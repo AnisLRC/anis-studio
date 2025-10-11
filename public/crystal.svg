@@ -1,0 +1,23 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="crystal-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6E44FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#BDA6FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main crystal shape -->
+  <path d="M16 2L26 12L16 30L6 12L16 2Z" fill="url(#crystal-gradient)" opacity="0.9"/>
+  
+  <!-- Inner facets -->
+  <path d="M16 2L20 8L16 14L12 8L16 2Z" fill="#BDA6FF" opacity="0.5"/>
+  <path d="M16 14L20 20L16 30L12 20L16 14Z" fill="#6E44FF" opacity="0.7"/>
+  
+  <!-- Highlights -->
+  <path d="M16 2L18 6L16 10L14 6L16 2Z" fill="white" opacity="0.4"/>
+  <circle cx="16" cy="8" r="1.5" fill="white" opacity="0.6"/>
+  
+  <!-- Outer edges -->
+  <path d="M16 2L26 12L16 30L6 12L16 2Z" stroke="#2E2447" stroke-width="0.5" fill="none" opacity="0.3"/>
+</svg>
+

@@ -21,61 +21,71 @@ export const initialCartState: CartState = {
   itemCount: 0
 }
 
+const KEY = "anis_cart_v1"
+
 export function calculateCartTotal(items: CartItem[]): { total: number; itemCount: number } {
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
   return { total, itemCount }
 }
 
-export function addToCart(cart: CartState, item: Omit<CartItem, 'quantity'>): CartState {
-  const existingItem = cart.items.find(cartItem => cartItem.id === item.id)
+export function addToCart(item: Omit<CartItem, 'quantity'>): CartItem[] {
+  const currentCart = getCart()
+  const existingItemIndex = currentCart.findIndex(cartItem => cartItem.id === item.id)
   
-  if (existingItem) {
-    const updatedItems = cart.items.map(cartItem =>
-      cartItem.id === item.id
-        ? { ...cartItem, quantity: cartItem.quantity + 1 }
-        : cartItem
-    )
-    const { total, itemCount } = calculateCartTotal(updatedItems)
-    return { items: updatedItems, total, itemCount }
+  if (existingItemIndex !== -1) {
+    currentCart[existingItemIndex].quantity += 1
   } else {
-    const newItem = { ...item, quantity: 1 }
-    const updatedItems = [...cart.items, newItem]
-    const { total, itemCount } = calculateCartTotal(updatedItems)
-    return { items: updatedItems, total, itemCount }
-  }
-}
-
-export function removeFromCart(cart: CartState, itemId: string): CartState {
-  const updatedItems = cart.items.filter(item => item.id !== itemId)
-  const { total, itemCount } = calculateCartTotal(updatedItems)
-  return { items: updatedItems, total, itemCount }
-}
-
-export function updateQuantity(cart: CartState, itemId: string, quantity: number): CartState {
-  if (quantity <= 0) {
-    return removeFromCart(cart, itemId)
+    currentCart.push({ ...item, quantity: 1 })
   }
   
-  const updatedItems = cart.items.map(item =>
-    item.id === itemId ? { ...item, quantity } : item
-  )
-  const { total, itemCount } = calculateCartTotal(updatedItems)
-  return { items: updatedItems, total, itemCount }
+  saveCart(currentCart)
+  return currentCart
 }
 
+export function removeFromCart(itemId: string): CartItem[] {
+  const currentCart = getCart()
+  const updatedCart = currentCart.filter(item => item.id !== itemId)
+  saveCart(updatedCart)
+  return updatedCart
+}
 
-// src/lib/cart.ts
-export type CartItem = {
-  id: string;
-  title: string;
-  price: number;
-  qty: number;
-};
+export function updateQuantity(itemId: string, quantity: number): CartItem[] {
+  if (quantity <= 0) {
+    return removeFromCart(itemId)
+  }
+  
+  const currentCart = getCart()
+  const itemIndex = currentCart.findIndex(item => item.id === itemId)
+  
+  if (itemIndex !== -1) {
+    currentCart[itemIndex].quantity = quantity
+    saveCart(currentCart)
+  }
+  
+  return currentCart
+}
 
-const KEY = "anis_cart_v1";
+export function getCart(): CartItem[] {
+  if (typeof window === 'undefined') return []
+  
+  try {
+    const stored = localStorage.getItem(KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
 
-export function getCart(): CartItem[] { /* ... */ }
-export function addToCart(item: { id:string; title:string; price:number }, qty=1): CartItem[] { /* ... */ }
-export function removeFromCart(id: string, qty=1): CartItem[] { /* ... */ }
-export function clearCart(): CartItem[] { /* ... */ }
+export function clearCart(): CartItem[] {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(KEY, JSON.stringify([]))
+  }
+  return []
+}
+
+function saveCart(items: CartItem[]): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(KEY, JSON.stringify(items))
+  }
+}
