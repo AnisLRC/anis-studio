@@ -378,11 +378,10 @@ select:focus-visible {
   will-change: transform, box-shadow;
 }
 
-/* Image defaults (attributes like loading/decoding belong in HTML) */
+/* Lazy loading for images */
 img {
-  display: block;
-  max-width: 100%;
-  height: auto;
+  loading: lazy;
+  decoding: async;
 }
 
 /* Optimize animations for better performance */
