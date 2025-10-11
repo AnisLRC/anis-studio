@@ -72,32 +72,19 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-2">
             {['lrc', 'interiors', 'web-atelier', 'about', 'contact'].map((section) => (
-              <button 
+              <a 
                 key={section}
-                onClick={() => scrollToSection(section)}
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '0.9375rem',
-                  fontWeight: 500,
-                  color: '#2E2447',
-                  transition: 'all 200ms ease',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '0.5rem 0',
-                  position: 'relative'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#6E44FF'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '#2E2447'
+                href={`#${section}`}
+                className="btn-ghost"
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToSection(section)
                 }}
               >
                 {navigation[language][section as keyof typeof navigation['hr']]}
-              </button>
+              </a>
             ))}
           </nav>
 
@@ -213,37 +200,57 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-white/20 py-4">
-            <nav className="flex flex-col gap-4">
-              <button 
-                onClick={() => scrollToSection('lrc')}
-                className="text-left text-text hover:text-primary transition-colors py-2"
+            <nav className="flex flex-col gap-2">
+              <a 
+                href="#lrc"
+                className="btn-ghost text-left"
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToSection('lrc')
+                }}
               >
                 {navigation[language].lrc}
-              </button>
-              <button 
-                onClick={() => scrollToSection('interiors')}
-                className="text-left text-text hover:text-primary transition-colors py-2"
+              </a>
+              <a 
+                href="#interiors"
+                className="btn-ghost text-left"
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToSection('interiors')
+                }}
               >
                 {navigation[language].interiors}
-              </button>
-              <button 
-                onClick={() => scrollToSection('web-atelier')}
-                className="text-left text-text hover:text-primary transition-colors py-2"
+              </a>
+              <a 
+                href="#web-atelier"
+                className="btn-ghost text-left"
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToSection('web-atelier')
+                }}
               >
                 {navigation[language].webAtelier}
-              </button>
-              <button 
-                onClick={() => scrollToSection('about')}
-                className="text-left text-text hover:text-primary transition-colors py-2"
+              </a>
+              <a 
+                href="#about"
+                className="btn-ghost text-left"
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToSection('about')
+                }}
               >
                 {navigation[language].about}
-              </button>
-              <button 
-                onClick={() => scrollToSection('contact')}
-                className="text-left text-text hover:text-primary transition-colors py-2"
+              </a>
+              <a 
+                href="#contact"
+                className="btn-ghost text-left"
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToSection('contact')
+                }}
               >
                 {navigation[language].contact}
-              </button>
+              </a>
             </nav>
           </div>
         )}

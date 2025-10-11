@@ -85,9 +85,12 @@
 
   /* Ghost link button (bez pozadine) */
   .btn-ghost {
-    background: transparent;
-    color: inherit;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: .5rem; padding: .5rem .9rem; border-radius: .8rem;
+    background: transparent; color: inherit;
+    transition: background .2s ease, transform .15s ease;
   }
+  .btn-ghost:hover { background: rgba(255,255,255,.06); transform: translateY(-1px); }
 
   /* --- Badges / Tagovi --- */
   .badge {
@@ -122,7 +125,14 @@
     height: 140px;
   }
 
-  /* --- Hero background (siguran shimmer bez fixed) --- */
+  /* --- Filter chips --- */
+  .chip { @apply badge cursor-pointer select-none; }
+  .chip-active {
+    background: linear-gradient(90deg, var(--lavender, #BDA6FF), var(--amethyst, #6E44FF));
+    color: white; border-color: transparent;
+  }
+
+  /* --- Hero background --- */
   .hero-bg {
     position: relative;
     isolation: isolate;

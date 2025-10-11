@@ -27,19 +27,18 @@ export default function AboutSection({ language }: AboutSectionProps) {
   return (
     <section id="about" className="section">
       <div className="container">
-        <div className="about-content">
-          <h2>{translations.title[language]}</h2>
-          <div className="about-text">
-            {translations.bio[language].map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
-          
-          <div className="badges">
-            {translations.badges[language].map((badge, index) => (
-              <span key={index} className="badge">{badge}</span>
-            ))}
-          </div>
+        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">
+          O studiju
+        </h2>
+        <p className="text-white/85 max-w-3xl mb-6">
+          Spajamo ručni rad i moderne tehnologije: epoxy i drvene suvenire,
+          3D vizualizacije interijera i web stranice s fokusom na estetiku i prodaju.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <span className="badge">epoxy</span>
+          <span className="badge">wood</span>
+          <span className="badge">3D interijer</span>
+          <span className="badge">web dizajn</span>
         </div>
       </div>
     </section>

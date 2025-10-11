@@ -1,0 +1,8 @@
+* [33mec558ad[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m layout utilities: section, container, grid, card + UI utilities: btn, badge, hero + App: section+container wrapperi, grid kartice + Hero: tipografija i CTA gumbi + Card: badge tagovi, CTA, thumb centriranje + Hero background: siguran shimmer bez fixed + A11y: aria i semantics polish
+* [33m06fb6be[m save: 2025-10-11 23:50
+* [33m2d17259[m save: 2025-10-11 23:45
+* [33ma385b49[m chore: save progress [sub 11.10.2025. 17:27:24,25]
+* [33ma9ec663[m chore: save progress [$(date +'%Y-%m-%d %H:%M:%S')]
+* [33m6f1ecb0[m chore: save progress [11. 10. 2025. 16:16]
+* [33m31238c3[m feat: running Vite scaffold (Hello Ani)
+* [33md61a129[m Initial commit: Ani’s Studio

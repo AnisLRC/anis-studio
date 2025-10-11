@@ -54,7 +54,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
         animation: 'float 8s ease-in-out infinite',
         animationDelay: '0s',
         pointerEvents: 'none'
-      }} aria-hidden="true"></div>
+      }}></div>
       <div style={{ 
         position: 'absolute',
         width: '350px', 
@@ -67,7 +67,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
         animation: 'float 10s ease-in-out infinite',
         animationDelay: '2s',
         pointerEvents: 'none'
-      }} aria-hidden="true"></div>
+      }}></div>
 
       <div className="container">
         <div style={{ 
@@ -157,7 +157,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
-              className="mt-8 flex flex-wrap gap-4"
+              className="flex flex-wrap gap-4 justify-center"
             >
               {/* Primary CTA */}
               <motion.a
@@ -166,10 +166,9 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
                   boxShadow: '0 20px 40px rgba(110, 68, 255, 0.4)'
                 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={onExploreOffers}
                 href="#lrc"
                 className="btn btn-primary"
-                aria-label="Pogledaj ponudu proizvoda"
+                aria-label={translations.exploreOffers[language]}
               >
                 {translations.exploreOffers[language]}
               </motion.a>
@@ -177,14 +176,12 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               {/* Secondary CTA */}
               <motion.a
                 whileHover={{ 
-                  scale: 1.05,
-                  background: 'rgba(110, 68, 255, 0.1)'
+                  scale: 1.05
                 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={onRequestQuote}
                 href="#contact"
                 className="btn btn-secondary"
-                aria-label="Zatraži ponudu"
+                aria-label={translations.requestQuote[language]}
               >
                 {translations.requestQuote[language]}
               </motion.a>

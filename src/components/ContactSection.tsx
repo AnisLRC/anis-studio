@@ -87,95 +87,42 @@ export default function ContactSection({ language }: ContactSectionProps) {
   }
 
   return (
-    <section className="section">
-      <div className="container">
-        <div className="section-header">
-          <h2 className="text-center">{translations.title[language]}</h2>
-          <p className="section-subtitle text-center">{translations.subtitle[language]}</p>
-        </div>
+    <section id="contact" className="section">
+      <div className="container max-w-3xl">
+        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">
+          Kontakt
+        </h2>
+        <p className="text-white/80 mb-6">Opiši ideju i javit ćemo se s prijedlogom i cijenom.</p>
 
-        <div className="glass-panel" style={{ maxWidth: '600px', margin: '0 auto', padding: 'var(--space-xl)' }}>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group" style={{ marginBottom: 'var(--space-lg)' }}>
-              <label htmlFor="name" style={{ display: 'block', marginBottom: 'var(--space-sm)', fontWeight: '500' }}>
-                {translations.name[language]}
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-md)',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid rgba(110, 68, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: 'var(--text-base)',
-                  fontFamily: 'var(--font-body)',
-                  transition: 'all var(--transition-fast)'
-                }}
-              />
-            </div>
-
-            <div className="form-group" style={{ marginBottom: 'var(--space-lg)' }}>
-              <label htmlFor="email" style={{ display: 'block', marginBottom: 'var(--space-sm)', fontWeight: '500' }}>
-                {translations.email[language]}
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-md)',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid rgba(110, 68, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: 'var(--text-base)',
-                  fontFamily: 'var(--font-body)',
-                  transition: 'all var(--transition-fast)'
-                }}
-              />
-            </div>
-
-            <div className="form-group" style={{ marginBottom: 'var(--space-lg)' }}>
-              <label htmlFor="message" style={{ display: 'block', marginBottom: 'var(--space-sm)', fontWeight: '500' }}>
-                {translations.message[language]}
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                required
-                rows={6}
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-md)',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid rgba(110, 68, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: 'var(--text-base)',
-                  fontFamily: 'var(--font-body)',
-                  resize: 'vertical',
-                  transition: 'all var(--transition-fast)'
-                }}
-              />
-            </div>
-
-            <div className="text-center">
-              <button type="submit" className="btn btn-primary">
-                {translations.send[language]}
-              </button>
-            </div>
-          </form>
-        </div>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <input
+            className="w-full rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/60"
+            placeholder="Ime i prezime"
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+          <input
+            className="w-full rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/60"
+            placeholder="Email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <textarea
+            className="w-full rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 px-4 py-3 min-h-[140px] focus:outline-none focus:ring-2 focus:ring-white/60"
+            placeholder="Poruka"
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            required
+          />
+          <button className="btn btn-primary" type="submit">Pošalji upit</button>
+        </form>
       </div>
     </section>
   )

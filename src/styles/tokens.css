@@ -11,6 +11,12 @@
   --clr-glass: rgba(255, 255, 255, 0.8);
   --clr-glass-hover: rgba(255, 255, 255, 0.9);
   
+  /* Additional color aliases for utilities */
+  --lavender: #BDA6FF;
+  --amethyst: #6E44FF;
+  --surface: rgba(255,255,255,.06);
+  --border: rgba(255,255,255,.18);
+  
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, #6E44FF 0%, #BDA6FF 100%);
   --gradient-epoxy: linear-gradient(45deg, 
