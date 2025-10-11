@@ -36,7 +36,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass" style={{
+    <header className="fixed top-0 left-0 right-0 z-50 glass py-3" style={{
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
       background: 'rgba(249, 247, 251, 0.8)',
@@ -44,7 +44,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
       boxShadow: '0 4px 24px rgba(110, 68, 255, 0.08)'
     }}>
       <div className="container">
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex items-center gap-3">
             <div style={{

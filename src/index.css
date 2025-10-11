@@ -4,3 +4,42 @@
 /* Import Ani's Studio Styles */
 @import './styles/tokens.css';
 @import './styles/base.css';
+
+@layer utilities {
+  /* Sekcijski razmaci (sigurno, bez calc/tema) */
+  .section {
+    padding-top: clamp(3rem, 6vw, 6rem);
+    padding-bottom: clamp(3rem, 6vw, 6rem);
+  }
+
+  /* Kontejner širine i horizontalnog paddiga */
+  .container {
+    width: 100%;
+    max-width: 1280px;         /* ~max-w-7xl safe */
+    margin-inline: auto;       /* center */
+    padding-inline: clamp(1rem, 3vw, 2rem);
+  }
+
+  /* Grid helper za listinge (LRC) */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;              /* 20px */
+  }
+  @media (min-width: 640px) {
+    .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  /* Kartica – jednostavno, a lijepo */
+  .card {
+    border-radius: 1.25rem;            /* rounded-2xl */
+    background: rgba(255,255,255,0.04);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .card-body { padding: 1.25rem; }     /* p-5 */
+}

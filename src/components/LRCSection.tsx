@@ -100,52 +100,52 @@ export default function LRCSection({ language }: LRCSectionProps) {
   ]
 
   return (
-    <section id="lrc" className="section">
-      <div className="container">
-        {/* Section Header */}
-        <div className="section-header">
-          <h2>{translations.title[language]}</h2>
-          <p className="section-subtitle" style={{ whiteSpace: 'pre-line' }}>
-            {translations.subtitle[language]}
-          </p>
-          
-          {/* Feature Chips */}
-          <div className="feature-chips">
-            <span className="feature-chip">Laser graviranje</span>
-            <span className="feature-chip">Epoksi smola</span>
-            <span className="feature-chip">Ručno izrađeno</span>
-          </div>
+    <>
+      {/* Section Header */}
+      <div className="section-header">
+        <h2>{translations.title[language]}</h2>
+        <p className="section-subtitle" style={{ whiteSpace: 'pre-line' }}>
+          {translations.subtitle[language]}
+        </p>
+        
+        {/* Feature Chips */}
+        <div className="feature-chips">
+          <span className="feature-chip">Laser graviranje</span>
+          <span className="feature-chip">Epoksi smola</span>
+          <span className="feature-chip">Ručno izrađeno</span>
         </div>
+      </div>
 
-        {/* Search and Filters */}
-        <div className="lrc-controls">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder={translations.searchPlaceholder[language]}
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          
-          <div className="tag-filters">
-            {productTags.map(tag => (
-              <button
-                key={tag.id}
-                className={`tag-chip ${selectedTag === tag.id ? 'active' : ''}`}
-                onClick={() => setSelectedTag(tag.id)}
-              >
-                {tag.label[language]}
-              </button>
-            ))}
-          </div>
+      {/* Search and Filters */}
+      <div className="lrc-controls">
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder={translations.searchPlaceholder[language]}
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+        
+        <div className="tag-filters">
+          {productTags.map(tag => (
+            <button
+              key={tag.id}
+              className={`tag-chip ${selectedTag === tag.id ? 'active' : ''}`}
+              onClick={() => setSelectedTag(tag.id)}
+            >
+              {tag.label[language]}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        {/* Products Grid */}
-        <div className="products-grid">
-          {filteredProducts.map(product => (
-            <div key={product.id} className="product-card glass-panel">
+      {/* Products Grid */}
+      <div className="cards-grid">
+        {filteredProducts.map(product => (
+          <article key={product.id} className="card">
+            <div className="card-body">
               <div className="product-image">
                 <span>🎨</span>
               </div>
@@ -157,7 +157,7 @@ export default function LRCSection({ language }: LRCSectionProps) {
               </div>
               <div className="product-price">{product.price}€</div>
               <button 
-                className="btn btn-primary btn-small"
+                className="btn btn-primary btn-small w-full mt-4"
                 onClick={() => {
                   addToCart({
                     id: product.id,
@@ -173,53 +173,53 @@ export default function LRCSection({ language }: LRCSectionProps) {
                 {translations.addToCart[language]}
               </button>
             </div>
-          ))}
-        </div>
-
-        {/* Process Steps */}
-        <div className="section-header">
-          <h3>{translations.processes[language]}</h3>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {processSteps.map((process, index) => (
-            <div key={index} className="glass-panel text-center">
-              <div className="text-4xl mb-4">{process.icon}</div>
-              <h4 className="text-primary mb-4">
-                {process.title[language]}
-              </h4>
-              <div>
-                {process.steps[language].map((step, stepIndex) => (
-                  <div key={stepIndex} className="text-sm text-light mb-2">
-                    {stepIndex + 1}. {step}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Personalization Banner */}
-        <div className="glass-panel text-center" style={{ marginTop: 'var(--space-3xl)' }}>
-          <h3 className="text-primary mb-4">
-            {translations.personalization[language]}
-          </h3>
-          <p className="text-light mb-6">
-            {translations.personalizationDesc[language]}
-          </p>
-          <button 
-            className="btn btn-primary"
-            onClick={() => {
-              const contactSection = document.querySelector('#contact')
-              if (contactSection) {
-                contactSection.scrollIntoView({ behavior: 'smooth' })
-              }
-            }}
-          >
-            {translations.sendInquiry[language]}
-          </button>
-        </div>
+          </article>
+        ))}
       </div>
-    </section>
+
+      {/* Process Steps */}
+      <div className="section-header">
+        <h3>{translations.processes[language]}</h3>
+      </div>
+      
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {processSteps.map((process, index) => (
+          <div key={index} className="glass-panel text-center">
+            <div className="text-4xl mb-4">{process.icon}</div>
+            <h4 className="text-primary mb-4">
+              {process.title[language]}
+            </h4>
+            <div>
+              {process.steps[language].map((step, stepIndex) => (
+                <div key={stepIndex} className="text-sm text-light mb-2">
+                  {stepIndex + 1}. {step}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Personalization Banner */}
+      <div className="glass-panel text-center" style={{ marginTop: 'var(--space-3xl)' }}>
+        <h3 className="text-primary mb-4">
+          {translations.personalization[language]}
+        </h3>
+        <p className="text-light mb-6">
+          {translations.personalizationDesc[language]}
+        </p>
+        <button 
+          className="btn btn-primary"
+          onClick={() => {
+            const contactSection = document.querySelector('#contact')
+            if (contactSection) {
+              contactSection.scrollIntoView({ behavior: 'smooth' })
+            }
+          }}
+        >
+          {translations.sendInquiry[language]}
+        </button>
+      </div>
+    </>
   )
 }

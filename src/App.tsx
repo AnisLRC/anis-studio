@@ -80,30 +80,44 @@ export default function App() {
       />
       
       <main>
-        <HeroSection 
-          language={language}
-          onExploreOffers={scrollToWebAtelier}
-          onRequestQuote={scrollToContact}
-        />
-        
-        <section id="lrc" style={{ scrollMarginTop: '80px' }}>
-          <LRCSection language={language} />
+        <section className="section">
+          <div className="container">
+            <HeroSection 
+              language={language}
+              onExploreOffers={scrollToWebAtelier}
+              onRequestQuote={scrollToContact}
+            />
+          </div>
         </section>
         
-        <section id="interiors" style={{ scrollMarginTop: '80px' }}>
-          <InteriorsSection language={language} />
+        <section id="lrc" className="section" style={{ scrollMarginTop: '80px' }}>
+          <div className="container">
+            <LRCSection language={language} />
+          </div>
         </section>
         
-        <section id="web-atelier" style={{ scrollMarginTop: '80px' }}>
-          <WebAtelierSection language={language} />
+        <section id="interiors" className="section" style={{ scrollMarginTop: '80px' }}>
+          <div className="container">
+            <InteriorsSection language={language} />
+          </div>
         </section>
         
-        <section id="about" style={{ scrollMarginTop: '80px' }}>
-          <AboutSection language={language} />
+        <section id="web-atelier" className="section" style={{ scrollMarginTop: '80px' }}>
+          <div className="container">
+            <WebAtelierSection language={language} />
+          </div>
         </section>
         
-        <section id="contact" style={{ scrollMarginTop: '80px' }}>
-          <ContactSection language={language} />
+        <section id="about" className="section" style={{ scrollMarginTop: '80px' }}>
+          <div className="container">
+            <AboutSection language={language} />
+          </div>
+        </section>
+        
+        <section id="contact" className="section" style={{ scrollMarginTop: '80px' }}>
+          <div className="container">
+            <ContactSection language={language} />
+          </div>
         </section>
       </main>
 
