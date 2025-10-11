@@ -129,11 +129,17 @@ export default function LRCSection({ language }: LRCSectionProps) {
             />
           </div>
           
-          <div className="tag-filters">
+          <div className="flex flex-wrap gap-2 mb-6">
+            <button
+              className={`chip ${selectedTag === 'all' ? 'chip-active' : ''}`}
+              onClick={() => setSelectedTag('all')}
+            >
+              sve
+            </button>
             {productTags.map(tag => (
               <button
                 key={tag.id}
-                className={`tag-chip ${selectedTag === tag.id ? 'active' : ''}`}
+                className={`chip ${selectedTag === tag.id ? 'chip-active' : ''}`}
                 onClick={() => setSelectedTag(tag.id)}
               >
                 {tag.label[language]}
@@ -143,36 +149,40 @@ export default function LRCSection({ language }: LRCSectionProps) {
         </div>
 
         {/* Products Grid */}
-        <div className="products-grid">
+        <div className="cards-grid">
           {filteredProducts.map(product => (
-            <div key={product.id} className="product-card glass-panel">
-              <div className="product-image">
-                <span>🎨</span>
+            <article key={product.id} className="card">
+              <div className="card-thumb">
+                <span aria-hidden="true">🎨</span>
               </div>
-              <h3 className="product-name">{language === 'hr' ? product.nameHr : product.name}</h3>
-              <div className="product-tags">
-                {product.tags.map(tag => (
-                  <span key={tag} className="product-tag">{tag}</span>
-                ))}
+              <div className="card-body">
+                <h3 className="text-xl font-semibold mb-1">{language === 'hr' ? product.nameHr : product.name}</h3>
+                <div className="text-2xl font-bold mb-3">€{product.price}</div>
+                
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {product.tags.map(tag => (
+                    <span key={tag} className="badge">{tag}</span>
+                  ))}
+                </div>
+                
+                <button 
+                  className="btn btn-primary w-full"
+                  onClick={() => {
+                    addToCart({
+                      id: product.id,
+                      name: language === 'hr' ? product.nameHr : product.name,
+                      price: product.price,
+                      image: product.image,
+                      tags: product.tags
+                    });
+                    // Trigger cart update event
+                    window.dispatchEvent(new Event('cartUpdated'));
+                  }}
+                >
+                  {translations.addToCart[language]}
+                </button>
               </div>
-              <div className="product-price">{product.price}€</div>
-              <button 
-                className="btn btn-primary btn-small"
-                onClick={() => {
-                  addToCart({
-                    id: product.id,
-                    name: language === 'hr' ? product.nameHr : product.name,
-                    price: product.price,
-                    image: product.image,
-                    tags: product.tags
-                  });
-                  // Trigger cart update event
-                  window.dispatchEvent(new Event('cartUpdated'));
-                }}
-              >
-                {translations.addToCart[language]}
-              </button>
-            </div>
+            </article>
           ))}
         </div>
 

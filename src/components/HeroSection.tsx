@@ -33,27 +33,40 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
   const sloganWords = translations.slogan[language].split(' ')
 
   return (
-    <section id="hero" className="section" style={{ 
+    <section id="hero" className="section hero-bg" style={{ 
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      paddingTop: '80px'
     }}>
-      {/* Additional Epoxy Blobs for Hero */}
-      <div className="epoxy-blob" style={{ 
+      {/* Floating Crystal Decorations */}
+      <div style={{ 
+        position: 'absolute',
         width: '400px', 
         height: '400px', 
-        top: '20%', 
+        top: '15%', 
         right: '10%',
-        animationDelay: '2s'
+        background: 'radial-gradient(circle, rgba(189, 166, 255, 0.2) 0%, transparent 70%)',
+        borderRadius: '50%',
+        filter: 'blur(60px)',
+        animation: 'float 8s ease-in-out infinite',
+        animationDelay: '0s',
+        pointerEvents: 'none'
       }}></div>
-      <div className="epoxy-blob" style={{ 
-        width: '300px', 
-        height: '300px', 
-        bottom: '30%', 
-        left: '5%',
-        animationDelay: '6s'
+      <div style={{ 
+        position: 'absolute',
+        width: '350px', 
+        height: '350px', 
+        bottom: '20%', 
+        left: '8%',
+        background: 'radial-gradient(circle, rgba(110, 68, 255, 0.15) 0%, transparent 70%)',
+        borderRadius: '50%',
+        filter: 'blur(50px)',
+        animation: 'float 10s ease-in-out infinite',
+        animationDelay: '2s',
+        pointerEvents: 'none'
       }}></div>
 
       <div className="container">
@@ -77,16 +90,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              style={{
-                fontSize: 'clamp(var(--text-3xl), 5vw, var(--text-6xl))',
-                fontWeight: '700',
-                lineHeight: 'var(--leading-tight)',
-                marginBottom: 'var(--space-lg)',
-                background: 'var(--gradient-primary)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}
+              className="hero-title text-white mb-4"
             >
               {translations.title[language]}
             </motion.h1>
@@ -96,78 +100,56 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              style={{
-                fontSize: 'var(--text-xl)',
-                lineHeight: 'var(--leading-relaxed)',
-                color: 'var(--clr-text-light)',
-                marginBottom: 'var(--space-2xl)',
-                maxWidth: '800px',
-                margin: '0 auto var(--space-2xl)'
-              }}
+              className="hero-subtitle text-white/80 max-w-3xl"
             >
               {translations.subtitle[language]}
             </motion.p>
 
-            {/* Artistic Slogan */}
+            {/* Artistic Slogan with Shimmer */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
               style={{
-                marginBottom: 'var(--space-3xl)',
+                marginBottom: '3rem',
                 position: 'relative'
               }}
             >
               <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 'var(--space-sm)',
-                flexWrap: 'wrap'
+                display: 'inline-block',
+                padding: '1rem 2rem',
+                background: 'linear-gradient(135deg, rgba(189, 166, 255, 0.15) 0%, rgba(110, 68, 255, 0.15) 100%)',
+                borderRadius: '999px',
+                border: '2px solid rgba(110, 68, 255, 0.2)',
+                position: 'relative',
+                overflow: 'hidden'
               }}>
-                {sloganWords.map((word, index) => (
-                  <motion.span
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: 0.8 + (index * 0.1),
-                      ease: 'easeOut'
-                    }}
-                    style={{
-                      fontSize: 'var(--text-2xl)',
-                      fontWeight: index === 0 ? '300' : index === 1 ? '500' : '700',
-                      color: 'var(--clr-text)',
-                      position: 'relative',
-                      display: 'inline-block'
-                    }}
-                    whileHover={{ 
-                      scale: 1.1,
-                      textShadow: '0 0 20px rgba(189, 166, 255, 0.5)'
-                    }}
-                  >
-                    {word}
-                    {index < sloganWords.length - 1 && (
-                      <span style={{ marginLeft: 'var(--space-sm)' }}>•</span>
-                    )}
-                  </motion.span>
-                ))}
+                {/* Shimmer Effect */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '-100%',
+                  width: '100%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
+                  animation: 'shimmer 3s infinite',
+                  pointerEvents: 'none'
+                }}></div>
+                
+                <span style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '700',
+                  fontFamily: 'Poppins, sans-serif',
+                  background: 'linear-gradient(135deg, #6E44FF 0%, #BDA6FF 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  position: 'relative',
+                  zIndex: 1
+                }}>
+                  ✨ {translations.slogan[language]} ✨
+                </span>
               </div>
-              
-              {/* Decorative Line */}
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1, delay: 1.2, ease: 'easeOut' }}
-                style={{
-                  height: '2px',
-                  background: 'var(--gradient-primary)',
-                  margin: 'var(--space-lg) auto 0',
-                  maxWidth: '200px',
-                  borderRadius: 'var(--radius-full)'
-                }}
-              />
             </motion.div>
 
             {/* CTA Buttons */}
@@ -175,33 +157,17 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
-              style={{
-                display: 'flex',
-                gap: 'var(--space-lg)',
-                justifyContent: 'center',
-                flexWrap: 'wrap'
-              }}
+              className="mt-8 flex flex-wrap gap-4"
             >
               {/* Primary CTA */}
               <motion.button
                 whileHover={{ 
                   scale: 1.05,
-                  boxShadow: '0 20px 40px rgba(110, 68, 255, 0.3)'
+                  boxShadow: '0 20px 40px rgba(110, 68, 255, 0.4)'
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onExploreOffers}
-                style={{
-                  background: 'var(--gradient-primary)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 'var(--radius-xl)',
-                  padding: 'var(--space-lg) var(--space-2xl)',
-                  fontSize: 'var(--text-lg)',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  boxShadow: 'var(--shadow-lg)',
-                  transition: 'all var(--transition-normal)'
-                }}
+                className="btn btn-primary"
               >
                 {translations.exploreOffers[language]}
               </motion.button>
@@ -210,23 +176,11 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               <motion.button
                 whileHover={{ 
                   scale: 1.05,
-                  background: 'var(--clr-glass-hover)'
+                  background: 'rgba(110, 68, 255, 0.1)'
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onRequestQuote}
-                className="glass-panel"
-                style={{
-                  border: '2px solid var(--clr-primary)',
-                  borderRadius: 'var(--radius-xl)',
-                  padding: 'var(--space-lg) var(--space-2xl)',
-                  fontSize: 'var(--text-lg)',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  color: 'var(--clr-primary)',
-                  background: 'var(--clr-glass)',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)'
-                }}
+                className="btn btn-secondary"
               >
                 {translations.requestQuote[language]}
               </motion.button>
