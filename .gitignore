@@ -31,3 +31,5 @@ out/
 # Env files
 .env*
 
+git checkout -b feature/content-i18n
+

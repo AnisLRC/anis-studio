@@ -65,3 +65,17 @@ export function updateQuantity(cart: CartState, itemId: string, quantity: number
 }
 
 
+// src/lib/cart.ts
+export type CartItem = {
+  id: string;
+  title: string;
+  price: number;
+  qty: number;
+};
+
+const KEY = "anis_cart_v1";
+
+export function getCart(): CartItem[] { /* ... */ }
+export function addToCart(item: { id:string; title:string; price:number }, qty=1): CartItem[] { /* ... */ }
+export function removeFromCart(id: string, qty=1): CartItem[] { /* ... */ }
+export function clearCart(): CartItem[] { /* ... */ }

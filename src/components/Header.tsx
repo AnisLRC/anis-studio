@@ -209,4 +209,17 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
       </div>
     </header>
   )
+}export default function Header() {
+  return (
+    <header className="container" style={{ padding: "20px 0" }}>
+      <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <a href="/" style={{ fontWeight: 700 }}>Ani’s Studio</a>
+        <ul style={{ display: "flex", gap: 16, listStyle: "none", margin: 0, padding: 0 }}>
+          <li><a href="#interiors">Interiors</a></li>
+          <li><a href="#lrc">LRC</a></li>
+          <li><a href="#web-atelier">Web Atelier</a></li>
+        </ul>
+      </nav>
+    </header>
+  );
 }
