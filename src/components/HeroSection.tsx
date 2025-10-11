@@ -33,13 +33,12 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
   const sloganWords = translations.slogan[language].split(' ')
 
   return (
-    <section id="hero" className="section" style={{ 
+    <section id="hero" className="section hero-bg" style={{ 
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       position: 'relative',
       overflow: 'hidden',
-      background: 'radial-gradient(circle at 30% 50%, rgba(189, 166, 255, 0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(110, 68, 255, 0.1) 0%, transparent 50%)',
       paddingTop: '80px'
     }}>
       {/* Floating Crystal Decorations */}
@@ -55,7 +54,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
         animation: 'float 8s ease-in-out infinite',
         animationDelay: '0s',
         pointerEvents: 'none'
-      }}></div>
+      }} aria-hidden="true"></div>
       <div style={{ 
         position: 'absolute',
         width: '350px', 
@@ -68,7 +67,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
         animation: 'float 10s ease-in-out infinite',
         animationDelay: '2s',
         pointerEvents: 'none'
-      }}></div>
+      }} aria-hidden="true"></div>
 
       <div className="container">
         <div style={{ 
@@ -91,16 +90,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              style={{
-                fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-                fontWeight: '800',
-                lineHeight: '1.2',
-                marginBottom: '1.5rem',
-                fontFamily: 'Poppins, sans-serif',
-                color: '#2E2447',
-                textAlign: 'center',
-                letterSpacing: '-0.02em'
-              }}
+              className="hero-title text-white mb-4"
             >
               {translations.title[language]}
             </motion.h1>
@@ -110,16 +100,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              style={{
-                fontSize: '1.25rem',
-                lineHeight: '1.6',
-                color: '#5A4A6B',
-                marginBottom: '3rem',
-                maxWidth: '700px',
-                margin: '0 auto 3rem',
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: 400
-              }}
+              className="hero-subtitle text-white/80 max-w-3xl mb-6"
             >
               {translations.subtitle[language]}
             </motion.p>
@@ -176,63 +157,37 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
-              style={{
-                display: 'flex',
-                gap: 'var(--space-lg)',
-                justifyContent: 'center',
-                flexWrap: 'wrap'
-              }}
+              className="mt-8 flex flex-wrap gap-4"
             >
               {/* Primary CTA */}
-              <motion.button
+              <motion.a
                 whileHover={{ 
                   scale: 1.05,
                   boxShadow: '0 20px 40px rgba(110, 68, 255, 0.4)'
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onExploreOffers}
-                style={{
-                  background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '16px',
-                  padding: '1rem 2.5rem',
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  boxShadow: '0 8px 24px rgba(110, 68, 255, 0.3)',
-                  transition: 'all 300ms ease',
-                  fontFamily: 'Inter, sans-serif'
-                }}
+                href="#lrc"
+                className="btn btn-primary"
+                aria-label="Pogledaj ponudu proizvoda"
               >
                 {translations.exploreOffers[language]}
-              </motion.button>
+              </motion.a>
 
               {/* Secondary CTA */}
-              <motion.button
+              <motion.a
                 whileHover={{ 
                   scale: 1.05,
                   background: 'rgba(110, 68, 255, 0.1)'
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onRequestQuote}
-                style={{
-                  border: '2px solid #6E44FF',
-                  borderRadius: '16px',
-                  padding: '1rem 2.5rem',
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  color: '#6E44FF',
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)',
-                  transition: 'all 300ms ease',
-                  fontFamily: 'Inter, sans-serif'
-                }}
+                href="#contact"
+                className="btn btn-secondary"
+                aria-label="Zatraži ponudu"
               >
                 {translations.requestQuote[language]}
-              </motion.button>
+              </motion.a>
             </motion.div>
           </motion.div>
 
@@ -256,6 +211,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               filter: 'blur(1px)',
               opacity: 0.3
             }}
+            aria-hidden="true"
           >
             🎨
           </motion.div>
@@ -279,6 +235,7 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               filter: 'blur(1px)',
               opacity: 0.3
             }}
+            aria-hidden="true"
           >
             ✨
           </motion.div>

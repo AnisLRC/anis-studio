@@ -42,4 +42,101 @@
     border: 1px solid rgba(255,255,255,0.08);
   }
   .card-body { padding: 1.25rem; }     /* p-5 */
+
+  /* --- Buttons --- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .875rem 1.25rem;          /* ~py-3.5 px-5 */
+    border-radius: 1rem;               /* rounded-2xl */
+    font-weight: 600;
+    line-height: 1;
+    transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+    will-change: transform;
+  }
+  .btn:focus-visible {
+    outline: 2px solid rgba(255,255,255,.6);
+    outline-offset: 2px;
+  }
+  .btn:hover { transform: translateY(-1px) scale(1.01); }
+
+  /* Primarni (gradijent) */
+  .btn-primary {
+    background: linear-gradient(90deg, var(--lavender, #BDA6FF), var(--amethyst, #6E44FF));
+    color: white;
+    box-shadow: 0 8px 22px rgba(110,68,255,.25);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 10px 26px rgba(110,68,255,.32);
+  }
+
+  /* Sekundarni (staklasti) */
+  .btn-secondary {
+    background: rgba(255,255,255,.08);
+    color: white;
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(6px);
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,.12);
+  }
+
+  /* Ghost link button (bez pozadine) */
+  .btn-ghost {
+    background: transparent;
+    color: inherit;
+  }
+
+  /* --- Badges / Tagovi --- */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .875rem;
+    padding: .25rem .6rem;
+    border-radius: .75rem;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+  }
+
+  /* --- Hero helpers --- */
+  .hero-title {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    font-size: clamp(2.2rem, 4.5vw + 1rem, 4.25rem);
+  }
+  .hero-subtitle {
+    font-size: clamp(1rem, 1.1vw + .9rem, 1.35rem);
+    opacity: .9;
+  }
+
+  /* --- Kartica thumbnail centriranje (ako koristiš emoji/ikonice) --- */
+  .card-thumb {
+    display: grid;
+    place-items: center;
+    height: 140px;
+  }
+
+  /* --- Hero background (siguran shimmer bez fixed) --- */
+  .hero-bg {
+    position: relative;
+    isolation: isolate;
+  }
+  .hero-bg::before {
+    content: "";
+    position: absolute;
+    inset: -10% -10% auto -10%;
+    height: 60%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 30% 20%,
+      rgba(189,166,255,.25), rgba(110,68,255,.18) 35%, transparent 60%);
+    filter: blur(24px);
+    z-index: -1;
+    pointer-events: none;
+  }
 }
