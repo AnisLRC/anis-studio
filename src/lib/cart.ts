@@ -1,20 +1,35 @@
 // Cart types and utilities
 
-export interface CartItem {
+export type CartItem = {
   id: string
   name: string
   price: number
   quantity: number
   image: string
-  tags: string[]
+  tags?: string[]
 }
 
+export interface CartState {
+  items: CartItem[]
+  total: number
+  itemCount: number
+}
+
+export const initialCartState: CartState = {
+  items: [],
+  total: 0,
+  itemCount: 0
+}
+
+// SSR-safe localStorage helpers
 const CART_KEY = 'anis_cart_v1'
 
-// Get cart from localStorage
+function isClient(): boolean {
+  return typeof window !== 'undefined'
+}
+
 export function getCart(): CartItem[] {
-  if (typeof window === 'undefined') return []
-  
+  if (!isClient()) return []
   try {
     const stored = localStorage.getItem(CART_KEY)
     return stored ? JSON.parse(stored) : []
@@ -23,70 +38,72 @@ export function getCart(): CartItem[] {
   }
 }
 
-// Save cart to localStorage
 function saveCart(items: CartItem[]): void {
-  if (typeof window === 'undefined') return
-  
+  if (!isClient()) return
   try {
     localStorage.setItem(CART_KEY, JSON.stringify(items))
-  } catch (error) {
-    console.error('Failed to save cart:', error)
+    window.dispatchEvent(new CustomEvent('cart:updated', { detail: { items } }))
+  } catch (err) {
+    console.error('Failed to save cart:', err)
   }
 }
 
-// Add item to cart
-export function addToCart(item: Omit<CartItem, 'quantity'>): CartItem[] {
-  const cart = getCart()
-  const existingItem = cart.find(cartItem => cartItem.id === item.id)
+export function calculateCartTotal(items: CartItem[]): { total: number; itemCount: number } {
+  const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  return { total, itemCount }
+}
+
+export function addToCart(item: Omit<CartItem, 'quantity'>, qty = 1): CartItem[] {
+  const currentCart = getCart()
+  const existingItem = currentCart.find(cartItem => cartItem.id === item.id)
   
   let updatedCart: CartItem[]
-  
   if (existingItem) {
-    updatedCart = cart.map(cartItem =>
+    updatedCart = currentCart.map(cartItem =>
       cartItem.id === item.id
-        ? { ...cartItem, quantity: cartItem.quantity + 1 }
+        ? { ...cartItem, quantity: cartItem.quantity + qty }
         : cartItem
     )
   } else {
-    updatedCart = [...cart, { ...item, quantity: 1 }]
+    updatedCart = [...currentCart, { ...item, quantity: qty }]
   }
   
   saveCart(updatedCart)
   return updatedCart
 }
 
-// Remove item from cart completely
 export function removeFromCart(itemId: string): CartItem[] {
-  const cart = getCart()
-  const updatedCart = cart.filter(item => item.id !== itemId)
+  const currentCart = getCart()
+  const updatedCart = currentCart.filter(item => item.id !== itemId)
   saveCart(updatedCart)
   return updatedCart
 }
 
-// Update item quantity
-export function updateCartItemQuantity(itemId: string, quantity: number): CartItem[] {
+export function updateQuantity(itemId: string, quantity: number): CartItem[] {
   if (quantity <= 0) {
     return removeFromCart(itemId)
   }
   
-  const cart = getCart()
-  const updatedCart = cart.map(item =>
+  const currentCart = getCart()
+  const updatedCart = currentCart.map(item =>
     item.id === itemId ? { ...item, quantity } : item
   )
-  
   saveCart(updatedCart)
   return updatedCart
 }
 
-// Clear entire cart
 export function clearCart(): CartItem[] {
   saveCart([])
   return []
 }
 
-// Calculate cart totals
-export function calculateCartTotal(items: CartItem[]): { total: number; itemCount: number } {
-  const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
-  return { total, itemCount }
+export function subtotal(items: CartItem[]): number {
+  return items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+}
+
+// Helper for creating CartState from items
+export function createCartState(items: CartItem[]): CartState {
+  const { total, itemCount } = calculateCartTotal(items)
+  return { items, total, itemCount }
 }

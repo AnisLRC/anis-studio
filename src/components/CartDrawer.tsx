@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import type { CartItem } from '../lib/cart'
+import { CartItem } from '../lib/cart'
 
 interface CartDrawerProps {
   isOpen: boolean

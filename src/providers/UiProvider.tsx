@@ -1,50 +1,51 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface UiContextType {
-  isDrawerOpen: boolean
-  openDrawer: () => void
-  closeDrawer: () => void
-  modals: Record<string, boolean>
-  openModal: (modalId: string) => void
-  closeModal: (modalId: string) => void
+  cartOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
+  toggleCart: () => void;
 }
 
-const UiContext = createContext<UiContextType | undefined>(undefined)
+const UiContext = createContext<UiContextType | undefined>(undefined);
 
-export function UiProvider({ children }: { children: ReactNode }) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [modals, setModals] = useState<Record<string, boolean>>({})
+export function UiProvider({ children }: { children: ReactNode }): JSX.Element {
+  const [cartOpen, setCartOpen] = useState(false);
 
-  const openDrawer = () => setIsDrawerOpen(true)
-  const closeDrawer = () => setIsDrawerOpen(false)
+  useEffect(() => {
+    const handleCartOpen = () => {
+      setCartOpen(true);
+    };
 
-  const openModal = (modalId: string) => {
-    setModals(prev => ({ ...prev, [modalId]: true }))
-  }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('cart:open', handleCartOpen);
 
-  const closeModal = (modalId: string) => {
-    setModals(prev => ({ ...prev, [modalId]: false }))
-  }
+      return () => {
+        window.removeEventListener('cart:open', handleCartOpen);
+      };
+    }
+  }, []);
+
+  const openCart = () => setCartOpen(true);
+  const closeCart = () => setCartOpen(false);
+  const toggleCart = () => setCartOpen(prev => !prev);
 
   return (
-    <UiContext.Provider value={{ 
-      isDrawerOpen, 
-      openDrawer, 
-      closeDrawer, 
-      modals, 
-      openModal, 
-      closeModal 
-    }}>
+    <UiContext.Provider value={{ cartOpen, openCart, closeCart, toggleCart }}>
       {children}
     </UiContext.Provider>
-  )
+  );
 }
 
-export function useUi() {
-  const context = useContext(UiContext)
-  if (!context) {
-    throw new Error('useUi must be used within UiProvider')
+export const useUi = (): {
+  cartOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
+  toggleCart: () => void;
+} => {
+  const context = useContext(UiContext);
+  if (context === undefined) {
+    throw new Error('useUi must be used within a UiProvider');
   }
-  return context
-}
-
+  return context;
+};

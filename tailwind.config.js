@@ -1,8 +1,9 @@
+// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -13,15 +14,15 @@ export default {
         plum: '#2E2447',
       },
       fontFamily: {
-        heading: ['Poppins', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Poppins', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
-    },
-    container: {
-      center: true,
-      padding: '1.25rem',
+      container: {
+        center: true,
+        padding: '1rem',
+        screens: { lg: '1024px', xl: '1280px', '2xl': '1440px' },
+      },
     },
   },
   plugins: [],
-}
-
+};

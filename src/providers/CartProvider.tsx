@@ -1,69 +1,88 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import type { CartItem } from '../lib/cart'
-import { getCart, addToCart as addToCartLib, removeFromCart as removeFromCartLib, updateCartItemQuantity, clearCart as clearCartLib } from '../lib/cart'
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getCart, addToCart, removeFromCart, clearCart, subtotal, type CartItem } from '../lib/cart';
 
 interface CartContextType {
-  items: CartItem[]
-  add: (item: Omit<CartItem, 'quantity'>) => void
-  remove: (itemId: string) => void
-  clear: () => void
-  updateQuantity: (itemId: string, quantity: number) => void
-  subtotal: number
+  items: CartItem[];
+  count: number;
+  total: number;
+  add: (item: CartItem) => void;
+  remove: (id: string) => void;
+  clear: () => void;
+  refresh: () => void;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined)
+const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([])
+export function CartProvider({ children }: { children: ReactNode }): JSX.Element {
+  const [items, setItems] = useState<CartItem[]>([]);
 
-  // SSR-safe: Load cart only in browser
   useEffect(() => {
+    // Initial load
+    setItems(getCart());
+
+    // Listen for storage changes and cart updates
+    const handleStorageChange = () => {
+      setItems(getCart());
+    };
+
+    const handleCartUpdate = () => {
+      setItems(getCart());
+    };
+
     if (typeof window !== 'undefined') {
-      setItems(getCart())
-      
-      const handleCartUpdate = () => {
-        setItems(getCart())
-      }
-      
-      window.addEventListener('cartUpdated', handleCartUpdate)
-      return () => window.removeEventListener('cartUpdated', handleCartUpdate)
+      window.addEventListener('storage', handleStorageChange);
+      window.addEventListener('cart:updated', handleCartUpdate);
+
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        window.removeEventListener('cart:updated', handleCartUpdate);
+      };
     }
-  }, [])
+  }, []);
 
-  const add = (item: Omit<CartItem, 'quantity'>) => {
-    addToCartLib(item)
-    setItems(getCart())
-  }
+  const add = (item: CartItem) => {
+    addToCart(item, item.quantity);
+    setItems(getCart());
+  };
 
-  const remove = (itemId: string) => {
-    removeFromCartLib(itemId)
-    setItems(getCart())
-  }
+  const remove = (id: string) => {
+    removeFromCart(id);
+    setItems(getCart());
+  };
 
   const clear = () => {
-    clearCartLib()
-    setItems([])
-  }
+    clearCart();
+    setItems([]);
+  };
 
-  const updateQuantity = (itemId: string, quantity: number) => {
-    updateCartItemQuantity(itemId, quantity)
-    setItems(getCart())
-  }
+  const refresh = () => {
+    setItems(getCart());
+  };
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const count = items.reduce((sum, item) => sum + item.quantity, 0);
+  const total = subtotal(items);
 
   return (
-    <CartContext.Provider value={{ items, add, remove, clear, updateQuantity, subtotal }}>
+    <CartContext.Provider value={{ items, count, total, add, remove, clear, refresh }}>
       {children}
     </CartContext.Provider>
-  )
+  );
 }
 
-export function useCart() {
-  const context = useContext(CartContext)
-  if (!context) {
-    throw new Error('useCart must be used within CartProvider')
+export const useCart = (): {
+  items: CartItem[];
+  count: number;
+  total: number;
+  add: (item: CartItem) => void;
+  remove: (id: string) => void;
+  clear: () => void;
+  refresh: () => void;
+} => {
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error('useCart must be used within a CartProvider');
   }
-  return context
-}
+  return context;
+};
 
+export type { CartItem } from '../lib/cart';

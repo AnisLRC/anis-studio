@@ -38,36 +38,22 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
       display: 'flex',
       alignItems: 'center',
       position: 'relative',
-      overflow: 'hidden',
-      background: 'radial-gradient(circle at 30% 50%, rgba(189, 166, 255, 0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(110, 68, 255, 0.1) 0%, transparent 50%)',
-      paddingTop: '80px'
+      overflow: 'hidden'
     }}>
-      {/* Floating Crystal Decorations */}
-      <div style={{ 
-        position: 'absolute',
+      {/* Additional Epoxy Blobs for Hero */}
+      <div className="epoxy-blob" style={{ 
         width: '400px', 
         height: '400px', 
-        top: '15%', 
+        top: '20%', 
         right: '10%',
-        background: 'radial-gradient(circle, rgba(189, 166, 255, 0.2) 0%, transparent 70%)',
-        borderRadius: '50%',
-        filter: 'blur(60px)',
-        animation: 'float 8s ease-in-out infinite',
-        animationDelay: '0s',
-        pointerEvents: 'none'
+        animationDelay: '2s'
       }}></div>
-      <div style={{ 
-        position: 'absolute',
-        width: '350px', 
-        height: '350px', 
-        bottom: '20%', 
-        left: '8%',
-        background: 'radial-gradient(circle, rgba(110, 68, 255, 0.15) 0%, transparent 70%)',
-        borderRadius: '50%',
-        filter: 'blur(50px)',
-        animation: 'float 10s ease-in-out infinite',
-        animationDelay: '2s',
-        pointerEvents: 'none'
+      <div className="epoxy-blob" style={{ 
+        width: '300px', 
+        height: '300px', 
+        bottom: '30%', 
+        left: '5%',
+        animationDelay: '6s'
       }}></div>
 
       <div className="container">
@@ -92,14 +78,14 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               style={{
-                fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-                fontWeight: '800',
-                lineHeight: '1.2',
-                marginBottom: '1.5rem',
-                fontFamily: 'Poppins, sans-serif',
-                color: '#2E2447',
-                textAlign: 'center',
-                letterSpacing: '-0.02em'
+                fontSize: 'clamp(var(--text-3xl), 5vw, var(--text-6xl))',
+                fontWeight: '700',
+                lineHeight: 'var(--leading-tight)',
+                marginBottom: 'var(--space-lg)',
+                background: 'var(--gradient-primary)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
               }}
             >
               {translations.title[language]}
@@ -111,64 +97,77 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               style={{
-                fontSize: '1.25rem',
-                lineHeight: '1.6',
-                color: '#5A4A6B',
-                marginBottom: '3rem',
-                maxWidth: '700px',
-                margin: '0 auto 3rem',
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: 400
+                fontSize: 'var(--text-xl)',
+                lineHeight: 'var(--leading-relaxed)',
+                color: 'var(--clr-text-light)',
+                marginBottom: 'var(--space-2xl)',
+                maxWidth: '800px',
+                margin: '0 auto var(--space-2xl)'
               }}
             >
               {translations.subtitle[language]}
             </motion.p>
 
-            {/* Artistic Slogan with Shimmer */}
+            {/* Artistic Slogan */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
               style={{
-                marginBottom: '3rem',
+                marginBottom: 'var(--space-3xl)',
                 position: 'relative'
               }}
             >
               <div style={{
-                display: 'inline-block',
-                padding: '1rem 2rem',
-                background: 'linear-gradient(135deg, rgba(189, 166, 255, 0.15) 0%, rgba(110, 68, 255, 0.15) 100%)',
-                borderRadius: '999px',
-                border: '2px solid rgba(110, 68, 255, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 'var(--space-sm)',
+                flexWrap: 'wrap'
               }}>
-                {/* Shimmer Effect */}
-                <div style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: '-100%',
-                  width: '100%',
-                  height: '100%',
-                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
-                  animation: 'shimmer 3s infinite',
-                  pointerEvents: 'none'
-                }}></div>
-                
-                <span style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '700',
-                  fontFamily: 'Poppins, sans-serif',
-                  background: 'linear-gradient(135deg, #6E44FF 0%, #BDA6FF 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  position: 'relative',
-                  zIndex: 1
-                }}>
-                  ✨ {translations.slogan[language]} ✨
-                </span>
+                {sloganWords.map((word, index) => (
+                  <motion.span
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.6, 
+                      delay: 0.8 + (index * 0.1),
+                      ease: 'easeOut'
+                    }}
+                    style={{
+                      fontSize: 'var(--text-2xl)',
+                      fontWeight: index === 0 ? '300' : index === 1 ? '500' : '700',
+                      color: 'var(--clr-text)',
+                      position: 'relative',
+                      display: 'inline-block'
+                    }}
+                    whileHover={{ 
+                      scale: 1.1,
+                      textShadow: '0 0 20px rgba(189, 166, 255, 0.5)'
+                    }}
+                  >
+                    {word}
+                    {index < sloganWords.length - 1 && (
+                      <span style={{ marginLeft: 'var(--space-sm)' }}>•</span>
+                    )}
+                  </motion.span>
+                ))}
               </div>
+              
+              {/* Decorative Line */}
+              <motion.div
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 1.2, ease: 'easeOut' }}
+                style={{
+                  height: '2px',
+                  background: 'var(--gradient-primary)',
+                  margin: 'var(--space-lg) auto 0',
+                  maxWidth: '200px',
+                  borderRadius: 'var(--radius-full)'
+                }}
+              />
             </motion.div>
 
             {/* CTA Buttons */}
@@ -187,22 +186,21 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               <motion.button
                 whileHover={{ 
                   scale: 1.05,
-                  boxShadow: '0 20px 40px rgba(110, 68, 255, 0.4)'
+                  boxShadow: '0 20px 40px rgba(110, 68, 255, 0.3)'
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onExploreOffers}
                 style={{
-                  background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
+                  background: 'var(--gradient-primary)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '16px',
-                  padding: '1rem 2.5rem',
-                  fontSize: '1.125rem',
+                  borderRadius: 'var(--radius-xl)',
+                  padding: 'var(--space-lg) var(--space-2xl)',
+                  fontSize: 'var(--text-lg)',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  boxShadow: '0 8px 24px rgba(110, 68, 255, 0.3)',
-                  transition: 'all 300ms ease',
-                  fontFamily: 'Inter, sans-serif'
+                  boxShadow: 'var(--shadow-lg)',
+                  transition: 'all var(--transition-normal)'
                 }}
               >
                 {translations.exploreOffers[language]}
@@ -212,23 +210,22 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
               <motion.button
                 whileHover={{ 
                   scale: 1.05,
-                  background: 'rgba(110, 68, 255, 0.1)'
+                  background: 'var(--clr-glass-hover)'
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onRequestQuote}
+                className="glass-panel"
                 style={{
-                  border: '2px solid #6E44FF',
-                  borderRadius: '16px',
-                  padding: '1rem 2.5rem',
-                  fontSize: '1.125rem',
+                  border: '2px solid var(--clr-primary)',
+                  borderRadius: 'var(--radius-xl)',
+                  padding: 'var(--space-lg) var(--space-2xl)',
+                  fontSize: 'var(--text-lg)',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  color: '#6E44FF',
-                  background: 'rgba(255, 255, 255, 0.8)',
+                  color: 'var(--clr-primary)',
+                  background: 'var(--clr-glass)',
                   backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)',
-                  transition: 'all 300ms ease',
-                  fontFamily: 'Inter, sans-serif'
+                  WebkitBackdropFilter: 'blur(16px)'
                 }}
               >
                 {translations.requestQuote[language]}
