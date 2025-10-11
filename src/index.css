@@ -1,3 +1,6 @@
+/* Tailwind v4 */
+@import "tailwindcss";
+
 /* Import Ani's Studio Styles */
 @import './styles/tokens.css';
 @import './styles/base.css';

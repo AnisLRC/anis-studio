@@ -1,162 +1,121 @@
 import { useState, useEffect } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
-import Header from './components/Header'
-import HeroSection from './components/HeroSection'
-import LRCSection from './components/LRCSection'
-import InteriorsSection from './components/InteriorsSection'
-import WebAtelierSection from './components/WebAtelierSection'
-import AboutSection from './components/AboutSection'
-import ContactSection from './components/ContactSection'
-import Footer from './components/Footer'
-import CartDrawer from './components/CartDrawer'
-import { getCart, removeFromCart, updateQuantity, clearCart, calculateCartTotal, type CartItem } from './lib/cart'
-import './App.css'
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_demo')
+import Header from './components/Header.tsx'
+import HeroSection from './components/HeroSection.tsx'
+import LRCSection from './components/LRCSection.tsx'
+import InteriorsSection from './components/InteriorsSection.tsx'
+import WebAtelierSection from './components/WebAtelierSection.tsx'
+import AboutSection from './components/AboutSection.tsx'
+import ContactSection from './components/ContactSection.tsx'
+import Footer from './components/Footer.tsx'
+import CartDrawer from './components/CartDrawer.tsx'
+import { getCart, removeFromCart, updateCartItemQuantity, type CartItem } from './lib/cart'
+import { createCheckoutSession, cartItemsToStripeItems } from './lib/stripe'
 
 export default function App() {
   const [language, setLanguage] = useState<'hr' | 'en'>(() => {
-    const saved = localStorage.getItem('anis_language')
-    return (saved === 'hr' || saved === 'en') ? saved : 'hr'
+    return (localStorage.getItem('language') as 'hr' | 'en') || 'hr'
   })
-  
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [cartTotal, setCartTotal] = useState(0)
-  const [cartItemCount, setCartItemCount] = useState(0)
 
-  // Load cart from localStorage
   useEffect(() => {
-    loadCartFromStorage()
-    
-    // Listen for cart updates
-    const handleCartUpdate = () => {
-      loadCartFromStorage()
-    }
-    
-    window.addEventListener('cartUpdated', handleCartUpdate)
-    return () => window.removeEventListener('cartUpdated', handleCartUpdate)
-  }, [])
-
-  // Save language preference
-  useEffect(() => {
-    localStorage.setItem('anis_language', language)
+    localStorage.setItem('language', language)
   }, [language])
 
-  const loadCartFromStorage = () => {
-    const items = getCart()
-    const { total, itemCount } = calculateCartTotal(items)
-    setCartItems(items)
-    setCartTotal(total)
-    setCartItemCount(itemCount)
-  }
-
-  const handleLanguageChange = (lang: 'hr' | 'en') => {
-    setLanguage(lang)
-  }
-
-  const handleCartClick = () => {
-    setIsCartOpen(true)
-  }
-
-  const handleCloseCart = () => {
-    setIsCartOpen(false)
-  }
-
-  const handleRemoveItem = (itemId: string) => {
-    removeFromCart(itemId)
-    loadCartFromStorage()
-  }
-
-  const handleUpdateQuantity = (itemId: string, quantity: number) => {
-    updateQuantity(itemId, quantity)
-    loadCartFromStorage()
-  }
+  useEffect(() => {
+    const updateCart = () => {
+      setCartItems(getCart())
+    }
+    
+    updateCart()
+    window.addEventListener('cartUpdated', updateCart)
+    
+    return () => window.removeEventListener('cartUpdated', updateCart)
+  }, [])
 
   const handleCheckout = async () => {
     try {
-      const stripe = await stripePromise
-      if (!stripe) {
-        console.error('Stripe not loaded')
-        return
-      }
-
-      // In a real app, you would call your backend to create a Stripe checkout session
-      // For demo purposes, we'll just show an alert
-      const message = language === 'hr' 
-        ? `Demo checkout: ${cartItemCount} artikala, ukupno €${cartTotal.toFixed(2)}\n\n(U produkcijskoj verziji, ovdje bi se otvorila Stripe naplata.)`
-        : `Demo checkout: ${cartItemCount} items, total €${cartTotal.toFixed(2)}\n\n(In production, this would open Stripe payment.)`
-      
-      alert(message)
-      
-      // Clear cart after "purchase"
-      clearCart()
-      loadCartFromStorage()
-      setIsCartOpen(false)
+      const stripeItems = cartItemsToStripeItems(cartItems)
+      const sessionId = await createCheckoutSession({
+        items: stripeItems,
+        success_url: `${window.location.origin}/checkout-success`,
+        cancel_url: `${window.location.origin}`,
+        metadata: {
+          language: language
+        }
+      })
+      console.log('Checkout session created:', sessionId)
+      alert(language === 'hr' 
+        ? 'Preusmjeravanje na Stripe...'
+        : 'Redirecting to Stripe...')
     } catch (error) {
       console.error('Checkout error:', error)
+      alert(language === 'hr' 
+        ? 'Došlo je do greške pri plaćanju. Molimo pokušajte ponovno.'
+        : 'An error occurred during checkout. Please try again.')
     }
   }
 
-  const handleExploreOffers = () => {
-    const lrcSection = document.getElementById('lrc')
-    if (lrcSection) {
-      lrcSection.scrollIntoView({ behavior: 'smooth' })
+  const scrollToWebAtelier = () => {
+    const section = document.getElementById('web-atelier')
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
-  const handleRequestQuote = () => {
-    const contactSection = document.getElementById('contact')
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' })
+  const scrollToContact = () => {
+    const section = document.getElementById('contact')
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
   return (
     <div className="epoxy-background">
-      {/* Epoxy background blobs */}
-      <div className="epoxy-blob" />
-      <div className="epoxy-blob" />
-      <div className="epoxy-blob" />
-
-      {/* Header */}
-      <Header
+      <Header 
         language={language}
-        onLanguageChange={handleLanguageChange}
-        cartItemCount={cartItemCount}
-        onCartClick={handleCartClick}
+        onLanguageChange={setLanguage}
+        cartItemCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+        onCartClick={() => setIsCartOpen(true)}
       />
-
-      {/* Main Content */}
-      <main style={{ paddingTop: '80px' }}>
-        <HeroSection
+      
+      <main>
+        <HeroSection 
           language={language}
-          onExploreOffers={handleExploreOffers}
-          onRequestQuote={handleRequestQuote}
+          onExploreOffers={scrollToWebAtelier}
+          onRequestQuote={scrollToContact}
         />
-
-        <LRCSection language={language} />
-
-        <InteriorsSection language={language} />
-
-        <WebAtelierSection language={language} />
-
-        <AboutSection language={language} />
-
-        <ContactSection language={language} />
+        
+        <section id="lrc" style={{ scrollMarginTop: '80px' }}>
+          <LRCSection language={language} />
+        </section>
+        
+        <section id="interiors" style={{ scrollMarginTop: '80px' }}>
+          <InteriorsSection language={language} />
+        </section>
+        
+        <section id="web-atelier" style={{ scrollMarginTop: '80px' }}>
+          <WebAtelierSection language={language} />
+        </section>
+        
+        <section id="about" style={{ scrollMarginTop: '80px' }}>
+          <AboutSection language={language} />
+        </section>
+        
+        <section id="contact" style={{ scrollMarginTop: '80px' }}>
+          <ContactSection language={language} />
+        </section>
       </main>
 
-      {/* Footer */}
       <Footer language={language} />
 
-      {/* Cart Drawer */}
       <CartDrawer
         isOpen={isCartOpen}
-        onClose={handleCloseCart}
+        onClose={() => setIsCartOpen(false)}
         items={cartItems}
-        total={cartTotal}
-        onRemoveItem={handleRemoveItem}
-        onUpdateQuantity={handleUpdateQuantity}
+        total={cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)}
+        onUpdateQuantity={updateCartItemQuantity}
+        onRemoveItem={removeFromCart}
         onCheckout={handleCheckout}
         language={language}
       />

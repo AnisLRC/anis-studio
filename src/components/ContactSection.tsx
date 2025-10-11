@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, FormEvent } from 'react'
 
 interface ContactSectionProps {
   language: 'hr' | 'en'
@@ -14,184 +14,167 @@ export default function ContactSection({ language }: ContactSectionProps) {
 
   const translations = {
     title: {
-      hr: "Kontaktirajte nas",
-      en: "Contact Us"
+      hr: "Kontaktirajte me",
+      en: "Contact Me"
     },
     subtitle: {
-      hr: "Imate pitanje ili želite započeti projekt? Javite nam se!",
-      en: "Have a question or want to start a project? Let us know!"
+      hr: "Imate pitanje ili želite započeti projekt? Javite mi se!",
+      en: "Have a question or want to start a project? Get in touch!"
     },
-    nameLabel: {
+    name: {
       hr: "Ime",
       en: "Name"
     },
-    emailLabel: {
+    email: {
       hr: "Email",
       en: "Email"
     },
-    messageLabel: {
+    message: {
       hr: "Poruka",
       en: "Message"
     },
-    namePlaceholder: {
-      hr: "Vaše ime",
-      en: "Your name"
-    },
-    emailPlaceholder: {
-      hr: "vas.email@primjer.com",
-      en: "your.email@example.com"
-    },
-    messagePlaceholder: {
-      hr: "Opišite svoj projekt ili pitanje...",
-      en: "Describe your project or question..."
-    },
-    submitButton: {
+    send: {
       hr: "Pošalji poruku",
       en: "Send Message"
     },
-    successMessage: {
-      hr: "Hvala! Vaša poruka je poslana. Javit ćemo vam se uskoro.",
-      en: "Thank you! Your message has been sent. We'll get back to you soon."
+    successTitle: {
+      hr: "Hvala vam!",
+      en: "Thank you!"
     },
-    contactInfo: {
-      hr: {
-        email: "Email: ani@anisstudio.com",
-        location: "Lokacija: Županja, Hrvatska",
-        hours: "Radno vrijeme: Pon-Pet, 9:00-17:00"
-      },
-      en: {
-        email: "Email: ani@anisstudio.com",
-        location: "Location: Županja, Croatia",
-        hours: "Working hours: Mon-Fri, 9:00-17:00"
-      }
+    successMessage: {
+      hr: "Vaša poruka je poslana. Javit ću vam se uskoro!",
+      en: "Your message has been sent. I'll get back to you soon!"
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     
-    // Demo: Just show success message
-    console.log('Contact form submitted:', formData)
+    // Demo alert - u production bi ovdje bio API poziv
+    console.log('Form submitted:', formData)
+    
     setIsSubmitted(true)
     
-    // Reset form after 3 seconds
+    // Reset after 3 seconds
     setTimeout(() => {
       setIsSubmitted(false)
       setFormData({ name: '', email: '', message: '' })
     }, 3000)
   }
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  if (isSubmitted) {
+    return (
+      <section className="section">
+        <div className="container">
+          <div className="glass-panel text-center" style={{ padding: 'var(--space-3xl)', maxWidth: '600px', margin: '0 auto' }}>
+            <h2 style={{ color: 'var(--clr-primary)', marginBottom: 'var(--space-lg)' }}>
+              {translations.successTitle[language]}
+            </h2>
+            <p style={{ fontSize: 'var(--text-lg)', color: 'var(--clr-text-light)' }}>
+              {translations.successMessage[language]}
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
-    <section id="contact" className="section">
+    <section className="section">
       <div className="container">
-        {/* Section Header */}
-        <div className="section-header text-center">
-          <h2>{translations.title[language]}</h2>
-          <p className="section-subtitle">
-            {translations.subtitle[language]}
-          </p>
+        <div className="section-header">
+          <h2 className="text-center">{translations.title[language]}</h2>
+          <p className="section-subtitle text-center">{translations.subtitle[language]}</p>
         </div>
 
-        <div className="contact-content">
-          {/* Contact Form */}
-          <div className="glass-panel" style={{ padding: 'var(--space-xl)', maxWidth: '800px', margin: '0 auto' }}>
-            {isSubmitted ? (
-              <div className="text-center" style={{ padding: 'var(--space-3xl)' }}>
-                <div style={{ fontSize: 'var(--text-5xl)', marginBottom: 'var(--space-lg)' }}>
-                  ✓
-                </div>
-                <p style={{ 
-                  fontSize: 'var(--text-lg)', 
-                  color: 'var(--clr-primary)',
-                  fontWeight: '600'
-                }}>
-                  {translations.successMessage[language]}
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="contact-form">
-                <div className="form-group">
-                  <label htmlFor="name">{translations.nameLabel[language]}</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder={translations.namePlaceholder[language]}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="email">{translations.emailLabel[language]}</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder={translations.emailPlaceholder[language]}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="message">{translations.messageLabel[language]}</label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder={translations.messagePlaceholder[language]}
-                    rows={6}
-                    required
-                  />
-                </div>
-
-                <div className="text-center">
-                  <button type="submit" className="btn btn-primary">
-                    {translations.submitButton[language]}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-
-          {/* Contact Info */}
-          <div className="contact-info-grid">
-            <div className="glass-panel text-center" style={{ padding: 'var(--space-lg)' }}>
-              <div style={{ fontSize: 'var(--text-3xl)', marginBottom: 'var(--space-sm)' }}>
-                📧
-              </div>
-              <p style={{ color: 'var(--clr-text-light)', fontSize: 'var(--text-sm)' }}>
-                {translations.contactInfo[language].email}
-              </p>
+        <div className="glass-panel" style={{ maxWidth: '600px', margin: '0 auto', padding: 'var(--space-xl)' }}>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group" style={{ marginBottom: 'var(--space-lg)' }}>
+              <label htmlFor="name" style={{ display: 'block', marginBottom: 'var(--space-sm)', fontWeight: '500' }}>
+                {translations.name[language]}
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: 'var(--space-md)',
+                  borderRadius: 'var(--radius-lg)',
+                  border: '1px solid rgba(110, 68, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.5)',
+                  fontSize: 'var(--text-base)',
+                  fontFamily: 'var(--font-body)',
+                  transition: 'all var(--transition-fast)'
+                }}
+              />
             </div>
 
-            <div className="glass-panel text-center" style={{ padding: 'var(--space-lg)' }}>
-              <div style={{ fontSize: 'var(--text-3xl)', marginBottom: 'var(--space-sm)' }}>
-                📍
-              </div>
-              <p style={{ color: 'var(--clr-text-light)', fontSize: 'var(--text-sm)' }}>
-                {translations.contactInfo[language].location}
-              </p>
+            <div className="form-group" style={{ marginBottom: 'var(--space-lg)' }}>
+              <label htmlFor="email" style={{ display: 'block', marginBottom: 'var(--space-sm)', fontWeight: '500' }}>
+                {translations.email[language]}
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: 'var(--space-md)',
+                  borderRadius: 'var(--radius-lg)',
+                  border: '1px solid rgba(110, 68, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.5)',
+                  fontSize: 'var(--text-base)',
+                  fontFamily: 'var(--font-body)',
+                  transition: 'all var(--transition-fast)'
+                }}
+              />
             </div>
 
-            <div className="glass-panel text-center" style={{ padding: 'var(--space-lg)' }}>
-              <div style={{ fontSize: 'var(--text-3xl)', marginBottom: 'var(--space-sm)' }}>
-                🕐
-              </div>
-              <p style={{ color: 'var(--clr-text-light)', fontSize: 'var(--text-sm)' }}>
-                {translations.contactInfo[language].hours}
-              </p>
+            <div className="form-group" style={{ marginBottom: 'var(--space-lg)' }}>
+              <label htmlFor="message" style={{ display: 'block', marginBottom: 'var(--space-sm)', fontWeight: '500' }}>
+                {translations.message[language]}
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                required
+                rows={6}
+                style={{
+                  width: '100%',
+                  padding: 'var(--space-md)',
+                  borderRadius: 'var(--radius-lg)',
+                  border: '1px solid rgba(110, 68, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.5)',
+                  fontSize: 'var(--text-base)',
+                  fontFamily: 'var(--font-body)',
+                  resize: 'vertical',
+                  transition: 'all var(--transition-fast)'
+                }}
+              />
             </div>
-          </div>
+
+            <div className="text-center">
+              <button type="submit" className="btn btn-primary">
+                {translations.send[language]}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </section>

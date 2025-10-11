@@ -36,53 +36,69 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass-panel">
+    <header className="fixed top-0 left-0 right-0 z-50 glass" style={{
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+      background: 'rgba(249, 247, 251, 0.8)',
+      borderBottom: '1px solid rgba(110, 68, 255, 0.1)',
+      boxShadow: '0 4px 24px rgba(110, 68, 255, 0.08)'
+    }}>
       <div className="container">
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <img 
-              src="/crystal.svg" 
-              alt="Ani's Studio" 
-              className="w-8 h-8"
-            />
-            <span className="font-heading text-xl font-semibold text-primary">
+            <div style={{
+              width: '32px',
+              height: '32px',
+              background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '20px',
+              boxShadow: '0 4px 12px rgba(110, 68, 255, 0.3)'
+            }}>
+              ✨
+            </div>
+            <span style={{
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '1.25rem',
+              fontWeight: 700,
+              color: '#2E2447',
+              letterSpacing: '-0.02em'
+            }}>
               Ani's Studio
             </span>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <button 
-              onClick={() => scrollToSection('lrc')}
-              className="text-text hover:text-primary transition-colors"
-            >
-              {navigation[language].lrc}
-            </button>
-            <button 
-              onClick={() => scrollToSection('interiors')}
-              className="text-text hover:text-primary transition-colors"
-            >
-              {navigation[language].interiors}
-            </button>
-            <button 
-              onClick={() => scrollToSection('web-atelier')}
-              className="text-text hover:text-primary transition-colors"
-            >
-              {navigation[language].webAtelier}
-            </button>
-            <button 
-              onClick={() => scrollToSection('about')}
-              className="text-text hover:text-primary transition-colors"
-            >
-              {navigation[language].about}
-            </button>
-            <button 
-              onClick={() => scrollToSection('contact')}
-              className="text-text hover:text-primary transition-colors"
-            >
-              {navigation[language].contact}
-            </button>
+            {['lrc', 'interiors', 'web-atelier', 'about', 'contact'].map((section) => (
+              <button 
+                key={section}
+                onClick={() => scrollToSection(section)}
+                style={{
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '0.9375rem',
+                  fontWeight: 500,
+                  color: '#2E2447',
+                  transition: 'all 200ms ease',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.5rem 0',
+                  position: 'relative'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#6E44FF'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#2E2447'
+                }}
+              >
+                {navigation[language][section as keyof typeof navigation['hr']]}
+              </button>
+            ))}
           </nav>
 
           {/* Right side - Cart and Language */}
@@ -114,24 +130,49 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             </button>
 
             {/* Language Toggle */}
-            <div className="flex items-center bg-glass rounded-lg p-1">
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              background: 'rgba(255, 255, 255, 0.6)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '12px',
+              padding: '4px',
+              gap: '4px',
+              border: '1px solid rgba(110, 68, 255, 0.15)'
+            }}>
               <button
                 onClick={() => onLanguageChange('hr')}
-                className={`px-3 py-1 rounded-md text-sm transition-colors ${
-                  language === 'hr' 
-                    ? 'bg-primary text-white' 
-                    : 'text-text hover:text-primary'
-                }`}
+                style={{
+                  padding: '6px 16px',
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  fontFamily: 'Inter, sans-serif',
+                  transition: 'all 200ms ease',
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: language === 'hr' ? 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)' : 'transparent',
+                  color: language === 'hr' ? '#FFFFFF' : '#2E2447',
+                  boxShadow: language === 'hr' ? '0 2px 8px rgba(110, 68, 255, 0.3)' : 'none'
+                }}
               >
                 HR
               </button>
               <button
                 onClick={() => onLanguageChange('en')}
-                className={`px-3 py-1 rounded-md text-sm transition-colors ${
-                  language === 'en' 
-                    ? 'bg-primary text-white' 
-                    : 'text-text hover:text-primary'
-                }`}
+                style={{
+                  padding: '6px 16px',
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  fontFamily: 'Inter, sans-serif',
+                  transition: 'all 200ms ease',
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: language === 'en' ? 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)' : 'transparent',
+                  color: language === 'en' ? '#FFFFFF' : '#2E2447',
+                  boxShadow: language === 'en' ? '0 2px 8px rgba(110, 68, 255, 0.3)' : 'none'
+                }}
               >
                 EN
               </button>
