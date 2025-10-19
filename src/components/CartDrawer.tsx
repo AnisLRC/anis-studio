@@ -1,27 +1,18 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import type { CartItem } from '../lib/cart'
+import { useCart } from '../lib/cart.store'
 
 interface CartDrawerProps {
   isOpen: boolean
   onClose: () => void
-  items: CartItem[]
-  total: number
-  onRemoveItem: (itemId: string) => void
-  onUpdateQuantity: (itemId: string, quantity: number) => void
-  onCheckout: () => void
   language: 'hr' | 'en'
 }
 
 export default function CartDrawer({
   isOpen,
   onClose,
-  items,
-  total,
-  onRemoveItem,
-  onUpdateQuantity,
-  onCheckout,
   language
 }: CartDrawerProps) {
+  const { items, totalPrice, removeItem, setQty } = useCart()
   const translations = {
     title: {
       hr: 'Košarica',
@@ -55,9 +46,9 @@ export default function CartDrawer({
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) {
-      onRemoveItem(itemId)
+      removeItem(itemId)
     } else {
-      onUpdateQuantity(itemId, newQuantity)
+      setQty(itemId, newQuantity)
     }
   }
 
@@ -233,7 +224,7 @@ export default function CartDrawer({
                         fontSize: 'var(--text-2xl)',
                         flexShrink: 0
                       }}>
-                        {item.image}
+                        {item.imageUrl || '🎨'}
                       </div>
 
                       {/* Product Info */}
@@ -250,7 +241,7 @@ export default function CartDrawer({
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap'
                         }}>
-                          {item.name}
+                          {item.title}
                         </h4>
                         
                         <p style={{
@@ -258,7 +249,7 @@ export default function CartDrawer({
                           color: 'var(--clr-text-light)',
                           margin: 0
                         }}>
-                          €{item.price.toFixed(2)} × {item.quantity}
+                          €{item.price.toFixed(2)} × {item.qty}
                         </p>
                       </div>
 
@@ -272,7 +263,7 @@ export default function CartDrawer({
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                          onClick={() => handleQuantityChange(item.id, item.qty - 1)}
                           style={{
                             width: '28px',
                             height: '28px',
@@ -298,13 +289,13 @@ export default function CartDrawer({
                           minWidth: '20px',
                           textAlign: 'center'
                         }}>
-                          {item.quantity}
+                          {item.qty}
                         </span>
                         
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                          onClick={() => handleQuantityChange(item.id, item.qty + 1)}
                           style={{
                             width: '28px',
                             height: '28px',
@@ -328,7 +319,7 @@ export default function CartDrawer({
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => onRemoveItem(item.id)}
+                        onClick={() => removeItem(item.id)}
                         style={{
                           background: 'none',
                           border: 'none',
@@ -391,7 +382,7 @@ export default function CartDrawer({
                     fontWeight: '700',
                     color: 'var(--clr-primary)'
                   }}>
-                    €{total.toFixed(2)}
+                    €{totalPrice.toFixed(2)}
                   </span>
                 </div>
 
@@ -410,7 +401,7 @@ export default function CartDrawer({
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={onCheckout}
+                  onClick={() => alert('Checkout functionality coming soon!')}
                   style={{
                     width: '100%',
                     background: 'var(--gradient-primary)',
