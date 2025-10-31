@@ -15,6 +15,9 @@ import WelcomeSection from './sections/WelcomeSection'
 import PortfolioSection from './sections/PortfolioSection'
 import TestimonialsSection from './sections/TestimonialsSection'
 import FAQSection from './sections/FAQSection'
+import LoginModal from './components/LoginModal'
+import RegisterModal from './components/RegisterModal'
+import { useGlobalScrollAnimations } from './hooks/useGlobalScrollAnimations'
 
 export default function App() {
   const [language, setLanguage] = useState<'hr' | 'en'>(() => {
@@ -25,6 +28,9 @@ export default function App() {
   })
   const [isCartOpen, setIsCartOpen] = useState(false)
   const cartCount = useCart(s => s.totalQty)
+
+  // Globalni scroll animacije
+  useGlobalScrollAnimations()
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -109,6 +115,14 @@ export default function App() {
           onClose={() => setIsCartOpen(false)}
           language={language}
         />
+      </ErrorBoundary>
+
+      {/* Auth Modals */}
+      <ErrorBoundary name="LoginModal">
+        <LoginModal language={language} />
+      </ErrorBoundary>
+      <ErrorBoundary name="RegisterModal">
+        <RegisterModal language={language} />
       </ErrorBoundary>
     </div>
   )

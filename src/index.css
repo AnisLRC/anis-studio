@@ -1,6 +1,8 @@
 /* Order is critical: declare layers first, then import Tailwind. */
 @layer theme, base, components, utilities;
 @import "tailwindcss";
+@import "./styles/animations.css";
+@import "./styles/mobile.css";
 
 /* === THEME TOKENS (pearl + amethyst) === */
 @theme {

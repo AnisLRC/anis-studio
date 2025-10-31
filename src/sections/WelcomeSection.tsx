@@ -4,36 +4,20 @@ interface WelcomeSectionProps {
 
 export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps) {
   const translations = {
-    title: {
-      hr: "Dobrodošli u Ani's Studio",
-      en: "Welcome to Ani's Studio"
+    slogan: {
+      hr: "Svaka ideja je bitna",
+      en: "Every idea matters"
     },
-    subtitle: {
-      hr: "Otkrijte jedinstvene ručno izrađene proizvode koji kombiniraju tradiciju i inovaciju",
-      en: "Discover unique handmade products that combine tradition and innovation"
-    },
-    features: {
-      hr: [
-        "Ručno izrađeno s ljubavlju",
-        "100% personalizirano",
-        "Brza isporuka",
-        "Visoka kvaliteta materijala"
-      ],
-      en: [
-        "Handmade with love",
-        "100% personalized",
-        "Fast delivery",
-        "High-quality materials"
-      ]
-    },
-    cta: {
+    buttons: {
       hr: {
-        view: "Pogledaj ponudu",
-        contact: "Zatraži ponudu"
+        lrc: "LRC Shop",
+        interiors: "Interijeri",
+        webAtelier: "Web Atelier"
       },
       en: {
-        view: "View Offer",
-        contact: "Request Quote"
+        lrc: "LRC Shop",
+        interiors: "Interiors",
+        webAtelier: "Web Atelier"
       }
     }
   }
@@ -46,81 +30,127 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
   }
 
   return (
-    <section id="welcome" className="Section fade-in">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          {/* Lijevo: Tekst i sadržaj */}
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
-                {translations.title[language]}
-              </h2>
-              <p className="text-lg text-[#5A4A6B] leading-relaxed">
-                {translations.subtitle[language]}
-              </p>
-            </div>
+    <section 
+      id="welcome" 
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{
+        background: `
+          radial-gradient(1200px 800px at 50% 20%, rgba(110, 68, 255, 0.08), transparent 70%),
+          radial-gradient(1000px 600px at 80% 80%, rgba(189, 166, 255, 0.06), transparent 60%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 246, 255, 0.98) 100%)
+        `
+      }}
+    >
+      {/* Particle efekti pozadine */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="particle"
+            style={{
+              left: `${20 + i * 15}%`,
+              top: `${30 + i * 10}%`,
+              animationDelay: `${i * 1.5}s`
+            }}
+          />
+        ))}
+      </div>
 
-            {/* Bullet points */}
-            <div className="space-y-3">
-              {translations.features[language].map((feature, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-[rgba(189,166,255,0.3)] to-[rgba(110,68,255,0.2)] flex items-center justify-center">
-                    <span className="text-[--color-primary] font-bold text-sm">✓</span>
-                  </div>
-                  <span className="text-[#2E2447] font-medium">{feature}</span>
-                </div>
-              ))}
-            </div>
+      {/* Glavni sadržaj */}
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+        {/* Dinamički slogan */}
+        <h1 className="hero-slogan mb-8 sm:mb-12">
+          <span 
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold"
+            style={{
+              fontFamily: 'Poppins, sans-serif',
+              background: 'linear-gradient(135deg, #6E44FF 0%, #BDA6FF 50%, #6E44FF 100%)',
+              backgroundSize: '200% 200%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              letterSpacing: '-0.02em',
+              lineHeight: '1.1'
+            }}
+          >
+            {translations.slogan[language]}
+          </span>
+          <span 
+            className="hero-star text-4xl sm:text-5xl md:text-6xl lg:text-7xl ml-2 sm:ml-3"
+            aria-hidden="true"
+            style={{
+              filter: 'drop-shadow(0 0 10px rgba(110, 68, 255, 0.5))'
+            }}
+          >
+            ✨
+          </span>
+        </h1>
 
-            {/* CTA gumbovi */}
-            <div className="flex flex-wrap gap-4 pt-4">
-              <a 
-                href="#lrc" 
-                className="btn btn-primary"
-                onClick={(e) => {
-                  e.preventDefault()
-                  scrollToSection('lrc')
-                }}
-              >
-                {translations.cta[language].view}
-              </a>
-              <a 
-                href="#contact" 
-                className="btn btn-secondary"
-                onClick={(e) => {
-                  e.preventDefault()
-                  scrollToSection('contact')
-                }}
-              >
-                {translations.cta[language].contact}
-              </a>
-            </div>
-          </div>
+        {/* Tri CTA gumba - Mobile-First */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 mt-8 sm:mt-12 w-full sm:w-auto">
+          {/* LRC Shop */}
+          <button
+            onClick={() => scrollToSection('lrc')}
+            className="hero-button glass-morphism px-6 sm:px-8 md:px-10 py-4 sm:py-5 rounded-2xl font-semibold text-base sm:text-lg transition-all duration-300 group w-full sm:w-auto"
+            style={{
+              minWidth: '180px',
+              minHeight: '48px',
+              color: '#2E2447'
+            }}
+          >
+            <span className="flex items-center justify-center gap-2">
+              <span className="text-xl sm:text-2xl">🎨</span>
+              <span>{translations.buttons[language].lrc}</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </span>
+          </button>
 
-          {/* Desno: Vizualni element */}
-          <div className="relative">
-            <div 
-              className="rounded-2xl w-full aspect-square shadow-[0_8px_24px_rgba(110,68,255,0.15)] transition-all duration-300 hover:shadow-[0_12px_32px_rgba(110,68,255,0.25)] hover:scale-[1.02] flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(135deg, rgba(189, 166, 255, 0.2) 0%, rgba(110, 68, 255, 0.15) 100%)',
-                border: '2px solid rgba(110, 68, 255, 0.2)'
-              }}
-            >
-              <div className="text-center p-8">
-                <div className="text-6xl mb-4">✨</div>
-                <p className="text-[#5A4A6B] font-medium text-lg">
-                  {language === 'hr' ? 'Fotografija dolazi uskoro' : 'Photo coming soon'}
-                </p>
-              </div>
-            </div>
-            
-            {/* Dekorativni badge */}
-            <div className="absolute -top-4 -right-4 bg-white/90 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg border border-[rgba(110,68,255,0.2)]">
-              <span className="text-sm font-semibold text-[--color-primary]">
-                {language === 'hr' ? 'Ručno izrađeno' : 'Handmade'}
-              </span>
-            </div>
-          </div>
+          {/* Interijeri */}
+          <button
+            onClick={() => scrollToSection('interiors')}
+            className="hero-button glass-morphism px-6 sm:px-8 md:px-10 py-4 sm:py-5 rounded-2xl font-semibold text-base sm:text-lg transition-all duration-300 group w-full sm:w-auto"
+            style={{
+              minWidth: '180px',
+              minHeight: '48px',
+              color: '#2E2447'
+            }}
+          >
+            <span className="flex items-center justify-center gap-2">
+              <span className="text-xl sm:text-2xl">🏠</span>
+              <span>{translations.buttons[language].interiors}</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </span>
+          </button>
+
+          {/* Web Atelier */}
+          <button
+            onClick={() => scrollToSection('web-atelier')}
+            className="hero-button glass-morphism px-6 sm:px-8 md:px-10 py-4 sm:py-5 rounded-2xl font-semibold text-base sm:text-lg transition-all duration-300 group w-full sm:w-auto"
+            style={{
+              minWidth: '180px',
+              minHeight: '48px',
+              color: '#2E2447'
+            }}
+          >
+            <span className="flex items-center justify-center gap-2">
+              <span className="text-xl sm:text-2xl">💻</span>
+              <span>{translations.buttons[language].webAtelier}</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Scroll indicator (opcionalno) */}
+      <div 
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce"
+        style={{ animation: 'float 2s ease-in-out infinite' }}
+      >
+        <div className="w-6 h-10 border-2 border-[rgba(110,68,255,0.3)] rounded-full flex items-start justify-center p-2">
+          <div 
+            className="w-1.5 h-3 bg-[rgba(110,68,255,0.5)] rounded-full"
+            style={{ animation: 'float 1.5s ease-in-out infinite' }}
+          />
         </div>
       </div>
     </section>

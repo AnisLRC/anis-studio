@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useAuth } from '../providers/AuthProvider'
+import { useUi } from '../providers/UiProvider'
 
 interface HeaderProps {
   language: 'hr' | 'en'
@@ -9,7 +11,8 @@ interface HeaderProps {
 
 export default function Header({ language, onLanguageChange, cartItemCount, onCartClick }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false) // TODO: povezati s pravim auth state-om
+  const { isAuthenticated, logout } = useAuth()
+  const { openModal } = useUi()
 
   const navigation = {
     hr: {
@@ -99,17 +102,17 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
         {/* Right side - Auth, Cart, Language */}
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Auth Buttons - Desktop */}
-          {!isLoggedIn ? (
+          {!isAuthenticated ? (
             <div className="hidden sm:flex items-center gap-2">
               <button
-                onClick={() => {/* TODO: otvori login modal */}}
+                onClick={() => openModal('login')}
                 className="px-4 py-2 text-sm font-medium text-[#5A4A6B] hover:text-[--color-primary] transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)]"
                 aria-label={authLabels[language].login}
               >
                 {authLabels[language].login}
               </button>
               <button
-                onClick={() => {/* TODO: otvori registracija modal */}}
+                onClick={() => openModal('register')}
                 className="px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg"
                 style={{
                   background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
@@ -122,7 +125,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             </div>
           ) : (
             <button
-              onClick={() => setIsLoggedIn(false)}
+              onClick={logout}
               className="hidden sm:block px-4 py-2 text-sm font-medium text-[#5A4A6B] hover:text-[--color-primary] transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)]"
               aria-label={authLabels[language].logout}
             >
@@ -273,12 +276,13 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             ))}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Touch-friendly */}
           <button 
             onClick={() => setIsMobileMenuOpen((v) => !v)} 
-            className="md:hidden p-2 text-[#5A4A6B] hover:text-[--color-primary] transition-colors rounded-lg hover:bg-[rgba(110,68,255,0.05)]" 
+            className="md:hidden mobile-menu-button p-2.5 text-[#5A4A6B] hover:text-[--color-primary] active:scale-95 transition-all rounded-lg hover:bg-[rgba(110,68,255,0.05)] active:bg-[rgba(110,68,255,0.1)]" 
             aria-label={language === 'hr' ? 'Otvorite meni' : 'Toggle menu'}
             aria-expanded={isMobileMenuOpen}
+            style={{ minWidth: '44px', minHeight: '44px' }}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
               {isMobileMenuOpen ? (
@@ -291,34 +295,37 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation - Touch-friendly */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-white/20 py-4 bg-white/95 backdrop-blur-sm">
-          <nav className="Section flex flex-col gap-4">
+        <div className="md:hidden border-t border-white/20 py-4 bg-white/95 backdrop-blur-sm mobile-menu-enter">
+          <nav className="Section flex flex-col gap-2">
             {(['lrc', 'interiors', 'webAtelier', 'about', 'contact'] as const).map((key) => (
               <button
                 key={key}
                 onClick={() => scrollToSection(key === "webAtelier" ? "web-atelier" : key)}
-                className="text-left text-[#5A4A6B] hover:text-[--color-primary] transition-colors py-2 font-medium"
+                className="mobile-menu-item text-left text-[#5A4A6B] hover:text-[--color-primary] active:text-[--color-primary] active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg font-medium"
+                style={{ minHeight: '48px' }}
               >
                 {navigation[language][key]}
               </button>
             ))}
-            {/* Mobile Auth Buttons */}
-            {!isLoggedIn ? (
+            {/* Mobile Auth Buttons - Touch-friendly */}
+            {!isAuthenticated ? (
               <div className="flex flex-col gap-2 pt-4 border-t border-white/20">
                 <button
-                  onClick={() => {/* TODO: otvori login modal */}}
-                  className="text-left px-4 py-2 text-sm font-medium text-[#5A4A6B] hover:text-[--color-primary] transition-colors rounded-lg hover:bg-[rgba(110,68,255,0.05)]"
+                  onClick={() => openModal('login')}
+                  className="mobile-menu-item text-left px-4 py-3 text-sm font-medium text-[#5A4A6B] hover:text-[--color-primary] active:text-[--color-primary] active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg"
+                  style={{ minHeight: '48px' }}
                 >
                   {authLabels[language].login}
                 </button>
                 <button
-                  onClick={() => {/* TODO: otvori registracija modal */}}
-                  className="text-left px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all duration-200"
+                  onClick={() => openModal('register')}
+                  className="mobile-menu-item text-left px-4 py-3 text-sm font-semibold text-white rounded-lg transition-all duration-200 active:scale-95"
                   style={{
                     background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
-                    boxShadow: '0 2px 8px rgba(110, 68, 255, 0.3)'
+                    boxShadow: '0 2px 8px rgba(110, 68, 255, 0.3)',
+                    minHeight: '48px'
                   }}
                 >
                   {authLabels[language].register}
@@ -326,8 +333,9 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
               </div>
             ) : (
               <button
-                onClick={() => setIsLoggedIn(false)}
-                className="text-left px-4 py-2 text-sm font-medium text-[#5A4A6B] hover:text-[--color-primary] transition-colors rounded-lg hover:bg-[rgba(110,68,255,0.05)]"
+                onClick={logout}
+                className="mobile-menu-item text-left px-4 py-3 text-sm font-medium text-[#5A4A6B] hover:text-[--color-primary] active:text-[--color-primary] active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg"
+                style={{ minHeight: '48px' }}
               >
                 {authLabels[language].logout}
               </button>
