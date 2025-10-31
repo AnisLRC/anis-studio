@@ -55,6 +55,9 @@
 
   .btn{ 
     @apply inline-flex items-center justify-center rounded-2xl px-6 py-3 font-semibold transition-all duration-200; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .btn-primary{ 
     @apply text-white; 
@@ -120,8 +123,8 @@
 @layer utilities {
   .Section { 
     @apply mx-auto max-w-7xl px-6 sm:px-8; 
-    padding-top: clamp(4rem, 6vw, 6rem); 
-    padding-bottom: clamp(4rem, 6vw, 6rem); 
+    padding-top: clamp(3.4rem, 5.1vw, 5.1rem); 
+    padding-bottom: clamp(3.4rem, 5.1vw, 5.1rem); 
   }
   
   .hero-bg {

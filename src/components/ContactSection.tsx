@@ -89,16 +89,16 @@ export default function ContactSection({ language }: ContactSectionProps) {
   return (
     <section id="contact" className="Section fade-in">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-lg text-[#5A4A6B]">
+          <p className="text-base text-[#5A4A6B]">
             {translations.subtitle[language]}
           </p>
         </div>
 
-        <div className="rounded-2xl p-8 sm:p-10 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg">
+        <div className="rounded-2xl p-6 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label 

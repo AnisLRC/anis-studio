@@ -9,7 +9,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
       en: "Ani's Web Atelier"
     },
     subtitle: {
-      hr: "Prilagođene, jednostranične landing stranice izgrađene za jasnoću, eleganciju i konverziju — dizajn, sadržaj i isporuka u jednom kreativnom radnom toku.",
+      hr: "Prilagođene jednostranične landing stranice izgrađene za jasnoću, eleganciju i konverziju — dizajn, sadržaj i isporuka u jednom kreativnom radnom toku.",
       en: "Custom, one-page landing sites built for clarity, elegance and conversion — design, content and delivery in one creative workflow."
     },
     features: {
@@ -124,7 +124,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
       hr: {
         title: "Spremni za svoju landing stranicu?",
         description: "Landing stranice fokusirane na konverziju s čistim dizajnom, jasnim porukama i brzom isporukom.",
-        button: "Zatraži ponudu za landing stranicu",
+        button: "Zatraži ponudu",
         paymentNote: "Plaćanja karticom putem Stripe-a."
       },
       en: {
@@ -147,17 +147,17 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
     <section id="web-atelier" className="Section fade-in">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-lg text-[#5A4A6B] max-w-3xl mx-auto">
+          <p className="text-base text-[#5A4A6B] max-w-3xl mx-auto">
             {translations.subtitle[language]}
           </p>
         </div>
 
         {/* Features List */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-12">
           {translations.features[language].map((feature, index) => (
             <div 
               key={index} 
@@ -170,8 +170,8 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
         </div>
 
         {/* Showcase Gallery */}
-        <div className="mb-16">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-8 text-center" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="mb-12">
+          <h3 className="text-xl sm:text-2xl font-bold mb-6 text-center" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {language === 'hr' ? 'Primjeri naših radova' : 'Examples of Our Work'}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -199,7 +199,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {translations.pricingPlans[language].map((plan, index) => (
             <div 
               key={index} 
@@ -247,11 +247,11 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
         </div>
 
         {/* CTA Section */}
-        <div className="rounded-2xl p-8 sm:p-12 text-center bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-[--color-primary]">
+        <div className="rounded-2xl p-6 sm:p-10 text-center bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
+          <h3 className="text-xl sm:text-2xl font-bold mb-3 text-[--color-primary]">
             {translations.cta[language].title}
           </h3>
-          <p className="text-lg text-[#5A4A6B] mb-6 max-w-2xl mx-auto">
+          <p className="text-base text-[#5A4A6B] mb-6 max-w-2xl mx-auto">
             {translations.cta[language].description}
           </p>
           <button 

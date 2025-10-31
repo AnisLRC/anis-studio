@@ -32,7 +32,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
   return (
     <section 
       id="welcome" 
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-[85vh] flex items-center justify-center overflow-hidden"
       style={{
         background: `
           radial-gradient(1200px 800px at 50% 20%, rgba(110, 68, 255, 0.08), transparent 70%),

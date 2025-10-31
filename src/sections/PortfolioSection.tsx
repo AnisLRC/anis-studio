@@ -29,7 +29,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
   // Placeholder portfolio items - kasnije će se zamijeniti sa stvarnim slikama
   const portfolioItems = [
     { id: 1, category: 'lrc', title: language === 'hr' ? 'Personalizirani poklon' : 'Customized Gift' },
-    { id: 2, category: 'lrc', title: language === 'hr' ? 'Epoksi umjetničko djelo' : 'Epoxy Art Piece' },
+    { id: 2, category: 'lrc', title: language === 'hr' ? 'Epoksidno umjetničko djelo' : 'Epoxy Art Piece' },
     { id: 3, category: 'interiors', title: language === 'hr' ? 'Moderna kuhinja' : 'Modern Kitchen' },
     { id: 4, category: 'interiors', title: language === 'hr' ? 'Ugradni ormar' : 'Built-in Wardrobe' },
     { id: 5, category: 'web-atelier', title: language === 'hr' ? 'Landing stranica' : 'Landing Page' },
@@ -47,22 +47,22 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     <section id="portfolio" className="Section fade-in">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-lg text-[#5A4A6B] max-w-2xl mx-auto">
+          <p className="text-base text-[#5A4A6B] max-w-2xl mx-auto">
             {translations.subtitle[language]}
           </p>
         </div>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
+        <div className="flex flex-wrap justify-center gap-3 mb-8 items-center">
           {(['all', 'lrc', 'interiors', 'web-atelier'] as const).map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`pill transition-all duration-200 ${
+              className={`pill transition-all duration-200 h-11 ${
                 selectedCategory === category
                   ? 'bg-gradient-to-br from-[rgba(189,166,255,0.3)] to-[rgba(110,68,255,0.2)] border-[--color-primary] text-[--color-primary] font-semibold'
                   : 'hover:bg-[rgba(110,68,255,0.1)]'
@@ -75,7 +75,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
 
         {/* Portfolio Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map((item, index) => (
+          {filteredItems.map((item) => (
             <div
               key={item.id}
               className={`scroll-fade-in-stagger rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] card-hover cursor-pointer group`}

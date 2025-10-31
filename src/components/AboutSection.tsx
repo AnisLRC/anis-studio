@@ -10,7 +10,7 @@ export default function AboutSection({ language }: AboutSectionProps) {
     },
     bio: {
       hr: [
-        "Ja sam Ani — multidisciplinarna kreativka iz Županje, Hrvatska. Spajam tehnike ručnog rada (laser, epoksi, svilka) s modernim dizajnerskim alatima i AI-jem. Svaki projekt, fizički ili digitalni, dobiva istu pažnju i emociju.",
+        "Ja sam Ani — multidisciplinarna kreativka iz Županje, Hrvatska. Spajam tehnike ručnog rada (laser, epoksidna smola, svilka) s modernim dizajnerskim alatima i AI-jem. Svaki projekt, fizički ili digitalni, dobiva istu pažnju i emociju.",
         "Moja misija je stvaranje jedinstvenih proizvoda koji kombiniraju tradiciju i inovaciju, pružajući vam personalizirana rješenja koja odražavaju vašu osobnost i potrebe."
       ],
       en: [
@@ -27,11 +27,11 @@ export default function AboutSection({ language }: AboutSectionProps) {
   return (
     <section id="about" className="Section fade-in">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-5" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <div className="space-y-4 text-lg text-[#5A4A6B] leading-relaxed">
+          <div className="space-y-4 text-base text-[#5A4A6B] leading-relaxed">
             {translations.bio[language].map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}

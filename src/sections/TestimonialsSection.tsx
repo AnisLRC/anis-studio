@@ -68,7 +68,7 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Epoksi umjetničko djelo premašilo je moja očekivanja. Svaki detalj je pažljivo osmišljen i izrađen.',
+        hr: 'Epoksidno umjetničko djelo premašilo je moja očekivanja. Svaki detalj je pažljivo osmišljen i izrađen.',
         en: 'The epoxy art piece exceeded my expectations. Every detail was carefully thought out and crafted.'
       }
     }
@@ -94,18 +94,18 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
     <section id="testimonials" className="Section fade-in">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-lg text-[#5A4A6B] max-w-2xl mx-auto">
+          <p className="text-base text-[#5A4A6B] max-w-2xl mx-auto">
             {translations.subtitle[language]}
           </p>
         </div>
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          {testimonials.map((testimonial, index) => (
+          {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
               className={`scroll-fade-in-stagger rounded-2xl p-6 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] card-hover`}

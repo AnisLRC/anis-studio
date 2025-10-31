@@ -330,19 +330,69 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
   return (
     <section id="interiors" className="Section fade-in">
       <div className="max-w-6xl mx-auto">
+        {/* Process Section - Premješteno iz ProcessSection */}
+        <div className="mb-10">
+          <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+                {language === 'hr' ? 'Naš proces' : 'Our Process'}
+              </h2>
+              <p className="text-[#5A4A6B] text-base">
+                {language === 'hr' ? 'Od ideje do realizacije — korak po korak' : 'From idea to realization — step by step'}
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <article 
+              className="rounded-2xl p-5 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 fade-in"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span 
+                  className="inline-flex items-center justify-center size-10 rounded-full font-bold text-white transition-all duration-200"
+                  style={{
+                    background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
+                    boxShadow: '0 2px 8px rgba(110, 68, 255, 0.3)'
+                  }}
+                >
+                  3
+                </span>
+                <h3 className="text-lg font-bold text-[#2E2447]">{language === 'hr' ? '2D koncept' : '2D concept'}</h3>
+              </div>
+              <p className="text-sm text-[#5A4A6B] leading-relaxed">{language === 'hr' ? 'Tlocrt i funkcija.' : 'Floor plan and function.'}</p>
+            </article>
+            <article 
+              className="rounded-2xl p-5 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 fade-in"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span 
+                  className="inline-flex items-center justify-center size-10 rounded-full font-bold text-white transition-all duration-200"
+                  style={{
+                    background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
+                    boxShadow: '0 2px 8px rgba(110, 68, 255, 0.3)'
+                  }}
+                >
+                  4
+                </span>
+                <h3 className="text-lg font-bold text-[#2E2447]">{language === 'hr' ? '3D render' : '3D render'}</h3>
+              </div>
+              <p className="text-sm text-[#5A4A6B] leading-relaxed">{language === 'hr' ? 'Vizual, boje i materijali.' : 'Visual, colors, materials.'}</p>
+            </article>
+          </div>
+        </div>
+
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-lg text-[#5A4A6B]">
+          <p className="text-base text-[#5A4A6B]">
             {translations.subtitle[language]}
           </p>
         </div>
 
         {/* Order Form */}
-        <div className="glass-morphism rounded-2xl p-6 sm:p-8 lg:p-10">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-8 text-center" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="glass-morphism rounded-2xl p-5 sm:p-6 lg:p-8">
+          <h3 className="text-xl sm:text-2xl font-bold mb-6 text-center" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.orderForm[language]}
           </h3>
           
@@ -754,7 +804,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
               <textarea
                 id="notes"
                 name="notes"
-                value={formData.otherNotes}
+                value={formData.notes}
                 onChange={handleInputChange}
                 rows={4}
                 className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-vertical text-[#2E2447]"

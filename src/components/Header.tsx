@@ -54,7 +54,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
   return (
     <header className="sticky top-0 z-50 header-glass">
-      <nav className="Section flex items-center justify-between py-5 sm:py-6">
+      <nav className="Section flex items-center justify-between py-3 sm:py-4">
         {/* Logo */}
         <div className="flex items-center gap-3">
           <div style={{
@@ -75,7 +75,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           </div>
           <span style={{
             fontFamily: 'Poppins, sans-serif',
-            fontSize: '1.25rem',
+            fontSize: '1.125rem',
             fontWeight: 700,
             color: '#2E2447',
             letterSpacing: '-0.02em'
@@ -85,7 +85,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {(['lrc', 'interiors', 'webAtelier', 'about', 'contact'] as const).map((key) => (
             <button
               key={key}

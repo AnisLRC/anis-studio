@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header'
-import HomeHero from './sections/HomeHero'
-import ProcessSection from './sections/ProcessSection'
 import LRCSection from './components/LRCSection'
 import InteriorsSection from './components/InteriorsSection'
 import WebAtelierSection from './components/WebAtelierSection'
@@ -50,10 +48,6 @@ export default function App() {
       </ErrorBoundary>
       
       <main>
-        <ErrorBoundary name="Hero">
-          <HomeHero />
-        </ErrorBoundary>
-        
         <ErrorBoundary name="Welcome">
           <WelcomeSection language={language} />
         </ErrorBoundary>
@@ -78,10 +72,6 @@ export default function App() {
           <section id="web-atelier" className="Section">
             <WebAtelierSection language={language} />
           </section>
-        </ErrorBoundary>
-        
-        <ErrorBoundary name="Process">
-          <ProcessSection />
         </ErrorBoundary>
         
         <ErrorBoundary name="ONama">

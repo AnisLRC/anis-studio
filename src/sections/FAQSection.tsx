@@ -40,7 +40,7 @@ export default function FAQSection({ language }: FAQSectionProps) {
         en: 'How can I order a product?'
       },
       answer: {
-        hr: 'Možete naručiti proizvod direktno preko web stranice dodavanjem u košaricu, ili možete kontaktirati nas putem kontakt forme za personalizirane narudžbe.',
+        hr: 'Možete naručiti proizvod direktno preko web stranice dodavanjem u košaricu, ili možete kontaktirati nas putem kontakt formulara za personalizirane narudžbe.',
         en: 'You can order a product directly through the website by adding it to your cart, or you can contact us through the contact form for personalized orders.'
       }
     },
@@ -64,7 +64,7 @@ export default function FAQSection({ language }: FAQSectionProps) {
         en: 'Can I personalize a product?'
       },
       answer: {
-        hr: 'Da! Većina naših proizvoda može biti personalizirana. Možete dodati imena, datume, poruke ili prilagoditi boje i dizajn prema svojim željama. Kontaktirajte nas za više detalja.',
+        hr: 'Da! Većina naših proizvoda može biti personalizirana. Možete dodati imena, datume, poruke ili prilagoditi boje i dizajn prema vašim željama. Kontaktirajte nas za više detalja.',
         en: 'Yes! Most of our products can be personalized. You can add names, dates, messages, or customize colors and design according to your wishes. Contact us for more details.'
       }
     },
@@ -118,11 +118,11 @@ export default function FAQSection({ language }: FAQSectionProps) {
     <section id="faq" className="Section fade-in">
       <div className="max-w-4xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-lg text-[#5A4A6B]">
+          <p className="text-base text-[#5A4A6B]">
             {translations.subtitle[language]}
           </p>
         </div>

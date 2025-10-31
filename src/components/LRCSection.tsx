@@ -23,7 +23,7 @@ export default function LRCSection({ language }: LRCSectionProps) {
       en: "🌸 Ani's LRC — a creative workshop of unique souvenirs & functional art pieces"
     },
     subtitle: {
-      hr: "🔥 Laser graviranje · Epoksi smola · Svilka · Graviranje\n🎨 Ručno izrađeno s ljubavlju i preciznošću",
+      hr: "🔥 Lasersko graviranje · Epoksidna smola · Svilka · Graviranje\n🎨 Ručno izrađeno s ljubavlju i preciznošću",
       en: "🔥 Laser cutting · Epoxy resin · Silk · Engraving\n🎨 Handmade with love and precision"
     },
     searchPlaceholder: {
@@ -43,7 +43,7 @@ export default function LRCSection({ language }: LRCSectionProps) {
       en: "Customize your gift — names, dates, messages"
     },
     personalizationDesc: {
-      hr: "Svaki proizvod može biti prilagođen tvojim željama",
+      hr: "Svaki proizvod može biti prilagođen vašim željama",
       en: "Every product can be customized to your wishes"
     },
     sendInquiry: {
@@ -56,45 +56,45 @@ export default function LRCSection({ language }: LRCSectionProps) {
     {
       icon: '⚡',
       title: {
-        hr: 'Laser Graviranje',
-        en: 'Laser Engraving'
+        hr: 'Lasersko rezanje',
+        en: 'Laser Cutting'
       },
       steps: {
-        hr: ['Priprema dizajna', 'Graviranje', 'Završna obrada'],
-        en: ['Design prep', 'Engrave', 'Finish']
+        hr: [],
+        en: []
       }
     },
     {
       icon: '🎨',
       title: {
-        hr: 'Akrilno Ručno Slikanje',
-        en: 'Acrylic Hand Painting'
+        hr: 'Lasersko graviranje',
+        en: 'Laser Engraving'
       },
       steps: {
-        hr: ['Skica', 'Slikanje', 'Zaštita'],
-        en: ['Sketch', 'Paint', 'Seal']
+        hr: [],
+        en: []
       }
     },
     {
       icon: '💎',
       title: {
-        hr: 'Epoksi Lijevanje',
-        en: 'Epoxy Casting'
+        hr: 'Epoksidna smola',
+        en: 'Epoxy Resin'
       },
       steps: {
-        hr: ['Priprema kalupa', 'Miješanje i lijevanje', 'Brušenje i poliranje'],
-        en: ['Mold prep', 'Mix & pour', 'Sand & polish']
+        hr: [],
+        en: []
       }
     },
     {
       icon: '🪢',
       title: {
-        hr: 'Makrame Pletenje',
-        en: 'Macrame Weaving'
+        hr: 'Svila',
+        en: 'Silk'
       },
       steps: {
-        hr: ['Odabir uzorka', 'Pletenje', 'Završna obrada'],
-        en: ['Pattern choice', 'Knotting', 'Final finish']
+        hr: [],
+        en: []
       }
     }
   ]
@@ -103,24 +103,24 @@ export default function LRCSection({ language }: LRCSectionProps) {
     <section id="lrc" className="Section fade-in">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-lg text-[#5A4A6B] mb-6 whitespace-pre-line">
+          <p className="text-base text-[#5A4A6B] mb-5 whitespace-pre-line">
             {translations.subtitle[language]}
           </p>
           
           {/* Feature Chips */}
-          <div className="flex flex-wrap justify-center gap-3">
-            <span className="pill">Laser graviranje</span>
-            <span className="pill">Epoksi smola</span>
-            <span className="pill">Ručno izrađeno</span>
+          <div className="flex flex-wrap justify-center gap-3 items-center">
+            <span className="pill h-11">Lasersko graviranje</span>
+            <span className="pill h-11">Epoksidna smola</span>
+            <span className="pill h-11">Ručno izrađeno</span>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-10 space-y-6">
+        <div className="mb-8 space-y-5">
           <div className="max-w-md mx-auto">
             <input
               type="text"
@@ -131,11 +131,11 @@ export default function LRCSection({ language }: LRCSectionProps) {
             />
           </div>
           
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3 items-center">
             {productTags.map(tag => (
               <button
                 key={tag.id}
-                className={`pill transition-all duration-200 ${
+                className={`pill transition-all duration-200 h-11 ${
                   selectedTag === tag.id 
                     ? 'bg-gradient-to-br from-[rgba(189,166,255,0.3)] to-[rgba(110,68,255,0.2)] border-[--color-primary] text-[--color-primary] font-semibold' 
                     : 'hover:bg-[rgba(110,68,255,0.1)]'
@@ -149,24 +149,43 @@ export default function LRCSection({ language }: LRCSectionProps) {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {filteredProducts.map(product => (
             <article 
               key={product.id} 
               className="rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] fade-in"
             >
               {/* Thumb */}
-              <div className="aspect-square bg-gradient-to-br from-[rgba(189,166,255,0.2)] to-[rgba(110,68,255,0.15)] flex items-center justify-center">
-                <div className="text-center p-6">
-                  <div className="text-5xl mb-3 opacity-70">🎨</div>
-                  <p className="text-sm text-[#5A4A6B] font-medium">
-                    {language === 'hr' ? 'Fotografija dolazi uskoro' : 'Photo coming soon'}
-                  </p>
+              <div className="aspect-square bg-gradient-to-br from-[rgba(189,166,255,0.2)] to-[rgba(110,68,255,0.15)] relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                {/* Decorative circles */}
+                <div className="absolute top-4 right-4 w-20 h-20 rounded-full bg-gradient-to-br from-[rgba(110,68,255,0.2)] to-[rgba(189,166,255,0.3)] blur-2xl" />
+                <div className="absolute bottom-6 left-6 w-16 h-16 rounded-full bg-gradient-to-br from-[rgba(189,166,255,0.3)] to-[rgba(110,68,255,0.2)] blur-xl" />
+                
+                {/* Content */}
+                <div className="relative z-10 h-full flex items-center justify-center p-6">
+                  <div className="text-center">
+                    {/* Product Icon based on tags */}
+                    <div className="text-6xl mb-4 animate-float">
+                      {product.tags.includes('epoxy') ? '💎' :
+                       product.tags.includes('wood') || product.tags.includes('laser') ? '🪵' :
+                       product.tags.includes('macrame') ? '🪢' :
+                       product.tags.includes('ceramic') ? '☕' :
+                       product.tags.includes('silk') ? '🧣' :
+                       product.tags.includes('jewelry') ? '💍' : '🎨'}
+                    </div>
+                    
+                    {/* Badge */}
+                    <div className="inline-block px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.3)] shadow-lg">
+                      <p className="text-xs text-[#6E44FF] font-semibold uppercase tracking-wider">
+                        {language === 'hr' ? 'Fotografija uskoro' : 'Coming Soon'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Body */}
-              <div className="p-6">
+              <div className="p-5">
                 <h3 className="text-xl font-bold mb-2 text-[#2E2447]">
                   {language === 'hr' ? product.nameHr : product.name}
                 </h3>
@@ -203,39 +222,32 @@ export default function LRCSection({ language }: LRCSectionProps) {
         </div>
 
         {/* Process Steps */}
-        <div className="text-center mb-12">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-8" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <div className="text-center mb-8">
+          <h3 className="text-xl sm:text-2xl font-bold mb-6" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.processes[language]}
           </h3>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {processSteps.map((process, index) => (
             <div 
               key={index} 
-              className="rounded-2xl p-6 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-center fade-in"
+              className="rounded-2xl p-5 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-center fade-in"
             >
-              <div className="text-5xl mb-4">{process.icon}</div>
-              <h4 className="text-lg font-bold mb-4 text-[--color-primary]">
+              <div className="text-4xl mb-3">{process.icon}</div>
+              <h4 className="text-base font-bold text-[--color-primary]">
                 {process.title[language]}
               </h4>
-              <div className="space-y-2">
-                {process.steps[language].map((step, stepIndex) => (
-                  <div key={stepIndex} className="text-sm text-[#5A4A6B]">
-                    {stepIndex + 1}. {step}
-                  </div>
-                ))}
-              </div>
             </div>
           ))}
         </div>
 
         {/* Personalization Banner */}
-        <div className="rounded-2xl p-8 sm:p-12 text-center bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-[--color-primary]">
+        <div className="rounded-2xl p-6 sm:p-10 text-center bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
+          <h3 className="text-xl sm:text-2xl font-bold mb-3 text-[--color-primary]">
             {translations.personalization[language]}
           </h3>
-          <p className="text-lg text-[#5A4A6B] mb-8">
+          <p className="text-base text-[#5A4A6B] mb-6">
             {translations.personalizationDesc[language]}
           </p>
           <button 
