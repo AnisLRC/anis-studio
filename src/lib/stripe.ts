@@ -2,7 +2,7 @@ import { loadStripe } from '@stripe/stripe-js'
 
 // Test mode keys - replace with your actual Stripe keys
 const STRIPE_PUBLISHABLE_KEY = 'pk_test_51234567890abcdef' // Replace with your test key
-const STRIPE_SECRET_KEY = 'sk_test_51234567890abcdef' // This should be on your backend
+// Note: STRIPE_SECRET_KEY should only be used on the backend for security reasons
 
 export const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY)
 
@@ -75,20 +75,11 @@ export function cartItemsToStripeItems(cartItems: Array<{
   }))
 }
 
-// Redirect to Stripe Checkout
-export async function redirectToCheckout(sessionId: string) {
-  const stripe = await stripePromise
-  if (!stripe) {
-    throw new Error('Stripe failed to load')
-  }
-
-  const { error } = await stripe.redirectToCheckout({
-    sessionId,
-  })
-
-  if (error) {
-    console.error('Stripe checkout error:', error)
-    throw error
+// Redirect to Stripe Checkout using the Checkout Session URL
+export async function redirectToCheckout(checkoutUrl: string) {
+  // Modern approach: redirect directly to the checkout URL provided by the backend
+  if (typeof window !== 'undefined') {
+    window.location.href = checkoutUrl
   }
 }
 

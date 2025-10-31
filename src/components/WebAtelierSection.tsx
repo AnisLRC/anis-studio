@@ -144,81 +144,125 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
   }
 
   return (
-    <section id="web-atelier" className="section">
-      <div className="container">
+    <section id="web-atelier" className="Section fade-in">
+      <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="section-header">
-          <h2 className="text-center">{translations.title[language]}</h2>
-          <p className="section-subtitle text-center">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+            {translations.title[language]}
+          </h2>
+          <p className="text-lg text-[#5A4A6B] max-w-3xl mx-auto">
             {translations.subtitle[language]}
           </p>
         </div>
 
-        <div className="web-content">
-          {/* Features List */}
-          <div className="features-list">
-            {translations.features[language].map((feature, index) => (
-              <div key={index} className="feature-item glass-panel">
-                <span style={{color: 'var(--clr-primary)'}}>✓</span> {feature}
-              </div>
-            ))}
-          </div>
+        {/* Features List */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-16">
+          {translations.features[language].map((feature, index) => (
+            <div 
+              key={index} 
+              className="rounded-xl p-4 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 fade-in"
+            >
+              <span className="text-[--color-primary] font-bold mr-2">✓</span>
+              <span className="text-sm text-[#2E2447]">{feature}</span>
+            </div>
+          ))}
+        </div>
 
-          {/* Pricing Cards */}
-          <div className="pricing-cards">
-            {translations.pricingPlans[language].map((plan, index) => (
-              <div 
-                key={index} 
-                className={`pricing-card glass-panel ${plan.popular ? 'border-2 border-primary' : ''}`}
-                style={{padding: 'var(--space-xl)'}}
+        {/* Showcase Gallery */}
+        <div className="mb-16">
+          <h3 className="text-2xl sm:text-3xl font-bold mb-8 text-center" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+            {language === 'hr' ? 'Primjeri naših radova' : 'Examples of Our Work'}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="rounded-xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] fade-in"
               >
-                {plan.popular && (
-                  <div className="text-center" style={{marginBottom: 'var(--space-md)'}}>
-                    <span className="badge">{translations.popular[language]}</span>
-                  </div>
-                )}
-                <h3 className="text-center">{plan.name}</h3>
-                <div className="text-center" style={{marginBottom: 'var(--space-md)'}}>
-                  <span style={{fontSize: 'var(--text-4xl)', fontWeight: '700', color: 'var(--clr-primary)'}}>{plan.price}</span>
-                </div>
-                <p className="text-center" style={{color: 'var(--clr-text-light)', marginBottom: 'var(--space-lg)'}}>{plan.description}</p>
-                <ul style={{marginBottom: 'var(--space-xl)'}}>
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} style={{display: 'flex', alignItems: 'flex-start', gap: 'var(--space-sm)', marginBottom: 'var(--space-sm)'}}>
-                      <span style={{color: 'var(--clr-primary)'}}>✓</span>
-                      <span style={{fontSize: 'var(--text-sm)'}}>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <button 
-                  className="btn btn-primary"
-                  style={{width: '100%'}}
-                  onClick={scrollToContact}
+                <div
+                  className="aspect-video bg-gradient-to-br from-[rgba(189,166,255,0.2)] to-[rgba(110,68,255,0.15)] flex items-center justify-center"
+                  style={{
+                    borderBottom: '2px solid rgba(110, 68, 255, 0.2)'
+                  }}
                 >
-                  {translations.requestQuote[language]}
-                </button>
+                  <div className="text-center p-6">
+                    <div className="text-5xl mb-3 opacity-70">💻</div>
+                    <p className="text-sm text-[#5A4A6B] font-medium">
+                      {language === 'hr' ? 'Fotografija dolazi uskoro' : 'Photo coming soon'}
+                    </p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* CTA Section */}
-          <div className="web-cta">
-            <div className="glass-panel text-center" style={{padding: 'var(--space-xl)'}}>
-              <h3 style={{color: 'var(--clr-primary)', marginBottom: 'var(--space-md)'}}>{translations.cta[language].title}</h3>
-              <p style={{color: 'var(--clr-text-light)', marginBottom: 'var(--space-lg)'}}>
-                {translations.cta[language].description}
-              </p>
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          {translations.pricingPlans[language].map((plan, index) => (
+            <div 
+              key={index} 
+              className={`rounded-2xl p-8 bg-white/80 backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 fade-in ${
+                plan.popular 
+                  ? 'border-2 border-[--color-primary] ring-2 ring-[--color-primary]/20' 
+                  : 'border-[rgba(110,68,255,0.15)]'
+              }`}
+            >
+              {plan.popular && (
+                <div className="text-center mb-4">
+                  <span 
+                    className="pill px-4 py-1 text-xs font-bold"
+                    style={{
+                      background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
+                      color: 'white',
+                      border: 'none'
+                    }}
+                  >
+                    {translations.popular[language]}
+                  </span>
+                </div>
+              )}
+              <h3 className="text-2xl font-bold text-center mb-2 text-[#2E2447]">{plan.name}</h3>
+              <div className="text-center mb-4">
+                <span className="text-4xl font-bold text-[--color-primary]">{plan.price}</span>
+              </div>
+              <p className="text-center text-[#5A4A6B] mb-6">{plan.description}</p>
+              <ul className="space-y-3 mb-8">
+                {plan.features.map((feature, featureIndex) => (
+                  <li key={featureIndex} className="flex items-start gap-2">
+                    <span className="text-[--color-primary] font-bold mt-0.5">✓</span>
+                    <span className="text-sm text-[#2E2447]">{feature}</span>
+                  </li>
+                ))}
+              </ul>
               <button 
-                className="btn btn-primary"
+                className="btn btn-primary w-full"
                 onClick={scrollToContact}
               >
-                {translations.cta[language].button}
+                {translations.requestQuote[language]}
               </button>
-              <p className="payment-note" style={{marginTop: 'var(--space-md)'}}>
-                {translations.cta[language].paymentNote}
-              </p>
             </div>
-          </div>
+          ))}
+        </div>
+
+        {/* CTA Section */}
+        <div className="rounded-2xl p-8 sm:p-12 text-center bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
+          <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-[--color-primary]">
+            {translations.cta[language].title}
+          </h3>
+          <p className="text-lg text-[#5A4A6B] mb-6 max-w-2xl mx-auto">
+            {translations.cta[language].description}
+          </p>
+          <button 
+            className="btn btn-primary mb-4"
+            onClick={scrollToContact}
+          >
+            {translations.cta[language].button}
+          </button>
+          <p className="text-sm text-[#5A4A6B]">
+            {translations.cta[language].paymentNote}
+          </p>
         </div>
       </div>
     </section>

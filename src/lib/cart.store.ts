@@ -19,10 +19,6 @@ const state: State = {
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 
-function getSnapshot(): State {
-  return state;
-}
-
 function subscribe(listener: () => void) {
   listeners.add(listener);
   return () => listeners.delete(listener);
@@ -73,12 +69,41 @@ function save() {
 }
 load();
 
-// helpers
+// Cache za memoizaciju state objekta - sprječava infinite loops
+let cachedState: ReturnType<typeof getCartState> | null = null;
+let lastItemsLength = 0;
+let lastTotalQty = 0;
+let lastTotalPrice = 0;
+
 function getCartState() {
   const items = state.items;
   const totalQty = items.reduce((a, b) => a + b.qty, 0);
   const totalPrice = items.reduce((a, b) => a + b.qty * b.price, 0);
   return { items, totalQty, totalPrice, ...cartActions };
+}
+
+function getSnapshot(): ReturnType<typeof getCartState> {
+  const items = state.items;
+  const totalQty = items.reduce((a, b) => a + b.qty, 0);
+  const totalPrice = items.reduce((a, b) => a + b.qty * b.price, 0);
+  
+  // Vraćamo cached state ako se ništa nije promijenilo - ključno za sprječavanje infinite loops
+  if (
+    cachedState &&
+    items.length === lastItemsLength &&
+    totalQty === lastTotalQty &&
+    totalPrice === lastTotalPrice &&
+    items === cachedState.items
+  ) {
+    return cachedState;
+  }
+  
+  // Kreiramo novi state samo ako se nešto promijenilo
+  lastItemsLength = items.length;
+  lastTotalQty = totalQty;
+  lastTotalPrice = totalPrice;
+  cachedState = { items, totalQty, totalPrice, ...cartActions };
+  return cachedState;
 }
 
 // hook
@@ -93,7 +118,7 @@ export function useCart<T = {
 }>(
   selector?: (s: ReturnType<typeof getCartState>) => T
 ): T {
-  const snapshot = useSyncExternalStore(subscribe, getCartState, getCartState);
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   // @ts-expect-error generic selector
   return selector ? selector(snapshot) : snapshot;
 }

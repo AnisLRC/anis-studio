@@ -25,21 +25,33 @@ export default function AboutSection({ language }: AboutSectionProps) {
   }
 
   return (
-    <section id="about" className="section">
-      <div className="container">
-        <div className="about-content">
-          <h2>{translations.title[language]}</h2>
-          <div className="about-text">
+    <section id="about" className="Section fade-in">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+            {translations.title[language]}
+          </h2>
+          <div className="space-y-4 text-lg text-[#5A4A6B] leading-relaxed">
             {translations.bio[language].map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
           </div>
-          
-          <div className="badges">
-            {translations.badges[language].map((badge, index) => (
-              <span key={index} className="badge">{badge}</span>
-            ))}
-          </div>
+        </div>
+        
+        <div className="flex flex-wrap justify-center gap-4 mt-8">
+          {translations.badges[language].map((badge, index) => (
+            <span 
+              key={index} 
+              className="pill px-6 py-3 text-base font-medium"
+              style={{
+                background: 'linear-gradient(135deg, rgba(189, 166, 255, 0.15) 0%, rgba(110, 68, 255, 0.1) 100%)',
+                borderColor: 'rgba(110, 68, 255, 0.3)',
+                color: '#2E2447'
+              }}
+            >
+              {badge}
+            </span>
+          ))}
         </div>
       </div>
     </section>

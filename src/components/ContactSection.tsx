@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 
 interface ContactSectionProps {
   language: 'hr' | 'en'
@@ -71,13 +71,13 @@ export default function ContactSection({ language }: ContactSectionProps) {
 
   if (isSubmitted) {
     return (
-      <section className="section">
-        <div className="container">
-          <div className="glass-panel text-center" style={{ padding: 'var(--space-3xl)', maxWidth: '600px', margin: '0 auto' }}>
-            <h2 style={{ color: 'var(--clr-primary)', marginBottom: 'var(--space-lg)' }}>
+      <section id="contact" className="Section fade-in">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center p-12 rounded-2xl bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg">
+            <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--color-primary)' }}>
               {translations.successTitle[language]}
             </h2>
-            <p style={{ fontSize: 'var(--text-lg)', color: 'var(--clr-text-light)' }}>
+            <p className="text-lg text-[#5A4A6B]">
               {translations.successMessage[language]}
             </p>
           </div>
@@ -87,17 +87,24 @@ export default function ContactSection({ language }: ContactSectionProps) {
   }
 
   return (
-    <section className="section">
-      <div className="container">
-        <div className="section-header">
-          <h2 className="text-center">{translations.title[language]}</h2>
-          <p className="section-subtitle text-center">{translations.subtitle[language]}</p>
+    <section id="contact" className="Section fade-in">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+            {translations.title[language]}
+          </h2>
+          <p className="text-lg text-[#5A4A6B]">
+            {translations.subtitle[language]}
+          </p>
         </div>
 
-        <div className="glass-panel" style={{ maxWidth: '600px', margin: '0 auto', padding: 'var(--space-xl)' }}>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group" style={{ marginBottom: 'var(--space-lg)' }}>
-              <label htmlFor="name" style={{ display: 'block', marginBottom: 'var(--space-sm)', fontWeight: '500' }}>
+        <div className="rounded-2xl p-8 sm:p-10 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label 
+                htmlFor="name" 
+                className="block mb-2 text-sm font-semibold text-[#2E2447]"
+              >
                 {translations.name[language]}
               </label>
               <input
@@ -107,21 +114,16 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-md)',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid rgba(110, 68, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: 'var(--text-base)',
-                  fontFamily: 'var(--font-body)',
-                  transition: 'all var(--transition-fast)'
-                }}
+                className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
+                placeholder={translations.name[language]}
               />
             </div>
 
-            <div className="form-group" style={{ marginBottom: 'var(--space-lg)' }}>
-              <label htmlFor="email" style={{ display: 'block', marginBottom: 'var(--space-sm)', fontWeight: '500' }}>
+            <div>
+              <label 
+                htmlFor="email" 
+                className="block mb-2 text-sm font-semibold text-[#2E2447]"
+              >
                 {translations.email[language]}
               </label>
               <input
@@ -131,21 +133,16 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-md)',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid rgba(110, 68, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: 'var(--text-base)',
-                  fontFamily: 'var(--font-body)',
-                  transition: 'all var(--transition-fast)'
-                }}
+                className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
+                placeholder={translations.email[language]}
               />
             </div>
 
-            <div className="form-group" style={{ marginBottom: 'var(--space-lg)' }}>
-              <label htmlFor="message" style={{ display: 'block', marginBottom: 'var(--space-sm)', fontWeight: '500' }}>
+            <div>
+              <label 
+                htmlFor="message" 
+                className="block mb-2 text-sm font-semibold text-[#2E2447]"
+              >
                 {translations.message[language]}
               </label>
               <textarea
@@ -155,22 +152,16 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 onChange={handleChange}
                 required
                 rows={6}
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-md)',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid rgba(110, 68, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: 'var(--text-base)',
-                  fontFamily: 'var(--font-body)',
-                  resize: 'vertical',
-                  transition: 'all var(--transition-fast)'
-                }}
+                className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-vertical text-[#2E2447]"
+                placeholder={translations.message[language]}
               />
             </div>
 
-            <div className="text-center">
-              <button type="submit" className="btn btn-primary">
+            <div className="text-center pt-2">
+              <button 
+                type="submit" 
+                className="btn btn-primary w-full sm:w-auto min-w-[200px]"
+              >
                 {translations.send[language]}
               </button>
             </div>
@@ -180,4 +171,3 @@ export default function ContactSection({ language }: ContactSectionProps) {
     </section>
   )
 }
-

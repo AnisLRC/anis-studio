@@ -30,8 +30,6 @@ export default function HeroSection({ language, onExploreOffers, onRequestQuote 
     }
   }
 
-  const sloganWords = translations.slogan[language].split(' ')
-
   return (
     <section id="hero" className="section hero-bg" style={{ 
       minHeight: '100vh',

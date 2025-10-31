@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { sampleProducts, productTags } from '../data/products'
-import { addToCart, type CartItem } from '../lib/cart'
+import { cartActions } from '../lib/cart.store'
 
 interface LRCSectionProps {
   language: 'hr' | 'en'
@@ -100,40 +100,46 @@ export default function LRCSection({ language }: LRCSectionProps) {
   ]
 
   return (
-    <section id="lrc" className="section">
-      <div className="container">
+    <section id="lrc" className="Section fade-in">
+      <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="section-header">
-          <h2>{translations.title[language]}</h2>
-          <p className="section-subtitle" style={{ whiteSpace: 'pre-line' }}>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+            {translations.title[language]}
+          </h2>
+          <p className="text-lg text-[#5A4A6B] mb-6 whitespace-pre-line">
             {translations.subtitle[language]}
           </p>
           
           {/* Feature Chips */}
-          <div className="feature-chips">
-            <span className="feature-chip">Laser graviranje</span>
-            <span className="feature-chip">Epoksi smola</span>
-            <span className="feature-chip">Ručno izrađeno</span>
+          <div className="flex flex-wrap justify-center gap-3">
+            <span className="pill">Laser graviranje</span>
+            <span className="pill">Epoksi smola</span>
+            <span className="pill">Ručno izrađeno</span>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="lrc-controls">
-          <div className="search-box">
+        <div className="mb-10 space-y-6">
+          <div className="max-w-md mx-auto">
             <input
               type="text"
               placeholder={translations.searchPlaceholder[language]}
-              className="search-input"
+              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447] placeholder:text-[#5A4A6B]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           
-          <div className="tag-filters">
+          <div className="flex flex-wrap justify-center gap-3">
             {productTags.map(tag => (
               <button
                 key={tag.id}
-                className={`tag-chip ${selectedTag === tag.id ? 'active' : ''}`}
+                className={`pill transition-all duration-200 ${
+                  selectedTag === tag.id 
+                    ? 'bg-gradient-to-br from-[rgba(189,166,255,0.3)] to-[rgba(110,68,255,0.2)] border-[--color-primary] text-[--color-primary] font-semibold' 
+                    : 'hover:bg-[rgba(110,68,255,0.1)]'
+                }`}
                 onClick={() => setSelectedTag(tag.id)}
               >
                 {tag.label[language]}
@@ -143,37 +149,50 @@ export default function LRCSection({ language }: LRCSectionProps) {
         </div>
 
         {/* Products Grid */}
-        <div className="cards-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {filteredProducts.map(product => (
-            <article key={product.id} className="card">
+            <article 
+              key={product.id} 
+              className="rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] fade-in"
+            >
               {/* Thumb */}
-              <div className="card-thumb">
-                <span aria-hidden="true">🎨</span>
+              <div className="aspect-square bg-gradient-to-br from-[rgba(189,166,255,0.2)] to-[rgba(110,68,255,0.15)] flex items-center justify-center">
+                <div className="text-center p-6">
+                  <div className="text-5xl mb-3 opacity-70">🎨</div>
+                  <p className="text-sm text-[#5A4A6B] font-medium">
+                    {language === 'hr' ? 'Fotografija dolazi uskoro' : 'Photo coming soon'}
+                  </p>
+                </div>
               </div>
 
               {/* Body */}
-              <div className="card-body">
-                <h3 className="text-xl font-semibold mb-1">{language === 'hr' ? product.nameHr : product.name}</h3>
-                <div className="text-2xl font-bold mb-3">€{product.price}</div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 text-[#2E2447]">
+                  {language === 'hr' ? product.nameHr : product.name}
+                </h3>
+                <div className="text-2xl font-bold mb-4 text-[--color-primary]">€{product.price}</div>
 
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-wrap gap-2 mb-6">
                   {product.tags.map(tag => (
-                    <span key={tag} className="badge">{tag}</span>
+                    <span 
+                      key={tag} 
+                      className="px-3 py-1 text-xs font-medium rounded-full bg-[rgba(110,68,255,0.1)] text-[--color-primary] border border-[rgba(110,68,255,0.2)]"
+                    >
+                      {tag}
+                    </span>
                   ))}
                 </div>
 
                 <button 
                   className="btn btn-primary w-full"
                   onClick={() => {
-                    addToCart({
+                    cartActions.addItem({
                       id: product.id,
-                      name: language === 'hr' ? product.nameHr : product.name,
+                      title: language === 'hr' ? product.nameHr : product.name,
                       price: product.price,
-                      image: product.image,
+                      imageUrl: product.image,
                       tags: product.tags
                     });
-                    // Trigger cart update event
-                    window.dispatchEvent(new Event('cartUpdated'));
                   }}
                 >
                   {translations.addToCart[language]}
@@ -184,20 +203,25 @@ export default function LRCSection({ language }: LRCSectionProps) {
         </div>
 
         {/* Process Steps */}
-        <div className="section-header">
-          <h3>{translations.processes[language]}</h3>
+        <div className="text-center mb-12">
+          <h3 className="text-2xl sm:text-3xl font-bold mb-8" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+            {translations.processes[language]}
+          </h3>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {processSteps.map((process, index) => (
-            <div key={index} className="glass-panel text-center">
-              <div className="text-4xl mb-4">{process.icon}</div>
-              <h4 className="text-primary mb-4">
+            <div 
+              key={index} 
+              className="rounded-2xl p-6 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-center fade-in"
+            >
+              <div className="text-5xl mb-4">{process.icon}</div>
+              <h4 className="text-lg font-bold mb-4 text-[--color-primary]">
                 {process.title[language]}
               </h4>
-              <div>
+              <div className="space-y-2">
                 {process.steps[language].map((step, stepIndex) => (
-                  <div key={stepIndex} className="text-sm text-light mb-2">
+                  <div key={stepIndex} className="text-sm text-[#5A4A6B]">
                     {stepIndex + 1}. {step}
                   </div>
                 ))}
@@ -207,11 +231,11 @@ export default function LRCSection({ language }: LRCSectionProps) {
         </div>
 
         {/* Personalization Banner */}
-        <div className="glass-panel text-center" style={{ marginTop: 'var(--space-3xl)' }}>
-          <h3 className="text-primary mb-4">
+        <div className="rounded-2xl p-8 sm:p-12 text-center bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
+          <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-[--color-primary]">
             {translations.personalization[language]}
           </h3>
-          <p className="text-light mb-6">
+          <p className="text-lg text-[#5A4A6B] mb-8">
             {translations.personalizationDesc[language]}
           </p>
           <button 

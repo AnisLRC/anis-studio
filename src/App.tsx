@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from './components/Header'
 import HomeHero from './sections/HomeHero'
 import ProcessSection from './sections/ProcessSection'
@@ -12,13 +12,25 @@ import CartDrawer from './components/CartDrawer'
 import { useCart } from './lib/cart.store'
 import { ErrorBoundary } from './ErrorBoundary'
 import WelcomeSection from './sections/WelcomeSection'
+import PortfolioSection from './sections/PortfolioSection'
+import TestimonialsSection from './sections/TestimonialsSection'
+import FAQSection from './sections/FAQSection'
 
 export default function App() {
   const [language, setLanguage] = useState<'hr' | 'en'>(() => {
-    return (localStorage.getItem('language') as 'hr' | 'en') || 'hr'
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('language') as 'hr' | 'en') || 'hr'
+    }
+    return 'hr'
   })
   const [isCartOpen, setIsCartOpen] = useState(false)
   const cartCount = useCart(s => s.totalQty)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', language)
+    }
+  }, [language])
 
   return (
     <div className="min-h-screen">
@@ -37,7 +49,11 @@ export default function App() {
         </ErrorBoundary>
         
         <ErrorBoundary name="Welcome">
-          <WelcomeSection />
+          <WelcomeSection language={language} />
+        </ErrorBoundary>
+        
+        <ErrorBoundary name="Portfolio">
+          <PortfolioSection language={language} />
         </ErrorBoundary>
         
         <ErrorBoundary name="LRC">
@@ -66,6 +82,14 @@ export default function App() {
           <section id="about" className="Section">
             <AboutSection language={language} />
           </section>
+        </ErrorBoundary>
+        
+        <ErrorBoundary name="Testimonials">
+          <TestimonialsSection language={language} />
+        </ErrorBoundary>
+        
+        <ErrorBoundary name="FAQ">
+          <FAQSection language={language} />
         </ErrorBoundary>
         
         <ErrorBoundary name="Kontakt">
