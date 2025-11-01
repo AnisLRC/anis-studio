@@ -18,7 +18,7 @@ export const sampleProducts: Product[] = [
     nameHr: 'Set podmetača od epoksidne smole',
     price: 25.00,
     image: '🎨',
-    tags: ['epoxy', 'home', 'gift'],
+    tags: ['epoxy', 'decor'],
     description: 'Handcrafted coasters with unique epoxy resin patterns and natural wood accents.',
     descriptionHr: 'Ručno izrađeni podmetači s jedinstvenim uzorcima epoksidne smole i prirodnim drvenim detaljima.'
   },
@@ -28,49 +28,139 @@ export const sampleProducts: Product[] = [
     nameHr: 'Laserski gravirani drveni natpis',
     price: 45.00,
     image: '🪵',
-    tags: ['wood', 'laser', 'custom'],
+    tags: ['wood', 'laser', 'decor'],
     description: 'Personalized wooden sign with laser-engraved text and decorative elements.',
     descriptionHr: 'Personalizirani drveni natpis s laserski graviranim tekstom i ukrasnim elementima.'
   },
   {
     id: '3',
-    name: 'Macrame Wall Hanging',
-    nameHr: 'Makrame zidni ukras',
-    price: 35.00,
-    image: '🧶',
-    tags: ['macrame', 'decor', 'handmade'],
-    description: 'Beautiful macrame wall hanging with natural cotton cord and wooden dowel.',
-    descriptionHr: 'Prekrasan makrame zidni ukras s prirodnim pamučnim koncem i drvenim štapićem.'
+    name: 'Epoxy Resin Serving Tray',
+    nameHr: 'Poslužavnik od epoksidne smole',
+    price: 55.00,
+    image: '💎',
+    tags: ['epoxy', 'decor'],
+    description: 'Beautiful epoxy resin serving tray with unique patterns and colors.',
+    descriptionHr: 'Prekrasan poslužavnik od epoksidne smole s jedinstvenim uzorcima i bojama.'
   },
   {
     id: '4',
-    name: 'Ceramic Mug with Epoxy Handle',
-    nameHr: 'Keramička šalica s epoksidnom ručkom',
-    price: 30.00,
-    image: '☕',
-    tags: ['ceramic', 'epoxy', 'kitchen'],
-    description: 'Unique ceramic mug with custom epoxy resin handle and personalized design.',
-    descriptionHr: 'Jedinstvena keramička šalica s prilagođenom epoksidnom ručkom i personaliziranim dizajnom.'
+    name: 'Laser Cut Wooden Clock',
+    nameHr: 'Laserski izrezani drveni sat',
+    price: 65.00,
+    image: '🪵',
+    tags: ['wood', 'laser', 'decor'],
+    description: 'Elegant wooden clock with laser-cut design and modern aesthetics.',
+    descriptionHr: 'Elegantan drveni sat s laserski izrezanim dizajnom i modernom estetikom.'
   },
   {
     id: '5',
-    name: 'Silk Painted Scarf',
-    nameHr: 'Šal sručno oslikan na svili',
-    price: 55.00,
-    image: '🧣',
-    tags: ['silk', 'painted', 'fashion'],
-    description: 'Hand-painted silk scarf with original artwork and vibrant colors.',
-    descriptionHr: 'Ručno oslikan šal od svile s originalnim umjetničkim djelom i živim bojama.'
+    name: 'Epoxy Resin Wall Art',
+    nameHr: 'Zidna umjetnina od epoksidne smole',
+    price: 75.00,
+    image: '💎',
+    tags: ['epoxy', 'decor'],
+    description: 'Stunning wall art piece made with epoxy resin and creative design.',
+    descriptionHr: 'Zapanjujuća zidna umjetnina izrađena od epoksidne smole s kreativnim dizajnom.'
   },
   {
     id: '6',
-    name: 'Epoxy Resin Jewelry Tray',
-    nameHr: 'Posuda za nakit od epoksidne smole',
-    price: 40.00,
+    name: 'Laser Engraved Keychain',
+    nameHr: 'Laserski gravirani privjesak',
+    price: 15.00,
+    image: '🪵',
+    tags: ['wood', 'laser'],
+    description: 'Personalized wooden keychain with laser-engraved text or design.',
+    descriptionHr: 'Personalizirani drveni privjesak s laserski graviranim tekstom ili dizajnom.'
+  },
+  {
+    id: '7',
+    name: 'Laser Cut Mandala Decoration',
+    nameHr: 'Laserski izrezana mandala ukras',
+    price: 50.00,
+    image: '🪵',
+    tags: ['wood', 'laser', 'mandala', 'decor'],
+    description: 'Beautiful mandala design laser-cut from wood, perfect for wall decoration.',
+    descriptionHr: 'Prekrasna mandala laserski izrezana iz drva, savršena za zidni ukras.'
+  },
+  {
+    id: '8',
+    name: 'Epoxy Resin Mandala Art',
+    nameHr: 'Mandala umjetnina od epoksidne smole',
+    price: 80.00,
     image: '💎',
-    tags: ['epoxy', 'jewelry', 'organizer'],
-    description: 'Elegant jewelry tray with epoxy resin base and decorative inclusions.',
-    descriptionHr: 'Elegantna posuda za nakit s bazom od epoksidne smole i ukrasnim inkluzijama.'
+    tags: ['epoxy', 'mandala', 'decor'],
+    description: 'Stunning mandala art piece created with epoxy resin and vibrant colors.',
+    descriptionHr: 'Zapanjujuća mandala umjetnina stvorena od epoksidne smole s živim bojama.'
+  },
+  {
+    id: '9',
+    name: 'Laser Engraved Cutting Board',
+    nameHr: 'Laserski gravirana daska za rezanje',
+    price: 35.00,
+    image: '🪵',
+    tags: ['wood', 'laser'],
+    description: 'Personalized wooden cutting board with laser-engraved design.',
+    descriptionHr: 'Personalizirana drvena daska za rezanje s laserski graviranim dizajnom.'
+  },
+  {
+    id: '10',
+    name: 'Plaster Wall Decoration',
+    nameHr: 'Zidni ukras od gipsa',
+    price: 45.00,
+    image: '🎨',
+    tags: ['plaster', 'decor'],
+    description: 'Elegant wall decoration made from plaster with unique texture and design.',
+    descriptionHr: 'Elegantan zidni ukras izrađen od gipsa s jedinstvenom teksturom i dizajnom.'
+  },
+  {
+    id: '11',
+    name: 'Epoxy Resin Jewelry Box',
+    nameHr: 'Kutija za nakit od epoksidne smole',
+    price: 60.00,
+    image: '💎',
+    tags: ['epoxy', 'jewelry', 'decor'],
+    description: 'Beautiful jewelry box with epoxy resin lid and elegant design.',
+    descriptionHr: 'Prekrasna kutija za nakit s poklopcem od epoksidne smole i elegantnim dizajnom.'
+  },
+  {
+    id: '12',
+    name: 'Plaster Sculpture',
+    nameHr: 'Gipsana skulptura',
+    price: 70.00,
+    image: '🎨',
+    tags: ['plaster', 'decor'],
+    description: 'Handcrafted plaster sculpture with artistic design and fine details.',
+    descriptionHr: 'Ručno izrađena gipsana skulptura s umjetničkim dizajnom i finim detaljima.'
+  },
+  {
+    id: '13',
+    name: 'Epoxy Resin Table Top',
+    nameHr: 'Stolna ploča od epoksidne smole',
+    price: 120.00,
+    image: '💎',
+    tags: ['epoxy', 'decor'],
+    description: 'Custom epoxy resin table top with unique patterns and colors.',
+    descriptionHr: 'Prilagođena stolna ploča od epoksidne smole s jedinstvenim uzorcima i bojama.'
+  },
+  {
+    id: '14',
+    name: 'Laser Engraved Gift Box',
+    nameHr: 'Laserski gravirana kutija za poklon',
+    price: 28.00,
+    image: '🪵',
+    tags: ['wood', 'laser'],
+    description: 'Personalized wooden gift box with laser-engraved decoration.',
+    descriptionHr: 'Personalizirana drvena kutija za poklon s laserski graviranim ukrasom.'
+  },
+  {
+    id: '15',
+    name: 'Plaster Mandala Wall Art',
+    nameHr: 'Zidna mandala od gipsa',
+    price: 65.00,
+    image: '🎨',
+    tags: ['plaster', 'mandala', 'decor'],
+    description: 'Beautiful mandala wall art made from plaster with intricate design.',
+    descriptionHr: 'Prekrasna zidna mandala izrađena od gipsa s zamršenim dizajnom.'
   }
 ]
 
