@@ -14,8 +14,8 @@ export default function ContactSection({ language }: ContactSectionProps) {
 
   const translations = {
     title: {
-      hr: "Kontaktirajte me",
-      en: "Contact Me"
+      hr: "📧 Kontaktirajte me",
+      en: "📧 Contact Me"
     },
     subtitle: {
       hr: "Imate pitanje ili želite započeti projekt? Javite mi se!",
@@ -44,7 +44,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
     successMessage: {
       hr: "Vaša poruka je poslana. Javit ću vam se uskoro!",
       en: "Your message has been sent. I'll get back to you soon!"
-    }
+    },
   }
 
   const handleSubmit = (e: FormEvent) => {
@@ -98,12 +98,18 @@ export default function ContactSection({ language }: ContactSectionProps) {
           </p>
         </div>
 
-        <div className="rounded-2xl p-6 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
+        <div className="rounded-2xl p-5 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg fade-in">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div
+              style={{ 
+                animationDelay: '0.1s',
+                animation: 'fadeInUp 0.6s ease-out forwards',
+                opacity: 0
+              }}
+            >
               <label 
                 htmlFor="name" 
-                className="block mb-2 text-sm font-semibold text-[#2E2447]"
+                className="block mb-1.5 text-sm font-medium text-[#2E2447]"
               >
                 {translations.name[language]}
               </label>
@@ -114,15 +120,21 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
                 placeholder={translations.name[language]}
               />
             </div>
 
-            <div>
+            <div
+              style={{ 
+                animationDelay: '0.2s',
+                animation: 'fadeInUp 0.6s ease-out forwards',
+                opacity: 0
+              }}
+            >
               <label 
                 htmlFor="email" 
-                className="block mb-2 text-sm font-semibold text-[#2E2447]"
+                className="block mb-1.5 text-sm font-medium text-[#2E2447]"
               >
                 {translations.email[language]}
               </label>
@@ -133,15 +145,21 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
                 placeholder={translations.email[language]}
               />
             </div>
 
-            <div>
+            <div
+              style={{ 
+                animationDelay: '0.3s',
+                animation: 'fadeInUp 0.6s ease-out forwards',
+                opacity: 0
+              }}
+            >
               <label 
                 htmlFor="message" 
-                className="block mb-2 text-sm font-semibold text-[#2E2447]"
+                className="block mb-1.5 text-sm font-medium text-[#2E2447]"
               >
                 {translations.message[language]}
               </label>
@@ -151,8 +169,8 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 value={formData.message}
                 onChange={handleChange}
                 required
-                rows={6}
-                className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-vertical text-[#2E2447]"
+                rows={4}
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-none text-[#2E2447]"
                 placeholder={translations.message[language]}
               />
             </div>
@@ -160,7 +178,8 @@ export default function ContactSection({ language }: ContactSectionProps) {
             <div className="text-center pt-2">
               <button 
                 type="submit" 
-                className="btn btn-primary w-full sm:w-auto min-w-[200px]"
+                className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                style={{ letterSpacing: '0.02em' }}
               >
                 {translations.send[language]}
               </button>

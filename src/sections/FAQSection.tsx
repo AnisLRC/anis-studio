@@ -22,8 +22,8 @@ export default function FAQSection({ language }: FAQSectionProps) {
 
   const translations = {
     title: {
-      hr: "Često postavljana pitanja",
-      en: "Frequently Asked Questions"
+      hr: "❓ Česta pitanja",
+      en: "❓ Frequently Asked Questions"
     },
     subtitle: {
       hr: "Pronađite odgovore na najčešća pitanja",
@@ -128,24 +128,29 @@ export default function FAQSection({ language }: FAQSectionProps) {
         </div>
 
         {/* FAQ Items */}
-        <div className="space-y-4">
-          {faqItems.map((item) => {
+        <div className="space-y-3">
+          {faqItems.map((item, index) => {
             const isOpen = openItems.includes(item.id)
             return (
               <div
                 key={item.id}
-                className="rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden"
+                className="rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden fade-in"
+                style={{ 
+                  animationDelay: `${index * 0.1}s`,
+                  animation: 'fadeInUp 0.6s ease-out forwards',
+                  opacity: 0
+                }}
               >
                 {/* Question */}
                 <button
                   onClick={() => toggleItem(item.id)}
-                  className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 hover:bg-[rgba(110,68,255,0.05)] transition-colors duration-200"
+                  className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-[rgba(110,68,255,0.05)] transition-colors duration-200"
                 >
-                  <span className="font-semibold text-[#2E2447] text-lg flex-1">
+                  <span className="font-semibold text-[#2E2447] text-base flex-1">
                     {item.question[language]}
                   </span>
                   <span
-                    className={`text-[--color-primary] text-2xl font-bold transition-transform duration-300 flex-shrink-0 ${
+                    className={`text-[--color-primary] text-xl font-bold transition-transform duration-300 flex-shrink-0 ${
                       isOpen ? 'rotate-180' : ''
                     }`}
                   >
@@ -155,11 +160,11 @@ export default function FAQSection({ language }: FAQSectionProps) {
 
                 {/* Answer */}
                 <div
-                  className={`overflow-hidden transition-all duration-300 ${
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
                     isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <div className="px-6 pb-5 text-[#5A4A6B] leading-relaxed">
+                  <div className="px-5 pb-4 text-sm text-[#5A4A6B] leading-relaxed">
                     {item.answer[language]}
                   </div>
                 </div>
