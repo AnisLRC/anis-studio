@@ -500,7 +500,8 @@ export default function LRCSection({ language }: LRCSectionProps) {
             <div className="text-center pt-2">
               <button
                 type="submit"
-                className="btn btn-primary px-8 py-3 text-base font-semibold shadow-md hover:shadow-lg"
+                className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                style={{ letterSpacing: '0.02em' }}
               >
                 {translations.submitButton[language]}
               </button>
