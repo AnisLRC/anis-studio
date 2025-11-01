@@ -123,8 +123,8 @@
 @layer utilities {
   .Section { 
     @apply mx-auto max-w-7xl px-6 sm:px-8; 
-    padding-top: clamp(3.4rem, 5.1vw, 5.1rem); 
-    padding-bottom: clamp(3.4rem, 5.1vw, 5.1rem); 
+    padding-top: clamp(1.5rem, 2.5vw, 2.5rem); 
+    padding-bottom: clamp(1.5rem, 2.5vw, 2.5rem); 
   }
   
   .hero-bg {

@@ -77,21 +77,12 @@ export const sampleProducts: Product[] = [
 export const productTags = [
   { id: 'all', label: { hr: 'Sve', en: 'All' } },
   { id: 'epoxy', label: { hr: 'Epoksidna smola', en: 'Epoxy' } },
-  { id: 'wood', label: { hr: 'Drvo', en: 'Wood' } },
-  { id: 'ceramic', label: { hr: 'Keramika', en: 'Ceramic' } },
-  { id: 'macrame', label: { hr: 'Makrame', en: 'Macrame' } },
-  { id: 'silk', label: { hr: 'Svila', en: 'Silk' } },
+  { id: 'wood', label: { hr: 'Gravura', en: 'Engraving' } },
+  { id: 'plaster', label: { hr: 'Gips', en: 'Plaster' } },
   { id: 'laser', label: { hr: 'Laser', en: 'Laser' } },
-  { id: 'custom', label: { hr: 'Prilagođeno', en: 'Custom' } },
-  { id: 'gift', label: { hr: 'Poklon', en: 'Gift' } },
-  { id: 'home', label: { hr: 'Dom', en: 'Home' } },
-  { id: 'decor', label: { hr: 'Ukras', en: 'Decor' } },
-  { id: 'kitchen', label: { hr: 'Kuhinja', en: 'Kitchen' } },
-  { id: 'fashion', label: { hr: 'Moda', en: 'Fashion' } },
+  { id: 'mandala', label: { hr: 'Mandela', en: 'Mandala' } },
   { id: 'jewelry', label: { hr: 'Nakit', en: 'Jewelry' } },
-  { id: 'organizer', label: { hr: 'Organizator', en: 'Organizer' } },
-  { id: 'handmade', label: { hr: 'Ručno izrađeno', en: 'Handmade' } },
-  { id: 'painted', label: { hr: 'Oslikano', en: 'Painted' } }
+  { id: 'silk', label: { hr: 'Svila', en: 'Silk' } }
 ]
 
 

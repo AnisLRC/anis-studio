@@ -19,16 +19,16 @@ export default function LRCSection({ language }: LRCSectionProps) {
 
   const translations = {
     title: {
-      hr: "🌸 Ani's LRC — kreativna radionica jedinstvenih suvenira i funkcionalnih umjetničkih djela",
-      en: "🌸 Ani's LRC — a creative workshop of unique souvenirs & functional art pieces"
+      hr: "🌸 Ani's LRC — kreativna radionica jedinstvenih suvenira i funkcionalnih uporabnik predmeta",
+      en: "🌸 Ani's LRC — a creative workshop of unique souvenirs & functional items"
     },
     subtitle: {
-      hr: "🔥 Lasersko graviranje · Epoksidna smola · Svilka · Graviranje\n🎨 Ručno izrađeno s ljubavlju i preciznošću",
-      en: "🔥 Laser cutting · Epoxy resin · Silk · Engraving\n🎨 Handmade with love and precision"
+      hr: "🔥 Lasersko rezanje · Lasersko graviranje · Epoksidna smola · Svila · Mandela\n🎨 Ručno izrađeno s ljubavlju i preciznošću",
+      en: "🔥 Laser cutting · Laser engraving · Epoxy resin · Silk · Mandala\n🎨 Handmade with love and precision"
     },
     searchPlaceholder: {
-      hr: "Pretraži proizvode...",
-      en: "Search products..."
+      hr: "Pretraži proizvod...",
+      en: "Search product..."
     },
     addToCart: {
       hr: "Dodaj u košaricu",
@@ -107,27 +107,29 @@ export default function LRCSection({ language }: LRCSectionProps) {
           <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-base text-[#5A4A6B] mb-5 whitespace-pre-line">
+          <p className="text-base text-[#5A4A6B] mb-8 whitespace-pre-line">
             {translations.subtitle[language]}
           </p>
-          
-          {/* Feature Chips */}
-          <div className="flex flex-wrap justify-center gap-3 items-center">
-            <span className="pill h-11">Lasersko graviranje</span>
-            <span className="pill h-11">Epoksidna smola</span>
-            <span className="pill h-11">Ručno izrađeno</span>
-          </div>
         </div>
 
         {/* Search and Filters */}
         <div className="mb-8 space-y-5">
           <div className="max-w-md mx-auto">
+            <label className="block text-xl font-bold text-[#2E2447] mb-2 text-center">
+              {language === 'hr' ? 'WEBSHOP' : 'WEBSHOP'}
+            </label>
             <input
               type="text"
               placeholder={translations.searchPlaceholder[language]}
-              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447] placeholder:text-[#5A4A6B]"
+              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447] placeholder:text-[#5A4A6B] placeholder:text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ 
+                fontSize: '0.95rem',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
             />
           </div>
           
@@ -149,23 +151,23 @@ export default function LRCSection({ language }: LRCSectionProps) {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 mb-12">
           {filteredProducts.map(product => (
             <article 
               key={product.id} 
-              className="rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] fade-in"
+              className="rounded-xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] fade-in"
             >
               {/* Thumb */}
               <div className="aspect-square bg-gradient-to-br from-[rgba(189,166,255,0.2)] to-[rgba(110,68,255,0.15)] relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
                 {/* Decorative circles */}
-                <div className="absolute top-4 right-4 w-20 h-20 rounded-full bg-gradient-to-br from-[rgba(110,68,255,0.2)] to-[rgba(189,166,255,0.3)] blur-2xl" />
-                <div className="absolute bottom-6 left-6 w-16 h-16 rounded-full bg-gradient-to-br from-[rgba(189,166,255,0.3)] to-[rgba(110,68,255,0.2)] blur-xl" />
+                <div className="absolute top-2 right-2 w-16 h-16 rounded-full bg-gradient-to-br from-[rgba(110,68,255,0.2)] to-[rgba(189,166,255,0.3)] blur-xl" />
+                <div className="absolute bottom-3 left-3 w-12 h-12 rounded-full bg-gradient-to-br from-[rgba(189,166,255,0.3)] to-[rgba(110,68,255,0.2)] blur-lg" />
                 
                 {/* Content */}
-                <div className="relative z-10 h-full flex items-center justify-center p-6">
+                <div className="relative z-10 h-full flex items-center justify-center p-3 sm:p-4">
                   <div className="text-center">
                     {/* Product Icon based on tags */}
-                    <div className="text-6xl mb-4 animate-float">
+                    <div className="text-4xl sm:text-5xl mb-2 animate-float">
                       {product.tags.includes('epoxy') ? '💎' :
                        product.tags.includes('wood') || product.tags.includes('laser') ? '🪵' :
                        product.tags.includes('macrame') ? '🪢' :
@@ -175,8 +177,8 @@ export default function LRCSection({ language }: LRCSectionProps) {
                     </div>
                     
                     {/* Badge */}
-                    <div className="inline-block px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.3)] shadow-lg">
-                      <p className="text-xs text-[#6E44FF] font-semibold uppercase tracking-wider">
+                    <div className="inline-block px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.3)] shadow-md">
+                      <p className="text-[10px] text-[#6E44FF] font-semibold uppercase tracking-wider">
                         {language === 'hr' ? 'Fotografija uskoro' : 'Coming Soon'}
                       </p>
                     </div>
@@ -185,17 +187,17 @@ export default function LRCSection({ language }: LRCSectionProps) {
               </div>
 
               {/* Body */}
-              <div className="p-5">
-                <h3 className="text-xl font-bold mb-2 text-[#2E2447]">
+              <div className="p-3 sm:p-4">
+                <h3 className="text-sm sm:text-base font-bold mb-1.5 text-[#2E2447] line-clamp-2">
                   {language === 'hr' ? product.nameHr : product.name}
                 </h3>
-                <div className="text-2xl font-bold mb-4 text-[--color-primary]">€{product.price}</div>
+                <div className="text-lg sm:text-xl font-bold mb-2 text-[--color-primary]">€{product.price}</div>
 
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-1.5 mb-3">
                   {product.tags.map(tag => (
                     <span 
                       key={tag} 
-                      className="px-3 py-1 text-xs font-medium rounded-full bg-[rgba(110,68,255,0.1)] text-[--color-primary] border border-[rgba(110,68,255,0.2)]"
+                      className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-[rgba(110,68,255,0.1)] text-[--color-primary] border border-[rgba(110,68,255,0.2)]"
                     >
                       {tag}
                     </span>
@@ -203,7 +205,7 @@ export default function LRCSection({ language }: LRCSectionProps) {
                 </div>
 
                 <button 
-                  className="btn btn-primary w-full"
+                  className="btn btn-primary w-full text-xs sm:text-sm py-2"
                   onClick={() => {
                     cartActions.addItem({
                       id: product.id,

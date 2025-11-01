@@ -54,7 +54,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
   return (
     <header className="sticky top-0 z-50 header-glass">
-      <nav className="Section flex items-center justify-between py-3 sm:py-4">
+      <nav className="mx-auto max-w-7xl px-6 sm:px-8 flex items-center justify-between py-2 sm:py-2.5">
         {/* Logo */}
         <div className="flex items-center gap-3">
           <div style={{
@@ -298,7 +298,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
       {/* Mobile Navigation - Touch-friendly */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-white/20 py-4 bg-white/95 backdrop-blur-sm mobile-menu-enter">
-          <nav className="Section flex flex-col gap-2">
+          <nav className="mx-auto max-w-7xl px-6 sm:px-8 flex flex-col gap-2">
             {(['lrc', 'interiors', 'webAtelier', 'about', 'contact'] as const).map((key) => (
               <button
                 key={key}

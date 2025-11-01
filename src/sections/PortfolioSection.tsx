@@ -36,12 +36,13 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     { id: 6, category: 'lrc', title: language === 'hr' ? 'Laser graviranje' : 'Laser Engraving' },
     { id: 7, category: 'interiors', title: language === 'hr' ? 'Radni prostor' : 'Workspace' },
     { id: 8, category: 'web-atelier', title: language === 'hr' ? 'E-commerce stranica' : 'E-commerce Site' },
-    { id: 9, category: 'lrc', title: language === 'hr' ? 'Makrame ukras' : 'Macrame Decoration' }
+    { id: 9, category: 'lrc', title: language === 'hr' ? 'Makrame ukras' : 'Macrame Decoration' },
+    { id: 10, category: 'interiors', title: language === 'hr' ? 'Dnevni boravak' : 'Living Room' }
   ]
 
   const filteredItems = selectedCategory === 'all' 
-    ? portfolioItems 
-    : portfolioItems.filter(item => item.category === selectedCategory)
+    ? portfolioItems.slice(0, 10) // Maksimalno 10 items
+    : portfolioItems.filter(item => item.category === selectedCategory).slice(0, 10)
 
   return (
     <section id="portfolio" className="Section fade-in">
@@ -74,11 +75,11 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
         </div>
 
         {/* Portfolio Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className={`scroll-fade-in-stagger rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] card-hover cursor-pointer group`}
+              className={`scroll-fade-in-stagger rounded-xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] card-hover cursor-pointer group`}
             >
               {/* Placeholder Image */}
               <div
@@ -87,20 +88,20 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
                   borderBottom: '2px solid rgba(110, 68, 255, 0.2)'
                 }}
               >
-                <div className="text-center p-6">
-                  <div className="text-5xl mb-3 opacity-70">🎨</div>
-                  <p className="text-sm text-[#5A4A6B] font-medium">
+                <div className="text-center p-3 sm:p-4">
+                  <div className="text-3xl sm:text-4xl mb-2 opacity-70">🎨</div>
+                  <p className="text-xs text-[#5A4A6B] font-medium">
                     {translations.placeholder[language]}
                   </p>
                 </div>
               </div>
 
               {/* Item Info */}
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-[#2E2447] mb-2">
+              <div className="p-3 sm:p-4">
+                <h3 className="text-sm sm:text-base font-semibold text-[#2E2447] mb-1.5 line-clamp-2">
                   {item.title}
                 </h3>
-                <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-[rgba(110,68,255,0.1)] text-[--color-primary] border border-[rgba(110,68,255,0.2)]">
+                <span className="inline-block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-full bg-[rgba(110,68,255,0.1)] text-[--color-primary] border border-[rgba(110,68,255,0.2)]">
                   {translations.categories[language][item.category === 'lrc' ? 1 : item.category === 'interiors' ? 2 : 3]}
                 </span>
               </div>
