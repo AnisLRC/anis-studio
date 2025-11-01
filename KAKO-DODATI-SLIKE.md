@@ -228,3 +228,4 @@ Ako naiđete na probleme:
 **Napomena**: Placeholder slike će ostati vidljive sve dok ne dodate stvarne slike i ne ažurirate kod kako je opisano gore.
 
 
+
