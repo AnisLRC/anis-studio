@@ -40,101 +40,101 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
   const testimonials: Testimonial[] = [
     {
       id: 1,
-      name: 'Maria K.',
-      location: language === 'hr' ? 'Zagreb' : 'Zagreb',
+      name: 'Danijel Kordić',
+      location: language === 'hr' ? 'Hrvatska' : 'Croatia',
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Fantastičan personalizirani poklon! Kvaliteta je izvrsna i poruka je lijepo ugravirana. Preporučujem!',
-        en: 'Fantastic personalized gift! The quality is excellent and the message is beautifully engraved. Highly recommend!'
+        hr: 'Odlični radovi za svaku prigodu........Sve pohvale',
+        en: 'Excellent works for every occasion........All praise'
       }
     },
     {
       id: 2,
-      name: 'Tomislav L.',
-      location: language === 'hr' ? 'Osijek' : 'Osijek',
+      name: 'Ivica Biškup',
+      location: language === 'hr' ? 'Hrvatska' : 'Croatia',
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Epoksidno umjetničko djelo premašilo je moja očekivanja. Svaki detalj je pažljivo osmišljen i izrađen.',
-        en: 'The epoxy art piece exceeded my expectations. Every detail was carefully thought out and crafted.'
+        hr: 'Predobra "kola za vino" Odrađeno za čistu 10 Preporučujem svima!!',
+        en: 'Too good "wine cart" Done for a pure 10 I recommend to everyone!!'
       }
     },
     {
       id: 3,
-      name: 'Petra M.',
-      location: language === 'hr' ? 'Split' : 'Split',
+      name: 'Martina Damjanović',
+      location: language === 'hr' ? 'Hrvatska' : 'Croatia',
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Laserski ugravirani drveni nakit je prekrasan! Preciznost i kvaliteta su nevjerojatni. Bila sam oduševljena!',
-        en: 'The laser engraved wooden jewelry is beautiful! The precision and quality are incredible. I was delighted!'
+        hr: 'Odlično odrađeno, svake pohvale i preporuke svima, nećete pogriješiti ❤️❤️❤️❤️',
+        en: 'Excellent work, all praise and recommendations to everyone, you won\'t go wrong ❤️❤️❤️❤️'
       }
     },
     {
       id: 4,
-      name: 'Marko D.',
-      location: language === 'hr' ? 'Rijeka' : 'Rijeka',
+      name: 'Sanja Mlinek Vučković',
+      location: language === 'hr' ? 'Hrvatska' : 'Croatia',
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Svila sa personaliziranim printom je savršena! Kvaliteta materijala i izrada su izvrsni. Definitivno ću naručiti ponovno.',
-        en: 'The silk with personalized print is perfect! The material quality and workmanship are excellent. I will definitely order again.'
+        hr: 'Najviše od svega mi se sviđa posvećenost poslu. Veliki + od mene. Izašli u susret što me jako razveselilo ❤️',
+        en: 'Most of all, I like the dedication to work. Big + from me. They went out of their way to help, which made me very happy ❤️'
       }
     },
     {
       id: 5,
-      name: 'Ivana S.',
-      location: language === 'hr' ? 'Zadar' : 'Zadar',
+      name: 'Danijel Drmić',
+      location: language === 'hr' ? 'Hrvatska' : 'Croatia',
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Mandela na drvenom podmetaču je stvarno umjetničko djelo! Svaki detalj je pažljivo osmišljen, a boje su živahne i prekrasne.',
-        en: 'The mandala on the wooden coaster is truly a work of art! Every detail is carefully thought out, and the colors are vibrant and beautiful.'
+        hr: 'Radovi za svaku preporuku čista desetka',
+        en: 'Works for every recommendation, a pure ten'
       }
     },
     {
       id: 6,
-      name: 'Andrija K.',
-      location: language === 'hr' ? 'Dubrovnik' : 'Dubrovnik',
+      name: 'Katarina Ronto',
+      location: language === 'hr' ? 'Hrvatska' : 'Croatia',
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Personalizirani poklon za rodendan je bio savršen izbor! Epoksidna smola u kombinaciji s drvetom daje prekrasan rezultat.',
-        en: 'The personalized birthday gift was the perfect choice! Epoxy resin combined with wood gives a beautiful result.'
+        hr: 'Ono što mene posebno oduševljava posvećenost je ovome poslu. Entuzijazam koji "pršti" iz radova, energija uložena u detalje te ljubav najvažniji su "začini" ove priče. I u mom domu svoje je mjesto našao jedan takav rad! Preporučujem svakome od srca uživanje u čaroliji Ani\'s LRC! ❤️❤️❤️',
+        en: 'What particularly delights me is the dedication to this work. The enthusiasm that "sparkles" from the works, the energy invested in details, and love are the most important "ingredients" of this story. And in my home, one such work has found its place! I wholeheartedly recommend everyone to enjoy the magic of Ani\'s LRC! ❤️❤️❤️'
       }
     },
     {
       id: 7,
-      name: 'Sandra B.',
-      location: language === 'hr' ? 'Zagreb' : 'Zagreb',
+      name: 'Đanela Novljaković',
+      location: language === 'hr' ? 'Hrvatska' : 'Croatia',
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Lasersko graviranje na drvu je stvarno impresivno! Preciznost je izvrsna, a poruka je čitljiva i lijepa. Preporučujem svima!',
-        en: 'Laser engraving on wood is truly impressive! The precision is excellent, and the message is readable and beautiful. I recommend to everyone!'
+        hr: 'Predivni radovi, moj sin oduševljen s poklonom ❤️ Inovatovno i kreativno, za svaku preporuku ✨',
+        en: 'Wonderful works, my son is delighted with the gift ❤️ Innovative and creative, for every recommendation ✨'
       }
     },
     {
       id: 8,
-      name: 'Luka R.',
-      location: language === 'hr' ? 'Pula' : 'Pula',
+      name: 'Branka Brana',
+      location: language === 'hr' ? 'Hrvatska' : 'Croatia',
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Kombinacija epoksidne smole i drva je stvarno jedinstvena. Proizvod je izgledao još bolje nego što sam očekivao. Odličan posao!',
-        en: 'The combination of epoxy resin and wood is truly unique. The product looked even better than I expected. Great job!'
+        hr: 'Izvrsno! Oduševljena šahom koji je kombinacija rada lasera i epoxy smole. Uredno, precizno, pedantno i uz to šah je personaliziran sa imenom. Svaka čast na idejama i kreativnosti!!!!',
+        en: 'Excellent! Delighted with the chess set which is a combination of laser work and epoxy resin. Neat, precise, meticulous, and additionally, the chess set is personalized with a name. Kudos to the ideas and creativity!!!!'
       }
     },
     {
       id: 9,
-      name: 'Maja P.',
-      location: language === 'hr' ? 'Varaždin' : 'Varaždin',
+      name: 'Damir Pejić',
+      location: language === 'hr' ? 'Hrvatska' : 'Croatia',
       rating: 5,
       category: 'lrc',
       text: {
-        hr: 'Svila sa ručno oslikanim detaljima je pravi užitak! Kvaliteta je izvrsna, a osobni pristup je bio izvanredan. Hvala!',
-        en: 'The silk with hand-painted details is a real delight! The quality is excellent, and the personal approach was outstanding. Thank you!'
+        hr: 'Proizvodi su kvalitetni i praktični. Posebno mi se sviđa jer možeš sudjelovati u kreiranju određenog proizvoda i tako ga prilagoditi svojim potrebama. Jako sam zadovoljan tako da moje preporuke. 😊',
+        en: 'The products are high quality and practical. I particularly like that you can participate in creating a specific product and thus adapt it to your needs. I am very satisfied, so my recommendations. 😊'
       }
     }
   ]

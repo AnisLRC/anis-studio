@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ErrorBoundary>
       <UiProvider>
         <AuthProvider>
-          <App />
+      <App />
         </AuthProvider>
       </UiProvider>
     </ErrorBoundary>

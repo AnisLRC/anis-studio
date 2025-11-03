@@ -220,7 +220,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-12">
           {landingPageSteps.map((step) => (
-            <div
+            <div 
               key={step.number}
               className="relative rounded-xl p-4 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-center fade-in"
             >

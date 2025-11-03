@@ -428,7 +428,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
             {translations.stepsTitle[language]}
           </h3>
         </div>
-        
+
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-12">
           {visualizationSteps.map((step) => (
             <div 
@@ -439,7 +439,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
               <div className="absolute top-2 left-2 w-8 h-8 rounded-full bg-gradient-to-br from-[#6E44FF] to-[#BDA6FF] text-white font-bold text-sm flex items-center justify-center shadow-md">
                 {step.number}
               </div>
-              
+
               {/* Icon */}
               <div className="text-3xl mb-3 mt-4">{step.icon}</div>
               
@@ -452,9 +452,9 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
               <p className="text-[10px] text-[#5A4A6B] leading-tight">
                 {step.desc[language]}
               </p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
         {/* Order Form */}
         <div className="rounded-2xl p-5 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
@@ -466,7 +466,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
               {translations.formDesc[language]}
             </p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-4">
             {/* Tip namještaja i Broj zidova */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -513,7 +513,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                   ))}
                 </select>
               </div>
-            </div>
+              </div>
 
             {/* Dimenzije prostora */}
             <div>
@@ -530,7 +530,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                     id="length"
                     name="length"
                     value={formData.length}
-                    onChange={handleInputChange}
+                  onChange={handleInputChange}
                     min="1"
                     step="0.1"
                     className={`w-full px-3 py-2.5 text-sm rounded-xl border transition-all duration-200 outline-none text-[#2E2447] ${
@@ -539,23 +539,23 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                         : 'border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20'
                     }`}
                     placeholder="cm"
-                    required
+                  required
                   />
                   {errors.length && (
                     <p className="mt-1 text-sm text-red-600">{errors.length}</p>
                   )}
-                </div>
+              </div>
 
                 <div>
                   <label htmlFor="width" className="block mb-1.5 text-xs font-medium text-[#2E2447]">
                     {translations.formLabels[language].width}
                   </label>
-                  <input
-                    type="number"
-                    id="width"
-                    name="width"
-                    value={formData.width}
-                    onChange={handleInputChange}
+                <input
+                  type="number"
+                  id="width"
+                  name="width"
+                  value={formData.width}
+                  onChange={handleInputChange}
                     min="1"
                     step="0.1"
                     className={`w-full px-3 py-2.5 text-sm rounded-xl border transition-all duration-200 outline-none text-[#2E2447] ${
@@ -564,23 +564,23 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                         : 'border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20'
                     }`}
                     placeholder="cm"
-                    required
-                  />
+                  required
+                />
                   {errors.width && (
                     <p className="mt-1 text-sm text-red-600">{errors.width}</p>
                   )}
-                </div>
+              </div>
 
                 <div>
                   <label htmlFor="height" className="block mb-1.5 text-xs font-medium text-[#2E2447]">
                     {translations.formLabels[language].height}
                   </label>
-                  <input
-                    type="number"
-                    id="height"
-                    name="height"
-                    value={formData.height}
-                    onChange={handleInputChange}
+                <input
+                  type="number"
+                  id="height"
+                  name="height"
+                  value={formData.height}
+                  onChange={handleInputChange}
                     min="1"
                     step="0.1"
                     className={`w-full px-3 py-2.5 text-sm rounded-xl border transition-all duration-200 outline-none text-[#2E2447] ${
@@ -589,23 +589,23 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                         : 'border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20'
                     }`}
                     placeholder="cm"
-                    required
-                  />
+                  required
+                />
                   {errors.height && (
                     <p className="mt-1 text-sm text-red-600">{errors.height}</p>
                   )}
-                </div>
+              </div>
 
                 <div>
                   <label htmlFor="depth" className="block mb-1.5 text-xs font-medium text-[#2E2447]">
                     {translations.formLabels[language].depth}
                   </label>
-                  <input
-                    type="number"
-                    id="depth"
-                    name="depth"
-                    value={formData.depth}
-                    onChange={handleInputChange}
+                <input
+                  type="number"
+                  id="depth"
+                  name="depth"
+                  value={formData.depth}
+                  onChange={handleInputChange}
                     min="1"
                     step="0.1"
                     className={`w-full px-3 py-2.5 text-sm rounded-xl border transition-all duration-200 outline-none text-[#2E2447] ${
@@ -614,8 +614,8 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                         : 'border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20'
                     }`}
                     placeholder="cm"
-                    required
-                  />
+                  required
+                />
                   {errors.depth && (
                     <p className="mt-1 text-sm text-red-600">{errors.depth}</p>
                   )}
@@ -780,7 +780,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                 className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-none text-[#2E2447]"
                 placeholder={language === 'hr' ? "Opišite sve što treba naglasiti..." : "Describe anything else that needs to be highlighted..."}
               />
-            </div>
+              </div>
 
             {/* Upload skica */}
             <div>
@@ -816,7 +816,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                                 src={preview} 
                                 alt={`Sketch ${index + 1}`} 
                                 className="w-full h-48 object-cover rounded-lg border border-[rgba(110,68,255,0.2)] shadow-md"
-                              />
+                />
                               <button
                                 type="button"
                                 onClick={() => removeSketch(index)}
@@ -865,23 +865,23 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                   <p className="mt-2 text-sm text-red-600">{errors.sketches}</p>
                 )}
               </div>
-            </div>
+              </div>
 
             {/* Napomene */}
             <div>
               <label htmlFor="notes" className="block mb-1.5 text-sm font-medium text-[#2E2447]">
                 {translations.formLabels[language].notes}
               </label>
-              <textarea
-                id="notes"
-                name="notes"
-                value={formData.notes}
-                onChange={handleInputChange}
-                rows={4}
+                <textarea
+                  id="notes"
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleInputChange}
+                  rows={4}
                 className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-none text-[#2E2447]"
-                placeholder={language === 'hr' ? "Opišite svoje želje i zahtjeve..." : "Describe your wishes and requirements..."}
-              />
-            </div>
+                  placeholder={language === 'hr' ? "Opišite svoje želje i zahtjeve..." : "Describe your wishes and requirements..."}
+                />
+              </div>
 
             {/* Submit button */}
             <div className="text-center pt-2">
@@ -890,10 +890,10 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                 className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                 style={{ letterSpacing: '0.02em' }}
               >
-                {translations.submitButton[language]}
-              </button>
-            </div>
-          </form>
+                  {translations.submitButton[language]}
+                </button>
+              </div>
+            </form>
         </div>
       </div>
     </section>
