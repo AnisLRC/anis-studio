@@ -1,0 +1,424 @@
+/* Mobile-First Optimizations for Ani's Studio */
+
+/* ============================================
+   TOUCH-FRIENDLY ELEMENTS
+   ============================================ */
+
+/* Minimum touch target size: 44x44px (Apple HIG, Material Design) */
+button,
+a.btn,
+input[type="submit"],
+input[type="button"],
+select,
+label {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Touch-friendly buttons */
+.btn {
+  min-height: 44px;
+  padding: var(--space-sm) var(--space-lg);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(110, 68, 255, 0.2);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-neon,
+.btn-glow {
+  min-height: 44px;
+  padding: var(--space-md) var(--space-xl);
+}
+
+/* Touch-friendly form inputs */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+input[type="password"],
+textarea,
+select {
+  min-height: 44px;
+  padding: var(--space-md);
+  font-size: 16px; /* Prevents zoom on iOS */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(110, 68, 255, 0.1);
+}
+
+/* ============================================
+   MOBILE MENU OPTIMIZATIONS
+   ============================================ */
+
+.mobile-menu-button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: var(--space-sm);
+  touch-action: manipulation;
+}
+
+.mobile-menu-item {
+  min-height: 48px;
+  padding: var(--space-md) var(--space-lg);
+  touch-action: manipulation;
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Mobile First Approach */
+/* Base styles (mobile) are default, then add desktop styles */
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .sm\:text-sm { font-size: var(--text-sm); }
+  .sm\:text-base { font-size: var(--text-base); }
+  .sm\:text-lg { font-size: var(--text-lg); }
+  .sm\:text-xl { font-size: var(--text-xl); }
+  .sm\:px-4 { padding-left: var(--space-lg); padding-right: var(--space-lg); }
+  .sm\:py-3 { padding-top: var(--space-md); padding-bottom: var(--space-md); }
+  .sm\:flex-row { flex-direction: row; }
+  .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .md\:text-lg { font-size: var(--text-lg); }
+  .md\:text-xl { font-size: var(--text-xl); }
+  .md\:text-2xl { font-size: var(--text-2xl); }
+  .md\:text-3xl { font-size: var(--text-3xl); }
+  .md\:px-6 { padding-left: var(--space-xl); padding-right: var(--space-xl); }
+  .md\:py-4 { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .md\:flex { display: flex; }
+  .md\:hidden { display: none; }
+}
+
+/* Large devices (desktops, 1024px and up) */
+@media (min-width: 1024px) {
+  .lg\:text-2xl { font-size: var(--text-2xl); }
+  .lg\:text-3xl { font-size: var(--text-3xl); }
+  .lg\:text-4xl { font-size: var(--text-4xl); }
+  .lg\:px-8 { padding-left: var(--space-2xl); padding-right: var(--space-2xl); }
+  .lg\:py-5 { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Extra large devices (large desktops, 1280px and up) */
+@media (min-width: 1280px) {
+  .xl\:text-4xl { font-size: var(--text-4xl); }
+  .xl\:text-5xl { font-size: var(--text-5xl); }
+  .xl\:px-10 { padding-left: var(--space-3xl); padding-right: var(--space-3xl); }
+  .xl\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .xl\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+/* ============================================
+   MOBILE-SPECIFIC OPTIMIZATIONS
+   ============================================ */
+
+/* Hide scrollbars on mobile (optional) */
+@media (max-width: 768px) {
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  /* Optimize images for mobile */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Mobile-friendly form layouts */
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  /* Mobile-friendly spacing */
+  .mobile-section {
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  /* Mobile-friendly text sizes */
+  h1 { font-size: var(--text-3xl); line-height: 1.2; }
+  h2 { font-size: var(--text-2xl); line-height: 1.3; }
+  h3 { font-size: var(--text-xl); line-height: 1.4; }
+
+  /* Mobile-friendly buttons */
+  .btn {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  /* Mobile-friendly cards */
+  .card {
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+  }
+
+  /* Mobile-friendly grids */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  /* Mobile-friendly navigation */
+  .nav-mobile {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  /* Mobile-friendly modals */
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  /* Mobile-friendly drawers */
+  .drawer {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Extra small devices (phones in portrait, 480px and down) */
+@media (max-width: 480px) {
+  /* Even smaller text on very small screens */
+  h1 { font-size: var(--text-2xl); }
+  h2 { font-size: var(--text-xl); }
+  h3 { font-size: var(--text-lg); }
+
+  /* Smaller padding */
+  .Section {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+  }
+
+  /* Smaller buttons */
+  .btn {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-sm);
+  }
+
+  /* Smaller spacing */
+  .mobile-section {
+    padding: var(--space-lg) var(--space-sm);
+  }
+}
+
+/* ============================================
+   TOUCH INTERACTIONS
+   ============================================ */
+
+/* Active state for touch devices */
+.btn:active,
+button:active,
+a:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Disable hover effects on touch devices */
+@media (hover: none) {
+  .btn:hover,
+  .glass-panel:hover,
+  .glass-morphism:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
+
+  /* Show active state instead */
+  .btn:active {
+    transform: scale(0.98);
+  }
+}
+
+/* ============================================
+   LAZY LOADING OPTIMIZATIONS
+   ============================================ */
+
+/* Lazy loading za slike */
+img {
+  loading: lazy;
+  decoding: async;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Placeholder za slike dok se učitavaju */
+img[loading="lazy"] {
+  background: linear-gradient(
+    90deg,
+    rgba(110, 68, 255, 0.1) 0%,
+    rgba(189, 166, 255, 0.1) 50%,
+    rgba(110, 68, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Optimizacija za slike na mobilnim uređajima */
+@media (max-width: 768px) {
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Manje slike na mobilnim uređajima */
+  .responsive-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Optimize rendering */
+.mobile-optimize {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* ============================================
+   MOBILE MENU ANIMATIONS
+   ============================================ */
+
+.mobile-menu-enter {
+  animation: slideDown 0.3s ease-out;
+}
+
+.mobile-menu-exit {
+  animation: slideUp 0.3s ease-in;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* ============================================
+   LANDSCAPE ORIENTATION
+   ============================================ */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Optimize for landscape mobile */
+  .mobile-section {
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  h1 { font-size: var(--text-2xl); }
+  h2 { font-size: var(--text-xl); }
+}
+
+/* ============================================
+   SAFE AREA INSETS (for notched devices)
+   ============================================ */
+
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(var(--space-md), env(safe-area-inset-top));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+  }
+
+  .safe-area-left {
+    padding-left: max(var(--space-md), env(safe-area-inset-left));
+  }
+
+  .safe-area-right {
+    padding-right: max(var(--space-md), env(safe-area-inset-right));
+  }
+}
+
+/* ============================================
+   MOBILE-SPECIFIC UTILITIES
+   ============================================ */
+
+/* Hide on mobile */
+.mobile-hidden {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mobile-hidden {
+    display: block;
+  }
+}
+
+/* Show only on mobile */
+.mobile-only {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
+/* Mobile text alignment */
+@media (max-width: 768px) {
+  .mobile-center {
+    text-align: center;
+  }
+
+  .mobile-left {
+    text-align: left;
+  }
+}
+

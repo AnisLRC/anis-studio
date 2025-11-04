@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 
 interface ContactSectionProps {
   language: 'hr' | 'en'
@@ -14,8 +14,8 @@ export default function ContactSection({ language }: ContactSectionProps) {
 
   const translations = {
     title: {
-      hr: "Kontaktirajte me",
-      en: "Contact Me"
+      hr: "📧 Kontaktirajte me",
+      en: "📧 Contact Me"
     },
     subtitle: {
       hr: "Imate pitanje ili želite započeti projekt? Javite mi se!",
@@ -44,7 +44,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
     successMessage: {
       hr: "Vaša poruka je poslana. Javit ću vam se uskoro!",
       en: "Your message has been sent. I'll get back to you soon!"
-    }
+    },
   }
 
   const handleSubmit = (e: FormEvent) => {
@@ -71,13 +71,13 @@ export default function ContactSection({ language }: ContactSectionProps) {
 
   if (isSubmitted) {
     return (
-      <section className="section">
-        <div className="container">
-          <div className="glass-panel text-center" style={{ padding: 'var(--space-3xl)', maxWidth: '600px', margin: '0 auto' }}>
-            <h2 style={{ color: 'var(--clr-primary)', marginBottom: 'var(--space-lg)' }}>
+      <section id="contact" className="Section fade-in">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center p-12 rounded-2xl bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg">
+            <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--color-primary)' }}>
               {translations.successTitle[language]}
             </h2>
-            <p style={{ fontSize: 'var(--text-lg)', color: 'var(--clr-text-light)' }}>
+            <p className="text-lg text-[#5A4A6B]">
               {translations.successMessage[language]}
             </p>
           </div>
@@ -87,44 +87,106 @@ export default function ContactSection({ language }: ContactSectionProps) {
   }
 
   return (
-    <section id="contact" className="section">
-      <div className="container max-w-3xl">
-        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">
-          Kontakt
-        </h2>
-        <p className="text-white/80 mb-6">Opiši ideju i javit ćemo se s prijedlogom i cijenom.</p>
+    <section id="contact" className="Section fade-in">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+            {translations.title[language]}
+          </h2>
+          <p className="text-base text-[#5A4A6B]">
+            {translations.subtitle[language]}
+          </p>
+        </div>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            className="w-full rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/60"
-            placeholder="Ime i prezime"
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-          <input
-            className="w-full rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/60"
-            placeholder="Email"
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <textarea
-            className="w-full rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 px-4 py-3 min-h-[140px] focus:outline-none focus:ring-2 focus:ring-white/60"
-            placeholder="Poruka"
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            required
-          />
-          <button className="btn btn-primary" type="submit">Pošalji upit</button>
-        </form>
+        <div className="rounded-2xl p-5 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg fade-in">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div
+              style={{ 
+                animationDelay: '0.1s',
+                animation: 'fadeInUp 0.6s ease-out forwards',
+                opacity: 0
+              }}
+            >
+              <label 
+                htmlFor="name" 
+                className="block mb-1.5 text-sm font-medium text-[#2E2447]"
+              >
+                {translations.name[language]}
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
+                placeholder={translations.name[language]}
+              />
+            </div>
+
+            <div
+              style={{ 
+                animationDelay: '0.2s',
+                animation: 'fadeInUp 0.6s ease-out forwards',
+                opacity: 0
+              }}
+            >
+              <label 
+                htmlFor="email" 
+                className="block mb-1.5 text-sm font-medium text-[#2E2447]"
+              >
+                {translations.email[language]}
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
+                placeholder={translations.email[language]}
+              />
+            </div>
+
+            <div
+              style={{ 
+                animationDelay: '0.3s',
+                animation: 'fadeInUp 0.6s ease-out forwards',
+                opacity: 0
+              }}
+            >
+              <label 
+                htmlFor="message" 
+                className="block mb-1.5 text-sm font-medium text-[#2E2447]"
+              >
+                {translations.message[language]}
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                required
+                rows={4}
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-none text-[#2E2447]"
+                placeholder={translations.message[language]}
+              />
+            </div>
+
+            <div className="text-center pt-2">
+              <button 
+                type="submit" 
+                className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                style={{ letterSpacing: '0.02em' }}
+              >
+                {translations.send[language]}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
   )
 }
-
