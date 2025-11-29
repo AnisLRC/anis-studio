@@ -18,6 +18,7 @@ export interface ClientProjectFormValues {
   approxWidth: string
   approxLength: string
   approxHeight: string
+  specialFeatures: string[]
 
   style: string[]
   mood: string[]
@@ -59,6 +60,7 @@ const INITIAL_VALUES: ClientProjectFormValues = {
   approxWidth: '',
   approxLength: '',
   approxHeight: '',
+  specialFeatures: [],
 
   style: [],
   mood: [],
@@ -119,6 +121,14 @@ const PRIORITY_OPTIONS = [
 ]
 
 export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormProps) {
+  const inputClass =
+    "w-full rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-400";
+
+  const textareaClass =
+    "w-full rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-inner resize-y min-h-[96px] focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-400";
+
+  const selectClass = inputClass;
+
   const [values, setValues] = useState<ClientProjectFormValues>(INITIAL_VALUES)
 
   function handleChange(
@@ -147,221 +157,289 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto py-8 space-y-8">
+      {/* Naslov i podnaslov */}
+      <div className="space-y-1 text-center mb-4">
+        <h2 className="text-xl font-semibold text-slate-900">
+          Naručite svoj 3D prikaz interijera po mjeri
+        </h2>
+        <p className="text-sm text-slate-600">
+          Ispunite formu s vašim dimenzijama, potrebama i opisom.
+        </p>
+      </div>
+
       {/* KORAK 1 – Osnovne informacije */}
-      <fieldset>
-        <legend>Osnovne informacije o prostoru</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">Osnovne informacije o prostoru</legend>
 
-        <div>
-          <label>
-            Tip prostora *
-            <select
-              value={values.projectType}
-              onChange={e => handleChange('projectType', e.target.value)}
-              required
-            >
-              <option value="">Odaberi...</option>
-              <option value="kuhinja">Kuhinja</option>
-              <option value="dnevni">Dnevni boravak</option>
-              <option value="spavaca">Spavaća soba</option>
-              <option value="djecja">Dječja soba</option>
-              <option value="hodnik">Hodnik / predprostor</option>
-              <option value="kupaonica">Kupaonica</option>
-              <option value="ured">Ured / poslovni prostor</option>
-              <option value="drugo">Drugo</option>
-            </select>
-          </label>
-        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+              <span>Tip prostora *</span>
+              <select
+                value={values.projectType}
+                onChange={e => handleChange('projectType', e.target.value)}
+                className={selectClass}
+                required
+              >
+                <option value="">Odaberi...</option>
+                <option value="kuhinja">Kuhinja</option>
+                <option value="dnevni">Dnevni boravak</option>
+                <option value="spavaca">Spavaća soba</option>
+                <option value="djecja">Dječja soba</option>
+                <option value="hodnik">Hodnik / predprostor</option>
+                <option value="kupaonica">Kupaonica</option>
+                <option value="ured">Ured / poslovni prostor</option>
+                <option value="drugo">Drugo</option>
+              </select>
+            </label>
+          </div>
 
-        <div>
-          <label>
-            Grad / lokacija *
-            <input
-              type="text"
-              value={values.location}
-              onChange={e => handleChange('location', e.target.value)}
-              required
-            />
-          </label>
-        </div>
+          <div>
+            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+              <span>Grad / lokacija *</span>
+              <input
+                type="text"
+                value={values.location}
+                onChange={e => handleChange('location', e.target.value)}
+                className="w-full"
+                required
+              />
+            </label>
+          </div>
 
-        <div>
-          <label>
-            Prostor je *
-            <select
-              value={values.spaceStatus}
-              onChange={e => handleChange('spaceStatus', e.target.value)}
-              required
-            >
-              <option value="">Odaberi...</option>
-              <option value="existing">Postojeći – renovacija</option>
-              <option value="new">Potpuno novi (novogradnja)</option>
-            </select>
-          </label>
+          <div>
+            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+              <span>Prostor je *</span>
+              <select
+                value={values.spaceStatus}
+                onChange={e => handleChange('spaceStatus', e.target.value)}
+                className={selectClass}
+                required
+              >
+                <option value="">Odaberi...</option>
+                <option value="existing">Postojeći – renovacija</option>
+                <option value="new">Potpuno novi (novogradnja)</option>
+              </select>
+            </label>
+          </div>
         </div>
       </fieldset>
 
       {/* KORAK 2 – Dimenzije i postojeće stanje */}
-      <fieldset>
-        <legend>Dimenzije i postojeće stanje</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">Dimenzije i postojeće stanje</legend>
 
         <div>
-          <span>Imaš li tlocrt ili skicu? *</span>
-          <label>
-            <input
-              type="radio"
-              name="hasPlan"
-              value="plan"
-              checked={values.hasPlan === 'plan'}
-              onChange={() => handleChange('hasPlan', 'plan')}
-              required
-            />
-            Imam tlocrt
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="hasPlan"
-              value="photos"
-              checked={values.hasPlan === 'photos'}
-              onChange={() => handleChange('hasPlan', 'photos')}
-            />
-            Imam samo fotografije / skice
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="hasPlan"
-              value="none"
-              checked={values.hasPlan === 'none'}
-              onChange={() => handleChange('hasPlan', 'none')}
-            />
-            Nemam ništa od navedenog
-          </label>
+          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Imaš li tlocrt ili skicu? *</p>
+          <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap">
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                name="hasPlan"
+                value="plan"
+                checked={values.hasPlan === 'plan'}
+                onChange={() => handleChange('hasPlan', 'plan')}
+                required
+              />
+              <span>Imam tlocrt</span>
+            </label>
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                name="hasPlan"
+                value="photos"
+                checked={values.hasPlan === 'photos'}
+                onChange={() => handleChange('hasPlan', 'photos')}
+              />
+              <span>Imam samo fotografije / skice</span>
+            </label>
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                name="hasPlan"
+                value="none"
+                checked={values.hasPlan === 'none'}
+                onChange={() => handleChange('hasPlan', 'none')}
+              />
+              <span>Nemam ništa od navedenog</span>
+            </label>
+          </div>
         </div>
 
         {values.hasPlan === 'plan' && (
           <div>
-            <label>
-              Učitaj tlocrt / nacrt
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                multiple
-                onChange={e => handleChange('planFiles', e.target.files)}
-              />
+            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+              <span>Učitaj tlocrt / nacrt</span>
+              <div className="flex items-center gap-3">
+                <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
+                  Odaberi datoteke
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="hidden"
+                    multiple
+                    onChange={e => handleChange('planFiles', e.target.files)}
+                  />
+                </label>
+                <span className="text-xs text-slate-500">
+                  Možeš učitati više datoteka (preporučeno 3–5).
+                </span>
+              </div>
             </label>
           </div>
         )}
 
         {(values.hasPlan === 'photos' || values.hasPlan === 'none') && (
           <div>
-            <label>
-              Učitaj fotografije prostora
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png"
-                multiple
-                onChange={e => handleChange('photoFiles', e.target.files)}
-              />
+            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+              <span>Učitaj fotografije prostora</span>
+              <div className="flex items-center gap-3">
+                <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
+                  Odaberi datoteke
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png"
+                    className="hidden"
+                    multiple
+                    onChange={e => handleChange('photoFiles', e.target.files)}
+                  />
+                </label>
+                <span className="text-xs text-slate-500">
+                  Možeš učitati više datoteka (preporučeno 3–5).
+                </span>
+              </div>
             </label>
           </div>
         )}
 
-        <div>
-          <label>
-            Širina prostora (cca)
+        {/* Dimenzije prostora */}
+        <div className="grid gap-4 sm:grid-cols-3">
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Širina prostora (cca)</span>
             <input
               type="text"
-              placeholder="npr. 3.5 m"
+              className={inputClass}
               value={values.approxWidth}
               onChange={e => handleChange('approxWidth', e.target.value)}
             />
+            <span className="text-xs text-slate-500">npr. 3.5 m</span>
           </label>
-        </div>
 
-        <div>
-          <label>
-            Dužina prostora (cca)
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Dužina prostora (cca)</span>
             <input
               type="text"
-              placeholder="npr. 4.2 m"
+              className={inputClass}
               value={values.approxLength}
               onChange={e => handleChange('approxLength', e.target.value)}
             />
+            <span className="text-xs text-slate-500">npr. 4.2 m</span>
           </label>
-        </div>
 
-        <div>
-          <label>
-            Visina prostora (cca)
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Visina prostora (cca)</span>
             <input
               type="text"
-              placeholder="npr. 2.7 m"
+              className={inputClass}
               value={values.approxHeight}
               onChange={e => handleChange('approxHeight', e.target.value)}
             />
+            <span className="text-xs text-slate-500">npr. 2.7 m</span>
           </label>
+        </div>
+
+        {/* Posebne karakteristike prostora */}
+        <div>
+          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
+            Posebne karakteristike prostora (moguć više odabira)
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {['Greda', 'Kosina', 'Stup', 'Niša u zidu', 'Sniženi strop', 'Drugo (opis u napomeni)'].map(option => (
+              <label
+                key={option}
+                className="flex items-start gap-2 text-sm text-slate-700"
+              >
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={values.specialFeatures.includes(option)}
+                  onChange={() => handleToggleMulti('specialFeatures', option)}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
         </div>
       </fieldset>
 
       {/* KORAK 3 – Stil, osjećaj, boje */}
-      <fieldset>
-        <legend>Stil i osjećaj prostora</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">Stil i osjećaj prostora</legend>
 
         <div>
-          <span>Željeni stil</span>
-          {STYLE_OPTIONS.map(option => (
-            <label key={option}>
-              <input
-                type="checkbox"
-                checked={values.style.includes(option)}
-                onChange={() => handleToggleMulti('style', option)}
-              />
-              {option}
-            </label>
-          ))}
+          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Željeni stil</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {STYLE_OPTIONS.map(option => (
+              <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={values.style.includes(option)}
+                  onChange={() => handleToggleMulti('style', option)}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div>
-          <span>Kakav osjećaj želiš u prostoru?</span>
-          {MOOD_OPTIONS.map(option => (
-            <label key={option}>
-              <input
-                type="checkbox"
-                checked={values.mood.includes(option)}
-                onChange={() => handleToggleMulti('mood', option)}
-              />
-              {option}
-            </label>
-          ))}
+          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Kakav osjećaj želiš u prostoru?</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {MOOD_OPTIONS.map(option => (
+              <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={values.mood.includes(option)}
+                  onChange={() => handleToggleMulti('mood', option)}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div>
-          <span>Preferirane boje</span>
-          {COLOR_OPTIONS.map(option => (
-            <label key={option}>
-              <input
-                type="checkbox"
-                checked={values.colorPreference.includes(option)}
-                onChange={() => handleToggleMulti('colorPreference', option)}
-              />
-              {option}
-            </label>
-          ))}
+          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Preferirane boje</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {COLOR_OPTIONS.map(option => (
+              <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={values.colorPreference.includes(option)}
+                  onChange={() => handleToggleMulti('colorPreference', option)}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
         </div>
       </fieldset>
 
       {/* KORAK 4 – Funkcija i navike */}
-      <fieldset>
-        <legend>Funkcija i navike</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">Funkcija i navike</legend>
 
         <div>
-          <label>
-            Tko najviše koristi prostor? *
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Tko najviše koristi prostor? *</span>
             <select
               value={values.mainUsers}
               onChange={e => handleChange('mainUsers', e.target.value)}
+              className={selectClass}
               required
             >
               <option value="">Odaberi...</option>
@@ -375,30 +453,34 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
         </div>
 
         <div>
-          <span>Što ti je najvažnije?</span>
-          {PRIORITY_OPTIONS.map(option => (
-            <label key={option}>
-              <input
-                type="checkbox"
-                checked={values.priority.includes(option)}
-                onChange={() => handleToggleMulti('priority', option)}
-              />
-              {option}
-            </label>
-          ))}
+          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Što ti je najvažnije?</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {PRIORITY_OPTIONS.map(option => (
+              <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={values.priority.includes(option)}
+                  onChange={() => handleToggleMulti('priority', option)}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
         </div>
       </fieldset>
 
       {/* KORAK 5 – Budžet i rok */}
-      <fieldset>
-        <legend>Budžet i rok</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">Budžet i rok</legend>
 
         <div>
-          <label>
-            Okvirni budžet za namještaj *
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Okvirni budžet za namještaj *</span>
             <select
               value={values.budgetRange}
               onChange={e => handleChange('budgetRange', e.target.value)}
+              className={selectClass}
               required
             >
               <option value="">Odaberi...</option>
@@ -412,10 +494,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
         </div>
 
         <div>
-          <label>
-            Kada bi ti okvirno odgovaralo da krenemo? *
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Kada bi ti okvirno odgovaralo da krenemo? *</span>
             <input
               type="date"
+              className={inputClass}
               value={values.desiredStartDate}
               onChange={e => handleChange('desiredStartDate', e.target.value)}
               required
@@ -424,11 +507,12 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
         </div>
 
         <div>
-          <label>
-            Koliko si fleksibilna s rokom? *
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Koliko si fleksibilna s rokom? *</span>
             <select
               value={values.flexibility}
               onChange={e => handleChange('flexibility', e.target.value)}
+              className={selectClass}
               required
             >
               <option value="">Odaberi...</option>
@@ -442,42 +526,45 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
       </fieldset>
 
       {/* KORAK 6 – Stolar / suradnja */}
-      <fieldset>
-        <legend>Stolar</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">Stolar</legend>
 
         <div>
-          <span>Imaš li već svog stolara? *</span>
-          <label>
-            <input
-              type="radio"
-              name="hasOwnStolar"
-              value="yes"
-              checked={values.hasOwnStolar === 'yes'}
-              onChange={() => handleChange('hasOwnStolar', 'yes')}
-              required
-            />
-            Da, imam svog stolara
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="hasOwnStolar"
-              value="no"
-              checked={values.hasOwnStolar === 'no'}
-              onChange={() => handleChange('hasOwnStolar', 'no')}
-            />
-            Nemam stolara / treba mi preporuka
-          </label>
+          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Imaš li već svog stolara? *</p>
+          <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap">
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                name="hasOwnStolar"
+                value="yes"
+                checked={values.hasOwnStolar === 'yes'}
+                onChange={() => handleChange('hasOwnStolar', 'yes')}
+                required
+              />
+              <span>Da, imam svog stolara</span>
+            </label>
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                name="hasOwnStolar"
+                value="no"
+                checked={values.hasOwnStolar === 'no'}
+                onChange={() => handleChange('hasOwnStolar', 'no')}
+              />
+              <span>Nemam stolara / treba mi preporuka</span>
+            </label>
+          </div>
         </div>
 
         {values.hasOwnStolar === 'yes' && (
           <>
             <div>
-              <label>
-                Odaberi svog stolara (ako je registriran)
+              <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+                <span>Odaberi svog stolara (ako je registriran)</span>
                 <select
                   value={values.stolarId}
                   onChange={e => handleChange('stolarId', e.target.value)}
+                  className={selectClass}
                 >
                   <option value="">Odaberi...</option>
                   {stolars.map(s => (
@@ -490,10 +577,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
             </div>
 
             <div>
-              <label>
-                Moj stolar još nije registriran (ime + kontakt)
+              <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+                <span>Moj stolar još nije registriran (ime + kontakt)</span>
                 <input
                   type="text"
+                  className={inputClass}
                   value={values.stolarNotRegistered}
                   onChange={e =>
                     handleChange('stolarNotRegistered', e.target.value)
@@ -507,41 +595,52 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
 
         {values.hasOwnStolar === 'no' && (
           <div>
-            <label>
+            <label className="flex items-start gap-2 text-sm text-slate-700">
               <input
                 type="checkbox"
+                className="mt-1"
                 checked={values.needStolarRecommendation}
                 onChange={e =>
                   handleChange('needStolarRecommendation', e.target.checked)
                 }
               />
-              Želim preporuku stolara
+              <span>Želim preporuku stolara</span>
             </label>
           </div>
         )}
       </fieldset>
 
       {/* KORAK 7 – Inspiracija i opis */}
-      <fieldset>
-        <legend>Inspiracija i opis</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">Inspiracija i opis</legend>
 
         <div>
-          <label>
-            Učitaj slike inspiracije (npr. Pinterest, Instagram)
-            <input
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              multiple
-              onChange={e => handleChange('inspirationFiles', e.target.files)}
-            />
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Učitaj slike inspiracije (npr. Pinterest, Instagram)</span>
+            <div className="flex items-center gap-3">
+              <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
+                Odaberi datoteke
+                <input
+                  type="file"
+                  accept=".jpg,.jpeg,.png"
+                  className="hidden"
+                  multiple
+                  onChange={e => handleChange('inspirationFiles', e.target.files)}
+                />
+              </label>
+              <span className="text-xs text-slate-500">
+                Možeš učitati više datoteka (preporučeno 3–5).
+              </span>
+            </div>
           </label>
         </div>
 
         <div>
-          <label>
-            Opiši svojim riječima što ti je najvažnije u ovom prostoru
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Opiši svojim riječima što ti je najvažnije u ovom prostoru</span>
             <textarea
               value={values.projectNote}
+              className={textareaClass}
               onChange={e => handleChange('projectNote', e.target.value)}
               rows={4}
             />
@@ -550,15 +649,16 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
       </fieldset>
 
       {/* KORAK 8 – Kontakt */}
-      <fieldset>
-        <legend>Kontakt</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">Kontakt</legend>
 
         <div>
-          <label>
-            Kako želiš da te kontaktiram? *
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Kako želiš da te kontaktiram? *</span>
             <select
               value={values.contactPreference}
               onChange={e => handleChange('contactPreference', e.target.value)}
+              className={selectClass}
               required
             >
               <option value="">Odaberi...</option>
@@ -571,11 +671,12 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
         </div>
 
         <div>
-          <label>
-            Kada ti najviše odgovara da te kontaktiram?
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Kada ti najviše odgovara da te kontaktiram?</span>
             <input
               type="text"
               placeholder="npr. radnim danom od 17 do 20h"
+              className={inputClass}
               value={values.contactTime}
               onChange={e => handleChange('contactTime', e.target.value)}
             />
@@ -583,7 +684,14 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
         </div>
       </fieldset>
 
-      <button type="submit">Pošalji upit za interijerski projekt</button>
+      <div className="mt-6 flex justify-center">
+        <button
+          type="submit"
+          className="inline-flex items-center justify-center rounded-full bg-violet-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-violet-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-300 focus:ring-offset-2"
+        >
+          Pošalji upit za interijerski projekt
+        </button>
+      </div>
     </form>
   )
 }

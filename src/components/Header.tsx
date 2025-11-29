@@ -54,28 +54,22 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
   return (
     <header className="sticky top-0 z-50 header-glass">
-      <nav className="mx-auto max-w-7xl px-6 sm:px-8 flex items-center justify-between py-2 sm:py-2.5">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex items-center justify-between py-2 sm:py-2.5">
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div style={{
-            width: '32px',
-            height: '32px',
-            background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '20px',
-            boxShadow: '0 4px 12px rgba(110, 68, 255, 0.3)',
-            transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-          }}
-          className="hover:scale-110 hover:shadow-[0_6px_16px_rgba(110,68,255,0.4)]"
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div 
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-lg sm:text-xl hover:scale-110 hover:shadow-[0_6px_16px_rgba(110,68,255,0.4)] transition-all duration-300"
+            style={{
+              background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
+              borderRadius: '8px',
+              boxShadow: '0 4px 12px rgba(110, 68, 255, 0.3)',
+            }}
           >
             ✨
           </div>
           <span style={{
             fontFamily: 'Poppins, sans-serif',
-            fontSize: '1.125rem',
+            fontSize: 'clamp(0.875rem, 2vw, 1.125rem)',
             fontWeight: 700,
             color: '#2E2447',
             letterSpacing: '-0.02em'
@@ -100,7 +94,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
         </div>
 
         {/* Right side - Auth, Cart, Language */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
           {/* Auth Buttons - Desktop */}
           {!isAuthenticated ? (
             <div className="hidden sm:flex items-center gap-2">
@@ -136,7 +130,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           {/* Cart Button - Elegant Design */}
           <button 
             onClick={onCartClick} 
-            className="relative group p-2.5 text-[#5A4A6B] transition-all duration-300 rounded-xl hover:bg-gradient-to-br hover:from-[rgba(110,68,255,0.08)] hover:to-[rgba(189,166,255,0.08)] hover:shadow-md hover:scale-105 active:scale-95 hover:-translate-y-0.5" 
+            className="relative group p-2 sm:p-2.5 text-[#5A4A6B] transition-all duration-300 rounded-xl hover:bg-gradient-to-br hover:from-[rgba(110,68,255,0.08)] hover:to-[rgba(189,166,255,0.08)] hover:shadow-md hover:scale-105 active:scale-95 hover:-translate-y-0.5" 
             aria-label={language === 'hr' ? 'Košarica' : 'Shopping cart'}
             style={{
               background: cartItemCount > 0 ? 'linear-gradient(135deg, rgba(110,68,255,0.06) 0%, rgba(189,166,255,0.06) 100%)' : 'transparent'
@@ -144,7 +138,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           >
             {/* Shopping Cart Icon - Elegant Design */}
             <svg 
-              className="w-6 h-6 transition-all duration-300 group-hover:scale-110 group-hover:text-[--color-primary] cart-icon-float" 
+              className="w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 group-hover:scale-110 group-hover:text-[--color-primary] cart-icon-float" 
               fill="none" 
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -240,13 +234,12 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
           {/* Language Toggle */}
           <div
+            className="hidden min-[360px]:flex items-center"
             style={{
-              display: "flex",
-              alignItems: "center",
               background: "rgba(255, 255, 255, 0.6)",
               backdropFilter: "blur(8px)",
               borderRadius: "12px",
-              padding: "4px",
+              padding: "3px",
               gap: "4px",
               border: "1px solid rgba(110, 68, 255, 0.15)",
             }}
@@ -255,10 +248,11 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
               <button
                 key={lng}
                 onClick={() => onLanguageChange(lng)}
+                className="sm:px-4 sm:py-1.5 sm:text-sm"
                 style={{
-                  padding: "6px 16px",
+                  padding: "5px 12px",
                   borderRadius: "8px",
-                  fontSize: "0.875rem",
+                  fontSize: "0.8125rem",
                   fontWeight: 600,
                   fontFamily: "Inter, sans-serif",
                   transition: "all 200ms ease",
@@ -282,9 +276,9 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             className="md:hidden mobile-menu-button p-2.5 text-[#5A4A6B] hover:text-[--color-primary] active:scale-95 transition-all rounded-lg hover:bg-[rgba(110,68,255,0.05)] active:bg-[rgba(110,68,255,0.1)]" 
             aria-label={language === 'hr' ? 'Otvorite meni' : 'Toggle menu'}
             aria-expanded={isMobileMenuOpen}
-            style={{ minWidth: '44px', minHeight: '44px' }}
+            style={{ minWidth: '48px', minHeight: '48px' }}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
               {isMobileMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -297,13 +291,13 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
       {/* Mobile Navigation - Touch-friendly */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-white/20 py-4 bg-white/95 backdrop-blur-sm mobile-menu-enter">
-          <nav className="mx-auto max-w-7xl px-6 sm:px-8 flex flex-col gap-2">
+        <div className="md:hidden border-t border-white/20 py-3 sm:py-4 bg-white/95 backdrop-blur-sm mobile-menu-enter">
+          <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex flex-col gap-2">
             {(['lrc', 'interiors', 'webAtelier', 'about', 'contact'] as const).map((key) => (
               <button
                 key={key}
                 onClick={() => scrollToSection(key === "webAtelier" ? "web-atelier" : key)}
-                className="mobile-menu-item text-left text-[#5A4A6B] hover:text-[--color-primary] active:text-[--color-primary] active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg font-medium"
+                className="mobile-menu-item text-left px-3 py-2.5 text-[#5A4A6B] hover:text-[--color-primary] active:text-[--color-primary] active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg font-medium"
                 style={{ minHeight: '48px' }}
               >
                 {navigation[language][key]}
@@ -311,7 +305,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             ))}
             {/* Mobile Auth Buttons - Touch-friendly */}
             {!isAuthenticated ? (
-              <div className="flex flex-col gap-2 pt-4 border-t border-white/20">
+              <div className="flex flex-col gap-2 pt-3 sm:pt-4 border-t border-white/20 mt-1">
                 <button
                   onClick={() => openModal('login')}
                   className="mobile-menu-item text-left px-4 py-3 text-sm font-medium text-[#5A4A6B] hover:text-[--color-primary] active:text-[--color-primary] active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg"
@@ -334,7 +328,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             ) : (
               <button
                 onClick={logout}
-                className="mobile-menu-item text-left px-4 py-3 text-sm font-medium text-[#5A4A6B] hover:text-[--color-primary] active:text-[--color-primary] active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg"
+                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium text-[#5A4A6B] hover:text-[--color-primary] active:text-[--color-primary] active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg"
                 style={{ minHeight: '48px' }}
               >
                 {authLabels[language].logout}
