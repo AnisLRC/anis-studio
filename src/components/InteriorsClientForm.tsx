@@ -130,12 +130,22 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
   const selectClass = inputClass;
 
   const [values, setValues] = useState<ClientProjectFormValues>(INITIAL_VALUES)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   function handleChange(
     field: keyof ClientProjectFormValues,
     value: ClientProjectFormValues[typeof field]
   ) {
     setValues(prev => ({ ...prev, [field]: value }))
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors(prev => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [field]: _, ...rest } = prev
+        return rest
+      })
+    }
   }
 
   function handleToggleMulti(field: keyof ClientProjectFormValues, option: string) {
@@ -145,15 +155,55 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
       const next = exists ? current.filter(o => o !== option) : [...current, option]
       return { ...prev, [field]: next as any }
     })
+    // Clear error for this field when user makes a selection
+    if (errors[field]) {
+      setErrors(prev => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [field]: _, ...rest } = prev
+        return rest
+      })
+    }
+  }
+
+  function validate(values: ClientProjectFormValues) {
+    const newErrors: Record<string, string> = {}
+
+    if (!values.projectType) newErrors.projectType = 'Molim te odaberi tip prostora.'
+    if (!values.location) newErrors.location = 'Molim te upiši grad ili lokaciju.'
+    if (!values.spaceStatus) newErrors.spaceStatus = 'Molim te odaberi stanje prostora.'
+    if (!values.hasPlan) newErrors.hasPlan = 'Molim te odaberi imaš li tlocrt ili skicu.'
+    if (!values.mainUsers) newErrors.mainUsers = 'Molim te odaberi tko najviše koristi prostor.'
+    if (!values.budgetRange) newErrors.budgetRange = 'Molim te odaberi okvirni budžet.'
+    if (!values.desiredStartDate) newErrors.desiredStartDate = 'Molim te odaberi okvirni datum početka.'
+    if (!values.flexibility) newErrors.flexibility = 'Molim te odaberi fleksibilnost roka.'
+    if (!values.hasOwnStolar) newErrors.hasOwnStolar = 'Molim te odaberi imaš li svog stolara.'
+    if (!values.contactPreference) newErrors.contactPreference = 'Molim te odaberi kako želiš da te kontaktiram.'
+
+    return newErrors
   }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    setIsSubmitted(false)
+
+    const newErrors = validate(values)
+    setErrors(newErrors)
+
+    if (Object.keys(newErrors).length > 0) {
+      return
+    }
+
+    // Clear all errors and mark as submitted
+    setErrors({})
+    setIsSubmitted(true)
+
     if (onSubmit) {
       onSubmit(values)
     } else {
       console.log('Client project form submitted:', values)
     }
+
+    setValues(INITIAL_VALUES)
   }
 
   return (
@@ -193,6 +243,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
                 <option value="drugo">Drugo</option>
               </select>
             </label>
+            {errors.projectType && (
+              <p className="text-xs text-red-500 mt-1">{errors.projectType}</p>
+            )}
           </div>
 
           <div>
@@ -202,10 +255,13 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
                 type="text"
                 value={values.location}
                 onChange={e => handleChange('location', e.target.value)}
-                className="w-full"
+                className={inputClass}
                 required
               />
             </label>
+            {errors.location && (
+              <p className="text-xs text-red-500 mt-1">{errors.location}</p>
+            )}
           </div>
 
           <div>
@@ -222,6 +278,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
                 <option value="new">Potpuno novi (novogradnja)</option>
               </select>
             </label>
+            {errors.spaceStatus && (
+              <p className="text-xs text-red-500 mt-1">{errors.spaceStatus}</p>
+            )}
           </div>
         </div>
       </fieldset>
@@ -266,6 +325,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
             </label>
           </div>
         </div>
+        {errors.hasPlan && (
+          <p className="text-xs text-red-500 mt-1">{errors.hasPlan}</p>
+        )}
 
         {values.hasPlan === 'plan' && (
           <div>
@@ -450,6 +512,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               <option value="office">Ured / poslovni prostor</option>
             </select>
           </label>
+          {errors.mainUsers && (
+            <p className="text-xs text-red-500 mt-1">{errors.mainUsers}</p>
+          )}
         </div>
 
         <div>
@@ -491,6 +556,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               <option value="unknown">Ne znam, trebam okvirnu procjenu</option>
             </select>
           </label>
+          {errors.budgetRange && (
+            <p className="text-xs text-red-500 mt-1">{errors.budgetRange}</p>
+          )}
         </div>
 
         <div>
@@ -504,6 +572,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               required
             />
           </label>
+          {errors.desiredStartDate && (
+            <p className="text-xs text-red-500 mt-1">{errors.desiredStartDate}</p>
+          )}
         </div>
 
         <div>
@@ -522,6 +593,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               <option value="flex">Vrlo fleksibilno</option>
             </select>
           </label>
+          {errors.flexibility && (
+            <p className="text-xs text-red-500 mt-1">{errors.flexibility}</p>
+          )}
         </div>
       </fieldset>
 
@@ -555,6 +629,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
             </label>
           </div>
         </div>
+        {errors.hasOwnStolar && (
+          <p className="text-xs text-red-500 mt-1">{errors.hasOwnStolar}</p>
+        )}
 
         {values.hasOwnStolar === 'yes' && (
           <>
@@ -668,6 +745,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               <option value="viber">Viber</option>
             </select>
           </label>
+          {errors.contactPreference && (
+            <p className="text-xs text-red-500 mt-1">{errors.contactPreference}</p>
+          )}
         </div>
 
         <div>
@@ -683,6 +763,13 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
           </label>
         </div>
       </fieldset>
+
+      {isSubmitted && (
+        <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          Hvala ti na povjerenju! Tvoj upit za interijerski projekt je zaprimljen.
+          Javit ću ti se povratno s informacijama i prijedlozima u najkraćem mogućem roku.
+        </div>
+      )}
 
       <div className="mt-6 flex justify-center">
         <button

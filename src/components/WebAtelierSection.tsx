@@ -1,3 +1,5 @@
+import { WebProjectForm } from './WebProjectForm'
+
 interface WebAtelierSectionProps {
   language: 'hr' | 'en'
 }
@@ -341,6 +343,17 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
           <p className="text-xs text-[#5A4A6B]">
             {translations.cta[language].paymentNote}
           </p>
+        </div>
+
+        {/* Web Project Form (test zona) */}
+        <div className="mt-12 border-t border-slate-200 pt-8">
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">
+            Upit za web projekt
+          </h2>
+          <p className="mb-4 text-sm text-slate-600">
+            Ispunite osnovne informacije o web stranici koju želite, a ja ću na temelju toga pripremiti prijedlog strukture, dizajna i daljnje korake.
+          </p>
+          <WebProjectForm />
         </div>
       </div>
     </section>
