@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { InteriorsClientForm } from './InteriorsClientForm'
 
 interface InteriorsSectionProps {
   language: 'hr' | 'en'
@@ -387,6 +388,11 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
       setErrors({})
     }, 3000)
   }
+
+  const stolars = [
+    { id: '1', name: 'Stolarija Jurić (Rijeka)' },
+    { id: '2', name: 'Stolarija Novak (Zagreb)' },
+  ]
 
   if (isSubmitted) {
     return (
@@ -895,6 +901,8 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
               </div>
             </form>
         </div>
+        
+        <InteriorsClientForm stolars={stolars} />
       </div>
     </section>
   )
