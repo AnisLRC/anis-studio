@@ -1,5 +1,7 @@
 // src/components/WebProjectForm.tsx
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
 
 export interface WebProjectFormValues {
   // 1) Osnovne informacije
@@ -83,14 +85,22 @@ const PROJECT_TYPES = [
   'Landing stranica za kampanju',
   'Web shop',
   'Portfolio / osobna stranica',
+  'Sustav za rezervacije / termine',
+  'Web aplikacija / SaaS',
+  'Interna aplikacija / alat (za firmu)',
+  'Drugo',
 ]
 
 const GOALS = [
   'Predstaviti usluge / brand',
-  'Dobiti upite (leadove)',
-  'Prodavati proizvode online',
-  'Educirati (blog, članci, tutorijali)',
+  'Prodavati proizvode online (web shop)',
   'Prikazati radove / portfolio',
+  'Dobiti upite (leadove)',
+  'Educirati (blog, članci, tutorijali)',
+  'Primati rezervacije / termine online',
+  'Omogućiti prijave / članstva (user accounti)',
+  'Automatizirati interne procese (interna aplikacija / alat)',
+  'Drugo',
 ]
 
 const DESIGN_MOODS = [
@@ -102,14 +112,17 @@ const DESIGN_MOODS = [
 ]
 
 const FEATURES = [
-  'Kontakt forma',
-  'Online narudžbe / upiti',
-  'Web shop / košarica',
-  'Blog / vijesti',
+  'Kontakt forma i osnovni upiti',
+  'Blog / novosti',
+  'Web shop (košarica, naplata)',
+  'Sustav za rezervacije (kalendar, termini)',
+  'Korisnički računi / članstvo',
+  'Administratorski panel / dashboard',
   'Višejezičnost (npr. HR/EN)',
-  'Kalendar / rezervacije',
+  'Integracija s newsletterom (Mailchimp, sl.)',
+  'Integracije s vanjskim servisima (npr. CRM, sustav naplate)',
   'Integracija s društvenim mrežama',
-  'Newsletter / email pretplata',
+  'Drugo',
 ]
 
 export function WebProjectForm() {
@@ -124,6 +137,8 @@ export function WebProjectForm() {
   const [values, setValues] = useState<WebProjectFormValues>(INITIAL_VALUES)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const addWebProjectRequest = useAdminStore((state: AdminStoreState) => state.addWebProjectRequest)
 
   function handleChange(
     field: keyof WebProjectFormValues,
@@ -181,6 +196,16 @@ export function WebProjectForm() {
     setErrors({}) // Clear all errors on successful validation
     setIsSubmitted(true)
 
+    // Save to admin store
+    addWebProjectRequest({
+      clientName: values.fullNameOrCompany,
+      email: values.email,
+      projectTypesSummary: Array.isArray(values.projectTypes)
+        ? values.projectTypes.join(', ')
+        : '',
+      budgetRange: values.budgetRange || '',
+    })
+
     console.log('Web project form submitted:', values)
     setValues(INITIAL_VALUES) // Reset form
   }
@@ -197,6 +222,12 @@ export function WebProjectForm() {
             Ispunite formu s detaljima o vašem web projektu.
           </p>
         </div>
+
+        {/* Legenda za checkboxe i radio gumbe */}
+        <p className="text-xs text-slate-500 mb-4">
+          ✅ Kvadratići – možeš odabrati više opcija.<br />
+          🔘 Kružići – biraš samo jednu opciju.
+        </p>
 
         {/* 1) Osnovne informacije */}
         <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
@@ -279,11 +310,7 @@ export function WebProjectForm() {
 
         {/* 2) Vrsta web projekta */}
         <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Vrsta web projekta</legend>
-
-          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
-            Koji tip web projekta želiš? (može više odabira) *
-          </p>
+          <legend className="text-lg font-semibold mb-2 text-slate-800">Koji tip web projekta želiš? (može više odabira) *</legend>
           <div className={`grid gap-2 sm:grid-cols-2 ${errors.projectTypes ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
             {PROJECT_TYPES.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -296,15 +323,6 @@ export function WebProjectForm() {
                 <span>{option}</span>
               </label>
             ))}
-            <label className="flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                className="mt-1 accent-violet-500"
-                checked={values.projectTypes.includes('Drugo')}
-                onChange={() => handleToggleMulti('projectTypes', 'Drugo')}
-              />
-              <span>Drugo</span>
-            </label>
           </div>
           {errors.projectTypes && (
             <p className="text-xs text-red-500 mt-1">{errors.projectTypes}</p>
@@ -328,11 +346,7 @@ export function WebProjectForm() {
 
         {/* 3) Ciljevi stranice */}
         <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Ciljevi stranice</legend>
-
-          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
-            Koji su glavni ciljevi tvoje web stranice? (može više odabira)
-          </p>
+          <legend className="text-lg font-semibold mb-2 text-slate-800">Koji su glavni ciljevi tvog online projekta? (može više odabira)</legend>
           <div className="grid gap-2 sm:grid-cols-2">
             {GOALS.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -345,15 +359,6 @@ export function WebProjectForm() {
                 <span>{option}</span>
               </label>
             ))}
-            <label className="flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                className="mt-1 accent-violet-500"
-                checked={values.goals.includes('Drugo')}
-                onChange={() => handleToggleMulti('goals', 'Drugo')}
-              />
-              <span>Drugo</span>
-            </label>
           </div>
 
           {values.goals.includes('Drugo') && (
@@ -473,7 +478,7 @@ export function WebProjectForm() {
           <legend className="text-lg font-semibold mb-2 text-slate-800">Dizajn i stil</legend>
 
           <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
-            Kakav stil dizajna želiš? (može više odabira)
+            Kakav stil dizajna želiš?
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {DESIGN_MOODS.map(option => (
@@ -532,7 +537,7 @@ export function WebProjectForm() {
           <legend className="text-lg font-semibold mb-2 text-slate-800">Funkcionalnosti</legend>
 
           <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
-            Koje funkcionalnosti želiš na stranici? (može više odabira)
+            Koje funkcionalnosti želiš na stranici?
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {FEATURES.map(option => (
@@ -546,15 +551,6 @@ export function WebProjectForm() {
                 <span>{option}</span>
               </label>
             ))}
-            <label className="flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                className="mt-1 accent-violet-500"
-                checked={values.features.includes('Drugo')}
-                onChange={() => handleToggleMulti('features', 'Drugo')}
-              />
-              <span>Drugo</span>
-            </label>
           </div>
 
           {values.features.includes('Drugo') && (

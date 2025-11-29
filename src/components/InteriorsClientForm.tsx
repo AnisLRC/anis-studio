@@ -1,5 +1,7 @@
 // src/components/InteriorsClientForm.tsx
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
 
 export interface StolarOption {
   id: string
@@ -7,6 +9,9 @@ export interface StolarOption {
 }
 
 export interface ClientProjectFormValues {
+  clientName: string
+  email: string
+
   projectType: string
   location: string
   spaceStatus: string
@@ -49,6 +54,9 @@ interface InteriorsClientFormProps {
 }
 
 const INITIAL_VALUES: ClientProjectFormValues = {
+  clientName: '',
+  email: '',
+
   projectType: '',
   location: '',
   spaceStatus: '',
@@ -133,6 +141,8 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitted, setIsSubmitted] = useState(false)
 
+  const addInteriorsRequest = useAdminStore((state: AdminStoreState) => state.addInteriorsRequest)
+
   function handleChange(
     field: keyof ClientProjectFormValues,
     value: ClientProjectFormValues[typeof field]
@@ -168,6 +178,8 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
   function validate(values: ClientProjectFormValues) {
     const newErrors: Record<string, string> = {}
 
+    if (!values.clientName) newErrors.clientName = 'Molim te upiši ime i prezime ili naziv klijenta.'
+    if (!values.email) newErrors.email = 'Molim te upiši email adresu.'
     if (!values.projectType) newErrors.projectType = 'Molim te odaberi tip prostora.'
     if (!values.location) newErrors.location = 'Molim te upiši grad ili lokaciju.'
     if (!values.spaceStatus) newErrors.spaceStatus = 'Molim te odaberi stanje prostora.'
@@ -197,6 +209,14 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
     setErrors({})
     setIsSubmitted(true)
 
+    // Save to admin store
+    addInteriorsRequest({
+      clientName: values.clientName || '',
+      email: values.email || '',
+      spaceType: values.projectType || 'Nije odabrano',
+      city: values.location || '',
+    })
+
     if (onSubmit) {
       onSubmit(values)
     } else {
@@ -217,6 +237,43 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
           Ispunite formu s vašim dimenzijama, potrebama i opisom.
         </p>
       </div>
+
+      {/* Kontakt podaci */}
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">Kontakt podaci</legend>
+
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Ime i prezime / naziv klijenta *</span>
+            <input
+              type="text"
+              className={inputClass}
+              value={values.clientName}
+              onChange={e => handleChange('clientName', e.target.value)}
+              required
+            />
+          </label>
+          {errors.clientName && (
+            <p className="text-xs text-red-500 mt-1">{errors.clientName}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Email *</span>
+            <input
+              type="email"
+              className={inputClass}
+              value={values.email}
+              onChange={e => handleChange('email', e.target.value)}
+              required
+            />
+          </label>
+          {errors.email && (
+            <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+          )}
+        </div>
+      </fieldset>
 
       {/* KORAK 1 – Osnovne informacije */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
@@ -297,6 +354,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
                 type="radio"
                 name="hasPlan"
                 value="plan"
+                className="accent-violet-500"
                 checked={values.hasPlan === 'plan'}
                 onChange={() => handleChange('hasPlan', 'plan')}
                 required
@@ -308,6 +366,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
                 type="radio"
                 name="hasPlan"
                 value="photos"
+                className="accent-violet-500"
                 checked={values.hasPlan === 'photos'}
                 onChange={() => handleChange('hasPlan', 'photos')}
               />
@@ -318,6 +377,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
                 type="radio"
                 name="hasPlan"
                 value="none"
+                className="accent-violet-500"
                 checked={values.hasPlan === 'none'}
                 onChange={() => handleChange('hasPlan', 'none')}
               />
@@ -424,7 +484,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               >
                 <input
                   type="checkbox"
-                  className="mt-1"
+                  className="mt-1 accent-violet-500"
                   checked={values.specialFeatures.includes(option)}
                   onChange={() => handleToggleMulti('specialFeatures', option)}
                 />
@@ -446,7 +506,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
                 <input
                   type="checkbox"
-                  className="mt-1"
+                  className="mt-1 accent-violet-500"
                   checked={values.style.includes(option)}
                   onChange={() => handleToggleMulti('style', option)}
                 />
@@ -463,7 +523,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
                 <input
                   type="checkbox"
-                  className="mt-1"
+                  className="mt-1 accent-violet-500"
                   checked={values.mood.includes(option)}
                   onChange={() => handleToggleMulti('mood', option)}
                 />
@@ -480,7 +540,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
                 <input
                   type="checkbox"
-                  className="mt-1"
+                  className="mt-1 accent-violet-500"
                   checked={values.colorPreference.includes(option)}
                   onChange={() => handleToggleMulti('colorPreference', option)}
                 />
@@ -524,7 +584,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
                 <input
                   type="checkbox"
-                  className="mt-1"
+                  className="mt-1 accent-violet-500"
                   checked={values.priority.includes(option)}
                   onChange={() => handleToggleMulti('priority', option)}
                 />
@@ -611,6 +671,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
                 type="radio"
                 name="hasOwnStolar"
                 value="yes"
+                className="accent-violet-500"
                 checked={values.hasOwnStolar === 'yes'}
                 onChange={() => handleChange('hasOwnStolar', 'yes')}
                 required
@@ -622,6 +683,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
                 type="radio"
                 name="hasOwnStolar"
                 value="no"
+                className="accent-violet-500"
                 checked={values.hasOwnStolar === 'no'}
                 onChange={() => handleChange('hasOwnStolar', 'no')}
               />
@@ -675,7 +737,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
             <label className="flex items-start gap-2 text-sm text-slate-700">
               <input
                 type="checkbox"
-                className="mt-1"
+                className="mt-1 accent-violet-500"
                 checked={values.needStolarRecommendation}
                 onChange={e =>
                   handleChange('needStolarRecommendation', e.target.checked)

@@ -1,5 +1,7 @@
 // src/components/StolarProfileForm.tsx
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
 
 export interface StolarProfileFormValues {
   // Osnovni podaci
@@ -91,6 +93,8 @@ export function StolarProfileForm() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitted, setIsSubmitted] = useState(false)
 
+  const addStolarProfile = useAdminStore((state: AdminStoreState) => state.addStolarProfile)
+
   function handleChange(
     field: keyof StolarProfileFormValues,
     value: StolarProfileFormValues[typeof field]
@@ -157,6 +161,18 @@ export function StolarProfileForm() {
 
     setErrors({}) // Clear all errors on successful validation
     setIsSubmitted(true)
+
+    // Save to admin store
+    addStolarProfile({
+      companyName: values.companyName,
+      contactPerson: values.contactPerson,
+      email: values.email,
+      location: values.location,
+      projectTypesSummary: Array.isArray(values.projectTypes)
+        ? values.projectTypes.join(', ')
+        : '',
+      monthlyCapacity: values.monthlyCapacity,
+    })
 
     console.log('Stolar profile submitted:', values)
     setValues(INITIAL_VALUES) // Reset form

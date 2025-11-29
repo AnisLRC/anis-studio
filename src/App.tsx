@@ -15,6 +15,7 @@ import TestimonialsSection from './sections/TestimonialsSection'
 import FAQSection from './sections/FAQSection'
 import LoginModal from './components/LoginModal'
 import RegisterModal from './components/RegisterModal'
+import AdminDashboard from './components/AdminDashboard'
 import { useGlobalScrollAnimations } from './hooks/useGlobalScrollAnimations'
 
 export default function App() {
@@ -114,6 +115,21 @@ export default function App() {
       <ErrorBoundary name="RegisterModal">
         <RegisterModal language={language} />
       </ErrorBoundary>
+
+      {/* Admin Dashboard (dev only) */}
+      {import.meta.env.DEV && (
+        <section id="admin" className="Section border-t border-slate-200 bg-slate-50/60 py-12 mt-12">
+          <div className="mx-auto max-w-6xl px-4">
+            <h2 className="mb-4 text-xl font-semibold text-slate-900">
+              Admin pregled (dev only)
+            </h2>
+            <p className="mb-6 text-sm text-slate-600">
+              Ovo je test verzija admin nadzorne ploče, vidljiva samo u development okruženju.
+            </p>
+            <AdminDashboard />
+          </div>
+        </section>
+      )}
     </div>
   )
 }
