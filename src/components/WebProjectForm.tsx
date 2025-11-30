@@ -224,9 +224,8 @@ export function WebProjectForm() {
         </div>
 
         {/* Legenda za checkboxe i radio gumbe */}
-        <p className="text-xs text-slate-500 mb-4">
-          ✅ Kvadratići – možeš odabrati više opcija.<br />
-          🔘 Kružići – biraš samo jednu opciju.
+        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+          Legenda: kružić (◉) znači da možeš odabrati <span className="font-semibold">samo jednu</span> opciju, a kvadratić (☑) da možeš odabrati <span className="font-semibold">više</span> opcija.
         </p>
 
         {/* 1) Osnovne informacije */}

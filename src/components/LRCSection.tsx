@@ -257,20 +257,20 @@ export default function LRCSection({ language }: LRCSectionProps) {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 mb-12">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {filteredProducts.map(product => (
             <article 
               key={product.id} 
               className="rounded-xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] fade-in"
             >
               {/* Thumb */}
-              <div className="aspect-square bg-gradient-to-br from-[rgba(189,166,255,0.2)] to-[rgba(110,68,255,0.15)] relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
+              <div className="w-full aspect-[4/5] overflow-hidden rounded-3xl bg-gradient-to-b from-violet-100/80 to-violet-50/80 relative">
                 {/* Decorative circles */}
                 <div className="absolute top-2 right-2 w-16 h-16 rounded-full bg-gradient-to-br from-[rgba(110,68,255,0.2)] to-[rgba(189,166,255,0.3)] blur-xl" />
                 <div className="absolute bottom-3 left-3 w-12 h-12 rounded-full bg-gradient-to-br from-[rgba(189,166,255,0.3)] to-[rgba(110,68,255,0.2)] blur-lg" />
                 
                 {/* Content */}
-                <div className="relative z-10 h-full flex items-center justify-center p-3 sm:p-4">
+                <div className="flex h-full w-full items-center justify-center relative z-10 p-3 sm:p-4">
                   <div className="text-center">
                     {/* Product Icon based on tags */}
                     <div className="text-4xl sm:text-5xl mb-2 animate-float">
@@ -293,7 +293,7 @@ export default function LRCSection({ language }: LRCSectionProps) {
               </div>
 
               {/* Body */}
-              <div className="p-3 sm:p-4">
+              <div className="p-3 sm:p-5 space-y-2">
                 <h3 className="text-sm sm:text-base font-bold mb-1.5 text-[#2E2447] line-clamp-2">
                   {language === 'hr' ? product.nameHr : product.name}
                 </h3>

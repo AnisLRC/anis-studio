@@ -183,6 +183,11 @@ export function StolarProfileForm() {
       <h1>Profil stolara</h1>
       <p>Ispunite formu jednom da biste se registrirali kao stolar partner.</p>
 
+      {/* Legenda za checkboxe i radio gumbe */}
+      <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+        Legenda: kružić (◉) znači da možeš odabrati <span className="font-semibold">samo jednu</span> opciju, a kvadratić (☑) da možeš odabrati <span className="font-semibold">više</span> opcija.
+      </p>
+
       {/* 1) Osnovni podaci */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
         <legend className="text-lg font-semibold mb-2 text-slate-800">Osnovni podaci</legend>
