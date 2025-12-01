@@ -240,17 +240,21 @@ export default function AdminDashboard() {
                       <th className="px-4 py-2">Email</th>
                       <th className="px-4 py-2">Tip prostora</th>
                       <th className="px-4 py-2">Grad</th>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Stolar</th>
                       <th className="px-4 py-2">Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredInteriors.map(req => (
+                    {filteredInteriors.map(req => {
+                      const stolar = stolars.find((s) => s.id === req.stolarId)
+                      return (
                       <tr key={req.id} className="border-t">
                         <td className="px-4 py-2 text-xs">{formatDate(req.createdAt)}</td>
                         <td className="px-4 py-2">{req.clientName}</td>
                         <td className="px-4 py-2 text-xs text-slate-600">{req.email}</td>
                         <td className="px-4 py-2 text-xs">{req.spaceType}</td>
                         <td className="px-4 py-2 text-xs">{req.city}</td>
+                        <td className="px-4 py-2 text-sm text-slate-700">{stolar ? stolar.companyName : '—'}</td>
                         <td className="px-4 py-2 text-xs sm:text-sm">
                           <div className="flex flex-col items-center gap-2">
                             <StatusBadge status={req.status} />
@@ -290,7 +294,7 @@ export default function AdminDashboard() {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    )})}
                   </tbody>
                 </table>
               </div>

@@ -10,6 +10,7 @@ export interface AdminInteriorsRequest {
   email: string
   spaceType: string
   city: string
+  stolarId?: string | null
   status: RequestStatus
   isArchived: boolean
 }
@@ -68,6 +69,7 @@ export const useAdminStore = create<AdminStoreState>((set) => ({
       email: 'test@example.com',
       spaceType: 'Kuhinja',
       city: 'Rijeka',
+      stolarId: null,
       status: 'new',
       isArchived: false,
     },
@@ -107,6 +109,7 @@ export const useAdminStore = create<AdminStoreState>((set) => ({
           createdAt: new Date().toISOString(),
           status: 'new',
           isArchived: false,
+          stolarId: payload.stolarId ?? null,
           ...payload,
         },
         ...state.interiors,

@@ -215,6 +215,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
       email: values.email || '',
       spaceType: values.projectType || 'Nije odabrano',
       city: values.location || '',
+      stolarId: values.stolarId || null,
     })
 
     if (onSubmit) {
@@ -479,7 +480,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
         {/* Posebne karakteristike prostora */}
         <div>
           <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
-            Posebne karakteristike prostora (moguć više odabira)
+            Posebne karakteristike prostora
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {['Greda', 'Kosina', 'Stup', 'Niša u zidu', 'Sniženi strop', 'Drugo (opis u napomeni)'].map(option => (
