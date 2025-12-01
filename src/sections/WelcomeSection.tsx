@@ -1,8 +1,12 @@
+import { useThemeStore } from '../lib/theme.store'
+
 interface WelcomeSectionProps {
   language?: 'hr' | 'en'
 }
 
 export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps) {
+  const { theme } = useThemeStore()
+  const isDark = theme === 'dark'
   const translations = {
     slogan: {
       hr: "Svaka ideja je Bitna!",
@@ -32,7 +36,11 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
   return (
     <section 
       id="welcome" 
-      className="relative min-h-[60vh] pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-12 flex items-center justify-center overflow-hidden bg-gradient-to-b from-violet-50 via-white to-violet-50/60 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-50"
+      className={
+        isDark
+          ? 'relative min-h-[60vh] pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-12 flex items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950'
+          : 'relative min-h-[60vh] pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-12 flex items-center justify-center overflow-hidden bg-gradient-to-b from-violet-50 via-white to-violet-50/70'
+      }
     >
       {/* Particle efekti pozadine */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -50,7 +58,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
       </div>
 
       {/* Glavni sadržaj */}
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-slate-900 dark:text-slate-50">
         {/* Dinamički slogan */}
         <h1 className="hero-slogan mb-6 sm:mb-8">
           <span 
@@ -79,54 +87,93 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </span>
         </h1>
 
-        {/* Tri CTA gumba - Mobile-First */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 md:gap-6 mt-6 sm:mt-8 w-full sm:w-auto">
+        {/* CTA kartice */}
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
           {/* LRC Shop */}
           <button
+            type="button"
             onClick={() => scrollToSection('lrc')}
-            className="hero-button glass-morphism px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto text-slate-800 dark:text-slate-50"
-            style={{
-              minWidth: '160px',
-              minHeight: '44px'
-            }}
+            className={
+              "flex items-center gap-3 rounded-2xl px-6 py-4 border transition-transform duration-300 hover:scale-[1.02] " +
+              (isDark
+                ? "bg-slate-900 text-slate-50 border-violet-500 shadow-lg shadow-violet-900/50"
+                : "bg-violet-50 text-violet-900 border-violet-400 shadow-xl shadow-violet-300"
+              )
+            }
           >
-            <span className="flex items-center justify-center gap-2">
-              <span className="text-lg sm:text-xl">🎨</span>
-              <span>{translations.buttons[language].lrc}</span>
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </span>
+            <span className="text-2xl">🎨</span>
+            <div className="flex flex-col items-start">
+              <span 
+                className="font-semibold"
+                style={{ color: isDark ? '#f9fafb' : '#1f2933' }}
+              >
+                {translations.buttons[language].lrc}
+              </span>
+              <span 
+                className="text-sm"
+                style={{ color: isDark ? '#e5e7eb' : '#4b5563' }}
+              >
+                {language === 'hr' ? 'Ručno rađeni pokloni i dekoracije' : 'Handmade gifts and decor'}
+              </span>
+            </div>
           </button>
 
           {/* Interijeri */}
           <button
+            type="button"
             onClick={() => scrollToSection('interiors')}
-            className="hero-button glass-morphism px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto text-slate-800 dark:text-slate-50"
-            style={{
-              minWidth: '160px',
-              minHeight: '44px'
-            }}
+            className={
+              "flex items-center gap-3 rounded-2xl px-6 py-4 border transition-transform duration-300 hover:scale-[1.02] " +
+              (isDark
+                ? "bg-slate-900 text-slate-50 border-violet-500 shadow-lg shadow-violet-900/50"
+                : "bg-violet-50 text-violet-900 border-violet-400 shadow-xl shadow-violet-300"
+              )
+            }
           >
-            <span className="flex items-center justify-center gap-2">
-              <span className="text-lg sm:text-xl">🏠</span>
-              <span>{translations.buttons[language].interiors}</span>
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </span>
+            <span className="text-2xl">🏠</span>
+            <div className="flex flex-col items-start">
+              <span 
+                className="font-semibold"
+                style={{ color: isDark ? '#f9fafb' : '#1f2933' }}
+              >
+                {translations.buttons[language].interiors}
+              </span>
+              <span 
+                className="text-sm"
+                style={{ color: isDark ? '#e5e7eb' : '#4b5563' }}
+              >
+                {language === 'hr' ? '3D vizualizacije i nacrti po mjeri' : '3D renders and custom designs'}
+              </span>
+            </div>
           </button>
 
           {/* Web Atelier */}
           <button
+            type="button"
             onClick={() => scrollToSection('web-atelier')}
-            className="hero-button glass-morphism px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto text-slate-800 dark:text-slate-50"
-            style={{
-              minWidth: '160px',
-              minHeight: '44px'
-            }}
+            className={
+              "flex items-center gap-3 rounded-2xl px-6 py-4 border transition-transform duration-300 hover:scale-[1.02] " +
+              (isDark
+                ? "bg-slate-900 text-slate-50 border-violet-500 shadow-lg shadow-violet-900/50"
+                : "bg-violet-50 text-violet-900 border-violet-400 shadow-xl shadow-violet-300"
+              )
+            }
           >
-            <span className="flex items-center justify-center gap-2">
-              <span className="text-lg sm:text-xl">💻</span>
-              <span>{translations.buttons[language].webAtelier}</span>
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </span>
+            <span className="text-2xl">💻</span>
+            <div className="flex flex-col items-start">
+              <span 
+                className="font-semibold"
+                style={{ color: isDark ? '#f9fafb' : '#1f2933' }}
+              >
+                {translations.buttons[language].webAtelier}
+              </span>
+              <span 
+                className="text-sm"
+                style={{ color: isDark ? '#e5e7eb' : '#4b5563' }}
+              >
+                {language === 'hr' ? 'Web stranice i online projekti po mjeri' : 'Websites and online projects'}
+              </span>
+            </div>
           </button>
         </div>
       </div>
