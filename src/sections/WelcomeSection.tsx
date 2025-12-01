@@ -32,14 +32,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
   return (
     <section 
       id="welcome" 
-      className="relative pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-12 flex items-center justify-center overflow-hidden"
-      style={{
-        background: `
-          radial-gradient(1200px 800px at 50% 20%, rgba(110, 68, 255, 0.08), transparent 70%),
-          radial-gradient(1000px 600px at 80% 80%, rgba(189, 166, 255, 0.06), transparent 60%),
-          linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 246, 255, 0.98) 100%)
-        `
-      }}
+      className="relative min-h-[60vh] pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-12 flex items-center justify-center overflow-hidden bg-gradient-to-b from-violet-50 via-white to-violet-50/60 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-50"
     >
       {/* Particle efekti pozadine */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -91,11 +84,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           {/* LRC Shop */}
           <button
             onClick={() => scrollToSection('lrc')}
-            className="hero-button glass-morphism px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto"
+            className="hero-button glass-morphism px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto text-slate-800 dark:text-slate-50"
             style={{
               minWidth: '160px',
-              minHeight: '44px',
-              color: '#2E2447'
+              minHeight: '44px'
             }}
           >
             <span className="flex items-center justify-center gap-2">
@@ -108,11 +100,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           {/* Interijeri */}
           <button
             onClick={() => scrollToSection('interiors')}
-            className="hero-button glass-morphism px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto"
+            className="hero-button glass-morphism px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto text-slate-800 dark:text-slate-50"
             style={{
               minWidth: '160px',
-              minHeight: '44px',
-              color: '#2E2447'
+              minHeight: '44px'
             }}
           >
             <span className="flex items-center justify-center gap-2">
@@ -125,11 +116,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           {/* Web Atelier */}
           <button
             onClick={() => scrollToSection('web-atelier')}
-            className="hero-button glass-morphism px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto"
+            className="hero-button glass-morphism px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto text-slate-800 dark:text-slate-50"
             style={{
               minWidth: '160px',
-              minHeight: '44px',
-              color: '#2E2447'
+              minHeight: '44px'
             }}
           >
             <span className="flex items-center justify-center gap-2">
@@ -146,9 +136,9 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
         className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce"
         style={{ animation: 'float 2s ease-in-out infinite' }}
       >
-        <div className="w-6 h-10 border-2 border-[rgba(110,68,255,0.3)] rounded-full flex items-start justify-center p-2">
+        <div className="w-6 h-10 border-2 border-[rgba(110,68,255,0.3)] dark:border-[rgba(189,166,255,0.4)] rounded-full flex items-start justify-center p-2">
           <div 
-            className="w-1.5 h-3 bg-[rgba(110,68,255,0.5)] rounded-full"
+            className="w-1.5 h-3 bg-[rgba(110,68,255,0.5)] dark:bg-[rgba(189,166,255,0.6)] rounded-full"
             style={{ animation: 'float 1.5s ease-in-out infinite' }}
           />
         </div>
