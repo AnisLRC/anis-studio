@@ -58,6 +58,8 @@ export interface AdminStoreState {
     type: 'interiors' | 'stolars' | 'web',
     id: string
   ) => void
+
+  deleteInteriorsRequest: (id: string) => void
 }
 
 export const useAdminStore = create<AdminStoreState>((set) => ({
@@ -189,5 +191,10 @@ export const useAdminStore = create<AdminStoreState>((set) => ({
         ),
       }
     }),
+
+  deleteInteriorsRequest: (id) =>
+    set((state) => ({
+      interiors: state.interiors.filter((req) => req.id !== id),
+    })),
 }))
 

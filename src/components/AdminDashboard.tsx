@@ -70,6 +70,7 @@ export default function AdminDashboard() {
     web,
     updateStatus,
     toggleArchive,
+    deleteInteriorsRequest,
   } = useAdminStore()
 
   const filteredInteriors = interiors
@@ -231,8 +232,8 @@ export default function AdminDashboard() {
                 Trenutno nema upita za interijere.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left text-sm">
+              <div className="mt-4 overflow-x-auto -mx-2 sm:mx-0">
+                <table className="min-w-[720px] w-full text-left text-sm">
                   <thead className="bg-slate-50">
                     <tr>
                       <th className="px-4 py-2">Datum</th>
@@ -290,6 +291,17 @@ export default function AdminDashboard() {
                               >
                                 {req.isArchived ? 'Vrati iz arhive' : 'Arhiviraj'}
                               </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (window.confirm('Jeste li sigurni da želite trajno obrisati ovaj upit?')) {
+                                    deleteInteriorsRequest(req.id)
+                                  }
+                                }}
+                                className="text-xs text-red-600 hover:text-red-700 underline ml-2"
+                              >
+                                Obriši
+                              </button>
                             </div>
                           </div>
                         </td>
@@ -312,8 +324,8 @@ export default function AdminDashboard() {
                 Trenutno nema registriranih stolara.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left text-sm">
+              <div className="mt-4 overflow-x-auto -mx-2 sm:mx-0">
+                <table className="min-w-[720px] w-full text-left text-sm">
                   <thead className="bg-slate-50">
                     <tr>
                       <th className="px-4 py-2">Firma</th>
@@ -391,8 +403,8 @@ export default function AdminDashboard() {
                 Trenutno nema upita za web projekte.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left text-sm">
+              <div className="mt-4 overflow-x-auto -mx-2 sm:mx-0">
+                <table className="min-w-[720px] w-full text-left text-sm">
                   <thead className="bg-slate-50">
                     <tr>
                       <th className="px-4 py-2">Datum</th>
