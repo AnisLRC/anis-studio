@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../providers/AuthProvider'
 import { useUi } from '../providers/UiProvider'
+import { useThemeStore } from '../lib/theme.store'
 
 interface HeaderProps {
   language: 'hr' | 'en'
@@ -13,6 +14,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { isAuthenticated, logout } = useAuth()
   const { openModal } = useUi()
+  const { theme, toggleTheme } = useThemeStore()
 
   const navigation = {
     hr: {
@@ -230,6 +232,15 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
                 }}
               />
             )}
+          </button>
+
+          {/* Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="hidden min-[360px]:flex rounded-full border border-violet-200/60 bg-white/70 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm hover:bg-violet-50 dark:bg-slate-900/60 dark:text-slate-100 dark:border-violet-500/60 transition"
+          >
+            {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
           </button>
 
           {/* Language Toggle */}

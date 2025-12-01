@@ -17,6 +17,7 @@ import LoginModal from './components/LoginModal'
 import RegisterModal from './components/RegisterModal'
 import AdminDashboard from './components/AdminDashboard'
 import { useGlobalScrollAnimations } from './hooks/useGlobalScrollAnimations'
+import { useThemeStore } from './lib/theme.store'
 
 export default function App() {
   const [language, setLanguage] = useState<'hr' | 'en'>(() => {
@@ -27,9 +28,15 @@ export default function App() {
   })
   const [isCartOpen, setIsCartOpen] = useState(false)
   const cartCount = useCart(s => s.totalQty)
+  const { theme, initializeTheme } = useThemeStore()
+  const isDark = theme === 'dark'
 
   // Globalni scroll animacije
   useGlobalScrollAnimations()
+
+  useEffect(() => {
+    initializeTheme()
+  }, [initializeTheme])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -38,8 +45,14 @@ export default function App() {
   }, [language])
 
   return (
-    <div className="min-h-screen">
-      <ErrorBoundary name="Header">
+    <div
+      className={
+        isDark
+          ? 'min-h-screen bg-slate-950 text-slate-50 transition-colors duration-300'
+          : 'min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300'
+      }
+    >
+        <ErrorBoundary name="Header">
         <Header 
           language={language}
           onLanguageChange={setLanguage}
@@ -118,7 +131,7 @@ export default function App() {
 
       {/* Admin Dashboard (dev only) */}
       {import.meta.env.DEV && (
-        <section id="admin" className="Section border-t border-slate-200 bg-slate-50/60 py-12 mt-12">
+        <section id="admin" className="Section border-t border-slate-200 bg-slate-50/60 py-12 mt-12 text-slate-900">
           <div className="mx-auto max-w-6xl px-4">
             <h2 className="mb-4 text-xl font-semibold text-slate-900">
               Admin pregled (dev only)
