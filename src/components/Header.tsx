@@ -15,7 +15,6 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   const { isAuthenticated, logout } = useAuth()
   const { openModal } = useUi()
   const { theme, toggleTheme } = useThemeStore()
-  const isDark = theme === 'dark'
 
   const navigation = {
     hr: {
@@ -56,7 +55,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   }
 
   return (
-    <header className="sticky top-0 z-50 header-glass bg-slate-50/90 text-slate-900 dark:bg-slate-950/90 dark:text-slate-100 backdrop-blur">
+    <header className="sticky top-0 z-50 header-glass bg-slate-50/80 dark:bg-slate-50/80 text-slate-900 border-b border-slate-200/60 dark:border-slate-200/60 backdrop-blur">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex items-center justify-between py-2 sm:py-2.5">
         {/* Logo */}
         <div className="flex items-center gap-2 sm:gap-3">
@@ -71,7 +70,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             ✨
           </div>
           <span 
-            className="font-bold text-slate-900 dark:text-slate-100"
+            className="font-bold text-slate-800"
             style={{
               fontFamily: 'Poppins, sans-serif',
               fontSize: 'clamp(0.875rem, 2vw, 1.125rem)',
@@ -88,11 +87,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             <button
               key={key}
               onClick={() => scrollToSection(key === "webAtelier" ? "web-atelier" : key)}
-              className={`relative text-[15px] font-medium py-2 transition-colors duration-200 ${
-                isDark 
-                  ? 'text-slate-100 hover:text-violet-200' 
-                  : 'text-slate-700 hover:text-violet-700'
-              }`}
+              className="relative text-[15px] font-medium py-2 transition-colors duration-200 text-slate-800 hover:text-violet-700"
             >
               <span className="after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-0 after:bg-[--color-primary] after:transition-[width] after:duration-300 hover:after:w-full">
                 {navigation[language][key]}
@@ -108,11 +103,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             <div className="hidden sm:flex items-center gap-2">
               <button
                 onClick={() => openModal('login')}
-                className={`px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] ${
-                  isDark 
-                    ? 'text-slate-100 hover:text-violet-200' 
-                    : 'text-slate-700 hover:text-violet-700'
-                }`}
+                className="px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] text-slate-800 hover:text-violet-700"
                 aria-label={authLabels[language].login}
               >
                 {authLabels[language].login}
@@ -132,11 +123,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           ) : (
             <button
               onClick={logout}
-              className={`hidden sm:block px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] ${
-                isDark 
-                  ? 'text-slate-100 hover:text-violet-200' 
-                  : 'text-slate-700 hover:text-violet-700'
-              }`}
+              className="hidden sm:block px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] text-slate-800 hover:text-violet-700"
               aria-label={authLabels[language].logout}
             >
               {authLabels[language].logout}
@@ -146,9 +133,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           {/* Cart Button - Elegant Design */}
           <button 
             onClick={onCartClick} 
-            className={`relative group p-2 sm:p-2.5 transition-all duration-300 rounded-xl hover:bg-gradient-to-br hover:from-[rgba(110,68,255,0.08)] hover:to-[rgba(189,166,255,0.08)] hover:shadow-md hover:scale-105 active:scale-95 hover:-translate-y-0.5 ${
-              isDark ? 'text-slate-100' : 'text-slate-700'
-            }`} 
+            className="relative group p-2 sm:p-2.5 transition-all duration-300 rounded-xl hover:bg-gradient-to-br hover:from-[rgba(110,68,255,0.08)] hover:to-[rgba(189,166,255,0.08)] hover:shadow-md hover:scale-105 active:scale-95 hover:-translate-y-0.5 text-slate-800" 
             aria-label={language === 'hr' ? 'Košarica' : 'Shopping cart'}
             style={{
               background: cartItemCount > 0 ? 'linear-gradient(135deg, rgba(110,68,255,0.06) 0%, rgba(189,166,255,0.06) 100%)' : 'transparent'
@@ -254,12 +239,9 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           <button
             type="button"
             onClick={toggleTheme}
-            className="hidden min-[360px]:flex rounded-full border border-violet-200/60 bg-white/70 px-3 py-1 shadow-sm hover:bg-violet-50 dark:bg-slate-900/60 dark:border-violet-500/60 transition"
+            className="hidden min-[360px]:flex rounded-full border border-violet-200/60 bg-white/70 dark:bg-white/70 px-3 py-1 shadow-sm hover:bg-violet-50 transition"
           >
-            <span
-              className="text-xs font-medium"
-              style={{ color: isDark ? '#9ca3af' : '#111827' }}
-            >
+            <span className="text-xs font-medium text-slate-800">
               {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
             </span>
           </button>
@@ -268,11 +250,11 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           <div
             className="hidden min-[360px]:flex items-center backdrop-blur-sm"
             style={{
-              background: isDark ? "rgba(15, 23, 42, 0.6)" : "rgba(255, 255, 255, 0.6)",
+              background: "rgba(255, 255, 255, 0.6)",
               borderRadius: "12px",
               padding: "3px",
               gap: "4px",
-              border: `1px solid ${isDark ? "rgba(110, 68, 255, 0.3)" : "rgba(110, 68, 255, 0.15)"}`,
+              border: "1px solid rgba(110, 68, 255, 0.15)",
             }}
           >
             {(["hr", "en"] as const).map((lng) => (
@@ -295,7 +277,13 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
                 aria-label={language === lng ? (language === 'hr' ? 'Odabran hrvatski' : 'Selected English') : (lng === 'hr' ? 'Prebaci na hrvatski' : 'Switch to English')}
                 aria-pressed={language === lng}
               >
-                <span className={language === lng ? "text-sm font-semibold text-white" : "text-sm font-semibold text-slate-800 dark:text-slate-100"}>
+                <span
+                  className={
+                    language === lng
+                      ? "text-sm font-semibold text-white"
+                      : "text-sm font-semibold text-slate-800 dark:text-slate-400"
+                  }
+                >
                   {lng.toUpperCase()}
                 </span>
               </button>
@@ -305,11 +293,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           {/* Mobile Menu Button - Touch-friendly */}
           <button 
             onClick={() => setIsMobileMenuOpen((v) => !v)} 
-            className={`md:hidden mobile-menu-button p-2.5 active:scale-95 transition-all rounded-lg hover:bg-[rgba(110,68,255,0.05)] active:bg-[rgba(110,68,255,0.1)] ${
-              isDark 
-                ? 'text-slate-100 hover:text-violet-200' 
-                : 'text-slate-700 hover:text-violet-700'
-            }`} 
+            className="md:hidden mobile-menu-button p-2.5 active:scale-95 transition-all rounded-lg hover:bg-[rgba(110,68,255,0.05)] active:bg-[rgba(110,68,255,0.1)] text-slate-800 hover:text-violet-700" 
             aria-label={language === 'hr' ? 'Otvorite meni' : 'Toggle menu'}
             aria-expanded={isMobileMenuOpen}
             style={{ minWidth: '48px', minHeight: '48px' }}
@@ -327,21 +311,13 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
       {/* Mobile Navigation - Touch-friendly */}
       {isMobileMenuOpen && (
-        <div className={`md:hidden border-t py-3 sm:py-4 backdrop-blur-sm mobile-menu-enter ${
-          isDark 
-            ? 'border-slate-700/20 bg-slate-900/95' 
-            : 'border-white/20 bg-white/95'
-        }`}>
+        <div className="md:hidden border-t py-3 sm:py-4 backdrop-blur-sm mobile-menu-enter border-slate-200/60 bg-white/95 dark:bg-white/95">
           <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex flex-col gap-2">
             {(['lrc', 'interiors', 'webAtelier', 'about', 'contact'] as const).map((key) => (
               <button
                 key={key}
                 onClick={() => scrollToSection(key === "webAtelier" ? "web-atelier" : key)}
-                className={`mobile-menu-item text-left px-3 py-2.5 active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg font-medium ${
-                  isDark 
-                    ? 'text-slate-100 hover:text-violet-200 active:text-violet-200' 
-                    : 'text-slate-700 hover:text-violet-700 active:text-violet-700'
-                }`}
+                className="mobile-menu-item text-left px-3 py-2.5 active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg font-medium text-slate-800 hover:text-violet-700 active:text-violet-700"
                 style={{ minHeight: '48px' }}
               >
                 {navigation[language][key]}
@@ -349,16 +325,10 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             ))}
             {/* Mobile Auth Buttons - Touch-friendly */}
             {!isAuthenticated ? (
-              <div className={`flex flex-col gap-2 pt-3 sm:pt-4 border-t mt-1 ${
-                isDark ? 'border-slate-700/20' : 'border-white/20'
-              }`}>
+              <div className="flex flex-col gap-2 pt-3 sm:pt-4 border-t mt-1 border-slate-200/60">
                 <button
                   onClick={() => openModal('login')}
-                  className={`mobile-menu-item text-left px-4 py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg ${
-                    isDark 
-                      ? 'text-slate-100 hover:text-violet-200 active:text-violet-200' 
-                      : 'text-slate-700 hover:text-violet-700 active:text-violet-700'
-                  }`}
+                  className="mobile-menu-item text-left px-4 py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg text-slate-800 hover:text-violet-700 active:text-violet-700"
                   style={{ minHeight: '48px' }}
                 >
                   {authLabels[language].login}
@@ -378,11 +348,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             ) : (
               <button
                 onClick={logout}
-                className={`mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg ${
-                  isDark 
-                    ? 'text-slate-100 hover:text-violet-200 active:text-violet-200' 
-                    : 'text-slate-700 hover:text-violet-700 active:text-violet-700'
-                }`}
+                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg text-slate-800 hover:text-violet-700 active:text-violet-700"
                 style={{ minHeight: '48px' }}
               >
                 {authLabels[language].logout}
