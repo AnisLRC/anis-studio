@@ -309,7 +309,7 @@ export function WebProjectForm() {
 
         {/* 2) Vrsta web projekta */}
         <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Koji tip web projekta želiš? (može više odabira) *</legend>
+          <legend className="text-lg font-semibold mb-2 text-slate-800">Koji tip web projekta želiš? *</legend>
           <div className={`grid gap-2 sm:grid-cols-2 ${errors.projectTypes ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
             {PROJECT_TYPES.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -343,9 +343,9 @@ export function WebProjectForm() {
           )}
         </fieldset>
 
-        {/* 3) Ciljevi stranice */}
+        {/* 3) Ciljevi projekta */}
         <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Koji su glavni ciljevi tvog online projekta? (može više odabira)</legend>
+          <legend className="text-lg font-semibold mb-2 text-slate-800">Koji su glavni ciljevi tvog online projekta?</legend>
           <div className="grid gap-2 sm:grid-cols-2">
             {GOALS.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -536,7 +536,7 @@ export function WebProjectForm() {
           <legend className="text-lg font-semibold mb-2 text-slate-800">Funkcionalnosti</legend>
 
           <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
-            Koje funkcionalnosti želiš na stranici?
+            Koje funkcionalnosti želiš u projektu?
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {FEATURES.map(option => (

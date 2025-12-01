@@ -290,7 +290,7 @@ export function StolarProfileForm() {
         <legend className="text-lg font-semibold mb-2 text-slate-800">Tipovi projekata koje rade</legend>
 
         <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
-          Tipovi projekata koje radite (može više odabira) *
+          Tipovi projekata koje radite *
         </p>
         <div className={`grid gap-2 sm:grid-cols-2 ${errors.projectTypes ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
           {PROJECT_TYPES.map(option => (
@@ -368,7 +368,7 @@ export function StolarProfileForm() {
         <legend className="text-lg font-semibold mb-2 text-slate-800">Okovi / brendovi</legend>
 
         <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
-          Okovi / brendovi koje koristite (može više odabira)
+          Okovi / brendovi koje koristite
         </p>
         <div className="grid gap-2 sm:grid-cols-2">
           {HARDWARE_BRANDS.map(brand => (

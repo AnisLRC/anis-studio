@@ -72,7 +72,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
   if (isSubmitted) {
     return (
       <section id="contact" className="Section fade-in">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto px-4 py-10 sm:px-6 lg:px-12 lg:py-16">
           <div className="text-center p-12 rounded-2xl bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg">
             <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--color-primary)' }}>
               {translations.successTitle[language]}
@@ -88,7 +88,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
 
   return (
     <section id="contact" className="Section fade-in">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto px-4 py-10 sm:px-6 lg:px-12 lg:py-16">
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}

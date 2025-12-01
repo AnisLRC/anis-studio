@@ -116,7 +116,7 @@ export default function FAQSection({ language }: FAQSectionProps) {
 
   return (
     <section id="faq" className="Section fade-in">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl mx-auto px-4 py-10 sm:px-6 lg:py-16">
         {/* Section Header */}
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>

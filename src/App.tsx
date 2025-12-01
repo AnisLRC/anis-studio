@@ -48,7 +48,7 @@ export default function App() {
         />
       </ErrorBoundary>
       
-      <main>
+      <main className="space-y-10 sm:space-y-14 lg:space-y-16">
         <ErrorBoundary name="Welcome">
           <WelcomeSection language={language} />
         </ErrorBoundary>

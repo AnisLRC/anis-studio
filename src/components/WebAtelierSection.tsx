@@ -196,9 +196,9 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
 
   return (
     <section id="web-atelier" className="Section fade-in">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto px-4 py-10 sm:px-6 lg:px-12 lg:py-16">
         {/* Section Header */}
-        <div className="text-center mb-8">
+        <div className="text-center md:text-left space-y-3 mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
@@ -254,7 +254,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
               {language === 'hr' ? '💻 Primjeri naših radova' : '💻 Examples of Our Work'}
             </h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {[1, 2, 3].map((item) => (
               <div
                 key={item}
@@ -279,7 +279,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 mb-12">
           {translations.pricingPlans[language].map((plan, index) => (
             <div 
               key={index} 
@@ -317,7 +317,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
                 ))}
               </ul>
               <button 
-                className="btn btn-primary w-full"
+                className="btn btn-primary w-full sm:w-auto"
                 onClick={scrollToContact}
               >
                 {translations.requestQuote[language]}
@@ -335,7 +335,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
             {translations.cta[language].description}
           </p>
           <button 
-            className="btn btn-primary mb-4"
+            className="btn btn-primary w-full sm:w-auto mb-4"
             onClick={scrollToContact}
           >
             {translations.cta[language].button}
