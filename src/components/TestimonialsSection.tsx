@@ -1,3 +1,7 @@
+// UNUSED DUPLICATE – safe to delete after visual verification
+// Active version: src/sections/TestimonialsSection.tsx (grid layout with real Facebook testimonials).
+// This file contains an older carousel implementation and older sample testimonials.
+
 import { useState } from 'react'
 
 interface TestimonialsSectionProps {

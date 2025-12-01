@@ -1,3 +1,7 @@
+// UNUSED DUPLICATE – safe to delete after visual verification
+// Active version: src/sections/FAQSection.tsx (categories + CTA).
+// This file contains an older, simpler accordion with fewer questions.
+
 import { useState } from 'react'
 
 interface FAQSectionProps {
