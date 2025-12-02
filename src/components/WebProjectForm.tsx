@@ -125,7 +125,11 @@ const FEATURES = [
   'Drugo',
 ]
 
-export function WebProjectForm() {
+interface WebProjectFormProps {
+  language?: 'hr' | 'en'
+}
+
+export function WebProjectForm({ language = 'hr' }: WebProjectFormProps) {
   const inputClass =
     "w-full rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-400";
   
@@ -139,6 +143,43 @@ export function WebProjectForm() {
   const [isSubmitted, setIsSubmitted] = useState(false)
 
   const addWebProjectRequest = useAdminStore((state: AdminStoreState) => state.addWebProjectRequest)
+
+  const translations = {
+    errors: {
+      nameRequired: {
+        hr: 'Ime i prezime ili naziv firme je obavezno',
+        en: 'Full name or company name is required'
+      },
+      emailRequired: {
+        hr: 'Email je obavezan',
+        en: 'Email is required'
+      },
+      emailInvalid: {
+        hr: 'Molimo unesite valjanu email adresu',
+        en: 'Please enter a valid email address'
+      },
+      projectTypeRequired: {
+        hr: 'Molimo odaberite barem jedan tip web projekta',
+        en: 'Please select at least one project type'
+      },
+      projectDescriptionRequired: {
+        hr: 'Molimo unesite opis projekta (najmanje 10 znakova)',
+        en: 'Please enter project description (at least 10 characters)'
+      },
+      budgetRequired: {
+        hr: 'Molimo odaberite okvirni budžet',
+        en: 'Please select budget range'
+      },
+      contactRequired: {
+        hr: 'Molimo odaberite način kontaktiranja',
+        en: 'Please select contact preference'
+      }
+    },
+    success: {
+      hr: 'Hvala ti na upitu! Tvoj web projekt je uspješno zaprimljen. Javit ću ti se povratno s prijedlozima strukture, dizajna i daljnjim koracima.',
+      en: 'Thank you for your inquiry! Your web project has been successfully received. I will get back to you with structure, design proposals and next steps.'
+    }
+  }
 
   function handleChange(
     field: keyof WebProjectFormValues,
@@ -173,11 +214,40 @@ export function WebProjectForm() {
   function validate(values: WebProjectFormValues) {
     const newErrors: Record<string, string> = {}
     
-    if (!values.fullNameOrCompany) newErrors.fullNameOrCompany = 'Molim te upiši ime i prezime ili naziv firme.'
-    if (!values.email) newErrors.email = 'Molim te upiši email.'
-    if (values.projectTypes.length === 0) newErrors.projectTypes = 'Molim te odaberi barem jedan tip web projekta.'
-    if (!values.budgetRange) newErrors.budgetRange = 'Molim te odaberi okvirni budžet.'
-    if (!values.contactPreference) newErrors.contactPreference = 'Molim te odaberi način kontaktiranja.'
+    // Validate name
+    if (!values.fullNameOrCompany.trim()) {
+      newErrors.fullNameOrCompany = translations.errors.nameRequired[language]
+    }
+    
+    // Validate email
+    if (!values.email.trim()) {
+      newErrors.email = translations.errors.emailRequired[language]
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(values.email.trim())) {
+        newErrors.email = translations.errors.emailInvalid[language]
+      }
+    }
+    
+    // Validate project type
+    if (values.projectTypes.length === 0) {
+      newErrors.projectTypes = translations.errors.projectTypeRequired[language]
+    }
+    
+    // Validate project description (using extraNotes as description field)
+    if (!values.extraNotes.trim() || values.extraNotes.trim().length < 10) {
+      newErrors.extraNotes = translations.errors.projectDescriptionRequired[language]
+    }
+    
+    // Validate budget
+    if (!values.budgetRange) {
+      newErrors.budgetRange = translations.errors.budgetRequired[language]
+    }
+    
+    // Validate contact preference
+    if (!values.contactPreference) {
+      newErrors.contactPreference = translations.errors.contactRequired[language]
+    }
     
     return newErrors
   }
@@ -190,6 +260,17 @@ export function WebProjectForm() {
     setErrors(newErrors)
 
     if (Object.keys(newErrors).length > 0) {
+      // Focus first error field
+      const firstErrorField = Object.keys(newErrors)[0]
+      setTimeout(() => {
+        const field = document.getElementById(firstErrorField) || 
+                     document.querySelector(`[name="${firstErrorField}"]`) ||
+                     document.querySelector(`input[name="${firstErrorField}"], select[name="${firstErrorField}"], textarea[name="${firstErrorField}"]`)
+        if (field) {
+          field.focus()
+          field.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 100)
       return // Stop if there are errors
     }
 
@@ -207,7 +288,12 @@ export function WebProjectForm() {
     })
 
     console.log('Web project form submitted:', values)
-    setValues(INITIAL_VALUES) // Reset form
+    
+    // Reset form after 3 seconds
+    setTimeout(() => {
+      setValues(INITIAL_VALUES)
+      setIsSubmitted(false)
+    }, 3000)
   }
 
   return (
@@ -237,10 +323,11 @@ export function WebProjectForm() {
               <span>Ime i prezime ili naziv firme *</span>
               <input
                 type="text"
-                className={inputClass}
+                id="fullNameOrCompany"
+                name="fullNameOrCompany"
+                className={`${inputClass} ${errors.fullNameOrCompany ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
                 value={values.fullNameOrCompany}
                 onChange={e => handleChange('fullNameOrCompany', e.target.value)}
-                required
               />
             </label>
             {errors.fullNameOrCompany && (
@@ -253,10 +340,11 @@ export function WebProjectForm() {
               <span>Email *</span>
               <input
                 type="email"
-                className={inputClass}
+                id="email"
+                name="email"
+                className={`${inputClass} ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
                 value={values.email}
                 onChange={e => handleChange('email', e.target.value)}
-                required
               />
             </label>
             {errors.email && (
@@ -310,11 +398,12 @@ export function WebProjectForm() {
         {/* 2) Vrsta web projekta */}
         <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
           <legend className="text-lg font-semibold mb-2 text-slate-800">Koji tip web projekta želiš? *</legend>
-          <div className={`grid gap-2 sm:grid-cols-2 ${errors.projectTypes ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
+          <div className={`grid gap-2 sm:grid-cols-2 ${errors.projectTypes ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`} id="projectTypes">
             {PROJECT_TYPES.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
                 <input
                   type="checkbox"
+                  name="projectTypes"
                   className="mt-1 accent-violet-500"
                   checked={values.projectTypes.includes(option)}
                   onChange={() => handleToggleMulti('projectTypes', option)}
@@ -589,10 +678,11 @@ export function WebProjectForm() {
             <label className="block space-y-1 text-sm sm:text-base text-slate-800">
               <span>Okvirni budžet *</span>
               <select
-                className={selectClass}
+                id="budgetRange"
+                name="budgetRange"
+                className={`${selectClass} ${errors.budgetRange ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
                 value={values.budgetRange}
                 onChange={e => handleChange('budgetRange', e.target.value)}
-                required
               >
                 <option value="">Odaberi...</option>
                 <option value="under-1000">Do 1000 €</option>
@@ -643,10 +733,11 @@ export function WebProjectForm() {
             <label className="block space-y-1 text-sm sm:text-base text-slate-800">
               <span>Način kontaktiranja *</span>
               <select
-                className={selectClass}
+                id="contactPreference"
+                name="contactPreference"
+                className={`${selectClass} ${errors.contactPreference ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
                 value={values.contactPreference}
                 onChange={e => handleChange('contactPreference', e.target.value)}
-                required
               >
                 <option value="">Odaberi...</option>
                 <option value="email">Email</option>
@@ -675,23 +766,27 @@ export function WebProjectForm() {
 
           <div>
             <label className="block space-y-1 text-sm sm:text-base text-slate-800">
-              <span>Dodatne napomene</span>
+              <span>Dodatne napomene / Opis projekta *</span>
               <textarea
-                className={textareaClass}
+                id="extraNotes"
+                name="extraNotes"
+                className={`${textareaClass} ${errors.extraNotes ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
                 value={values.extraNotes}
                 onChange={e => handleChange('extraNotes', e.target.value)}
                 rows={4}
-                placeholder="Sve dodatne informacije koje bi mogle biti korisne..."
+                placeholder={language === 'hr' ? 'Sve dodatne informacije koje bi mogle biti korisne...' : 'All additional information that might be useful...'}
               />
             </label>
+            {errors.extraNotes && (
+              <p className="text-xs text-red-500 mt-1">{errors.extraNotes}</p>
+            )}
           </div>
         </fieldset>
 
         {/* Success message */}
         {isSubmitted && (
           <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            Hvala ti na upitu! Tvoj web projekt je uspješno zaprimljen.
-            Javit ću ti se povratno s prijedlozima strukture, dizajna i daljnjim koracima.
+            {translations.success[language]}
           </div>
         )}
 

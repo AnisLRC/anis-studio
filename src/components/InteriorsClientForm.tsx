@@ -51,6 +51,7 @@ export interface ClientProjectFormValues {
 interface InteriorsClientFormProps {
   stolars: StolarOption[]
   onSubmit?: (values: ClientProjectFormValues) => void
+  language?: 'hr' | 'en'
 }
 
 const INITIAL_VALUES: ClientProjectFormValues = {
@@ -128,7 +129,7 @@ const PRIORITY_OPTIONS = [
   'Prilagođeno kućnim ljubimcima',
 ]
 
-export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormProps) {
+export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: InteriorsClientFormProps) {
   const inputClass =
     "w-full rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-400";
 
@@ -142,6 +143,71 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
   const [isSubmitted, setIsSubmitted] = useState(false)
 
   const addInteriorsRequest = useAdminStore((state: AdminStoreState) => state.addInteriorsRequest)
+
+  const translations = {
+    errors: {
+      nameRequired: {
+        hr: 'Ime i prezime ili naziv klijenta je obavezno',
+        en: 'Client name is required'
+      },
+      emailRequired: {
+        hr: 'Email je obavezan',
+        en: 'Email is required'
+      },
+      emailInvalid: {
+        hr: 'Molimo unesite valjanu email adresu',
+        en: 'Please enter a valid email address'
+      },
+      projectTypeRequired: {
+        hr: 'Molimo odaberite tip prostora',
+        en: 'Please select space type'
+      },
+      locationRequired: {
+        hr: 'Molimo unesite grad ili lokaciju',
+        en: 'Please enter city or location'
+      },
+      spaceStatusRequired: {
+        hr: 'Molimo odaberite stanje prostora',
+        en: 'Please select space status'
+      },
+      hasPlanRequired: {
+        hr: 'Molimo odaberite imate li tlocrt ili skicu',
+        en: 'Please select if you have a plan or sketch'
+      },
+      mainUsersRequired: {
+        hr: 'Molimo odaberite tko najviše koristi prostor',
+        en: 'Please select main users'
+      },
+      projectDescriptionRequired: {
+        hr: 'Molimo unesite opis projekta (najmanje 10 znakova)',
+        en: 'Please enter project description (at least 10 characters)'
+      },
+      budgetRequired: {
+        hr: 'Molimo odaberite okvirni budžet',
+        en: 'Please select budget range'
+      },
+      desiredStartDateRequired: {
+        hr: 'Molimo odaberite okvirni datum početka',
+        en: 'Please select desired start date'
+      },
+      flexibilityRequired: {
+        hr: 'Molimo odaberite fleksibilnost roka',
+        en: 'Please select deadline flexibility'
+      },
+      hasOwnStolarRequired: {
+        hr: 'Molimo odaberite imate li svog stolara',
+        en: 'Please select if you have your own carpenter'
+      },
+      contactRequired: {
+        hr: 'Molimo odaberite način kontaktiranja',
+        en: 'Please select contact preference'
+      }
+    },
+    success: {
+      hr: 'Hvala ti na povjerenju! Tvoj upit za interijerski projekt je zaprimljen. Javit ću ti se povratno s informacijama i prijedlozima u najkraćem mogućem roku.',
+      en: 'Thank you for your trust! Your interior project inquiry has been received. I will get back to you with information and proposals as soon as possible.'
+    }
+  }
 
   function handleChange(
     field: keyof ClientProjectFormValues,
@@ -163,7 +229,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
       const current = (prev[field] as string[]) || []
       const exists = current.includes(option)
       const next = exists ? current.filter(o => o !== option) : [...current, option]
-      return { ...prev, [field]: next as any }
+      return { ...prev, [field]: next }
     })
     // Clear error for this field when user makes a selection
     if (errors[field]) {
@@ -175,33 +241,108 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
     }
   }
 
-  function validate(values: ClientProjectFormValues) {
+  function validate(values: ClientProjectFormValues): { isValid: boolean; errors: Record<string, string>; firstErrorField: string | null } {
     const newErrors: Record<string, string> = {}
 
-    if (!values.clientName) newErrors.clientName = 'Molim te upiši ime i prezime ili naziv klijenta.'
-    if (!values.email) newErrors.email = 'Molim te upiši email adresu.'
-    if (!values.projectType) newErrors.projectType = 'Molim te odaberi tip prostora.'
-    if (!values.location) newErrors.location = 'Molim te upiši grad ili lokaciju.'
-    if (!values.spaceStatus) newErrors.spaceStatus = 'Molim te odaberi stanje prostora.'
-    if (!values.hasPlan) newErrors.hasPlan = 'Molim te odaberi imaš li tlocrt ili skicu.'
-    if (!values.mainUsers) newErrors.mainUsers = 'Molim te odaberi tko najviše koristi prostor.'
-    if (!values.budgetRange) newErrors.budgetRange = 'Molim te odaberi okvirni budžet.'
-    if (!values.desiredStartDate) newErrors.desiredStartDate = 'Molim te odaberi okvirni datum početka.'
-    if (!values.flexibility) newErrors.flexibility = 'Molim te odaberi fleksibilnost roka.'
-    if (!values.hasOwnStolar) newErrors.hasOwnStolar = 'Molim te odaberi imaš li svog stolara.'
-    if (!values.contactPreference) newErrors.contactPreference = 'Molim te odaberi kako želiš da te kontaktiram.'
+    // Validate name
+    if (!values.clientName.trim()) {
+      newErrors.clientName = translations.errors.nameRequired[language]
+    }
 
-    return newErrors
+    // Validate email
+    if (!values.email.trim()) {
+      newErrors.email = translations.errors.emailRequired[language]
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(values.email.trim())) {
+        newErrors.email = translations.errors.emailInvalid[language]
+      }
+    }
+
+    // Validate project type
+    if (!values.projectType) {
+      newErrors.projectType = translations.errors.projectTypeRequired[language]
+    }
+
+    // Validate location
+    if (!values.location.trim()) {
+      newErrors.location = translations.errors.locationRequired[language]
+    }
+
+    // Validate space status
+    if (!values.spaceStatus) {
+      newErrors.spaceStatus = translations.errors.spaceStatusRequired[language]
+    }
+
+    // Validate has plan
+    if (!values.hasPlan) {
+      newErrors.hasPlan = translations.errors.hasPlanRequired[language]
+    }
+
+    // Validate main users
+    if (!values.mainUsers) {
+      newErrors.mainUsers = translations.errors.mainUsersRequired[language]
+    }
+
+    // Validate project description (projectNote)
+    if (!values.projectNote.trim() || values.projectNote.trim().length < 10) {
+      newErrors.projectNote = translations.errors.projectDescriptionRequired[language]
+    }
+
+    // Validate budget
+    if (!values.budgetRange) {
+      newErrors.budgetRange = translations.errors.budgetRequired[language]
+    }
+
+    // Validate desired start date
+    if (!values.desiredStartDate) {
+      newErrors.desiredStartDate = translations.errors.desiredStartDateRequired[language]
+    }
+
+    // Validate flexibility
+    if (!values.flexibility) {
+      newErrors.flexibility = translations.errors.flexibilityRequired[language]
+    }
+
+    // Validate has own stolar
+    if (!values.hasOwnStolar) {
+      newErrors.hasOwnStolar = translations.errors.hasOwnStolarRequired[language]
+    }
+
+    // Validate contact preference
+    if (!values.contactPreference) {
+      newErrors.contactPreference = translations.errors.contactRequired[language]
+    }
+
+    const firstErrorField = Object.keys(newErrors)[0] || null
+
+    return {
+      isValid: Object.keys(newErrors).length === 0,
+      errors: newErrors,
+      firstErrorField
+    }
   }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setIsSubmitted(false)
 
-    const newErrors = validate(values)
-    setErrors(newErrors)
+    const validation = validate(values)
+    setErrors(validation.errors)
 
-    if (Object.keys(newErrors).length > 0) {
+    if (!validation.isValid) {
+      // Focus first error field
+      if (validation.firstErrorField) {
+        setTimeout(() => {
+          const field = document.getElementById(validation.firstErrorField!) || 
+                       document.querySelector(`[name="${validation.firstErrorField}"]`) ||
+                       document.querySelector(`input[name="${validation.firstErrorField}"], select[name="${validation.firstErrorField}"], textarea[name="${validation.firstErrorField}"]`)
+          if (field) {
+            field.focus()
+            field.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+        }, 100)
+      }
       return
     }
 
@@ -224,7 +365,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
       console.log('Client project form submitted:', values)
     }
 
-    setValues(INITIAL_VALUES)
+    // Reset form after 3 seconds
+    setTimeout(() => {
+      setValues(INITIAL_VALUES)
+      setIsSubmitted(false)
+    }, 3000)
   }
 
   return (
@@ -253,10 +398,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
             <span>Ime i prezime / naziv klijenta *</span>
             <input
               type="text"
-              className={inputClass}
+              id="clientName"
+              name="clientName"
+              className={`${inputClass} ${errors.clientName ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
               value={values.clientName}
               onChange={e => handleChange('clientName', e.target.value)}
-              required
             />
           </label>
           {errors.clientName && (
@@ -269,10 +415,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
             <span>Email *</span>
             <input
               type="email"
-              className={inputClass}
+              id="email"
+              name="email"
+              className={`${inputClass} ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
               value={values.email}
               onChange={e => handleChange('email', e.target.value)}
-              required
             />
           </label>
           {errors.email && (
@@ -290,10 +437,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
             <label className="block space-y-1 text-sm sm:text-base text-slate-800">
               <span>Tip prostora *</span>
               <select
+                id="projectType"
+                name="projectType"
                 value={values.projectType}
                 onChange={e => handleChange('projectType', e.target.value)}
-                className={selectClass}
-                required
+                className={`${selectClass} ${errors.projectType ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
               >
                 <option value="">Odaberi...</option>
                 <option value="kuhinja">Kuhinja</option>
@@ -316,10 +464,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
               <span>Grad / lokacija *</span>
               <input
                 type="text"
+                id="location"
+                name="location"
                 value={values.location}
                 onChange={e => handleChange('location', e.target.value)}
-                className={inputClass}
-                required
+                className={`${inputClass} ${errors.location ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
               />
             </label>
             {errors.location && (
@@ -331,10 +480,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
             <label className="block space-y-1 text-sm sm:text-base text-slate-800">
               <span>Prostor je *</span>
               <select
+                id="spaceStatus"
+                name="spaceStatus"
                 value={values.spaceStatus}
                 onChange={e => handleChange('spaceStatus', e.target.value)}
-                className={selectClass}
-                required
+                className={`${selectClass} ${errors.spaceStatus ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
               >
                 <option value="">Odaberi...</option>
                 <option value="existing">Postojeći – renovacija</option>
@@ -352,9 +502,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
       <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
         <legend className="text-lg font-semibold mb-2 text-slate-800">Dimenzije i postojeće stanje</legend>
 
-        <div>
+        <div id="hasPlan">
           <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Imaš li tlocrt ili skicu? *</p>
-          <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap">
+          <div className={`flex flex-col gap-1 sm:flex-row sm:flex-wrap ${errors.hasPlan ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
             <label className="inline-flex items-center gap-2 text-sm text-slate-700">
               <input
                 type="radio"
@@ -565,10 +715,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
             <span>Tko najviše koristi prostor? *</span>
             <select
+              id="mainUsers"
+              name="mainUsers"
               value={values.mainUsers}
               onChange={e => handleChange('mainUsers', e.target.value)}
-              className={selectClass}
-              required
+              className={`${selectClass} ${errors.mainUsers ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
             >
               <option value="">Odaberi...</option>
               <option value="single">1 osoba</option>
@@ -609,10 +760,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
             <span>Okvirni budžet za namještaj *</span>
             <select
+              id="budgetRange"
+              name="budgetRange"
               value={values.budgetRange}
               onChange={e => handleChange('budgetRange', e.target.value)}
-              className={selectClass}
-              required
+              className={`${selectClass} ${errors.budgetRange ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
             >
               <option value="">Odaberi...</option>
               <option value="0-1000">do 1.000 €</option>
@@ -632,10 +784,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
             <span>Kada bi ti okvirno odgovaralo da krenemo? *</span>
             <input
               type="date"
-              className={inputClass}
+              id="desiredStartDate"
+              name="desiredStartDate"
+              className={`${inputClass} ${errors.desiredStartDate ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
               value={values.desiredStartDate}
               onChange={e => handleChange('desiredStartDate', e.target.value)}
-              required
             />
           </label>
           {errors.desiredStartDate && (
@@ -647,10 +800,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
             <span>Koliko si fleksibilna s rokom? *</span>
             <select
+              id="flexibility"
+              name="flexibility"
               value={values.flexibility}
               onChange={e => handleChange('flexibility', e.target.value)}
-              className={selectClass}
-              required
+              className={`${selectClass} ${errors.flexibility ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
             >
               <option value="">Odaberi...</option>
               <option value="fixed">Datum je fiksan</option>
@@ -669,9 +823,9 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
       <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
         <legend className="text-lg font-semibold mb-2 text-slate-800">Stolar</legend>
 
-        <div>
+        <div id="hasOwnStolar">
           <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Imaš li već svog stolara? *</p>
-          <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap">
+          <div className={`flex flex-col gap-1 sm:flex-row sm:flex-wrap ${errors.hasOwnStolar ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
             <label className="inline-flex items-center gap-2 text-sm text-slate-700">
               <input
                 type="radio"
@@ -784,12 +938,17 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
             <span>Opiši svojim riječima što ti je najvažnije u ovom prostoru</span>
             <textarea
+              id="projectNote"
+              name="projectNote"
               value={values.projectNote}
-              className={textareaClass}
+              className={`${textareaClass} ${errors.projectNote ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
               onChange={e => handleChange('projectNote', e.target.value)}
               rows={4}
             />
           </label>
+          {errors.projectNote && (
+            <p className="text-xs text-red-500 mt-1">{errors.projectNote}</p>
+          )}
         </div>
       </fieldset>
 
@@ -801,10 +960,11 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
             <span>Kako želiš da te kontaktiram? *</span>
             <select
+              id="contactPreference"
+              name="contactPreference"
               value={values.contactPreference}
               onChange={e => handleChange('contactPreference', e.target.value)}
-              className={selectClass}
-              required
+              className={`${selectClass} ${errors.contactPreference ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
             >
               <option value="">Odaberi...</option>
               <option value="email">Email</option>
@@ -834,8 +994,7 @@ export function InteriorsClientForm({ stolars, onSubmit }: InteriorsClientFormPr
 
       {isSubmitted && (
         <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Hvala ti na povjerenju! Tvoj upit za interijerski projekt je zaprimljen.
-          Javit ću ti se povratno s informacijama i prijedlozima u najkraćem mogućem roku.
+          {translations.success[language]}
         </div>
       )}
 

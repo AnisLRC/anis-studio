@@ -353,7 +353,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
           <p className="mb-4 text-sm text-slate-600">
             Ispunite osnovne informacije o web stranici koju želite, a ja ću na temelju toga pripremiti prijedlog strukture, dizajna i daljnje korake.
           </p>
-          <WebProjectForm />
+          <WebProjectForm language={language} />
         </div>
       </div>
     </section>
