@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../providers/AuthProvider'
 import { useUi } from '../providers/UiProvider'
 import { useThemeStore } from '../lib/theme.store'
@@ -16,6 +16,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   const { isAuthenticated, logout } = useAuth()
   const { openModal } = useUi()
   const { theme, toggleTheme } = useThemeStore()
+  const navigate = useNavigate()
 
   const navigation = {
     hr: {
@@ -118,7 +119,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           {!isAuthenticated ? (
             <div className="hidden sm:flex items-center gap-2">
               <button
-                onClick={() => openModal('login')}
+                onClick={() => navigate('/admin/login')}
                 className="px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] text-slate-800 hover:text-violet-700"
                 aria-label={authLabels[language].login}
               >
@@ -358,7 +359,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             {!isAuthenticated ? (
               <div className="flex flex-col gap-2 pt-3 sm:pt-4 border-t mt-1 border-slate-200/60">
                 <button
-                  onClick={() => openModal('login')}
+                  onClick={() => navigate('/admin/login')}
                   className="mobile-menu-item text-left px-4 py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg text-slate-800 hover:text-violet-700 active:text-violet-700"
                   style={{ minHeight: '48px' }}
                 >

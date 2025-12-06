@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { sampleProducts, productTags } from '../data/products'
 import { cartActions } from '../lib/cart.store'
+import { submitLrcInquiry } from '../lib/lrcInquiries'
 
 interface LRCSectionProps {
   language?: 'hr' | 'en'
@@ -19,6 +20,8 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
   })
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [showSuccess, setShowSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const filteredProducts = sampleProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -127,6 +130,14 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
     successMessage: {
       hr: "Upit uspješno poslan! Javit ćemo ti se uskoro.",
       en: "Inquiry sent successfully! We'll get back to you soon."
+    },
+    errorMessage: {
+      hr: "Greška pri slanju upita. Molimo pokušajte ponovno.",
+      en: "Error sending inquiry. Please try again."
+    },
+    submittingButton: {
+      hr: "Šaljem...",
+      en: "Sending..."
     }
   }
 
@@ -176,7 +187,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     // Validacija
@@ -185,27 +196,42 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
       return
     }
 
-    // Log podataka (kasnije backend integracija)
-    console.log('Customization inquiry:', {
-      ...formData,
-      files: uploadedFiles.map(f => f.name)
-    })
+    // Clear previous error
+    setErrorMessage(null)
+    setIsSubmitting(true)
 
-    // Prikaži success message
-    setShowSuccess(true)
+    try {
+      await submitLrcInquiry({
+        product: formData.product,
+        description: formData.description,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        language: language
+      })
 
-    // Reset forme
-    setFormData({
-      product: '',
-      description: '',
-      name: '',
-      email: '',
-      phone: ''
-    })
-    setUploadedFiles([])
+      // Prikaži success message
+      setShowSuccess(true)
 
-    // Auto-hide success nakon 5s
-    setTimeout(() => setShowSuccess(false), 5000)
+      // Reset forme
+      setFormData({
+        product: '',
+        description: '',
+        name: '',
+        email: '',
+        phone: ''
+      })
+      setUploadedFiles([])
+
+      // Auto-hide success nakon 5s
+      setTimeout(() => setShowSuccess(false), 5000)
+    } catch (error) {
+      // Prikaži error message
+      setErrorMessage(translations.errorMessage[language])
+      console.error('Error submitting LRC inquiry:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -527,10 +553,11 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
             <div className="text-center pt-2">
               <button
                 type="submit"
-                className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                disabled={isSubmitting}
+                className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ letterSpacing: '0.02em' }}
               >
-                {translations.submitButton[language]}
+                {isSubmitting ? translations.submittingButton[language] : translations.submitButton[language]}
               </button>
             </div>
 
@@ -538,6 +565,13 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
             {showSuccess && (
               <div className="p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-center text-sm animate-fade-in">
                 {translations.successMessage[language]}
+              </div>
+            )}
+
+            {/* Error Message */}
+            {errorMessage && (
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-center text-sm animate-fade-in">
+                {errorMessage}
               </div>
             )}
           </form>
