@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSettings } from '../hooks/useSettings'
+import AdminNav from '../components/AdminNav'
 
 export default function AdminSettingsPage() {
   const { settings, isLoading, error, updateSettings } = useSettings()
@@ -28,10 +29,12 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8">
-      <div className="mx-auto max-w-2xl">
-        {/* Header */}
-        <header className="mb-8 border-b pb-4">
+    <div className="min-h-screen bg-slate-50">
+      <AdminNav />
+      <div className="px-4 py-8">
+        <div className="mx-auto max-w-2xl">
+          {/* Header */}
+          <header className="mb-8 border-b pb-4">
           <h1 className="text-2xl font-semibold text-slate-900">
             Postavke sustava
           </h1>
@@ -121,6 +124,7 @@ export default function AdminSettingsPage() {
             onemogućena, korisnici neće moći slati upite za personalizirane narudžbe,
             ali webshop s gotovim proizvodima ostaje dostupan.
           </p>
+        </div>
         </div>
       </div>
     </div>

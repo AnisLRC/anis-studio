@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { fetchLrcInquiries, type LrcInquiry } from '../lib/lrcInquiries'
+import { fetchLrcInquiries, updateLrcInquiryStatus, type LrcInquiry, type LrcInquiryStatus } from '../lib/lrcInquiries'
 import { isSupabaseConfigured } from '../lib/supabase'
 import { sampleProducts } from '../data/products'
+import AdminNav from '../components/AdminNav'
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
@@ -20,8 +21,8 @@ function getProductName(productId: string, language: 'hr' | 'en' = 'hr'): string
   return language === 'hr' ? product.nameHr : product.name
 }
 
-function getStatusBadgeColor(status: string): string {
-  switch (status.toLowerCase()) {
+function getStatusBadgeColor(status: LrcInquiryStatus): string {
+  switch (status) {
     case 'new':
       return 'bg-blue-100 text-blue-800 border-blue-200'
     case 'read':
@@ -37,6 +38,8 @@ const AdminLrcInquiriesPage: React.FC = () => {
   const [inquiries, setInquiries] = useState<LrcInquiry[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [filterStatus, setFilterStatus] = useState<LrcInquiryStatus | 'all'>('all')
+  const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -64,8 +67,45 @@ const AdminLrcInquiriesPage: React.FC = () => {
     loadInquiries()
   }, [])
 
+  // Filter inquiries based on selected status
+  const filteredInquiries = filterStatus === 'all' 
+    ? inquiries 
+    : inquiries.filter(inquiry => inquiry.status === filterStatus)
+
+  // Handle status update with optimistic updates
+  const handleStatusUpdate = async (inquiryId: string, newStatus: LrcInquiryStatus) => {
+    const inquiry = inquiries.find(i => i.id === inquiryId)
+    if (!inquiry) return
+
+    const previousStatus = inquiry.status
+
+    // Optimistic update
+    setUpdatingIds(prev => new Set(prev).add(inquiryId))
+    setInquiries(prev => 
+      prev.map(i => i.id === inquiryId ? { ...i, status: newStatus } : i)
+    )
+
+    try {
+      await updateLrcInquiryStatus(inquiryId, newStatus)
+    } catch (err) {
+      // Rollback on error
+      setInquiries(prev => 
+        prev.map(i => i.id === inquiryId ? { ...i, status: previousStatus } : i)
+      )
+      setError('Došlo je do greške pri ažuriranju statusa. Pokušaj ponovo.')
+      console.error('Error updating inquiry status:', err)
+    } finally {
+      setUpdatingIds(prev => {
+        const next = new Set(prev)
+        next.delete(inquiryId)
+        return next
+      })
+    }
+  }
+
   return (
     <main className="min-h-screen bg-white text-slate-900">
+      <AdminNav />
       <section className="max-w-5xl mx-auto px-4 py-10">
         {/* Header */}
         <header className="mb-8 border-b pb-4">
@@ -76,6 +116,37 @@ const AdminLrcInquiriesPage: React.FC = () => {
             Pregled svih upita za personalizirane proizvode iz LRC forme.
           </p>
         </header>
+
+        {/* Filter Tabs */}
+        {!isLoading && !error && inquiries.length > 0 && (
+          <div className="mb-6 border-b border-slate-200">
+            <nav className="flex space-x-8" aria-label="Status filter">
+              {(['all', 'new', 'read', 'archived'] as const).map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setFilterStatus(status)}
+                  className={`
+                    py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                    ${
+                      filterStatus === status
+                        ? 'border-violet-600 text-violet-600'
+                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    }
+                  `}
+                >
+                  {status === 'all' 
+                    ? `Svi (${inquiries.length})`
+                    : status === 'new'
+                    ? `Novi (${inquiries.filter(i => i.status === 'new').length})`
+                    : status === 'read'
+                    ? `Pročitano (${inquiries.filter(i => i.status === 'read').length})`
+                    : `Arhivirano (${inquiries.filter(i => i.status === 'archived').length})`
+                  }
+                </button>
+              ))}
+            </nav>
+          </div>
+        )}
 
         {/* Error message */}
         {error && (
@@ -98,8 +169,17 @@ const AdminLrcInquiriesPage: React.FC = () => {
           </div>
         )}
 
+        {/* Filtered empty state */}
+        {!isLoading && !error && inquiries.length > 0 && filteredInquiries.length === 0 && (
+          <div className="rounded-xl bg-white border border-slate-200 p-8 text-center">
+            <p className="text-slate-600">
+              Nema upita s statusom "{filterStatus === 'all' ? 'svi' : filterStatus}".
+            </p>
+          </div>
+        )}
+
         {/* Table */}
-        {!isLoading && !error && inquiries.length > 0 && (
+        {!isLoading && !error && inquiries.length > 0 && filteredInquiries.length > 0 && (
           <div className="rounded-xl bg-white shadow-sm border border-slate-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -126,10 +206,13 @@ const AdminLrcInquiriesPage: React.FC = () => {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                       Status
                     </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Akcije
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-slate-200">
-                  {inquiries.map((inquiry) => (
+                  {filteredInquiries.map((inquiry) => (
                     <tr key={inquiry.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-3 text-sm text-slate-900">
                         {formatDate(inquiry.created_at)}
@@ -174,8 +257,57 @@ const AdminLrcInquiriesPage: React.FC = () => {
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusBadgeColor(inquiry.status)}`}
                         >
-                          {inquiry.status}
+                          {inquiry.status === 'new' ? 'Novi' : inquiry.status === 'read' ? 'Pročitano' : 'Arhivirano'}
                         </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <div className="flex flex-wrap gap-2">
+                          {inquiry.status === 'new' && (
+                            <>
+                              <button
+                                onClick={() => handleStatusUpdate(inquiry.id, 'read')}
+                                disabled={updatingIds.has(inquiry.id)}
+                                className="px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              >
+                                {updatingIds.has(inquiry.id) ? '...' : 'Označi kao pročitano'}
+                              </button>
+                              <button
+                                onClick={() => handleStatusUpdate(inquiry.id, 'archived')}
+                                disabled={updatingIds.has(inquiry.id)}
+                                className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              >
+                                {updatingIds.has(inquiry.id) ? '...' : 'Arhiviraj'}
+                              </button>
+                            </>
+                          )}
+                          {inquiry.status === 'read' && (
+                            <>
+                              <button
+                                onClick={() => handleStatusUpdate(inquiry.id, 'new')}
+                                disabled={updatingIds.has(inquiry.id)}
+                                className="px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              >
+                                {updatingIds.has(inquiry.id) ? '...' : 'Vrati na novo'}
+                              </button>
+                              <button
+                                onClick={() => handleStatusUpdate(inquiry.id, 'archived')}
+                                disabled={updatingIds.has(inquiry.id)}
+                                className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              >
+                                {updatingIds.has(inquiry.id) ? '...' : 'Arhiviraj'}
+                              </button>
+                            </>
+                          )}
+                          {inquiry.status === 'archived' && (
+                            <button
+                              onClick={() => handleStatusUpdate(inquiry.id, 'new')}
+                              disabled={updatingIds.has(inquiry.id)}
+                              className="px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {updatingIds.has(inquiry.id) ? '...' : 'Vrati na novo'}
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -188,7 +320,14 @@ const AdminLrcInquiriesPage: React.FC = () => {
         {/* Summary */}
         {!isLoading && !error && inquiries.length > 0 && (
           <div className="mt-4 text-sm text-slate-600">
-            Ukupno upita: <span className="font-semibold">{inquiries.length}</span>
+            {filterStatus === 'all' ? (
+              <>Ukupno upita: <span className="font-semibold">{inquiries.length}</span></>
+            ) : (
+              <>
+                Prikazano: <span className="font-semibold">{filteredInquiries.length}</span> od{' '}
+                <span className="font-semibold">{inquiries.length}</span> upita
+              </>
+            )}
           </div>
         )}
       </section>

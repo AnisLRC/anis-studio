@@ -1,5 +1,7 @@
 import { supabase, isSupabaseConfigured } from './supabase'
 
+export type LrcInquiryStatus = "new" | "read" | "archived"
+
 export interface LrcInquiryPayload {
   product: string
   description: string
@@ -19,7 +21,7 @@ export interface LrcInquiry {
   phone: string | null
   language: string
   source: string
-  status: string
+  status: LrcInquiryStatus
 }
 
 /**
@@ -86,5 +88,41 @@ export async function fetchLrcInquiries(): Promise<LrcInquiry[]> {
   }
 
   return (data ?? []) as LrcInquiry[]
+}
+
+/**
+ * Updates the status of an LRC inquiry in Supabase.
+ * If Supabase is not configured, throws an error.
+ * 
+ * @param inquiryId - The ID of the inquiry to update
+ * @param status - The new status to set (must be one of: "new", "read", "archived")
+ * @throws Error if Supabase is not configured, client is not available, or the update fails
+ */
+export async function updateLrcInquiryStatus(
+  inquiryId: string,
+  status: LrcInquiryStatus
+): Promise<void> {
+  if (!isSupabaseConfigured) {
+    throw new Error('Supabase is not configured. Cannot update inquiry status.')
+  }
+
+  if (!supabase) {
+    throw new Error('Supabase client is not available')
+  }
+
+  // Validate status
+  const validStatuses: LrcInquiryStatus[] = ['new', 'read', 'archived']
+  if (!validStatuses.includes(status)) {
+    throw new Error(`Invalid status: ${status}. Must be one of: ${validStatuses.join(', ')}`)
+  }
+
+  const { error } = await supabase
+    .from('lrc_inquiries')
+    .update({ status })
+    .eq('id', inquiryId)
+
+  if (error) {
+    throw new Error(`Failed to update LRC inquiry status: ${error.message}`)
+  }
 }
 
