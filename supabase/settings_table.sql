@@ -29,3 +29,4 @@ on conflict (id) do nothing;
 -- Otkomentiraj sljedeću liniju za provjeru:
 -- select * from settings;
 
+
