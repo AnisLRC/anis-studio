@@ -1,23 +1,18 @@
 import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
-import LRCSection from './components/LRCSection'
-import InteriorsSection from './components/InteriorsSection'
-import WebAtelierSection from './components/WebAtelierSection'
-import AboutSection from './components/AboutSection'
-import ContactSection from './components/ContactSection'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
 import { useCart } from './lib/cart.store'
 import { ErrorBoundary } from './ErrorBoundary'
-import WelcomeSection from './sections/WelcomeSection'
-import PortfolioSection from './sections/PortfolioSection'
-import TestimonialsSection from './sections/TestimonialsSection'
-import FAQSection from './sections/FAQSection'
 import LoginModal from './components/LoginModal'
 import RegisterModal from './components/RegisterModal'
 import AdminDashboard from './components/AdminDashboard'
 import { useGlobalScrollAnimations } from './hooks/useGlobalScrollAnimations'
 import { useThemeStore } from './lib/theme.store'
+import HomePage from './pages/HomePage'
+import LRCPage from './pages/LRCPage'
+import AdminSettingsPage from './pages/AdminSettingsPage'
 
 export default function App() {
   const [language, setLanguage] = useState<'hr' | 'en'>(() => {
@@ -52,97 +47,57 @@ export default function App() {
           : 'min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300'
       }
     >
+        <BrowserRouter>
         <ErrorBoundary name="Header">
-        <Header 
-          language={language}
-          onLanguageChange={setLanguage}
-          cartItemCount={cartCount}
-          onCartClick={() => setIsCartOpen(true)}
-        />
-      </ErrorBoundary>
-      
-      <main className="space-y-10 sm:space-y-14 lg:space-y-16">
-        <ErrorBoundary name="Welcome">
-          <WelcomeSection language={language} />
+          <Header 
+            language={language}
+            onLanguageChange={setLanguage}
+            cartItemCount={cartCount}
+            onCartClick={() => setIsCartOpen(true)}
+          />
         </ErrorBoundary>
         
-        <ErrorBoundary name="Portfolio">
-          <PortfolioSection language={language} />
-        </ErrorBoundary>
-        
-        <ErrorBoundary name="LRC">
-          <section id="lrc" className="Section">
-            <LRCSection language={language} />
-          </section>
-        </ErrorBoundary>
-        
-        <ErrorBoundary name="Interijeri">
-          <section id="interiors" className="Section">
-            <InteriorsSection language={language} />
-          </section>
-        </ErrorBoundary>
-        
-        <ErrorBoundary name="WebAtelier">
-          <section id="web-atelier" className="Section">
-            <WebAtelierSection language={language} />
-          </section>
-        </ErrorBoundary>
-        
-        <ErrorBoundary name="ONama">
-          <section id="about" className="Section">
-            <AboutSection language={language} />
-          </section>
-        </ErrorBoundary>
-        
-        <ErrorBoundary name="Testimonials">
-          <TestimonialsSection language={language} />
-        </ErrorBoundary>
-        
-        <ErrorBoundary name="FAQ">
-          <FAQSection language={language} />
-        </ErrorBoundary>
-        
-        <ErrorBoundary name="Kontakt">
-          <section id="contact" className="Section">
-            <ContactSection language={language} />
-          </section>
-        </ErrorBoundary>
-      </main>
+        <Routes>
+          <Route path="/" element={<HomePage language={language} />} />
+          <Route path="/lrc" element={<LRCPage language={language} />} />
+          <Route path="/admin/settings" element={<AdminSettingsPage />} />
+        </Routes>
 
-      <ErrorBoundary name="Footer">
-        <Footer />
-      </ErrorBoundary>
+        <ErrorBoundary name="Footer">
+          <Footer />
+        </ErrorBoundary>
 
-      <ErrorBoundary name="CartDrawer">
-        <CartDrawer
-          isOpen={isCartOpen}
-          onClose={() => setIsCartOpen(false)}
-          language={language}
-        />
-      </ErrorBoundary>
+        <ErrorBoundary name="CartDrawer">
+          <CartDrawer
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            language={language}
+          />
+        </ErrorBoundary>
 
-      {/* Auth Modals */}
-      <ErrorBoundary name="LoginModal">
-        <LoginModal language={language} />
-      </ErrorBoundary>
-      <ErrorBoundary name="RegisterModal">
-        <RegisterModal language={language} />
-      </ErrorBoundary>
+        {/* Auth Modals */}
+        <ErrorBoundary name="LoginModal">
+          <LoginModal language={language} />
+        </ErrorBoundary>
+        <ErrorBoundary name="RegisterModal">
+          <RegisterModal language={language} />
+        </ErrorBoundary>
 
-      {/* Admin Dashboard (dev only) */}
-      {import.meta.env.DEV && (
-        <section id="admin" className="Section border-t border-slate-200 bg-slate-50/60 py-12 mt-12 text-slate-900">
-          <div className="mx-auto max-w-6xl px-4">
-            <h2 className="mb-4 text-xl font-semibold text-slate-900">
-              Admin pregled (dev only)
-            </h2>
-            <p className="mb-6 text-sm text-slate-600">
-              Ovo je test verzija admin nadzorne ploče, vidljiva samo u development okruženju.
-            </p>
-            <AdminDashboard />
-          </div>
-        </section>
-      )}
+        {/* Admin Dashboard (dev only) */}
+        {import.meta.env.DEV && (
+          <section id="admin" className="Section border-t border-slate-200 bg-slate-50/60 py-12 mt-12 text-slate-900">
+            <div className="mx-auto max-w-6xl px-4">
+              <h2 className="mb-4 text-xl font-semibold text-slate-900">
+                Admin pregled (dev only)
+              </h2>
+              <p className="mb-6 text-sm text-slate-600">
+                Ovo je test verzija admin nadzorne ploče, vidljiva samo u development okruženju.
+              </p>
+              <AdminDashboard />
+            </div>
+          </section>
+        )}
+      </BrowserRouter>
     </div>
   )
 }
