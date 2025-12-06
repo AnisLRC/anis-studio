@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
+import { createClient, createProject, type VrLocationPreference, type VrPackagePreference } from '../lib/interiors'
 
 export interface StolarOption {
   id: string
@@ -11,13 +12,14 @@ export interface StolarOption {
 export interface ClientProjectFormValues {
   clientName: string
   email: string
+  phone: string
 
   projectType: string
   location: string
   spaceStatus: string
 
   hasPlan: 'plan' | 'photos' | 'none' | ''
-  planFiles: FileList | null
+  planFiles: File[]
   photoFiles: FileList | null
 
   approxWidth: string
@@ -41,11 +43,14 @@ export interface ClientProjectFormValues {
   stolarNotRegistered: string
   needStolarRecommendation: boolean
 
-  inspirationFiles: FileList | null
   projectNote: string
 
   contactPreference: string
   contactTime: string
+
+  wantsVr: boolean
+  vrLocationPreference: VrLocationPreference | null
+  vrPackagePreference: VrPackagePreference | null
 }
 
 interface InteriorsClientFormProps {
@@ -57,13 +62,14 @@ interface InteriorsClientFormProps {
 const INITIAL_VALUES: ClientProjectFormValues = {
   clientName: '',
   email: '',
+  phone: '',
 
   projectType: '',
   location: '',
   spaceStatus: '',
 
   hasPlan: '',
-  planFiles: null,
+  planFiles: [],
   photoFiles: null,
 
   approxWidth: '',
@@ -87,11 +93,14 @@ const INITIAL_VALUES: ClientProjectFormValues = {
   stolarNotRegistered: '',
   needStolarRecommendation: false,
 
-  inspirationFiles: null,
   projectNote: '',
 
   contactPreference: '',
   contactTime: '',
+
+  wantsVr: false,
+  vrLocationPreference: null,
+  vrPackagePreference: null,
 }
 
 const STYLE_OPTIONS = [
@@ -141,6 +150,12 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
   const [values, setValues] = useState<ClientProjectFormValues>(INITIAL_VALUES)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [selectedPlanFileNames, setSelectedPlanFileNames] = useState<string[]>([])
+  const [selectedPhotoFileName, setSelectedPhotoFileName] = useState<string | null>(null)
+  const [selectedInspirationFileNames, setSelectedInspirationFileNames] = useState<string[]>([])
+  const [inspirationFiles, setInspirationFiles] = useState<File[]>([])
 
   const addInteriorsRequest = useAdminStore((state: AdminStoreState) => state.addInteriorsRequest)
 
@@ -157,6 +172,10 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       emailInvalid: {
         hr: 'Molimo unesite valjanu email adresu',
         en: 'Please enter a valid email address'
+      },
+      phoneRequired: {
+        hr: 'Molim te, upiši broj mobitela kako bih te mogla kontaktirati.',
+        en: 'Please enter your phone number so I can contact you.'
       },
       projectTypeRequired: {
         hr: 'Molimo odaberite tip prostora',
@@ -206,6 +225,70 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
     success: {
       hr: 'Hvala ti na povjerenju! Tvoj upit za interijerski projekt je zaprimljen. Javit ću ti se povratno s informacijama i prijedlozima u najkraćem mogućem roku.',
       en: 'Thank you for your trust! Your interior project inquiry has been received. I will get back to you with information and proposals as soon as possible.'
+    },
+    vr: {
+      wantsVr: {
+        hr: 'Želim ponudu i za VR šetnju mojim budućim interijerom',
+        en: 'I want a quote for VR walkthrough of my future interior'
+      },
+      locationTitle: {
+        hr: 'Gdje želite VR prezentaciju?',
+        en: 'Where would you like the VR presentation?'
+      },
+      locationStudio: {
+        hr: 'Kod Ane u studiju',
+        en: 'At Ana\'s studio'
+      },
+      locationClientHome: {
+        hr: 'Kod mene doma',
+        en: 'At my home'
+      },
+      locationUnsure: {
+        hr: 'Nisam siguran, treba mi savjet',
+        en: 'I\'m not sure, I need advice'
+      },
+      packageTitle: {
+        hr: 'Koji VR paket vas zanima?',
+        en: 'Which VR package interests you?'
+      },
+      package3dVr: {
+        hr: '3D projekt + VR obilazak',
+        en: '3D project + VR walkthrough'
+      },
+      package3dVrOnline: {
+        hr: '3D + VR + online za obitelj',
+        en: '3D + VR + online for family'
+      },
+      packageUnsure: {
+        hr: 'Nisam siguran',
+        en: 'I\'m not sure'
+      }
+    },
+    error: {
+      hr: 'Greška pri spremanju, pokušaj ponovno.',
+      en: 'Error saving, please try again.'
+    },
+    fileUpload: {
+      selectedFile: {
+        hr: 'Odabrana datoteka:',
+        en: 'Selected file:'
+      },
+      noFileSelected: {
+        hr: 'Niste još odabrali datoteku.',
+        en: 'No file selected yet.'
+      },
+      noFilesSelected: {
+        hr: 'Niste još odabrali datoteke.',
+        en: 'No files selected yet.'
+      },
+      oneFileSelectedLabel: {
+        hr: 'Odabrana datoteka:',
+        en: 'Selected file:'
+      },
+      multipleFilesSelectedLabel: {
+        hr: 'Odabrane datoteke:',
+        en: 'Selected files:'
+      }
     }
   }
 
@@ -241,6 +324,42 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
     }
   }
 
+  type FileField = 'planFile' | 'photoFiles' | 'inspirationFiles'
+
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: FileField
+  ) => {
+    const files = event.target.files
+    if (!files) return
+
+    if (field === 'planFile') {
+      const fileArray = Array.from(files)
+
+      // spremi imena svih odabranih datoteka
+      setSelectedPlanFileNames(fileArray.map((file) => file.name))
+
+      // spremi sve datoteke u values.planFiles
+      setValues((prev) => ({
+        ...prev,
+        planFiles: fileArray,
+      }))
+
+      return
+    } else {
+      setValues((prev) => ({
+        ...prev,
+        [field]: files,
+      }))
+
+      if (field === 'inspirationFiles') {
+        const fileNames = Array.from(files).map((file) => file.name)
+        setSelectedInspirationFileNames(fileNames)
+      }
+    }
+  }
+
+
   function validate(values: ClientProjectFormValues): { isValid: boolean; errors: Record<string, string>; firstErrorField: string | null } {
     const newErrors: Record<string, string> = {}
 
@@ -257,6 +376,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       if (!emailRegex.test(values.email.trim())) {
         newErrors.email = translations.errors.emailInvalid[language]
       }
+    }
+
+    // Validate phone
+    if (!values.phone.trim()) {
+      newErrors.phone = translations.errors.phoneRequired[language]
     }
 
     // Validate project type
@@ -323,9 +447,10 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
     }
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setIsSubmitted(false)
+    setSubmitError(null)
 
     const validation = validate(values)
     setErrors(validation.errors)
@@ -346,30 +471,100 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       return
     }
 
-    // Clear all errors and mark as submitted
+    // Clear all errors
     setErrors({})
-    setIsSubmitted(true)
+    setIsSubmitting(true)
 
-    // Save to admin store
-    addInteriorsRequest({
-      clientName: values.clientName || '',
-      email: values.email || '',
-      spaceType: values.projectType || 'Nije odabrano',
-      city: values.location || '',
-      stolarId: values.stolarId || null,
-    })
+    try {
+      // Calculate area_m2 from approxWidth and approxLength if available
+      let areaM2: number | null = null
+      if (values.approxWidth && values.approxLength) {
+        const width = parseFloat(values.approxWidth.replace(/[^\d.,]/g, '').replace(',', '.'))
+        const length = parseFloat(values.approxLength.replace(/[^\d.,]/g, '').replace(',', '.'))
+        if (!isNaN(width) && !isNaN(length) && width > 0 && length > 0) {
+          areaM2 = width * length
+        }
+      }
 
-    if (onSubmit) {
-      onSubmit(values)
-    } else {
-      console.log('Client project form submitted:', values)
+      // Parse budget from budgetRange
+      let budget: number | null = null
+      if (values.budgetRange) {
+        const budgetMatch = values.budgetRange.match(/(\d+)/g)
+        if (budgetMatch && budgetMatch.length > 0) {
+          budget = parseFloat(budgetMatch[0]) * 1000 // Convert to euros if needed
+        }
+      }
+
+      // Include inspiration files info in notes
+      const inspirationCount = inspirationFiles.length
+      const notesWithFilesInfo = inspirationCount > 0
+        ? `${values.projectNote.trim() || ''}\n\nInspiration files attached: ${inspirationCount}`
+        : values.projectNote.trim() || null
+
+      // TODO: kasnije stvarni upload inspirationFiles u Supabase Storage + zapis u project_files
+
+      // Create client
+      const client = await createClient({
+        name: values.clientName.trim(),
+        email: values.email.trim(),
+        phone: values.phone.trim() || null,
+        language: language,
+        notes: notesWithFilesInfo,
+      })
+
+      // Create project
+      await createProject({
+        title: `Projekt za ${values.clientName.trim()} – ${values.projectType || 'Nepoznato'}`,
+        user_type: 'client',
+        client_id: client.id,
+        carpenter_id: null,
+        drawn_by: 'ani',
+        uses_corpus: true,
+        wants_vr: values.wantsVr,
+        vr_location_preference: values.wantsVr ? values.vrLocationPreference : null,
+        vr_package_preference: values.wantsVr ? values.vrPackagePreference : null,
+        status: 'inquiry',
+        space_type: values.projectType || null,
+        area_m2: areaM2,
+        budget: budget,
+        notes: notesWithFilesInfo,
+      })
+
+      // Reset poruke o odabranom tlocrtu odmah nakon uspješnog slanja
+      setSelectedPlanFileNames([])
+      setSelectedInspirationFileNames([])
+
+      // Save to admin store (keep existing behavior)
+      addInteriorsRequest({
+        clientName: values.clientName || '',
+        email: values.email || '',
+        spaceType: values.projectType || 'Nije odabrano',
+        city: values.location || '',
+        stolarId: values.stolarId || null,
+      })
+
+      if (onSubmit) {
+        onSubmit(values)
+      }
+
+      // Mark as submitted
+      setIsSubmitted(true)
+
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setValues(INITIAL_VALUES)
+        setIsSubmitted(false)
+        setSelectedPlanFileNames([])
+        setSelectedPhotoFileName(null)
+        setSelectedInspirationFileNames([])
+        setInspirationFiles([])
+      }, 3000)
+    } catch (error) {
+      console.error('Error submitting client form:', error)
+      setSubmitError(translations.error[language])
+    } finally {
+      setIsSubmitting(false)
     }
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setValues(INITIAL_VALUES)
-      setIsSubmitted(false)
-    }, 3000)
   }
 
   return (
@@ -424,6 +619,24 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
           </label>
           {errors.email && (
             <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>{language === 'hr' ? 'Broj mobitela *' : 'Phone number *'}</span>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              className={`${inputClass} ${errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
+              value={values.phone}
+              onChange={e => handleChange('phone', e.target.value)}
+              placeholder={language === 'hr' ? 'npr. 095 123 4567' : 'e.g. +385 95 123 4567'}
+            />
+          </label>
+          {errors.phone && (
+            <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
           )}
         </div>
       </fieldset>
@@ -546,25 +759,39 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         )}
 
         {values.hasPlan === 'plan' && (
-          <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
-              <span>Učitaj tlocrt / nacrt</span>
-              <div className="flex items-center gap-3">
-                <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
-                  Odaberi datoteke
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    className="hidden"
-                    multiple
-                    onChange={e => handleChange('planFiles', e.target.files)}
-                  />
-                </label>
-                <span className="text-xs text-slate-500">
-                  Možeš učitati više datoteka (preporučeno 3–5).
-                </span>
-              </div>
-            </label>
+          <div className="space-y-2">
+            <p className="block text-sm font-medium text-slate-800">
+              Tlocrt prostora (PDF ili slika)
+            </p>
+            <p className="text-xs text-slate-500">
+              Možeš učitati više datoteka (preporučeno 3–5, PDF ili slike).
+            </p>
+
+            <div className="flex items-center gap-3 mt-2">
+              {/* Gumb za tlocrt – isti stil kao inspiracije */}
+              <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
+                Odaberi datoteke
+                <input
+                  id="plan-file-input"
+                  type="file"
+                  accept=".pdf,image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e, 'planFile')}
+                />
+              </label>
+            </div>
+
+            {selectedPlanFileNames.length > 0 && (
+              <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                {selectedPlanFileNames.map((name) => (
+                  <li key={name} className="flex items-center gap-2">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
+                    <span className="font-medium">{name}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
@@ -580,13 +807,18 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
                     accept=".jpg,.jpeg,.png"
                     className="hidden"
                     multiple
-                    onChange={e => handleChange('photoFiles', e.target.files)}
+                    onChange={e => handleFileChange(e, 'photoFiles')}
                   />
                 </label>
                 <span className="text-xs text-slate-500">
                   Možeš učitati više datoteka (preporučeno 3–5).
                 </span>
               </div>
+              <p className="text-xs text-slate-600 mt-1">
+                {selectedPhotoFileName 
+                  ? `${translations.fileUpload.selectedFile[language]} ${selectedPhotoFileName}`
+                  : translations.fileUpload.noFileSelected[language]}
+              </p>
             </label>
           </div>
         )}
@@ -924,13 +1156,31 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
                   accept=".jpg,.jpeg,.png"
                   className="hidden"
                   multiple
-                  onChange={e => handleChange('inspirationFiles', e.target.files)}
+                  onChange={e => handleFileChange(e, 'inspirationFiles')}
                 />
               </label>
               <span className="text-xs text-slate-500">
                 Možeš učitati više datoteka (preporučeno 3–5).
               </span>
             </div>
+            {selectedInspirationFileNames.length === 0 ? (
+              <p className="text-xs text-slate-400 mt-1">
+                {translations.fileUpload.noFilesSelected[language]}
+              </p>
+            ) : (
+              <div className="mt-1 text-sm text-slate-600">
+                <p>
+                  {selectedInspirationFileNames.length === 1
+                    ? translations.fileUpload.oneFileSelectedLabel[language]
+                    : translations.fileUpload.multipleFilesSelectedLabel[language]}
+                </p>
+                <ul className="list-disc list-inside">
+                  {selectedInspirationFileNames.map((name) => (
+                    <li key={name}>{name}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </label>
         </div>
 
@@ -992,18 +1242,128 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
       </fieldset>
 
+      {/* VR Block */}
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">VR opcije</legend>
+
+        <div>
+          <label className="flex items-start gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              className="mt-1 accent-violet-500"
+              checked={values.wantsVr}
+              onChange={e => handleChange('wantsVr', e.target.checked)}
+            />
+            <span>{translations.vr.wantsVr[language]}</span>
+          </label>
+        </div>
+
+        {values.wantsVr && (
+          <>
+            <div>
+              <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
+                {translations.vr.locationTitle[language]}
+              </p>
+              <div className="flex flex-col gap-2">
+                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="vrLocationPreference"
+                    value="studio"
+                    className="accent-violet-500"
+                    checked={values.vrLocationPreference === 'studio'}
+                    onChange={() => handleChange('vrLocationPreference', 'studio')}
+                  />
+                  <span>{translations.vr.locationStudio[language]}</span>
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="vrLocationPreference"
+                    value="client_home"
+                    className="accent-violet-500"
+                    checked={values.vrLocationPreference === 'client_home'}
+                    onChange={() => handleChange('vrLocationPreference', 'client_home')}
+                  />
+                  <span>{translations.vr.locationClientHome[language]}</span>
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="vrLocationPreference"
+                    value="unsure"
+                    className="accent-violet-500"
+                    checked={values.vrLocationPreference === 'unsure'}
+                    onChange={() => handleChange('vrLocationPreference', 'unsure')}
+                  />
+                  <span>{translations.vr.locationUnsure[language]}</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
+                {translations.vr.packageTitle[language]}
+              </p>
+              <div className="flex flex-col gap-2">
+                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="vrPackagePreference"
+                    value="3d_vr"
+                    className="accent-violet-500"
+                    checked={values.vrPackagePreference === '3d_vr'}
+                    onChange={() => handleChange('vrPackagePreference', '3d_vr')}
+                  />
+                  <span>{translations.vr.package3dVr[language]}</span>
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="vrPackagePreference"
+                    value="3d_vr_online"
+                    className="accent-violet-500"
+                    checked={values.vrPackagePreference === '3d_vr_online'}
+                    onChange={() => handleChange('vrPackagePreference', '3d_vr_online')}
+                  />
+                  <span>{translations.vr.package3dVrOnline[language]}</span>
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    type="radio"
+                    name="vrPackagePreference"
+                    value="unsure"
+                    className="accent-violet-500"
+                    checked={values.vrPackagePreference === 'unsure'}
+                    onChange={() => handleChange('vrPackagePreference', 'unsure')}
+                  />
+                  <span>{translations.vr.packageUnsure[language]}</span>
+                </label>
+              </div>
+            </div>
+          </>
+        )}
+      </fieldset>
+
       {isSubmitted && (
         <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
           {translations.success[language]}
         </div>
       )}
 
+      {submitError && (
+        <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">
+          {submitError}
+        </div>
+      )}
+
       <div className="mt-6 flex justify-center">
         <button
           type="submit"
-          className="inline-flex items-center justify-center rounded-full bg-violet-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-violet-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-300 focus:ring-offset-2"
+          disabled={isSubmitting}
+          className="inline-flex items-center justify-center rounded-full bg-violet-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-violet-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Pošalji upit za interijerski projekt
+          {isSubmitting ? (language === 'hr' ? 'Šaljem...' : 'Sending...') : (language === 'hr' ? 'Pošalji upit za interijerski projekt' : 'Send interior project inquiry')}
         </button>
       </div>
     </form>
