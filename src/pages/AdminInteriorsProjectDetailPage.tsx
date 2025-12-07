@@ -6,6 +6,10 @@ import {
   fetchCarpenterById,
   fetchProjectFilesForProject,
   updateProjectStatus,
+  fetchVrScenesForProject,
+  createVrScene,
+  type VrScene,
+  type VrSceneType,
 } from "../lib/interiors";
 
 type Project = NonNullable<Awaited<ReturnType<typeof fetchProjectById>>>;
@@ -41,6 +45,15 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
   const [files, setFiles] = useState<ProjectFile[]>([]);
   const [isLoadingFiles, setIsLoadingFiles] = useState(false);
   const [filesError, setFilesError] = useState<string | null>(null);
+
+  const [vrScenes, setVrScenes] = useState<VrScene[]>([]);
+  const [isLoadingVrScenes, setIsLoadingVrScenes] = useState(false);
+  const [vrScenesError, setVrScenesError] = useState<string | null>(null);
+
+  const [isCreatingVrScene, setIsCreatingVrScene] = useState(false);
+  const [newSceneType, setNewSceneType] = useState<VrSceneType | "">("");
+  const [newSceneTitle, setNewSceneTitle] = useState("");
+  const [newSceneUrl, setNewSceneUrl] = useState("");
 
   useEffect(() => {
     let isCancelled = false;
@@ -193,6 +206,44 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     };
   }, [project]);
 
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadVrScenes = async () => {
+      setVrScenes([]);
+      setVrScenesError(null);
+
+      if (!project || !project.id) return;
+
+      try {
+        setIsLoadingVrScenes(true);
+        const data = await fetchVrScenesForProject(project.id);
+
+        if (!isCancelled) {
+          setVrScenes(data);
+        }
+      } catch (error) {
+        console.error(
+          "[AdminInteriorsProjectDetailPage] Failed to load VR scenes:",
+          error
+        );
+        if (!isCancelled) {
+          setVrScenesError("Došlo je do greške pri dohvaćanju VR scena.");
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingVrScenes(false);
+        }
+      }
+    };
+
+    loadVrScenes();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [project]);
+
   const handleBack = () => {
     navigate("/admin/interiors-projects");
   };
@@ -215,6 +266,70 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     } finally {
       setIsUpdatingStatus(false);
     }
+  };
+
+  const handleCreateVrScene = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!project || !newSceneType || !newSceneTitle.trim() || !newSceneUrl.trim()) {
+      return;
+    }
+
+    setIsCreatingVrScene(true);
+
+    try {
+      const input: Parameters<typeof createVrScene>[0] = {
+        project_id: project.id,
+        scene_type: newSceneType as VrSceneType,
+        title: newSceneTitle.trim(),
+      };
+
+      // Odaberi koje URL polje popuniti na temelju scene_type
+      if (newSceneType === "simlab_package") {
+        input.simlab_project_url = newSceneUrl.trim() || null;
+      } else if (newSceneType === "webxr_scene") {
+        input.webxr_url = newSceneUrl.trim() || null;
+      } else if (newSceneType === "video_tour") {
+        input.video_url = newSceneUrl.trim() || null;
+      } else {
+        // Za ostale tipove, koristimo webxr_url kao default
+        input.webxr_url = newSceneUrl.trim() || null;
+      }
+
+      const newScene = await createVrScene(input);
+
+      // Optimistički update: dodaj novu scenu u listu
+      setVrScenes([...vrScenes, newScene]);
+
+      // Resetiraj formu
+      setNewSceneType("");
+      setNewSceneTitle("");
+      setNewSceneUrl("");
+    } catch (error) {
+      console.error(
+        "[AdminInteriorsProjectDetailPage] Failed to create VR scene:",
+        error
+      );
+      // Refetch da osvježimo listu
+      try {
+        const data = await fetchVrScenesForProject(project.id);
+        setVrScenes(data);
+      } catch (refetchError) {
+        console.error(
+          "[AdminInteriorsProjectDetailPage] Failed to refetch VR scenes:",
+          refetchError
+        );
+      }
+    } finally {
+      setIsCreatingVrScene(false);
+    }
+  };
+
+  const getMainUrl = (scene: VrScene): string => {
+    if (scene.webxr_url) return scene.webxr_url;
+    if (scene.simlab_project_url) return scene.simlab_project_url;
+    if (scene.video_url) return scene.video_url;
+    return "Nema URL-a";
   };
 
   return (
@@ -519,6 +634,136 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
               )}
             </section>
 
+            {/* VR scene */}
+            <section className="rounded-lg border border-slate-200 bg-white p-4">
+              <h2 className="text-sm font-semibold text-slate-900">
+                VR scene
+              </h2>
+
+              {isLoadingVrScenes && (
+                <p className="mt-3 text-xs text-slate-600">
+                  Učitavanje VR scena...
+                </p>
+              )}
+
+              {vrScenesError && (
+                <p className="mt-3 text-xs text-red-700">{vrScenesError}</p>
+              )}
+
+              {!isLoadingVrScenes && !vrScenesError && vrScenes.length === 0 && (
+                <p className="mt-3 text-xs text-slate-600">
+                  Još nema dodanih VR scena za ovaj projekt.
+                </p>
+              )}
+
+              {!isLoadingVrScenes && !vrScenesError && vrScenes.length > 0 && (
+                <ul className="mt-3 space-y-2 text-xs text-slate-700">
+                  {vrScenes.map((scene) => (
+                    <li
+                      key={scene.id}
+                      className="flex flex-col gap-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium">{scene.title}</span>
+                        <span className="text-[11px] text-slate-500">
+                          {mapVrSceneType(scene.scene_type)}
+                        </span>
+                        <span className="mt-1 text-[11px] text-slate-600 break-all">
+                          {getMainUrl(scene)}
+                        </span>
+                      </div>
+
+                      <div className="mt-1 text-[11px] text-slate-500 sm:mt-0 sm:text-right">
+                        {scene.created_at
+                          ? new Date(scene.created_at).toLocaleString("hr-HR")
+                          : ""}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Forma za dodavanje nove VR scene */}
+              <div className="mt-4 border-t border-slate-200 pt-4">
+                <form onSubmit={handleCreateVrScene} className="space-y-3">
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div>
+                      <label
+                        htmlFor="scene-type"
+                        className="block text-xs font-medium text-slate-700 mb-1"
+                      >
+                        Tip scene
+                      </label>
+                      <select
+                        id="scene-type"
+                        value={newSceneType}
+                        onChange={(e) =>
+                          setNewSceneType(e.target.value as VrSceneType | "")
+                        }
+                        className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                        required
+                      >
+                        <option value="">Odaberi tip</option>
+                        <option value="simlab_package">SimLab paket</option>
+                        <option value="webxr_scene">WebXR scena</option>
+                        <option value="video_tour">Video tura</option>
+                        <option value="image_gallery">Galerija slika</option>
+                        <option value="other">Ostalo</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="scene-title"
+                        className="block text-xs font-medium text-slate-700 mb-1"
+                      >
+                        Naslov
+                      </label>
+                      <input
+                        id="scene-title"
+                        type="text"
+                        value={newSceneTitle}
+                        onChange={(e) => setNewSceneTitle(e.target.value)}
+                        className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                        placeholder="Npr. Glavna scena"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="scene-url"
+                        className="block text-xs font-medium text-slate-700 mb-1"
+                      >
+                        URL
+                      </label>
+                      <input
+                        id="scene-url"
+                        type="url"
+                        value={newSceneUrl}
+                        onChange={(e) => setNewSceneUrl(e.target.value)}
+                        className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                        placeholder="https://..."
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isCreatingVrScene}
+                    className={`inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 ${
+                      isCreatingVrScene
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
+                  >
+                    {isCreatingVrScene ? "Dodavanje..." : "Dodaj VR scenu"}
+                  </button>
+                </form>
+              </div>
+            </section>
+
             {/* Napomene */}
             <section className="rounded-lg border border-slate-200 bg-white p-4">
               <h2 className="text-sm font-semibold text-slate-900">
@@ -618,6 +863,23 @@ function mapFileTypeLabel(fileType: ProjectFile["file_type"]): string {
       return "Ostalo";
     default:
       return fileType;
+  }
+}
+
+function mapVrSceneType(sceneType: VrSceneType): string {
+  switch (sceneType) {
+    case "simlab_package":
+      return "SimLab paket";
+    case "webxr_scene":
+      return "WebXR scena";
+    case "video_tour":
+      return "Video tura";
+    case "image_gallery":
+      return "Galerija slika";
+    case "other":
+      return "Ostalo";
+    default:
+      return sceneType;
   }
 }
 
