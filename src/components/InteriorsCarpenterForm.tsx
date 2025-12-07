@@ -1,7 +1,7 @@
 // src/components/InteriorsCarpenterForm.tsx
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { createCarpenter, createProject, type DrawnBy, type VrPackagePreference } from '../lib/interiors'
+import { createCarpenter, createProject, uploadProjectFileToStorage, type DrawnBy, type VrPackagePreference } from '../lib/interiors'
 
 export interface CarpenterProjectFormValues {
   companyName: string
@@ -125,6 +125,8 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [exportFiles, setExportFiles] = useState<File[]>([])
+  const [kitchenSketchFiles, setKitchenSketchFiles] = useState<File[]>([])
 
   const translations = {
     title: {
@@ -305,6 +307,32 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         return rest
       })
     }
+  }
+
+  const handleExportFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files
+    if (!files) {
+      setExportFiles([])
+      return
+    }
+
+    const fileArray = Array.from(files)
+    setExportFiles(fileArray)
+  }
+
+  const handleKitchenSketchChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files
+    if (!files) {
+      setKitchenSketchFiles([])
+      return
+    }
+
+    const fileArray = Array.from(files)
+    setKitchenSketchFiles(fileArray)
   }
 
   function validate(values: CarpenterProjectFormValues): { isValid: boolean; errors: Record<string, string>; firstErrorField: string | null } {
@@ -523,7 +551,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       })
 
       // Create project
-      await createProject({
+      const project = await createProject({
         title: `Projekt za ${values.companyName.trim()} – ${values.projectType || 'Nepoznato'}`,
         user_type: 'carpenter',
         client_id: null,
@@ -540,16 +568,48 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         notes: values.notes.trim() || null,
       })
 
+      // Upload 3D eksport fajlova stolara (OBJ/FBX...) u Storage + project_files
+      try {
+        if (exportFiles.length > 0) {
+          await Promise.all(
+            exportFiles.map((file) =>
+              uploadProjectFileToStorage(
+                project.id,
+                file,
+                "carpenter_3d_export"
+              )
+            )
+          )
+        }
+
+        if (kitchenSketchFiles.length > 0) {
+          await Promise.all(
+            kitchenSketchFiles.map((file) =>
+              uploadProjectFileToStorage(
+                project.id,
+                file,
+                "kitchen_sketch"
+              )
+            )
+          )
+        }
+      } catch (error) {
+        console.error(
+          "[InteriorsCarpenterForm] Error uploading project files:",
+          error
+        )
+        // ne rušimo submit – projekt je već kreiran
+      }
+
       // Mark as submitted
       setIsSubmitted(true)
-
-      // TODO: Handle corpusExportFile upload to project_files storage
-      // For now, file is stored in form state but not uploaded
 
       // Reset form after 3 seconds
       setTimeout(() => {
         setValues(INITIAL_VALUES)
         setIsSubmitted(false)
+        setExportFiles([])
+        setKitchenSketchFiles([])
       }, 3000)
     } catch (error) {
       console.error('Error submitting carpenter form:', error)
@@ -1059,25 +1119,35 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
                 <span>{translations.drawnBy.uploadFile[language]}</span>
                 <div className="flex items-center gap-3">
                   <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
-                    Odaberi datoteku
+                    Odaberi datoteke
                     <input
                       type="file"
-                      accept=".corpus,.3dm,.dwg"
+                      accept=".obj,.fbx,.zip,.rar,application/octet-stream"
+                      multiple
                       className="hidden"
-                      onChange={e => handleChange('corpusExportFile', e.target.files?.[0] || null)}
+                      onChange={handleExportFileChange}
                     />
                   </label>
-                  {values.corpusExportFile && (
+                  {exportFiles.length > 0 && (
                     <span className="text-xs text-slate-500">
-                      {values.corpusExportFile.name}
+                      {exportFiles.length === 1 
+                        ? exportFiles[0].name 
+                        : `${exportFiles.length} datoteka odabrano`}
                     </span>
                   )}
                 </div>
+                {exportFiles.length > 0 && (
+                  <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                    {exportFiles.map((file, index) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
+                        <span className="font-medium">{file.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <p className="text-xs text-slate-500 mt-1">
                   {translations.drawnBy.uploadFileFormats[language]}
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  {translations.drawnBy.uploadFileNote[language]}
                 </p>
               </label>
             </div>
@@ -1091,6 +1161,44 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
                   onChange={e => handleChange('usesCorpus', e.target.checked)}
                 />
                 <span>{translations.drawnBy.usesCorpus[language]}</span>
+              </label>
+            </div>
+
+            <div className="mt-4">
+              <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+                <span>Skice kuhinje (slike ili PDF)</span>
+                <p className="text-xs text-slate-500">
+                  Možeš učitati više datoteka (JPG, PNG ili PDF).
+                </p>
+                <div className="flex items-center gap-3 mt-2">
+                  <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
+                    Dodaj skice
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      multiple
+                      className="hidden"
+                      onChange={handleKitchenSketchChange}
+                    />
+                  </label>
+                  {kitchenSketchFiles.length > 0 && (
+                    <span className="text-xs text-slate-500">
+                      {kitchenSketchFiles.length === 1 
+                        ? kitchenSketchFiles[0].name 
+                        : `${kitchenSketchFiles.length} datoteka odabrano`}
+                    </span>
+                  )}
+                </div>
+                {kitchenSketchFiles.length > 0 && (
+                  <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                    {kitchenSketchFiles.map((file, index) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
+                        <span className="font-medium">{file.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </label>
             </div>
           </>
