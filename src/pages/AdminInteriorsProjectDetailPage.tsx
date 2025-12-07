@@ -796,25 +796,6 @@ const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => (
   </div>
 );
 
-function mapProjectStatusToLabel(status: Project["status"]): string {
-  switch (status) {
-    case "inquiry":
-      return "Upit";
-    case "3d_in_progress":
-      return "3D u izradi";
-    case "3d_done":
-      return "3D gotovo";
-    case "vr_in_progress":
-      return "VR u izradi";
-    case "vr_done":
-      return "VR gotovo";
-    case "presented":
-      return "Prezentirano";
-    default:
-      return status;
-  }
-}
-
 function mapVrLocation(
   value: Project["vr_location_preference"]
 ): string {
