@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchProjects, type ProjectListFilters } from "../lib/interiors";
 
 type Project = Awaited<ReturnType<typeof fetchProjects>>[number];
@@ -26,6 +27,7 @@ const WANTS_VR_OPTIONS = [
 ];
 
 export const AdminInteriorsProjectsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -81,6 +83,10 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
       isCancelled = true;
     };
   }, [userTypeFilter, statusFilter, wantsVrFilter]);
+
+  const handleRowClick = (id: string) => {
+    navigate(`/admin/interiors-projects/${id}`);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
@@ -227,7 +233,11 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                     project.budget != null ? `${project.budget} €` : "—";
 
                   return (
-                    <tr key={project.id}>
+                    <tr
+                      key={project.id}
+                      onClick={() => handleRowClick(project.id)}
+                      className="cursor-pointer hover:bg-slate-50"
+                    >
                       <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-700">
                         {formattedDate}
                       </td>
