@@ -170,6 +170,62 @@ export async function fetchProjectById(id: string): Promise<Project | null> {
 }
 
 /**
+ * Fetches a single client by ID from Supabase.
+ * If Supabase is not configured, returns null without throwing an error.
+ *
+ * @param id - The client ID to fetch
+ * @returns The client if found, or null if not found
+ * @throws Error if Supabase is configured but the fetch fails
+ */
+export async function fetchClientById(id: string): Promise<Client | null> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] fetchClientById (fallback)", id);
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("clients")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[Interiors] fetchClientById error:", error);
+    throw error;
+  }
+
+  return (data as Client) ?? null;
+}
+
+/**
+ * Fetches a single carpenter by ID from Supabase.
+ * If Supabase is not configured, returns null without throwing an error.
+ *
+ * @param id - The carpenter ID to fetch
+ * @returns The carpenter if found, or null if not found
+ * @throws Error if Supabase is configured but the fetch fails
+ */
+export async function fetchCarpenterById(id: string): Promise<Carpenter | null> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] fetchCarpenterById (fallback)", id);
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("carpenters")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[Interiors] fetchCarpenterById error:", error);
+    throw error;
+  }
+
+  return (data as Carpenter) ?? null;
+}
+
+/**
  * Creates a new project in Supabase.
  * If Supabase is not configured, returns a mock project with fake ID for development.
  *
