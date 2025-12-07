@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { InteriorsClientForm } from './InteriorsClientForm'
-import { StolarProfileForm } from './StolarProfileForm'
+import { InteriorsCarpenterForm } from './InteriorsCarpenterForm'
 
 interface InteriorsSectionProps {
   language: 'hr' | 'en'
@@ -467,12 +467,14 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
         
         <div className="mt-12 border-t border-slate-200 pt-8">
           <h2 className="mb-4 text-lg font-semibold text-slate-900">
-            Profil stolara (test zona)
+            {language === 'hr' ? 'Za stolare i studije namještaja' : 'For carpenters and furniture studios'}
           </h2>
           <p className="mb-4 text-sm text-slate-600">
-            Ovo je test verzija ankete za stolare. U budućnosti će imati svoju zasebnu stranicu i prijavu.
+            {language === 'hr' 
+              ? 'Istim obrascem šaljete i svoje podatke i konkretan upit za projekt.'
+              : 'With the same form you send both your details and a specific project inquiry.'}
           </p>
-          <StolarProfileForm language={language} />
+          <InteriorsCarpenterForm language={language} />
         </div>
       </div>
     </section>

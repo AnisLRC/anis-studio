@@ -1,4 +1,8 @@
 // src/components/StolarProfileForm.tsx
+// NOTE: Legacy/test form for carpenter profile.
+// Currently not used in public UI.
+// Main carpenter flow is handled by InteriorsCarpenterForm.
+
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
