@@ -278,6 +278,43 @@ export async function createCarpenter(payload: NewCarpenterInput): Promise<Carpe
 
   if (error) {
     console.error('[Interiors] createCarpenter error:', error)
+
+    // 1) Je li ovo greška zbog duplikata emaila? (unique constraint)
+    const code = (error as any).code
+    const details = (error as any).details as string | undefined
+
+    const isDuplicateEmail =
+      code === '23505' ||
+      (details && details.includes('carpenters_email_unique'))
+
+    if (isDuplicateEmail) {
+      // 2) Umjesto da padnemo, pokušaj dohvatiti postojećeg stolara s tim emailom
+      const { data: existing, error: fetchError } = await supabase
+        .from('carpenters')
+        .select('*')
+        .eq('email', payload.email)
+        .maybeSingle()
+
+      if (fetchError) {
+        console.error(
+          '[Interiors] createCarpenter fetch existing by email error:',
+          fetchError
+        )
+        throw error // vratimo originalnu grešku ako i fetch pukne
+      }
+
+      if (existing) {
+        console.info(
+          '[Interiors] createCarpenter: reusing existing carpenter with same email'
+        )
+        return existing as Carpenter
+      }
+
+      // ako je baš sve čudno i nema existinga, ipak bacimo originalnu grešku
+      throw error
+    }
+
+    // 3) Sve ostale greške i dalje bacamo normalno
     throw error
   }
 
