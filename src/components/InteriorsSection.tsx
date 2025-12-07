@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { InteriorsClientForm } from './InteriorsClientForm'
 import { InteriorsCarpenterForm } from './InteriorsCarpenterForm'
 
@@ -7,27 +6,6 @@ interface InteriorsSectionProps {
 }
 
 export default function InteriorsSection({ language }: InteriorsSectionProps) {
-  const [formData, setFormData] = useState({
-    furnitureType: '',
-    wallCount: '',
-    handleType: '' as 'ugradbene' | 'obicne' | '',
-    length: '',
-    width: '',
-    height: '',
-    depth: '',
-    hasSlope: false,
-    slopeDescription: '',
-    hasColumn: false,
-    columnDimensions: '',
-    hasBeam: false,
-    beamDimensions: '',
-    otherNotes: '',
-    notes: '',
-    sketches: [] as File[]
-  })
-  const [sketchPreviews, setSketchPreviews] = useState<Array<{ preview: string | null }>>([])
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const translations = {
     title: {
@@ -225,156 +203,10 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
     }
   ]
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target
-    const checked = (e.target as HTMLInputElement).checked
-    
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }))
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev }
-        delete newErrors[name]
-        return newErrors
-      })
-    }
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    
-    if (files.length === 0) return
-
-    const maxSize = 10 * 1024 * 1024 // 10MB
-    const validTypes = ['image/jpeg', 'image/png', 'application/pdf']
-    const newFiles: File[] = []
-    const fileErrors: string[] = []
-
-    files.forEach((file) => {
-      // Validacija veličine
-      if (file.size > maxSize) {
-        fileErrors.push(`${file.name}: ${language === 'hr' ? 'Datoteka je prevelika (max 10MB)' : 'File too large (max 10MB)'}`)
-        return
-      }
-
-      // Validacija formata
-      if (!validTypes.includes(file.type)) {
-        fileErrors.push(`${file.name}: ${language === 'hr' ? 'Neispravan format (samo JPG, PNG, PDF)' : 'Invalid format (only JPG, PNG, PDF)'}`)
-        return
-      }
-
-      newFiles.push(file)
-    })
-
-    if (fileErrors.length > 0) {
-      setErrors(prev => ({
-        ...prev,
-        sketches: fileErrors.join('; ')
-      }))
-      return
-    } else {
-      setErrors(prev => {
-        const newErrors = { ...prev }
-        delete newErrors.sketches
-        return newErrors
-      })
-    }
-
-    // Dodaj nove datoteke
-    const updatedSketches = [...formData.sketches, ...newFiles]
-    setFormData(prev => ({ ...prev, sketches: updatedSketches }))
-    
-    // Inicijaliziraj preview array s null vrijednostima za nove datoteke
-    setSketchPreviews(prev => {
-      const updated = [...prev]
-      while (updated.length < updatedSketches.length) {
-        updated.push({ preview: null })
-      }
-      return updated
-    })
-    
-    // Generiraj preview za sve nove slike
-    newFiles.forEach((file, newFileIndex) => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader()
-        // Spremimo start index za ovu datoteku
-        const startIndex = formData.sketches.length + newFileIndex
-        reader.onloadend = () => {
-          const preview = reader.result as string
-          setSketchPreviews(prev => {
-            const updated = [...prev]
-            // Ažuriraj preview na odgovarajućem indexu
-            if (startIndex >= 0 && startIndex < updated.length) {
-              updated[startIndex] = { preview }
-            }
-            return updated
-          })
-        }
-        reader.readAsDataURL(file)
-      }
-    })
-  }
-
-  const removeSketch = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      sketches: prev.sketches.filter((_, i) => i !== index)
-    }))
-    setSketchPreviews(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.furnitureType) {
-      newErrors.furnitureType = language === 'hr' ? 'Odaberite tip namještaja' : 'Select furniture type'
-    }
-    if (!formData.handleType) {
-      newErrors.handleType = language === 'hr' ? 'Odaberite tip ručki' : 'Select handle type'
-    }
-    if (!formData.length || parseFloat(formData.length) <= 0) {
-      newErrors.length = language === 'hr' ? 'Unesite duljinu' : 'Enter length'
-    }
-    if (!formData.width || parseFloat(formData.width) <= 0) {
-      newErrors.width = language === 'hr' ? 'Unesite širinu' : 'Enter width'
-    }
-    if (!formData.height || parseFloat(formData.height) <= 0) {
-      newErrors.height = language === 'hr' ? 'Unesite visinu' : 'Enter height'
-    }
-    if (!formData.depth || parseFloat(formData.depth) <= 0) {
-      newErrors.depth = language === 'hr' ? 'Unesite dubinu' : 'Enter depth'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
   const stolars = [
     { id: '1', name: 'Stolarija Jurić (Rijeka)' },
     { id: '2', name: 'Stolarija Novak (Zagreb)' },
   ]
-
-  if (isSubmitted) {
-    return (
-      <section id="interiors" className="Section fade-in">
-        <div className="max-w-4xl mx-auto">
-          <div className="glass-morphism rounded-2xl p-8 sm:p-12 text-center">
-            <div className="text-5xl mb-4">✨</div>
-            <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--color-primary)' }}>
-              {translations.successMessage[language].title}
-            </h2>
-            <p className="text-lg text-[#5A4A6B]">
-              {translations.successMessage[language].description}
-            </p>
-          </div>
-        </div>
-      </section>
-    )
-  }
 
   return (
     <section id="interiors" className="Section fade-in">

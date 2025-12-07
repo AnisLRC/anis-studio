@@ -1,7 +1,7 @@
 // src/components/InteriorsCarpenterForm.tsx
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { createCarpenter, createProject, type DrawnBy, type VrLocationPreference, type VrPackagePreference } from '../lib/interiors'
+import { createCarpenter, createProject, type DrawnBy, type VrPackagePreference } from '../lib/interiors'
 
 export interface CarpenterProjectFormValues {
   companyName: string
