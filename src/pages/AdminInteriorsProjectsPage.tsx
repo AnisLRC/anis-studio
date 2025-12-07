@@ -36,6 +36,10 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
   const [userTypeFilter, setUserTypeFilter] = useState<"" | "client" | "carpenter">("");
   const [statusFilter, setStatusFilter] = useState<"" | Project["status"]>("");
   const [wantsVrFilter, setWantsVrFilter] = useState<"all" | "yes" | "no">("all");
+  // Search query state for client-side filtering by title
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  // Sort order state for client-side sorting by date
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
 
   useEffect(() => {
     let isCancelled = false;
@@ -116,6 +120,32 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
     }
   };
 
+  // Client-side filtering by title (case-insensitive)
+  const filteredProjects = searchQuery.trim()
+    ? projects.filter((project) =>
+        (project.title || "").toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : projects;
+
+  // Client-side sorting by created_at date
+  const sortedAndFilteredProjects = [...filteredProjects].sort((a, b) => {
+    const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+    const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+
+    // Handle null/undefined dates - put them at the end regardless of sort order
+    if (!a.created_at && !b.created_at) return 0;
+    if (!a.created_at) return 1;
+    if (!b.created_at) return -1;
+
+    if (sortOrder === "newest") {
+      // DESC: newer dates first (larger timestamp first)
+      return dateB - dateA;
+    } else {
+      // ASC: older dates first (smaller timestamp first)
+      return dateA - dateB;
+    }
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-6xl space-y-6">
@@ -130,6 +160,15 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs sm:justify-end">
+            {/* Search input */}
+            <input
+              type="text"
+              placeholder="Pretraži po nazivu..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm placeholder:text-slate-400"
+            />
+
             {/* Tip korisnika */}
             <label className="flex items-center gap-1">
               <span className="text-slate-600">Tip:</span>
@@ -183,6 +222,21 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                 ))}
               </select>
             </label>
+
+            {/* Sortiranje */}
+            <label className="flex items-center gap-1">
+              <span className="text-slate-600">Sortiranje:</span>
+              <select
+                className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm"
+                value={sortOrder}
+                onChange={(e) =>
+                  setSortOrder(e.target.value as "newest" | "oldest")
+                }
+              >
+                <option value="newest">Najnoviji prvo</option>
+                <option value="oldest">Najstariji prvo</option>
+              </select>
+            </label>
           </div>
         </header>
 
@@ -199,13 +253,13 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
           </div>
         )}
 
-        {!isLoading && !loadError && projects.length === 0 && (
+        {!isLoading && !loadError && sortedAndFilteredProjects.length === 0 && (
           <div className="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
-            Još nema nijednog projekta.
+            {searchQuery.trim() ? "Nema projekata koji odgovaraju pretrazi." : "Još nema nijednog projekta."}
           </div>
         )}
 
-        {!isLoading && !loadError && projects.length > 0 && (
+        {!isLoading && !loadError && sortedAndFilteredProjects.length > 0 && (
           <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50">
@@ -234,7 +288,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
-                {projects.map((project) => {
+                {sortedAndFilteredProjects.map((project) => {
                   const createdAt = project.created_at
                     ? new Date(project.created_at)
                     : null;
@@ -249,8 +303,6 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
 
                   const userTypeLabel =
                     project.user_type === "client" ? "Klijent" : "Stolar";
-
-                  const statusLabel = mapProjectStatusToLabel(project.status);
 
                   const vrLabel = project.wants_vr ? "Da" : "Ne";
 
@@ -328,25 +380,6 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
     </div>
   );
 };
-
-function mapProjectStatusToLabel(status: Project["status"]): string {
-  switch (status) {
-    case "inquiry":
-      return "Upit";
-    case "3d_in_progress":
-      return "3D u izradi";
-    case "3d_done":
-      return "3D gotovo";
-    case "vr_in_progress":
-      return "VR u izradi";
-    case "vr_done":
-      return "VR gotovo";
-    case "presented":
-      return "Prezentirano";
-    default:
-      return status;
-  }
-}
 
 export default AdminInteriorsProjectsPage;
 
