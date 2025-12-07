@@ -100,10 +100,51 @@ create index if not exists projects_client_id_idx on projects(client_id);
 create index if not exists projects_carpenter_id_idx on projects(carpenter_id);
 
 -- ============================================
+-- Tablica: project_files (povezane datoteke za projekte)
+-- ============================================
+
+create table if not exists public.project_files (
+  id uuid primary key default gen_random_uuid(),
+
+  project_id uuid not null references public.projects (id) on delete cascade,
+
+  created_at timestamptz not null default timezone('utc'::text, now()),
+
+  -- tip datoteke (tlocrt, inspiracija, foto, 3D eksport, VR asset...)
+  file_type text not null check (
+    file_type in (
+      'plan',
+      'inspiration',
+      'space_photo',
+      'kitchen_sketch',
+      'carpenter_3d_export',
+      'vr_asset',
+      'other'
+    )
+  ),
+
+  storage_bucket text not null,
+  storage_path text not null,
+
+  original_name text not null,
+  mime_type text,
+  size_bytes bigint,
+
+  notes text
+);
+
+create index if not exists project_files_project_id_idx
+  on public.project_files (project_id);
+
+create index if not exists project_files_file_type_idx
+  on public.project_files (file_type);
+
+-- ============================================
 -- Provjera: provjeri da li su tablice kreirane
 -- ============================================
 -- Otkomentiraj sljedeće linije za provjeru:
 -- select * from clients;
 -- select * from carpenters;
 -- select * from projects;
+-- select * from project_files;
 

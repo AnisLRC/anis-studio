@@ -68,6 +68,32 @@ export interface Project {
   notes: string | null
 }
 
+export type ProjectFileType =
+  | "plan"
+  | "inspiration"
+  | "space_photo"
+  | "kitchen_sketch"
+  | "carpenter_3d_export"
+  | "vr_asset"
+  | "other"
+
+export interface ProjectFile {
+  id: string
+  project_id: string
+  created_at: string
+
+  file_type: ProjectFileType
+
+  storage_bucket: string
+  storage_path: string
+
+  original_name: string
+  mime_type: string | null
+  size_bytes: number | null
+
+  notes: string | null
+}
+
 export type ProjectListFilters = {
   userType?: Project["user_type"]; // 'client' | 'carpenter'
   status?: Project["status"];      // 'inquiry' | '3d_in_progress' | ...
@@ -83,6 +109,17 @@ export type NewClientInput = Omit<Client, 'id' | 'created_at'>
 export type NewCarpenterInput = Omit<Carpenter, 'id' | 'created_at'>
 
 export type NewProjectInput = Omit<Project, 'id' | 'created_at' | 'updated_at'>
+
+export type NewProjectFileInput = {
+  project_id: string
+  file_type: ProjectFileType
+  storage_bucket: string
+  storage_path: string
+  original_name: string
+  mime_type?: string | null
+  size_bytes?: number | null
+  notes?: string | null
+}
 
 // ============================================
 // Constants
@@ -425,5 +462,88 @@ export async function fetchCarpenters(): Promise<Carpenter[]> {
   }
 
   return (data ?? []) as Carpenter[]
+}
+
+/**
+ * Creates a new project file record in Supabase.
+ * If Supabase is not configured, returns a mock project file with fake ID for development.
+ *
+ * @param input - The project file data to create
+ * @returns The created project file
+ * @throws Error if Supabase is configured but the creation fails
+ */
+export async function createProjectFile(
+  input: NewProjectFileInput
+): Promise<ProjectFile> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] createProjectFile (fallback)", input)
+
+    const now = new Date().toISOString()
+
+    return {
+      id: "fallback-project-file",
+      created_at: now,
+      project_id: input.project_id,
+      file_type: input.file_type,
+      storage_bucket: input.storage_bucket,
+      storage_path: input.storage_path,
+      original_name: input.original_name,
+      mime_type: input.mime_type ?? null,
+      size_bytes: input.size_bytes ?? null,
+      notes: input.notes ?? null,
+    }
+  }
+
+  const { data, error } = await supabase
+    .from("project_files")
+    .insert({
+      project_id: input.project_id,
+      file_type: input.file_type,
+      storage_bucket: input.storage_bucket,
+      storage_path: input.storage_path,
+      original_name: input.original_name,
+      mime_type: input.mime_type ?? null,
+      size_bytes: input.size_bytes ?? null,
+      notes: input.notes ?? null,
+    })
+    .select("*")
+    .single()
+
+  if (error) {
+    console.error("[Interiors] createProjectFile error:", error)
+    throw error
+  }
+
+  return data as ProjectFile
+}
+
+/**
+ * Fetches all project files for a specific project from Supabase.
+ * If Supabase is not configured, returns an empty array without throwing an error.
+ *
+ * @param projectId - The project ID to fetch files for
+ * @returns Array of project files, sorted by created_at ascending (oldest first)
+ * @throws Error if Supabase is configured but the fetch fails
+ */
+export async function fetchProjectFilesForProject(
+  projectId: string
+): Promise<ProjectFile[]> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] fetchProjectFilesForProject (fallback)", projectId)
+    return []
+  }
+
+  const { data, error } = await supabase
+    .from("project_files")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true })
+
+  if (error) {
+    console.error("[Interiors] fetchProjectFilesForProject error:", error)
+    throw error
+  }
+
+  return (data ?? []) as ProjectFile[]
 }
 
