@@ -126,6 +126,7 @@ export interface VrAppointment {
   client_name: string | null
   client_email: string | null
   client_phone: string | null
+  vr_link: string | null
   notes: string | null
   created_at: string
   updated_at: string
@@ -180,6 +181,7 @@ export interface NewVrAppointmentInput {
   client_name?: string | null
   client_email?: string | null
   client_phone?: string | null
+  vr_link?: string | null
   notes?: string | null
 }
 
@@ -837,6 +839,7 @@ export async function createVrAppointment(
       client_name: input.client_name ?? null,
       client_email: input.client_email ?? null,
       client_phone: input.client_phone ?? null,
+      vr_link: input.vr_link ?? null,
       notes: input.notes ?? null,
       created_at: now,
       updated_at: now,
@@ -845,7 +848,17 @@ export async function createVrAppointment(
 
   const { data, error } = await supabase!
     .from("vr_appointments")
-    .insert(input)
+    .insert({
+      vr_scene_id: input.vr_scene_id,
+      scheduled_at: input.scheduled_at,
+      location_preference: input.location_preference ?? null,
+      status: input.status,
+      client_name: input.client_name ?? null,
+      client_email: input.client_email ?? null,
+      client_phone: input.client_phone ?? null,
+      vr_link: input.vr_link ?? null,
+      notes: input.notes ?? null,
+    })
     .select("*")
     .single()
 
