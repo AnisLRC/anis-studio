@@ -68,6 +68,12 @@ export interface Project {
   notes: string | null
 }
 
+export type ProjectListFilters = {
+  userType?: Project["user_type"]; // 'client' | 'carpenter'
+  status?: Project["status"];      // 'inquiry' | '3d_in_progress' | ...
+  wantsVr?: boolean;
+};
+
 // ============================================
 // Input Types
 // ============================================
@@ -89,60 +95,50 @@ const NOT_CONFIGURED_ERROR =
 // Helper Functions
 // ============================================
 
-export interface FetchProjectsOptions {
-  status?: ProjectStatus
-  userType?: UserType
-  wantsVr?: boolean
-  limit?: number
-}
-
 /**
  * Fetches projects from Supabase with optional filtering.
  * If Supabase is not configured, returns an empty array without throwing an error.
  *
- * @param options - Optional filters for projects
+ * @param filters - Optional filters for projects (applied client-side)
  * @returns Array of projects, sorted by created_at descending (newest first)
  * @throws Error if Supabase is configured but the fetch fails
  */
 export async function fetchProjects(
-  options: FetchProjectsOptions = {}
+  filters: ProjectListFilters = {}
 ): Promise<Project[]> {
-  if (!isSupabaseConfigured || !supabase) {
-    console.warn(NOT_CONFIGURED_ERROR)
-    return []
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] fetchProjects (fallback)", filters);
+    // fallback za dev bez Supabase env-a
+    return [];
   }
 
-  const { status, userType, wantsVr, limit } = options
-
-  let query = supabase
-    .from('projects')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (status) {
-    query = query.eq('status', status)
-  }
-
-  if (userType) {
-    query = query.eq('user_type', userType)
-  }
-
-  if (typeof wantsVr === 'boolean') {
-    query = query.eq('wants_vr', wantsVr)
-  }
-
-  if (limit) {
-    query = query.limit(limit)
-  }
-
-  const { data, error } = await query
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error('[Interiors] fetchProjects error:', error)
-    throw error
+    console.error("[Interiors] fetchProjects error:", error);
+    throw error;
   }
 
-  return (data ?? []) as Project[]
+  let projects = (data ?? []) as Project[];
+
+  const { userType, status, wantsVr } = filters;
+
+  if (userType) {
+    projects = projects.filter((p) => p.user_type === userType);
+  }
+
+  if (status) {
+    projects = projects.filter((p) => p.status === status);
+  }
+
+  if (typeof wantsVr === "boolean") {
+    projects = projects.filter((p) => p.wants_vr === wantsVr);
+  }
+
+  return projects;
 }
 
 /**
