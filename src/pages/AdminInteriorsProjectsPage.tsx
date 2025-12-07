@@ -3,13 +3,36 @@ import { fetchProjects, type ProjectListFilters } from "../lib/interiors";
 
 type Project = Awaited<ReturnType<typeof fetchProjects>>[number];
 
+const USER_TYPE_OPTIONS: { value: "" | "client" | "carpenter"; label: string }[] = [
+  { value: "", label: "Svi" },
+  { value: "client", label: "Klijenti" },
+  { value: "carpenter", label: "Stolari" },
+];
+
+const STATUS_OPTIONS: { value: "" | Project["status"]; label: string }[] = [
+  { value: "", label: "Svi statusi" },
+  { value: "inquiry", label: "Upit" },
+  { value: "3d_in_progress", label: "3D u izradi" },
+  { value: "3d_done", label: "3D gotovo" },
+  { value: "vr_in_progress", label: "VR u izradi" },
+  { value: "vr_done", label: "VR gotovo" },
+  { value: "presented", label: "Prezentirano" },
+];
+
+const WANTS_VR_OPTIONS = [
+  { value: "all" as const, label: "Svi" },
+  { value: "yes" as const, label: "S VR-om" },
+  { value: "no" as const, label: "Bez VR-a" },
+];
+
 export const AdminInteriorsProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  // za buduće filtere, za sada prazno
-  const [filters] = useState<ProjectListFilters>({});
+  const [userTypeFilter, setUserTypeFilter] = useState<"" | "client" | "carpenter">("");
+  const [statusFilter, setStatusFilter] = useState<"" | Project["status"]>("");
+  const [wantsVrFilter, setWantsVrFilter] = useState<"all" | "yes" | "no">("all");
 
   useEffect(() => {
     let isCancelled = false;
@@ -18,6 +41,22 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
       try {
         setIsLoading(true);
         setLoadError(null);
+
+        const filters: ProjectListFilters = {};
+
+        if (userTypeFilter) {
+          filters.userType = userTypeFilter;
+        }
+
+        if (statusFilter) {
+          filters.status = statusFilter;
+        }
+
+        if (wantsVrFilter === "yes") {
+          filters.wantsVr = true;
+        } else if (wantsVrFilter === "no") {
+          filters.wantsVr = false;
+        }
 
         const data = await fetchProjects(filters);
 
@@ -41,7 +80,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
     return () => {
       isCancelled = true;
     };
-  }, [filters]);
+  }, [userTypeFilter, statusFilter, wantsVrFilter]);
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
@@ -56,9 +95,60 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Mjesto za buduće filtere (user_type, status, wants_vr...) */}
-          <div className="text-xs text-slate-500">
-            Filteri dolaze u sljedećem koraku 🙂
+          <div className="flex flex-wrap items-center gap-2 text-xs sm:justify-end">
+            {/* Tip korisnika */}
+            <label className="flex items-center gap-1">
+              <span className="text-slate-600">Tip:</span>
+              <select
+                className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm"
+                value={userTypeFilter}
+                onChange={(e) =>
+                  setUserTypeFilter(e.target.value as "" | "client" | "carpenter")
+                }
+              >
+                {USER_TYPE_OPTIONS.map((opt) => (
+                  <option key={opt.value || "all"} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {/* Status projekta */}
+            <label className="flex items-center gap-1">
+              <span className="text-slate-600">Status:</span>
+              <select
+                className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm"
+                value={statusFilter}
+                onChange={(e) =>
+                  setStatusFilter(e.target.value as "" | Project["status"])
+                }
+              >
+                {STATUS_OPTIONS.map((opt) => (
+                  <option key={opt.value || "all-status"} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {/* VR filter */}
+            <label className="flex items-center gap-1">
+              <span className="text-slate-600">VR:</span>
+              <select
+                className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm"
+                value={wantsVrFilter}
+                onChange={(e) =>
+                  setWantsVrFilter(e.target.value as "all" | "yes" | "no")
+                }
+              >
+                {WANTS_VR_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
         </header>
 
