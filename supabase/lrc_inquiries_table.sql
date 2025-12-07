@@ -31,3 +31,4 @@ create table if not exists lrc_inquiries (
 -- Otkomentiraj sljedeću liniju za provjeru:
 -- select * from lrc_inquiries;
 
+

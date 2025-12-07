@@ -30,3 +30,4 @@ on conflict (id) do nothing;
 -- select * from settings;
 
 
+
