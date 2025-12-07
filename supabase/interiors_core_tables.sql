@@ -140,6 +140,67 @@ create index if not exists project_files_file_type_idx
   on public.project_files (file_type);
 
 -- ============================================
+-- VR model – vr_scenes, vr_appointments
+-- ============================================
+-- 
+-- Tablice za upravljanje VR scenama i terminima za VR prezentacije:
+-- - vr_scenes: VR scene povezane s projektima (SimLab paketi, WebXR scene, video ture, galerije slika)
+-- - vr_appointments: termini za VR prezentacije povezani s vr_scenes
+
+-- ============================================
+-- Tablica: vr_scenes
+-- ============================================
+create table if not exists vr_scenes (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references projects(id) on delete cascade,
+  scene_type text not null check (
+    scene_type in ('simlab_package', 'webxr_scene', 'video_tour', 'image_gallery', 'other')
+  ),
+  title text not null,
+  description text,
+  simlab_project_url text,
+  webxr_url text,
+  video_url text,
+  cover_image_url text,
+  storage_bucket text,
+  storage_path text,
+  notes text,
+  created_at timestamptz not null default timezone('utc'::text, now()),
+  updated_at timestamptz not null default timezone('utc'::text, now())
+);
+
+-- Index na project_id (za brzo dohvaćanje scena za određeni projekt)
+create index if not exists vr_scenes_project_id_idx on vr_scenes(project_id);
+
+-- ============================================
+-- Tablica: vr_appointments
+-- ============================================
+create table if not exists vr_appointments (
+  id uuid primary key default gen_random_uuid(),
+  vr_scene_id uuid not null references vr_scenes(id) on delete cascade,
+  scheduled_at timestamptz not null,
+  location_preference text check (
+    location_preference is null or
+    location_preference in ('studio', 'client_home', 'online', 'other')
+  ),
+  status text not null check (
+    status in ('scheduled', 'completed', 'cancelled', 'no_show')
+  ),
+  client_name text,
+  client_email text,
+  client_phone text,
+  notes text,
+  created_at timestamptz not null default timezone('utc'::text, now()),
+  updated_at timestamptz not null default timezone('utc'::text, now())
+);
+
+-- Index na vr_scene_id (za brzo dohvaćanje termina za određenu scenu)
+create index if not exists vr_appointments_vr_scene_id_idx on vr_appointments(vr_scene_id);
+
+-- Index na scheduled_at (za sortiranje i filtriranje po datumu termina)
+create index if not exists vr_appointments_scheduled_at_idx on vr_appointments(scheduled_at);
+
+-- ============================================
 -- Provjera: provjeri da li su tablice kreirane
 -- ============================================
 -- Otkomentiraj sljedeće linije za provjeru:
@@ -147,4 +208,6 @@ create index if not exists project_files_file_type_idx
 -- select * from carpenters;
 -- select * from projects;
 -- select * from project_files;
+-- select * from vr_scenes;
+-- select * from vr_appointments;
 

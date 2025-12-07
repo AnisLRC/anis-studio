@@ -14,6 +14,12 @@ export type VrLocationPreference = 'studio' | 'client_home' | 'unsure'
 
 export type VrPackagePreference = '3d_vr' | '3d_vr_online' | 'unsure' | null
 
+export type VrSceneType = 'simlab_package' | 'webxr_scene' | 'video_tour' | 'image_gallery' | 'other'
+
+export type VrAppointmentLocationPreference = 'studio' | 'client_home' | 'online' | 'other'
+
+export type VrAppointmentStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_show'
+
 export type ProjectStatus =
   | 'inquiry'
   | '3d_in_progress'
@@ -94,6 +100,37 @@ export interface ProjectFile {
   notes: string | null
 }
 
+export interface VrScene {
+  id: string
+  project_id: string
+  scene_type: VrSceneType
+  title: string
+  description: string | null
+  simlab_project_url: string | null
+  webxr_url: string | null
+  video_url: string | null
+  cover_image_url: string | null
+  storage_bucket: string | null
+  storage_path: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface VrAppointment {
+  id: string
+  vr_scene_id: string
+  scheduled_at: string
+  location_preference: VrAppointmentLocationPreference | null
+  status: VrAppointmentStatus
+  client_name: string | null
+  client_email: string | null
+  client_phone: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
 export type ProjectListFilters = {
   userType?: Project["user_type"]; // 'client' | 'carpenter'
   status?: Project["status"];      // 'inquiry' | '3d_in_progress' | ...
@@ -118,6 +155,31 @@ export type NewProjectFileInput = {
   original_name: string
   mime_type?: string | null
   size_bytes?: number | null
+  notes?: string | null
+}
+
+export interface NewVrSceneInput {
+  project_id: string
+  scene_type: VrSceneType
+  title: string
+  description?: string | null
+  simlab_project_url?: string | null
+  webxr_url?: string | null
+  video_url?: string | null
+  cover_image_url?: string | null
+  storage_bucket?: string | null
+  storage_path?: string | null
+  notes?: string | null
+}
+
+export interface NewVrAppointmentInput {
+  vr_scene_id: string
+  scheduled_at: string
+  location_preference?: VrAppointmentLocationPreference | null
+  status: VrAppointmentStatus
+  client_name?: string | null
+  client_email?: string | null
+  client_phone?: string | null
   notes?: string | null
 }
 
@@ -670,5 +732,158 @@ export async function uploadProjectFileToStorage(
   })
 
   return projectFile
+}
+
+// ============================================
+// VR helpers
+// ============================================
+
+/**
+ * Creates a new VR scene in Supabase.
+ * If Supabase is not configured, returns a mock VR scene with fake ID for development.
+ *
+ * @param input - The VR scene data to create
+ * @returns The created VR scene
+ * @throws Error if Supabase is configured but the creation fails
+ */
+export async function createVrScene(
+  input: NewVrSceneInput
+): Promise<VrScene> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] createVrScene (fallback)", input)
+    const now = new Date().toISOString()
+    return {
+      id: "mock-vr-scene",
+      project_id: input.project_id,
+      scene_type: input.scene_type,
+      title: input.title,
+      description: input.description ?? null,
+      simlab_project_url: input.simlab_project_url ?? null,
+      webxr_url: input.webxr_url ?? null,
+      video_url: input.video_url ?? null,
+      cover_image_url: input.cover_image_url ?? null,
+      storage_bucket: input.storage_bucket ?? null,
+      storage_path: input.storage_path ?? null,
+      notes: input.notes ?? null,
+      created_at: now,
+      updated_at: now,
+    }
+  }
+
+  const { data, error } = await supabase!
+    .from("vr_scenes")
+    .insert(input)
+    .select("*")
+    .single()
+
+  if (error) {
+    console.error("[Interiors] createVrScene error:", error)
+    throw error
+  }
+
+  return data as VrScene
+}
+
+/**
+ * Fetches all VR scenes for a specific project from Supabase.
+ * If Supabase is not configured, returns an empty array without throwing an error.
+ *
+ * @param projectId - The project ID to fetch VR scenes for
+ * @returns Array of VR scenes, sorted by created_at ascending (oldest first)
+ * @throws Error if Supabase is configured but the fetch fails
+ */
+export async function fetchVrScenesForProject(
+  projectId: string
+): Promise<VrScene[]> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] fetchVrScenesForProject (fallback)", projectId)
+    return []
+  }
+
+  const { data, error } = await supabase!
+    .from("vr_scenes")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true })
+
+  if (error) {
+    console.error("[Interiors] fetchVrScenesForProject error:", error)
+    throw error
+  }
+
+  return (data ?? []) as VrScene[]
+}
+
+/**
+ * Creates a new VR appointment in Supabase.
+ * If Supabase is not configured, returns a mock VR appointment with fake ID for development.
+ *
+ * @param input - The VR appointment data to create
+ * @returns The created VR appointment
+ * @throws Error if Supabase is configured but the creation fails
+ */
+export async function createVrAppointment(
+  input: NewVrAppointmentInput
+): Promise<VrAppointment> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] createVrAppointment (fallback)", input)
+    const now = new Date().toISOString()
+    return {
+      id: "mock-vr-appointment",
+      vr_scene_id: input.vr_scene_id,
+      scheduled_at: input.scheduled_at,
+      location_preference: input.location_preference ?? null,
+      status: input.status,
+      client_name: input.client_name ?? null,
+      client_email: input.client_email ?? null,
+      client_phone: input.client_phone ?? null,
+      notes: input.notes ?? null,
+      created_at: now,
+      updated_at: now,
+    }
+  }
+
+  const { data, error } = await supabase!
+    .from("vr_appointments")
+    .insert(input)
+    .select("*")
+    .single()
+
+  if (error) {
+    console.error("[Interiors] createVrAppointment error:", error)
+    throw error
+  }
+
+  return data as VrAppointment
+}
+
+/**
+ * Fetches all VR appointments for a specific VR scene from Supabase.
+ * If Supabase is not configured, returns an empty array without throwing an error.
+ *
+ * @param vrSceneId - The VR scene ID to fetch appointments for
+ * @returns Array of VR appointments, sorted by scheduled_at ascending (oldest first)
+ * @throws Error if Supabase is configured but the fetch fails
+ */
+export async function fetchVrAppointmentsForScene(
+  vrSceneId: string
+): Promise<VrAppointment[]> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] fetchVrAppointmentsForScene (fallback)", vrSceneId)
+    return []
+  }
+
+  const { data, error } = await supabase!
+    .from("vr_appointments")
+    .select("*")
+    .eq("vr_scene_id", vrSceneId)
+    .order("scheduled_at", { ascending: true })
+
+  if (error) {
+    console.error("[Interiors] fetchVrAppointmentsForScene error:", error)
+    throw error
+  }
+
+  return (data ?? []) as VrAppointment[]
 }
 
