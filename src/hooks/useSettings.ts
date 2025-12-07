@@ -25,6 +25,10 @@ export function useSettings() {
         return
       }
 
+      if (!supabase) {
+        throw new Error('Supabase klijent nije dostupan.')
+      }
+
       try {
         const { data, error: fetchError } = await supabase
           .from('settings')
@@ -58,6 +62,10 @@ export function useSettings() {
       const updatedSettings = { ...DEFAULT_SETTINGS, ...updates }
       setSettings(updatedSettings)
       return { success: true, data: updatedSettings }
+    }
+
+    if (!supabase) {
+      return { success: false, error: 'Supabase klijent nije dostupan.' }
     }
 
     try {

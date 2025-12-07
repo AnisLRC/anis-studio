@@ -353,43 +353,6 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!validateForm()) {
-      return
-    }
-
-    // In a real app, you would send this data to your backend
-    console.log('Form submitted:', formData)
-    setIsSubmitted(true)
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false)
-      setFormData({
-        furnitureType: '',
-        wallCount: '',
-        handleType: '',
-        length: '',
-        width: '',
-        height: '',
-        depth: '',
-        hasSlope: false,
-        slopeDescription: '',
-        hasColumn: false,
-        columnDimensions: '',
-        hasBeam: false,
-        beamDimensions: '',
-        otherNotes: '',
-        notes: '',
-        sketches: []
-      })
-      setSketchPreviews([])
-      setErrors({})
-    }, 3000)
-  }
-
   const stolars = [
     { id: '1', name: 'Stolarija Jurić (Rijeka)' },
     { id: '2', name: 'Stolarija Novak (Zagreb)' },

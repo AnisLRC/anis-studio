@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSettings } from '../hooks/useSettings'
 import AdminNav from '../components/AdminNav'
 

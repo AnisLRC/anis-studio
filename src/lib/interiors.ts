@@ -151,7 +151,7 @@ export async function fetchProjects(
     return [];
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from("projects")
     .select("*")
     .order("created_at", { ascending: false });
@@ -194,7 +194,7 @@ export async function fetchProjectById(id: string): Promise<Project | null> {
     return null;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from("projects")
     .select("*")
     .eq("id", id)
@@ -222,7 +222,7 @@ export async function fetchClientById(id: string): Promise<Client | null> {
     return null;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from("clients")
     .select("*")
     .eq("id", id)
@@ -250,7 +250,7 @@ export async function fetchCarpenterById(id: string): Promise<Carpenter | null> 
     return null;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from("carpenters")
     .select("*")
     .eq("id", id)
@@ -286,7 +286,7 @@ export async function createProject(
     }
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from('projects')
     .insert(payload)
     .select('*')
@@ -336,7 +336,7 @@ export async function createClient(input: {
   const {
     data: existing,
     error: selectError,
-  } = await supabase
+  } = await supabase!
     .from('clients')
     .select('*')
     .eq('email', input.email)
@@ -355,7 +355,7 @@ export async function createClient(input: {
   }
 
   // 2) ako ne postoji → normalan insert
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from('clients')
     .insert({
       name: input.name,
@@ -394,7 +394,7 @@ export async function createCarpenter(payload: NewCarpenterInput): Promise<Carpe
     }
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from('carpenters')
     .insert(payload)
     .select('*')
@@ -413,7 +413,7 @@ export async function createCarpenter(payload: NewCarpenterInput): Promise<Carpe
 
     if (isDuplicateEmail) {
       // 2) Umjesto da padnemo, pokušaj dohvatiti postojećeg stolara s tim emailom
-      const { data: existing, error: fetchError } = await supabase
+      const { data: existing, error: fetchError } = await supabase!
         .from('carpenters')
         .select('*')
         .eq('email', payload.email)
@@ -458,7 +458,7 @@ export async function fetchCarpenters(): Promise<Carpenter[]> {
     return []
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from('carpenters')
     .select('*')
     .order('created_at', { ascending: false })
@@ -501,7 +501,7 @@ export async function createProjectFile(
     }
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from("project_files")
     .insert({
       project_id: input.project_id,
@@ -540,7 +540,7 @@ export async function fetchProjectFilesForProject(
     return []
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase!
     .from("project_files")
     .select("*")
     .eq("project_id", projectId)
@@ -587,7 +587,7 @@ export async function uploadProjectFileToStorage(
   const path = `${projectId}/${timestamp}-${random}-${safeName}`
 
   // 1) Upload u Storage
-  const { data: uploadData, error: uploadError } = await supabase.storage
+  const { data: uploadData, error: uploadError } = await supabase!.storage
     .from(PROJECT_FILES_BUCKET)
     .upload(path, file)
 
