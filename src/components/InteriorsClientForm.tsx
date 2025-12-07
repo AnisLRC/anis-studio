@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
-import { createClient, createProject, type VrLocationPreference, type VrPackagePreference } from '../lib/interiors'
+import { createClient, createProject, uploadProjectFileToStorage, type VrLocationPreference, type VrPackagePreference, type ProjectFile } from '../lib/interiors'
 
 export interface StolarOption {
   id: string
@@ -521,7 +521,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       })
 
       // Create project
-      await createProject({
+      const project = await createProject({
         title: `Projekt za ${values.clientName.trim()} – ${values.projectType || 'Nepoznato'}`,
         user_type: 'client',
         client_id: client.id,
@@ -537,6 +537,40 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         budget: budget,
         notes: notesWithFilesInfo,
       })
+
+      // Upload povezanih datoteka (tlocrt + inspiracije) u Storage + project_files
+      try {
+        const uploadPromises: Promise<ProjectFile | null>[] = []
+
+        // tlocrt / tlocrti → file_type = "plan"
+        if (values.planFiles && values.planFiles.length > 0) {
+          for (const file of values.planFiles) {
+            uploadPromises.push(
+              uploadProjectFileToStorage(project.id, file, "plan")
+            )
+          }
+        }
+
+        // inspiracije → file_type = "inspiration"
+        if (inspirationFiles && inspirationFiles.length > 0) {
+          for (const file of inspirationFiles) {
+            uploadPromises.push(
+              uploadProjectFileToStorage(project.id, file, "inspiration")
+            )
+          }
+        }
+
+        if (uploadPromises.length > 0) {
+          await Promise.all(uploadPromises)
+        }
+      } catch (uploadError) {
+        console.error(
+          "[InteriorsClientForm] Error uploading project files:",
+          uploadError
+        )
+        // ne rušimo cijeli submit – projekt je svejedno kreiran
+        // kasnije možemo dodati user-facing upozorenje
+      }
 
       // Reset poruke o odabranom tlocrtu odmah nakon uspješnog slanja
       setSelectedPlanFileNames([])
