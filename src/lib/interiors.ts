@@ -301,6 +301,62 @@ export async function createProject(
 }
 
 /**
+ * Updates the status of a project in Supabase.
+ * If Supabase is not configured, returns a mock project with the updated status for development.
+ *
+ * @param projectId - The ID of the project to update
+ * @param status - The new status to set
+ * @returns The updated project
+ * @throws Error if Supabase is configured but the update fails
+ */
+export async function updateProjectStatus(
+  projectId: string,
+  status: Project["status"]
+): Promise<Project> {
+  if (!isSupabaseConfigured || !supabase) {
+    console.log('[Interiors] updateProjectStatus (fallback)', { projectId, status })
+    // fallback za dev bez Supabase env-a
+    const now = new Date().toISOString()
+    return {
+      id: projectId,
+      created_at: now,
+      updated_at: now,
+      title: '',
+      user_type: 'client',
+      client_id: null,
+      carpenter_id: null,
+      drawn_by: 'ani',
+      uses_corpus: false,
+      wants_vr: false,
+      vr_location_preference: null,
+      vr_package_preference: null,
+      status: status,
+      space_type: null,
+      area_m2: null,
+      budget: null,
+      notes: null,
+    }
+  }
+
+  const { data, error } = await supabase!
+    .from('projects')
+    .update({
+      status: status,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', projectId)
+    .select('*')
+    .single()
+
+  if (error) {
+    console.error('[Interiors] updateProjectStatus error:', error)
+    throw error
+  }
+
+  return data as Project
+}
+
+/**
  * Creates a new client in Supabase.
  * If Supabase is not configured, returns a mock client with fake ID for development.
  * If a client with the same email already exists, returns the existing client.

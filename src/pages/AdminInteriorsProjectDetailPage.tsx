@@ -5,6 +5,7 @@ import {
   fetchClientById,
   fetchCarpenterById,
   fetchProjectFilesForProject,
+  updateProjectStatus,
 } from "../lib/interiors";
 
 type Project = NonNullable<Awaited<ReturnType<typeof fetchProjectById>>>;
@@ -14,6 +15,15 @@ type ProjectFile = Awaited<
   ReturnType<typeof fetchProjectFilesForProject>
 >[number];
 
+const STATUS_OPTIONS: { value: Project["status"]; label: string }[] = [
+  { value: "inquiry", label: "Upit" },
+  { value: "3d_in_progress", label: "3D u izradi" },
+  { value: "3d_done", label: "3D gotovo" },
+  { value: "vr_in_progress", label: "VR u izradi" },
+  { value: "vr_done", label: "VR gotovo" },
+  { value: "presented", label: "Prezentirano" },
+];
+
 const AdminInteriorsProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -21,6 +31,7 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   const [client, setClient] = useState<Client | null>(null);
   const [carpenter, setCarpenter] = useState<Carpenter | null>(null);
@@ -186,6 +197,26 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     navigate("/admin/interiors-projects");
   };
 
+  const handleStatusChange = async (newStatus: Project["status"]) => {
+    if (!project || newStatus === project.status) return;
+
+    const previousStatus = project.status;
+    setProject({ ...project, status: newStatus });
+    setIsUpdatingStatus(true);
+
+    try {
+      await updateProjectStatus(project.id, newStatus);
+    } catch (error) {
+      console.error(
+        "[AdminInteriorsProjectDetail] Failed to update status:",
+        error
+      );
+      setProject({ ...project, status: previousStatus });
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-4xl space-y-6">
@@ -330,7 +361,27 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                 />
                 <InfoRow
                   label="Status"
-                  value={mapProjectStatusToLabel(project.status)}
+                  value={
+                    <select
+                      value={project.status}
+                      onChange={(e) =>
+                        handleStatusChange(e.target.value as Project["status"])
+                      }
+                      disabled={isUpdatingStatus}
+                      title={isUpdatingStatus ? "Spremam..." : undefined}
+                      className={`rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 ${
+                        isUpdatingStatus
+                          ? "opacity-50 cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
+                    >
+                      {STATUS_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  }
                 />
                 <InfoRow
                   label="VR"
@@ -488,7 +539,7 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
 
 type InfoRowProps = {
   label: string;
-  value: string;
+  value: string | React.ReactNode;
 };
 
 const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchProjects, type ProjectListFilters } from "../lib/interiors";
+import { fetchProjects, updateProjectStatus, type ProjectListFilters } from "../lib/interiors";
 
 type Project = Awaited<ReturnType<typeof fetchProjects>>[number];
 
@@ -31,6 +31,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const [userTypeFilter, setUserTypeFilter] = useState<"" | "client" | "carpenter">("");
   const [statusFilter, setStatusFilter] = useState<"" | Project["status"]>("");
@@ -86,6 +87,33 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
 
   const handleRowClick = (id: string) => {
     navigate(`/admin/interiors-projects/${id}`);
+  };
+
+  const handleStatusChange = async (
+    projectId: string,
+    oldStatus: Project["status"],
+    newStatus: Project["status"]
+  ) => {
+    if (oldStatus === newStatus) return;
+
+    setUpdatingId(projectId);
+
+    // Optimistic update
+    setProjects((prev) =>
+      prev.map((p) => (p.id === projectId ? { ...p, status: newStatus } : p))
+    );
+
+    try {
+      await updateProjectStatus(projectId, newStatus);
+    } catch (error) {
+      console.error("[AdminInteriorsProjects] Failed to update status:", error);
+      // Rollback to old status on error
+      setProjects((prev) =>
+        prev.map((p) => (p.id === projectId ? { ...p, status: oldStatus } : p))
+      );
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   return (
@@ -251,9 +279,37 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                         {vrLabel}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-700">
-                        <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700">
-                          {statusLabel}
-                        </span>
+                        <select
+                          value={project.status}
+                          onChange={(e) =>
+                            handleStatusChange(
+                              project.id,
+                              project.status,
+                              e.target.value as Project["status"]
+                            )
+                          }
+                          onClick={(e) => e.stopPropagation()}
+                          disabled={updatingId === project.id}
+                          title={
+                            updatingId === project.id ? "Spremam..." : undefined
+                          }
+                          className={`rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 ${
+                            updatingId === project.id
+                              ? "opacity-50 cursor-not-allowed"
+                              : "cursor-pointer"
+                          }`}
+                        >
+                          {STATUS_OPTIONS.filter((opt) => opt.value !== "").map(
+                            (opt) => (
+                              <option
+                                key={opt.value}
+                                value={opt.value as Project["status"]}
+                              >
+                                {opt.label}
+                              </option>
+                            )
+                          )}
+                        </select>
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-700">
                         {area}
