@@ -4,11 +4,15 @@ import {
   fetchProjectById,
   fetchClientById,
   fetchCarpenterById,
+  fetchProjectFilesForProject,
 } from "../lib/interiors";
 
 type Project = NonNullable<Awaited<ReturnType<typeof fetchProjectById>>>;
 type Client = NonNullable<Awaited<ReturnType<typeof fetchClientById>>>;
 type Carpenter = NonNullable<Awaited<ReturnType<typeof fetchCarpenterById>>>;
+type ProjectFile = Awaited<
+  ReturnType<typeof fetchProjectFilesForProject>
+>[number];
 
 const AdminInteriorsProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +26,10 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
   const [carpenter, setCarpenter] = useState<Carpenter | null>(null);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
   const [relatedError, setRelatedError] = useState<string | null>(null);
+
+  const [files, setFiles] = useState<ProjectFile[]>([]);
+  const [isLoadingFiles, setIsLoadingFiles] = useState(false);
+  const [filesError, setFilesError] = useState<string | null>(null);
 
   useEffect(() => {
     let isCancelled = false;
@@ -130,6 +138,44 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     };
 
     loadRelated();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [project]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadFiles = async () => {
+      setFiles([]);
+      setFilesError(null);
+
+      if (!project) return;
+
+      try {
+        setIsLoadingFiles(true);
+        const data = await fetchProjectFilesForProject(project.id);
+
+        if (!isCancelled) {
+          setFiles(data);
+        }
+      } catch (error) {
+        console.error(
+          "[AdminInteriorsProjectDetailPage] Failed to load project files:",
+          error
+        );
+        if (!isCancelled) {
+          setFilesError("Došlo je do greške pri dohvaćanju datoteka projekta.");
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingFiles(false);
+        }
+      }
+    };
+
+    loadFiles();
 
     return () => {
       isCancelled = true;
@@ -363,6 +409,65 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
               </div>
             </section>
 
+            {/* Datoteke projekta */}
+            <section className="rounded-lg border border-slate-200 bg-white p-4">
+              <h2 className="text-sm font-semibold text-slate-900">
+                Datoteke projekta
+              </h2>
+
+              {isLoadingFiles && (
+                <p className="mt-3 text-xs text-slate-600">
+                  Učitavam datoteke...
+                </p>
+              )}
+
+              {filesError && (
+                <p className="mt-3 text-xs text-red-700">{filesError}</p>
+              )}
+
+              {!isLoadingFiles && !filesError && files.length === 0 && (
+                <p className="mt-3 text-xs text-slate-600">
+                  Još nema povezanih datoteka za ovaj projekt.
+                </p>
+              )}
+
+              {!isLoadingFiles && !filesError && files.length > 0 && (
+                <ul className="mt-3 space-y-2 text-xs text-slate-700">
+                  {files.map((file) => (
+                    <li
+                      key={file.id}
+                      className="flex flex-col gap-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {file.original_name}
+                        </span>
+                        <span className="text-[11px] text-slate-500">
+                          {mapFileTypeLabel(file.file_type)}
+                          {file.size_bytes != null
+                            ? ` • ${(file.size_bytes / (1024 * 1024)).toFixed(
+                                2
+                              )} MB`
+                            : ""}
+                        </span>
+                        {file.notes && (
+                          <span className="mt-1 text-[11px] text-slate-600">
+                            {file.notes}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-1 text-[11px] text-slate-500 sm:mt-0 sm:text-right">
+                        {file.created_at
+                          ? new Date(file.created_at).toLocaleString("hr-HR")
+                          : ""}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+
             {/* Napomene */}
             <section className="rounded-lg border border-slate-200 bg-white p-4">
               <h2 className="text-sm font-semibold text-slate-900">
@@ -441,6 +546,27 @@ function mapVrPackage(
       return "Nisam siguran";
     default:
       return "—";
+  }
+}
+
+function mapFileTypeLabel(fileType: ProjectFile["file_type"]): string {
+  switch (fileType) {
+    case "plan":
+      return "Tlocrt";
+    case "inspiration":
+      return "Inspiracija";
+    case "space_photo":
+      return "Fotografija prostora";
+    case "kitchen_sketch":
+      return "Skica kuhinje";
+    case "carpenter_3d_export":
+      return "3D eksport stolara";
+    case "vr_asset":
+      return "VR asset";
+    case "other":
+      return "Ostalo";
+    default:
+      return fileType;
   }
 }
 
