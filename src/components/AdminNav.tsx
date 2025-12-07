@@ -45,6 +45,18 @@ const AdminNav: React.FC = () => {
               >
                 LRC upiti
               </NavLink>
+              <NavLink
+                to="/admin/interiors-projects"
+                className={({ isActive }) =>
+                  `text-sm font-medium transition-colors duration-200 px-3 py-1.5 rounded-lg ${
+                    isActive
+                      ? 'text-violet-700 bg-violet-50 font-semibold'
+                      : 'text-slate-600 hover:text-violet-700 hover:bg-slate-100'
+                  }`
+                }
+              >
+                Interijeri projekti
+              </NavLink>
             </nav>
           </div>
 

@@ -14,6 +14,7 @@ import HomePage from './pages/HomePage'
 import LRCPage from './pages/LRCPage'
 import AdminSettingsPage from './pages/AdminSettingsPage'
 import AdminLrcInquiriesPage from './pages/AdminLrcInquiriesPage'
+import AdminInteriorsProjectsPage from './pages/AdminInteriorsProjectsPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminRoute from './components/AdminRoute'
 import { AdminAuthProvider } from './providers/AdminAuthProvider'
@@ -79,6 +80,14 @@ export default function App() {
               element={
                 <AdminRoute>
                   <AdminLrcInquiriesPage />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/interiors-projects"
+              element={
+                <AdminRoute>
+                  <AdminInteriorsProjectsPage />
                 </AdminRoute>
               }
             />
