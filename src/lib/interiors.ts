@@ -128,6 +128,8 @@ export type NewProjectFileInput = {
 const NOT_CONFIGURED_ERROR =
   '[Interiors] Supabase nije konfiguriran. Provjeri .env.local i postavke.'
 
+const PROJECT_FILES_BUCKET = "project-files"; // TODO: kreiraj ovaj bucket u Supabase Storage
+
 // ============================================
 // Helper Functions
 // ============================================
@@ -301,67 +303,72 @@ export async function createProject(
 /**
  * Creates a new client in Supabase.
  * If Supabase is not configured, returns a mock client with fake ID for development.
+ * If a client with the same email already exists, returns the existing client.
  *
- * @param payload - The client data to create (without id, created_at)
- * @returns The created client
- * @throws Error if Supabase is configured but the creation fails
+ * @param input - The client data to create (without id, created_at)
+ * @returns The created or existing client
+ * @throws Error if Supabase is configured but the operation fails
  */
-export async function createClient(payload: NewClientInput): Promise<Client> {
-  if (!isSupabaseConfigured || !supabase) {
-    console.warn(NOT_CONFIGURED_ERROR)
-    // soft-fallback za razvoj – vrati payload s fake ID-em
+export async function createClient(input: {
+  name: string
+  email: string
+  phone: string | null
+  language: string
+  notes: string | null
+}): Promise<Client> {
+  if (!isSupabaseConfigured) {
+    console.log('[Interiors] createClient (fallback)', input)
+
+    const now = new Date().toISOString()
+
     return {
-      ...payload,
-      id: 'local-dev-id',
-      created_at: new Date().toISOString(),
+      id: 'fallback-client',
+      created_at: now,
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      language: input.language as Client['language'],
+      notes: input.notes,
     }
   }
 
+  // 1) prvo provjeri postoji li već klijent s ovim emailom
+  const {
+    data: existing,
+    error: selectError,
+  } = await supabase
+    .from('clients')
+    .select('*')
+    .eq('email', input.email)
+    .maybeSingle()
+
+  if (selectError) {
+    console.error('[Interiors] createClient select error:', selectError)
+    throw selectError
+  }
+
+  if (existing) {
+    console.log(
+      '[Interiors] createClient: reusing existing client with same email'
+    )
+    return existing as Client
+  }
+
+  // 2) ako ne postoji → normalan insert
   const { data, error } = await supabase
     .from('clients')
-    .insert(payload)
+    .insert({
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      language: input.language,
+      notes: input.notes,
+    })
     .select('*')
     .single()
 
   if (error) {
-    console.error('[Interiors] createClient error:', error)
-
-    // 1) Je li ovo greška zbog duplikata emaila? (unique constraint)
-    const code = (error as any).code
-    const details = (error as any).details as string | undefined
-
-    const isDuplicateEmail =
-      code === '23505' ||
-      (details && details.includes('clients_email_unique'))
-
-    if (isDuplicateEmail) {
-      // 2) Umjesto da padnemo, pokušaj dohvatiti postojećeg klijenta s tim emailom
-      const { data: existing, error: fetchError } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('email', payload.email)
-        .maybeSingle()
-
-      if (fetchError) {
-        console.error(
-          '[Interiors] createClient fetch existing by email error:',
-          fetchError
-        )
-        throw error // vratimo originalnu grešku ako i fetch pukne
-      }
-
-      if (existing) {
-        console.info(
-          '[Interiors] createClient: reusing existing client with same email'
-        )
-        return existing as Client
-      }
-
-      // ako je baš sve čudno i nema existinga, ipak bacimo originalnu grešku
-      throw error
-    }
-
-    // 3) Sve ostale greške i dalje bacamo normalno
+    console.error('[Interiors] createClient insert error:', error)
     throw error
   }
 
@@ -545,5 +552,67 @@ export async function fetchProjectFilesForProject(
   }
 
   return (data ?? []) as ProjectFile[]
+}
+
+/**
+ * Uploads a file to Supabase Storage and creates a project file record.
+ * If Supabase is not configured, returns null without throwing an error.
+ *
+ * @param projectId - The project ID to associate the file with
+ * @param file - The file to upload
+ * @param fileType - The type of file (plan, inspiration, etc.)
+ * @returns The created project file record, or null if Supabase is not configured
+ * @throws Error if Supabase is configured but the upload or creation fails
+ */
+export async function uploadProjectFileToStorage(
+  projectId: string,
+  file: File,
+  fileType: ProjectFileType
+): Promise<ProjectFile | null> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] uploadProjectFileToStorage (fallback)", {
+      projectId,
+      fileName: file.name,
+      fileType,
+    })
+
+    // u dev okruženju bez Supabase-a samo preskačemo upload
+    return null
+  }
+
+  // malo čišćenje imena datoteke za path
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_\u0100-\u017F]/g, "_")
+  const timestamp = Date.now()
+  const random = Math.random().toString(36).slice(2, 8)
+  const path = `${projectId}/${timestamp}-${random}-${safeName}`
+
+  // 1) Upload u Storage
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from(PROJECT_FILES_BUCKET)
+    .upload(path, file)
+
+  if (uploadError) {
+    console.error(
+      "[Interiors] uploadProjectFileToStorage upload error:",
+      uploadError
+    )
+    throw uploadError
+  }
+
+  const storagePath = uploadData?.path ?? path
+
+  // 2) Zapis u project_files tablicu
+  const projectFile = await createProjectFile({
+    project_id: projectId,
+    file_type: fileType,
+    storage_bucket: PROJECT_FILES_BUCKET,
+    storage_path: storagePath,
+    original_name: file.name,
+    mime_type: file.type || null,
+    size_bytes: file.size,
+    notes: null,
+  })
+
+  return projectFile
 }
 
