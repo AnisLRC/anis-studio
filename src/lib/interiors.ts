@@ -142,6 +142,34 @@ export async function fetchProjects(
 }
 
 /**
+ * Fetches a single project by ID from Supabase.
+ * If Supabase is not configured, returns null without throwing an error.
+ *
+ * @param id - The project ID to fetch
+ * @returns The project if found, or null if not found
+ * @throws Error if Supabase is configured but the fetch fails
+ */
+export async function fetchProjectById(id: string): Promise<Project | null> {
+  if (!isSupabaseConfigured) {
+    console.log("[Interiors] fetchProjectById (fallback)", id);
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[Interiors] fetchProjectById error:", error);
+    throw error;
+  }
+
+  return (data as Project) ?? null;
+}
+
+/**
  * Creates a new project in Supabase.
  * If Supabase is not configured, returns a mock project with fake ID for development.
  *
