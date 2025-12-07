@@ -336,26 +336,34 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
     if (field === 'planFile') {
       const fileArray = Array.from(files)
 
-      // spremi imena svih odabranih datoteka
+      // imena za prikaz
       setSelectedPlanFileNames(fileArray.map((file) => file.name))
 
-      // spremi sve datoteke u values.planFiles
+      // sve datoteke u values.planFiles (File[])
       setValues((prev) => ({
         ...prev,
         planFiles: fileArray,
       }))
 
       return
+    } else if (field === 'inspirationFiles') {
+      const fileArray = Array.from(files)
+      const fileNames = fileArray.map((file) => file.name)
+
+      // imena za prikaz
+      setSelectedInspirationFileNames(fileNames)
+
+      // stvarne datoteke držimo u posebnom stateu, NE u values
+      setInspirationFiles(fileArray)
+
+      // ne diramo values.inspirationFiles – to polje ni ne postoji u tipu
+      return
     } else {
+      // trenutno je ovo samo za photoFiles, pa ako to koristiš neka ostane ovako
       setValues((prev) => ({
         ...prev,
         [field]: files,
       }))
-
-      if (field === 'inspirationFiles') {
-        const fileNames = Array.from(files).map((file) => file.name)
-        setSelectedInspirationFileNames(fileNames)
-      }
     }
   }
 
@@ -544,7 +552,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       })
 
       if (onSubmit) {
-        onSubmit(values)
+        // ne šalji File objekte u callback
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { planFiles, photoFiles, ...valuesWithoutFiles } = values
+
+        onSubmit(valuesWithoutFiles as ClientProjectFormValues)
       }
 
       // Mark as submitted
@@ -561,6 +573,25 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       }, 3000)
     } catch (error) {
       console.error('Error submitting client form:', error)
+
+      // dodatne informacije ako je običan Error objekt
+      if (error instanceof Error) {
+        console.error('Error message:', error.message)
+        console.error('Error stack:', error.stack)
+      }
+
+      // ako je "Supabase-stil" error ili bilo što s .message
+      if (error && typeof error === 'object' && 'message' in error) {
+        try {
+          console.error(
+            'Supabase error details:',
+            JSON.stringify(error, null, 2)
+          )
+        } catch {
+          // ako JSON.stringify pukne, ignoriraj
+        }
+      }
+
       setSubmitError(translations.error[language])
     } finally {
       setIsSubmitting(false)
