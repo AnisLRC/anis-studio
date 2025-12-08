@@ -286,8 +286,6 @@ export function WebProjectForm({ language = 'hr' }: WebProjectFormProps) {
         : '',
       budgetRange: values.budgetRange || '',
     })
-
-    console.log('Web project form submitted:', values)
     
     // Reset form after 3 seconds
     setTimeout(() => {

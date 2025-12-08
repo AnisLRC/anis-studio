@@ -140,8 +140,6 @@ export default function ContactSection({ language }: ContactSectionProps) {
     }
     
     // Demo alert - u production bi ovdje bio API poziv
-    console.log('Form submitted:', formData)
-    
     setIsSubmitted(true)
     setErrors({})
     
