@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Header from './components/Header'
-import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
 import { useCart } from './lib/cart.store'
 import { ErrorBoundary } from './ErrorBoundary'
@@ -10,6 +8,7 @@ import RegisterModal from './components/RegisterModal'
 import AdminDashboard from './components/AdminDashboard'
 import { useGlobalScrollAnimations } from './hooks/useGlobalScrollAnimations'
 import { useThemeStore } from './lib/theme.store'
+import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
 import LRCPage from './pages/LRCPage'
 import AdminSettingsPage from './pages/AdminSettingsPage'
@@ -56,19 +55,23 @@ export default function App() {
     >
         <BrowserRouter>
         <AdminAuthProvider>
-          <ErrorBoundary name="Header">
-            <Header 
-              language={language}
-              onLanguageChange={setLanguage}
-              cartItemCount={cartCount}
-              onCartClick={() => setIsCartOpen(true)}
-            />
-          </ErrorBoundary>
-          
           <Routes>
-            <Route path="/" element={<HomePage language={language} />} />
-            <Route path="/lrc" element={<LRCPage language={language} />} />
-            <Route path="/vr/:projectId" element={<PublicProjectVrPage />} />
+            <Route
+              element={
+                <MainLayout
+                  language={language}
+                  onLanguageChange={setLanguage}
+                  cartItemCount={cartCount}
+                  onCartClick={() => setIsCartOpen(true)}
+                />
+              }
+            >
+              <Route path="/" element={<HomePage language={language} />} />
+              <Route path="/lrc" element={<LRCPage language={language} />} />
+              <Route path="/vr/:projectId" element={<PublicProjectVrPage />} />
+            </Route>
+
+            {/* Admin routes - no public header/footer */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route
               path="/admin/settings"
@@ -103,10 +106,6 @@ export default function App() {
               }
             />
           </Routes>
-
-          <ErrorBoundary name="Footer">
-            <Footer />
-          </ErrorBoundary>
 
           <ErrorBoundary name="CartDrawer">
             <CartDrawer

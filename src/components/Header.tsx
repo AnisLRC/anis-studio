@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../providers/AuthProvider'
 import { useAdminAuth } from '../providers/AdminAuthProvider'
 import { useUi } from '../providers/UiProvider'
@@ -19,6 +19,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   const { openModal } = useUi()
   const { theme, toggleTheme } = useThemeStore()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const navigation = {
     hr: {
@@ -51,9 +52,21 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   }
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+    // If not on homepage, navigate to "/" first, then scroll
+    if (location.pathname !== '/') {
+      navigate('/')
+      // Wait for navigation to complete before scrolling
+      setTimeout(() => {
+        const element = document.getElementById(sectionId)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
+    } else {
+      const element = document.getElementById(sectionId)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
     }
     setIsMobileMenuOpen(false)
   }
@@ -62,7 +75,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
     <header className="sticky top-0 z-50 header-glass bg-slate-50/80 dark:bg-slate-50/80 text-slate-900 border-b border-slate-200/60 dark:border-slate-200/60 backdrop-blur">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex items-center justify-between py-2 sm:py-2.5">
         {/* Logo */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <Link to="/" className="flex items-center gap-2 sm:gap-3">
           <div 
             className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-lg sm:text-xl hover:scale-110 hover:shadow-[0_6px_16px_rgba(110,68,255,0.4)] transition-all duration-300"
             style={{
@@ -83,7 +96,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           >
             Ani's Studio
           </span>
-        </div>
+        </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6">
