@@ -27,14 +27,16 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
       interiors: 'Interijeri',
       webAtelier: 'Web Atelier',
       about: 'O nama',
-      contact: 'Kontakt'
+      contact: 'Kontakt',
+      faq: 'Česta pitanja'
     },
     en: {
       lrc: 'LRC',
       interiors: 'Interiors',
       webAtelier: 'Web Atelier',
       about: 'About',
-      contact: 'Contact'
+      contact: 'Contact',
+      faq: 'FAQ'
     }
   }
 
@@ -100,30 +102,26 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6">
-          {(['lrc', 'interiors', 'webAtelier', 'about', 'contact'] as const).map((key) => {
-            if (key === 'lrc') {
-              return (
-                <Link
-                  key={key}
-                  to="/lrc"
-                  className="relative text-[15px] font-medium py-2 transition-colors duration-200 text-slate-800 hover:text-violet-700"
-                >
-                  <span className="after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-0 after:bg-[--color-primary] after:transition-[width] after:duration-300 hover:after:w-full">
-                    {navigation[language][key]}
-                  </span>
-                </Link>
-              )
+          {(['lrc', 'interiors', 'webAtelier', 'about', 'faq', 'contact'] as const).map((key) => {
+            const routeMap: Record<typeof key, string> = {
+              lrc: '/lrc',
+              interiors: '/interijeri',
+              webAtelier: '/web-atelier',
+              about: '/o-nama',
+              contact: '/kontakt',
+              faq: '/faq'
             }
+            
             return (
-              <button
+              <Link
                 key={key}
-                onClick={() => scrollToSection(key === "webAtelier" ? "web-atelier" : key)}
+                to={routeMap[key]}
                 className="relative text-[15px] font-medium py-2 transition-colors duration-200 text-slate-800 hover:text-violet-700"
               >
                 <span className="after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-0 after:bg-[--color-primary] after:transition-[width] after:duration-300 hover:after:w-full">
                   {navigation[language][key]}
                 </span>
-              </button>
+              </Link>
             )
           })}
         </div>
@@ -345,29 +343,26 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
       {isMobileMenuOpen && (
         <div className="md:hidden border-t py-3 sm:py-4 backdrop-blur-sm mobile-menu-enter border-slate-200/60 bg-white/95 dark:bg-white/95">
           <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex flex-col gap-2">
-            {(['lrc', 'interiors', 'webAtelier', 'about', 'contact'] as const).map((key) => {
-              if (key === 'lrc') {
-                return (
-                  <Link
-                    key={key}
-                    to="/lrc"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="mobile-menu-item text-left px-3 py-2.5 active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg font-medium text-slate-800 hover:text-violet-700 active:text-violet-700"
-                    style={{ minHeight: '48px' }}
-                  >
-                    {navigation[language][key]}
-                  </Link>
-                )
+            {(['lrc', 'interiors', 'webAtelier', 'about', 'faq', 'contact'] as const).map((key) => {
+              const routeMap: Record<typeof key, string> = {
+                lrc: '/lrc',
+                interiors: '/interijeri',
+                webAtelier: '/web-atelier',
+                about: '/o-nama',
+                contact: '/kontakt',
+                faq: '/faq'
               }
+              
               return (
-                <button
+                <Link
                   key={key}
-                  onClick={() => scrollToSection(key === "webAtelier" ? "web-atelier" : key)}
+                  to={routeMap[key]}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="mobile-menu-item text-left px-3 py-2.5 active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg font-medium text-slate-800 hover:text-violet-700 active:text-violet-700"
                   style={{ minHeight: '48px' }}
                 >
                   {navigation[language][key]}
-                </button>
+                </Link>
               )
             })}
             {/* Mobile Auth Buttons - Touch-friendly */}

@@ -1,6 +1,8 @@
 import React from "react";
 import LRCSection from "../components/LRCSection";
 import { useSettings } from "../hooks/useSettings";
+import { ErrorBoundary } from "../ErrorBoundary";
+import FAQSection from "../sections/FAQSection";
 
 interface LRCPageProps {
   language?: 'hr' | 'en';
@@ -41,6 +43,11 @@ const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
           )}
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <ErrorBoundary name="FAQ">
+        <FAQSection language={language} categories={['lrc']} />
+      </ErrorBoundary>
     </main>
   );
 };

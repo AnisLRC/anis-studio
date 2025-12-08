@@ -11,6 +11,11 @@ import { useThemeStore } from './lib/theme.store'
 import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
 import LRCPage from './pages/LRCPage'
+import InterijeriPage from './pages/InterijeriPage'
+import WebAtelierPage from './pages/WebAtelierPage'
+import AboutPage from './pages/AboutPage'
+import ContactPage from './pages/ContactPage'
+import FAQPage from './pages/FAQPage'
 import AdminSettingsPage from './pages/AdminSettingsPage'
 import AdminLrcInquiriesPage from './pages/AdminLrcInquiriesPage'
 import AdminInteriorsProjectsPage from './pages/AdminInteriorsProjectsPage'
@@ -68,6 +73,11 @@ export default function App() {
             >
               <Route path="/" element={<HomePage language={language} />} />
               <Route path="/lrc" element={<LRCPage language={language} />} />
+              <Route path="/interijeri" element={<InterijeriPage language={language} />} />
+              <Route path="/web-atelier" element={<WebAtelierPage language={language} />} />
+              <Route path="/o-nama" element={<AboutPage language={language} />} />
+              <Route path="/kontakt" element={<ContactPage language={language} />} />
+              <Route path="/faq" element={<FAQPage language={language} />} />
               <Route path="/vr/:projectId" element={<PublicProjectVrPage />} />
             </Route>
 
