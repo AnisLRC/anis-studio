@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../providers/AuthProvider'
 import { useAdminAuth } from '../providers/AdminAuthProvider'
 import { useUi } from '../providers/UiProvider'
@@ -19,7 +19,6 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   const { openModal } = useUi()
   const { theme, toggleTheme } = useThemeStore()
   const navigate = useNavigate()
-  const location = useLocation()
 
   const navigation = {
     hr: {
@@ -51,26 +50,6 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
       register: 'Register',
       logout: 'Logout'
     }
-  }
-
-  const scrollToSection = (sectionId: string) => {
-    // If not on homepage, navigate to "/" first, then scroll
-    if (location.pathname !== '/') {
-      navigate('/')
-      // Wait for navigation to complete before scrolling
-      setTimeout(() => {
-        const element = document.getElementById(sectionId)
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' })
-        }
-      }, 100)
-    } else {
-      const element = document.getElementById(sectionId)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
-      }
-    }
-    setIsMobileMenuOpen(false)
   }
 
   return (
