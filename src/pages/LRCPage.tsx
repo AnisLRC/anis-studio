@@ -7,7 +7,7 @@ interface LRCPageProps {
 }
 
 const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
-  const { settings, isLoading } = useSettings();
+  const { settings, isLoading, error } = useSettings();
   const LRC_FORM_ENABLED = settings?.is_lrc_form_enabled ?? true;
 
   return (
@@ -17,10 +17,25 @@ const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
         <div className="mx-auto max-w-6xl">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <p className="text-slate-600">Učitavanje...</p>
+              <p className="text-slate-600">Učitavanje postavki prijava...</p>
             </div>
           ) : (
-            <LRCSection language={language} isFormEnabled={LRC_FORM_ENABLED} />
+            <>
+              {error && (
+                <div className="rounded-xl bg-yellow-50 border border-yellow-200 p-6 text-center mb-6">
+                  <p className="text-sm text-yellow-800 mb-2">
+                    Trenutno ne možemo učitati postavke prijave. Ako imate problem s prijavom, javite se na e-mail.
+                  </p>
+                  <a 
+                    href="mailto:info.anilrc@gmail.com" 
+                    className="text-sm text-yellow-900 underline hover:text-yellow-700"
+                  >
+                    info.anilrc@gmail.com
+                  </a>
+                </div>
+              )}
+              <LRCSection language={language} isFormEnabled={error ? true : LRC_FORM_ENABLED} />
+            </>
           )}
         </div>
       </section>

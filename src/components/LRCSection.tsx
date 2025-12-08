@@ -138,6 +138,18 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
     submittingButton: {
       hr: "Šaljem...",
       en: "Sending..."
+    },
+    formDisabledTitle: {
+      hr: "LRC radionice",
+      en: "LRC Workshops"
+    },
+    formDisabledMessage: {
+      hr: "Trenutno nema otvorenih prijava za LRC radionice.",
+      en: "There are currently no open applications for LRC workshops."
+    },
+    formDisabledAdditional: {
+      hr: "Ako želite da vam javimo kad otvorimo nove termine, javite nam se na info.anilrc@gmail.com ili nas pratite na društvenim mrežama.",
+      en: "If you would like us to notify you when we open new dates, contact us at info.anilrc@gmail.com or follow us on social media."
     }
   }
 
@@ -376,6 +388,21 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
             </article>
           ))}
         </div>
+
+        {/* Message when form is disabled */}
+        {!isFormEnabled && (
+          <div className="rounded-2xl p-6 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.2)] shadow-lg fade-in text-center mb-12">
+            <h3 className="text-xl sm:text-2xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+              {translations.formDisabledTitle[language]}
+            </h3>
+            <p className="text-base sm:text-lg text-slate-700 mb-4">
+              {translations.formDisabledMessage[language]}
+            </p>
+            <p className="text-sm sm:text-base text-slate-600">
+              {translations.formDisabledAdditional[language]}
+            </p>
+          </div>
+        )}
 
         {/* Customization Steps - only show if form is enabled */}
         {isFormEnabled && (
