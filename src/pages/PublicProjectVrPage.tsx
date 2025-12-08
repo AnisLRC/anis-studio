@@ -16,6 +16,22 @@ const getMainUrl = (scene: VrScene): string => {
   return "";
 };
 
+function formatLocationPreference(value: string | null): string {
+  if (!value) return "—";
+  switch (value) {
+    case "online":
+      return "Online (Meet/Zoom/Teams)";
+    case "showroom":
+      return "VR showroom / Ani's Studio";
+    case "client_home":
+      return "Na lokaciji klijenta";
+    case "other":
+      return "Drugo";
+    default:
+      return value;
+  }
+}
+
 const PublicProjectVrPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [project, setProject] = useState<Project | null>(null);
@@ -141,19 +157,19 @@ const PublicProjectVrPage: React.FC = () => {
     <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-3xl space-y-8">
         {/* Header */}
-        <header>
+        <header className="space-y-3">
           <h1 className="text-2xl font-semibold text-slate-900">
-            VR za projekt: {project.title}
+            VR pregled vašeg interijera
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Ovdje možete pregledati VR scene i zakazane termine za vaš projekt.
+          <p className="text-sm text-slate-600">
+            Ovdje možete pregledati VR scene i zakazane termine za vaš projekt. Kliknite na "Otvori VR scenu" za pregled interijera u virtualnoj stvarnosti. Ako imate problema s pristupom VR sceni ili imate pitanja, javite se Ani.
           </p>
         </header>
 
         {/* VR Scenes */}
         {vrScenes.length === 0 ? (
           <div className="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
-            Trenutno nema dostupnih VR scena za ovaj projekt...
+            Trenutno nema dostupnih VR scena za ovaj projekt. Ako mislite da je došlo do greške, javite nam se.
           </div>
         ) : (
           <div className="space-y-6">
@@ -198,6 +214,9 @@ const PublicProjectVrPage: React.FC = () => {
                       <h3 className="mb-3 text-sm font-semibold text-slate-900">
                         Zakazani VR termini
                       </h3>
+                      <p className="text-xs text-slate-500 mb-3">
+                        Ovdje su prikazani zakazani termini za VR prezentaciju vašeg projekta.
+                      </p>
                       <div className="space-y-4">
                         {appointments.map((app) => (
                           <div
@@ -221,7 +240,7 @@ const PublicProjectVrPage: React.FC = () => {
                             {/* Location Preference */}
                             {app.location_preference && (
                               <div className="mt-2 text-sm text-slate-700">
-                                Način kontakta: {app.location_preference}
+                                Način kontakta: {formatLocationPreference(app.location_preference)}
                               </div>
                             )}
 

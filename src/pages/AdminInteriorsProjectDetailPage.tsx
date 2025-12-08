@@ -729,6 +729,9 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
               <h2 className="text-sm font-semibold text-slate-900">
                 Datoteke projekta
               </h2>
+              <p className="text-xs text-slate-500 mt-1 mb-3">
+                Sve datoteke povezane s ovim projektom (tlocrti, inspiracije, fotografije, 3D eksporti).
+              </p>
 
               {isLoadingFiles && (
                 <p className="mt-3 text-xs text-slate-600">
@@ -841,6 +844,9 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
               <h2 className="text-sm font-semibold text-slate-900">
                 VR scene
               </h2>
+              <p className="text-xs text-slate-500 mt-1 mb-3">
+                Upravljajte VR scenama i terminima za ovaj projekt.
+              </p>
 
               {isLoadingVrScenes && (
                 <p className="mt-3 text-xs text-slate-600">
@@ -890,6 +896,9 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                           <h3 className="text-xs font-semibold text-slate-900">
                             VR termini
                           </h3>
+                          <p className="text-[10px] text-slate-500 hidden sm:block">
+                            Zakazani termini za VR prezentaciju
+                          </p>
                           <button
                             type="button"
                             onClick={() => loadAppointmentsForScene(scene.id)}
@@ -949,8 +958,10 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                                       {appointment.status === "scheduled"
                                         ? "Zakazano"
                                         : appointment.status === "completed"
-                                        ? "Završeno"
-                                        : "Otkazano"}
+                                        ? "Održano"
+                                        : appointment.status === "cancelled"
+                                        ? "Otkazano"
+                                        : appointment.status}
                                     </span>
                                   </div>
                                   {appointment.location_preference && (
@@ -1274,11 +1285,11 @@ function mapFileTypeLabel(fileType: ProjectFile["file_type"]): string {
     case "inspiration":
       return "Inspiracija";
     case "space_photo":
-      return "Fotografija prostora";
+      return "Fotografije prostora";
     case "kitchen_sketch":
       return "Skica kuhinje";
     case "carpenter_3d_export":
-      return "3D eksport stolara";
+      return "3D export stolara";
     case "vr_asset":
       return "VR asset";
     case "other":

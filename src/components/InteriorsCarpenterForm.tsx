@@ -622,7 +622,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto py-8 space-y-8">
       {/* Naslov i podnaslov */}
-      <div className="space-y-1 text-center mb-4">
+      <div className="space-y-2 text-center mb-6">
         <h2 className="text-xl font-semibold text-slate-900">
           {translations.title[language]}
         </h2>
@@ -797,6 +797,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
                 onChange={e => handleChange('areaM2', e.target.value)}
                 placeholder="npr. 15.5"
               />
+              <span className="text-xs text-slate-500">Približna površina prostora za projekt</span>
             </label>
           </div>
 
@@ -810,6 +811,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
                 onChange={e => handleChange('budget', e.target.value)}
                 placeholder="npr. 5000"
               />
+              <span className="text-xs text-slate-500">Okvirni budžet za projekt</span>
             </label>
           </div>
         </div>
@@ -835,6 +837,9 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
           Tipovi projekata koje radite
         </p>
+        <p className="text-xs text-slate-500 mb-3">
+          Odaberite sve tipove projekata koje standardno izrađujete. Ovo nam pomaže razumjeti vašu specijalizaciju.
+        </p>
         <div className="grid gap-2 sm:grid-cols-2">
           {PROJECT_TYPES.map(option => (
             <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -853,6 +858,9 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       {/* Materijali i debljine */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
         <legend className="text-lg font-semibold mb-2 text-slate-800">Materijali i debljine koje standardno koriste</legend>
+        <p className="text-xs text-slate-500 mb-3">
+          Navedite materijale i debljine koje standardno koristite u svojoj proizvodnji. Ovo nam pomaže prilagoditi projekt vašim mogućnostima.
+        </p>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
@@ -864,6 +872,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               onChange={e => handleChange('boards', e.target.value)}
               placeholder="npr. 18mm, 19mm, 36mm..."
             />
+            <span className="text-xs text-slate-500">Navedite debljine ploča koje standardno koristite</span>
           </label>
           {errors.boards && (
             <p className="text-xs text-red-500 mt-1">{errors.boards}</p>
@@ -880,6 +889,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               onChange={e => handleChange('worktops', e.target.value)}
               placeholder="npr. kvarc, granit, laminat..."
             />
+            <span className="text-xs text-slate-500">Navedite materijale radnih ploča koje standardno koristite</span>
           </label>
           {errors.worktops && (
             <p className="text-xs text-red-500 mt-1">{errors.worktops}</p>
@@ -896,6 +906,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               onChange={e => handleChange('fronts', e.target.value)}
               placeholder="npr. MDF, HPL, melamin..."
             />
+            <span className="text-xs text-slate-500">Navedite materijale i finiše frontova koje standardno koristite</span>
           </label>
           {errors.fronts && (
             <p className="text-xs text-red-500 mt-1">{errors.fronts}</p>
@@ -909,6 +920,9 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
 
         <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
           Okovi / brendovi koje koristite
+        </p>
+        <p className="text-xs text-slate-500 mb-3">
+          Odaberite brendove okova koje standardno koristite. Ako koristite druge brendove, navedite ih u polju ispod.
         </p>
         <div className="grid gap-2 sm:grid-cols-2">
           {HARDWARE_BRANDS.map(brand => (
@@ -941,6 +955,9 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       {/* Kapacitet i rokovi */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
         <legend className="text-lg font-semibold mb-2 text-slate-800">Kapacitet i rokovi</legend>
+        <p className="text-xs text-slate-500 mb-3">
+          Ove informacije nam pomažu planirati suradnju i razumjeti vaše mogućnosti izrade.
+        </p>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
@@ -952,6 +969,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               onChange={e => handleChange('monthlyCapacity', e.target.value)}
               placeholder="npr. 3-5 projekata"
             />
+            <span className="text-xs text-slate-500">Realna procjena vašeg mjesečnog kapaciteta</span>
           </label>
           {errors.monthlyCapacity && (
             <p className="text-xs text-red-500 mt-1">{errors.monthlyCapacity}</p>
@@ -968,6 +986,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               onChange={e => handleChange('averageProductionTime', e.target.value)}
               placeholder="npr. 4-6 tjedana"
             />
+            <span className="text-xs text-slate-500">Prosječno vrijeme potrebno za izradu jednog projekta</span>
           </label>
           {errors.averageProductionTime && (
             <p className="text-xs text-red-500 mt-1">{errors.averageProductionTime}</p>
@@ -991,6 +1010,9 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       {/* Suradnja s Ani's Studiom */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
         <legend className="text-lg font-semibold mb-2 text-slate-800">Suradnja s Ani's Studiom / Corpus</legend>
+        <p className="text-xs text-slate-500 mb-3">
+          Odaberite način suradnje koji vam najviše odgovara. Možete kombinirati različite opcije ovisno o projektu.
+        </p>
 
         <div>
           <label className="flex items-start gap-2 text-sm text-slate-700">
@@ -1002,6 +1024,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
             />
             <span>Želim da mi Ani priprema kompletne nacrte i krojne liste</span>
           </label>
+          <p className="text-xs text-slate-500 ml-6 mt-1">Ani će pripremiti sve potrebne nacrte i krojne liste za izradu</p>
         </div>
 
         <div>
@@ -1014,6 +1037,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
             />
             <span>Koristit ću dijelove rješenja (djelomična izrada po crtežu)</span>
           </label>
+          <p className="text-xs text-slate-500 ml-6 mt-1">Izrađujete samo određene dijelove prema nacrtu, ne cijeli projekt</p>
         </div>
 
         <div>

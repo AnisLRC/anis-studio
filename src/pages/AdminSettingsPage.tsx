@@ -85,7 +85,7 @@ export default function AdminSettingsPage() {
               LRC prijave
             </h2>
             <p className="mt-1 text-sm text-slate-600">
-              Kada je ova opcija isključena, public LRC forma se skriva i klijenti vide poruku da trenutno nema otvorenih prijava.
+              Kada je isključeno, public LRC forma se skriva i na stranici se prikazuje poruka da trenutno nema otvorenih prijava za LRC radionice.
             </p>
           </div>
 
@@ -103,8 +103,8 @@ export default function AdminSettingsPage() {
                     </p>
                     <p className="mt-1 text-sm text-slate-600">
                       {localEnabled
-                        ? 'Prijave su trenutno omogućene i forma je vidljiva korisnicima.'
-                        : 'Prijave su trenutno onemogućene i korisnici vide poruku da nema otvorenih prijava.'}
+                        ? 'Prijave su trenutno omogućene i forma za prijavu na LRC radionice je vidljiva korisnicima.'
+                        : 'Prijave su trenutno onemogućene i korisnici vide poruku da trenutno nema otvorenih prijava za LRC radionice.'}
                     </p>
                   </div>
 
@@ -147,7 +147,7 @@ export default function AdminSettingsPage() {
         {/* Info Box */}
         <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
           <p className="text-sm text-blue-800">
-            <strong>Napomena:</strong> Promjene se primjenjuju odmah. Kada su prijave
+            <strong>Napomena:</strong> Promjene se primjenjuju odmah. Kada su LRC prijave
             onemogućene, korisnici vide poruku da trenutno nema otvorenih prijava za LRC radionice,
             ali webshop s gotovim proizvodima ostaje dostupan.
           </p>

@@ -635,23 +635,24 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto py-8 space-y-8">
       {/* Naslov i podnaslov */}
-      <div className="space-y-1 text-center mb-4">
+      <div className="space-y-2 text-center mb-6">
         <h2 className="text-xl font-semibold text-slate-900">
           Naručite svoj 3D prikaz interijera po mjeri
         </h2>
         <p className="text-sm text-slate-600">
-          Ispunite formu s vašim dimenzijama, potrebama i opisom.
+          Ispunite formu s vašim dimenzijama, potrebama i opisom. Javit ćemo vam se u najkraćem mogućem roku.
         </p>
       </div>
 
       {/* Legenda za checkboxe i radio gumbe */}
-      <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+      <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
         Legenda: kružić (◉) znači da možeš odabrati <span className="font-semibold">samo jednu</span> opciju, a kvadratić (☑) da možeš odabrati <span className="font-semibold">više</span> opcija.
       </p>
 
       {/* Kontakt podaci */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
         <legend className="text-lg font-semibold mb-2 text-slate-800">Kontakt podaci</legend>
+        <p className="text-xs text-slate-500 mb-3">Ove informacije koristimo za kontaktiranje u vezi vašeg projekta.</p>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
@@ -897,8 +898,9 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
               className={inputClass}
               value={values.approxWidth}
               onChange={e => handleChange('approxWidth', e.target.value)}
+              placeholder="npr. 3.5 m"
             />
-            <span className="text-xs text-slate-500">npr. 3.5 m</span>
+            <span className="text-xs text-slate-500">Unesite približnu širinu prostora u metrima</span>
           </label>
 
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
@@ -908,8 +910,9 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
               className={inputClass}
               value={values.approxLength}
               onChange={e => handleChange('approxLength', e.target.value)}
+              placeholder="npr. 4.2 m"
             />
-            <span className="text-xs text-slate-500">npr. 4.2 m</span>
+            <span className="text-xs text-slate-500">Unesite približnu dužinu prostora u metrima</span>
           </label>
 
           <label className="block space-y-1 text-sm sm:text-base text-slate-800">
@@ -919,8 +922,9 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
               className={inputClass}
               value={values.approxHeight}
               onChange={e => handleChange('approxHeight', e.target.value)}
+              placeholder="npr. 2.7 m"
             />
-            <span className="text-xs text-slate-500">npr. 2.7 m</span>
+            <span className="text-xs text-slate-500">Unesite približnu visinu prostora u metrima</span>
           </label>
         </div>
 
@@ -1070,6 +1074,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
               <option value="7000+">iznad 7.000 €</option>
               <option value="unknown">Ne znam, trebam okvirnu procjenu</option>
             </select>
+            <span className="text-xs text-slate-500 mt-1 block">Okvirni budžet za namještaj i izradu</span>
           </label>
           {errors.budgetRange && (
             <p className="text-xs text-red-500 mt-1">{errors.budgetRange}</p>
@@ -1182,8 +1187,9 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
                   onChange={e =>
                     handleChange('stolarNotRegistered', e.target.value)
                   }
-                  placeholder="Ime stolara i kontakt"
+                  placeholder="npr. Stolarija Jurić, 091 234 5678"
                 />
+                <span className="text-xs text-slate-500">Unesite naziv stolarije i broj telefona</span>
               </label>
             </div>
           </>
@@ -1259,7 +1265,9 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
               className={`${textareaClass} ${errors.projectNote ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
               onChange={e => handleChange('projectNote', e.target.value)}
               rows={4}
+              placeholder="Opišite svoje želje, prioritete i sve što mislite da bi moglo biti važno za projekt..."
             />
+            <span className="text-xs text-slate-500">Najmanje 10 znakova. Opišite detaljno što želite postići u ovom prostoru.</span>
           </label>
           {errors.projectNote && (
             <p className="text-xs text-red-500 mt-1">{errors.projectNote}</p>
@@ -1303,6 +1311,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
               value={values.contactTime}
               onChange={e => handleChange('contactTime', e.target.value)}
             />
+            <span className="text-xs text-slate-500">Navedite preferirano vrijeme za kontakt (opcionalno)</span>
           </label>
         </div>
       </fieldset>
@@ -1428,7 +1437,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
           disabled={isSubmitting}
           className="inline-flex items-center justify-center rounded-full bg-violet-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-violet-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? (language === 'hr' ? 'Šaljem...' : 'Sending...') : (language === 'hr' ? 'Pošalji upit za interijerski projekt' : 'Send interior project inquiry')}
+          {isSubmitting ? (language === 'hr' ? 'Šaljem...' : 'Sending...') : (language === 'hr' ? 'Pošalji upit za projekt' : 'Send project inquiry')}
         </button>
       </div>
     </form>

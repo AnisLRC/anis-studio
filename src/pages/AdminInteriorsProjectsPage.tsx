@@ -163,7 +163,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
             {/* Search input */}
             <input
               type="text"
-              placeholder="Pretraži po nazivu..."
+              placeholder="Pretraži projekte..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm placeholder:text-slate-400"
@@ -171,7 +171,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
 
             {/* Tip korisnika */}
             <label className="flex items-center gap-1">
-              <span className="text-slate-600">Tip:</span>
+              <span className="text-slate-600">Tip korisnika:</span>
               <select
                 className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm"
                 value={userTypeFilter}
@@ -189,7 +189,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
 
             {/* Status projekta */}
             <label className="flex items-center gap-1">
-              <span className="text-slate-600">Status:</span>
+              <span className="text-slate-600">Status projekta:</span>
               <select
                 className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm"
                 value={statusFilter}
@@ -207,13 +207,14 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
 
             {/* VR filter */}
             <label className="flex items-center gap-1">
-              <span className="text-slate-600">VR:</span>
+              <span className="text-slate-600">VR opcija:</span>
               <select
                 className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm"
                 value={wantsVrFilter}
                 onChange={(e) =>
                   setWantsVrFilter(e.target.value as "all" | "yes" | "no")
                 }
+                title="Filtriraj projekte prema tome žele li VR opciju"
               >
                 {WANTS_VR_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>

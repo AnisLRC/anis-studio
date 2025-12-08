@@ -124,8 +124,8 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
       en: "Phone (optional)"
     },
     submitButton: {
-      hr: "Pošalji upit za personalizaciju",
-      en: "Send customization inquiry"
+      hr: "Prijavi se na LRC radionice",
+      en: "Apply for LRC workshops"
     },
     successMessage: {
       hr: "Upit uspješno poslan! Javit ćemo ti se uskoro.",
@@ -145,11 +145,15 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
     },
     formDisabledMessage: {
       hr: "Trenutno nema otvorenih prijava za LRC radionice.",
-      en: "There are currently no open applications for LRC workshops."
+      en: "Currently there are no open applications for LRC workshops."
     },
     formDisabledAdditional: {
       hr: "Ako želite da vam javimo kad otvorimo nove termine, javite nam se na info.anilrc@gmail.com ili nas pratite na društvenim mrežama.",
       en: "If you would like us to notify you when we open new dates, contact us at info.anilrc@gmail.com or follow us on social media."
+    },
+    submitHelperText: {
+      hr: "Nakon slanja prijave, javit ćemo ti se e-mailom u roku od 3 radna dana s dodatnim informacijama o radionicama i terminima.",
+      en: "After submitting your application, we will contact you via email within 3 business days with additional information about workshops and dates."
     }
   }
 
@@ -445,7 +449,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
         {/* Personalization Form - only show if form is enabled */}
         {isFormEnabled && (
         <div className="rounded-2xl p-5 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
-          <div className="text-center mb-6">
+          <div className="text-center mb-6 space-y-2">
             <h3 className="text-lg sm:text-xl font-bold mb-2 text-[--color-primary]">
               {translations.formTitle[language]}
             </h3>
@@ -454,7 +458,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-4">
+          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-5">
             {/* Product Selection */}
             <div>
               <label className="block text-sm font-medium text-slate-900 mb-1.5">
@@ -577,7 +581,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
             </div>
 
             {/* Submit Button */}
-            <div className="text-center pt-2">
+            <div className="text-center pt-2 space-y-2">
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -586,6 +590,9 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
               >
                 {isSubmitting ? translations.submittingButton[language] : translations.submitButton[language]}
               </button>
+              <p className="text-xs text-slate-500">
+                {translations.submitHelperText[language]}
+              </p>
             </div>
 
             {/* Success Message */}

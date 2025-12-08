@@ -17,14 +17,16 @@ const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
         <div className="mx-auto max-w-6xl">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <p className="text-slate-600">Učitavanje postavki prijava...</p>
+              <p className="text-slate-600">{language === 'hr' ? 'Učitavanje postavki prijava...' : 'Loading application settings...'}</p>
             </div>
           ) : (
             <>
               {error && (
                 <div className="rounded-xl bg-yellow-50 border border-yellow-200 p-6 text-center mb-6">
                   <p className="text-sm text-yellow-800 mb-2">
-                    Trenutno ne možemo učitati postavke prijave. Ako imate problem s prijavom, javite se na e-mail.
+                    {language === 'hr' 
+                      ? 'Trenutno ne možemo učitati postavke prijave. Ako imate problem s prijavom, javite se na e-mail.'
+                      : 'We cannot load application settings at the moment. If you have issues with your application, please contact us via email.'}
                   </p>
                   <a 
                     href="mailto:info.anilrc@gmail.com" 
