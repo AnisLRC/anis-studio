@@ -309,7 +309,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
     }
   }
 
-  const handleExportFileChange = (
+  const handleCarpenterExportFilesChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = event.target.files
@@ -322,7 +322,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
     setExportFiles(fileArray)
   }
 
-  const handleKitchenSketchChange = (
+  const handleKitchenSketchFilesChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = event.target.files
@@ -1113,95 +1113,17 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         )}
 
         {values.drawnByOption === 'carpenter' && (
-          <>
-            <div>
-              <label className="block space-y-1 text-sm sm:text-base text-slate-800">
-                <span>{translations.drawnBy.uploadFile[language]}</span>
-                <div className="flex items-center gap-3">
-                  <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
-                    Odaberi datoteke
-                    <input
-                      type="file"
-                      accept=".obj,.fbx,.zip,.rar,application/octet-stream"
-                      multiple
-                      className="hidden"
-                      onChange={handleExportFileChange}
-                    />
-                  </label>
-                  {exportFiles.length > 0 && (
-                    <span className="text-xs text-slate-500">
-                      {exportFiles.length === 1 
-                        ? exportFiles[0].name 
-                        : `${exportFiles.length} datoteka odabrano`}
-                    </span>
-                  )}
-                </div>
-                {exportFiles.length > 0 && (
-                  <ul className="mt-2 space-y-1 text-xs text-slate-600">
-                    {exportFiles.map((file, index) => (
-                      <li key={index} className="flex items-center gap-2">
-                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
-                        <span className="font-medium">{file.name}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <p className="text-xs text-slate-500 mt-1">
-                  {translations.drawnBy.uploadFileFormats[language]}
-                </p>
-              </label>
-            </div>
-
-            <div>
-              <label className="flex items-start gap-2 text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  className="mt-1 accent-violet-500"
-                  checked={values.usesCorpus}
-                  onChange={e => handleChange('usesCorpus', e.target.checked)}
-                />
-                <span>{translations.drawnBy.usesCorpus[language]}</span>
-              </label>
-            </div>
-
-            <div className="mt-4">
-              <label className="block space-y-1 text-sm sm:text-base text-slate-800">
-                <span>Skice kuhinje (slike ili PDF)</span>
-                <p className="text-xs text-slate-500">
-                  Možeš učitati više datoteka (JPG, PNG ili PDF).
-                </p>
-                <div className="flex items-center gap-3 mt-2">
-                  <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
-                    Dodaj skice
-                    <input
-                      type="file"
-                      accept=".jpg,.jpeg,.png,.pdf"
-                      multiple
-                      className="hidden"
-                      onChange={handleKitchenSketchChange}
-                    />
-                  </label>
-                  {kitchenSketchFiles.length > 0 && (
-                    <span className="text-xs text-slate-500">
-                      {kitchenSketchFiles.length === 1 
-                        ? kitchenSketchFiles[0].name 
-                        : `${kitchenSketchFiles.length} datoteka odabrano`}
-                    </span>
-                  )}
-                </div>
-                {kitchenSketchFiles.length > 0 && (
-                  <ul className="mt-2 space-y-1 text-xs text-slate-600">
-                    {kitchenSketchFiles.map((file, index) => (
-                      <li key={index} className="flex items-center gap-2">
-                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
-                        <span className="font-medium">{file.name}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </label>
-            </div>
-          </>
+          <div>
+            <label className="flex items-start gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                className="mt-1 accent-violet-500"
+                checked={values.usesCorpus}
+                onChange={e => handleChange('usesCorpus', e.target.checked)}
+              />
+              <span>{translations.drawnBy.usesCorpus[language]}</span>
+            </label>
+          </div>
         )}
       </fieldset>
 
@@ -1257,6 +1179,81 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
             </div>
           </>
         )}
+      </fieldset>
+
+      {/* Datoteke za projekt */}
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
+        <legend className="text-lg font-semibold mb-2 text-slate-800">
+          Datoteke za projekt
+        </legend>
+
+        {/* Skice kuhinje */}
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>Skice kuhinje (PDF, slika...)</span>
+            <div className="flex items-center gap-3 mt-2">
+              <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
+                Odaberi datoteke
+                <input
+                  type="file"
+                  accept=".pdf,image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleKitchenSketchFilesChange}
+                />
+              </label>
+              {kitchenSketchFiles.length > 0 && (
+                <span className="text-xs text-slate-500">
+                  Odabrano datoteka: {kitchenSketchFiles.length}
+                </span>
+              )}
+            </div>
+            {kitchenSketchFiles.length > 0 && (
+              <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                {kitchenSketchFiles.map((file, index) => (
+                  <li key={index} className="flex items-center gap-2">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
+                    <span className="font-medium">{file.name}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </label>
+        </div>
+
+        {/* 3D export stolara */}
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <span>3D export (npr. .fbx, .obj, .zip)</span>
+            <div className="flex items-center gap-3 mt-2">
+              <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
+                Odaberi datoteke
+                <input
+                  type="file"
+                  accept=".fbx,.obj,.zip,.3ds,.skp"
+                  multiple
+                  className="hidden"
+                  onChange={handleCarpenterExportFilesChange}
+                />
+              </label>
+              {exportFiles.length > 0 && (
+                <span className="text-xs text-slate-500">
+                  Odabrano datoteka: {exportFiles.length}
+                </span>
+              )}
+            </div>
+            {exportFiles.length > 0 && (
+              <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                {exportFiles.map((file, index) => (
+                  <li key={index} className="flex items-center gap-2">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
+                    <span className="font-medium">{file.name}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </label>
+        </div>
       </fieldset>
 
       {isSubmitted && (

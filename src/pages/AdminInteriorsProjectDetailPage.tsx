@@ -84,6 +84,7 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
   const [files, setFiles] = useState<ProjectFile[]>([]);
   const [isLoadingFiles, setIsLoadingFiles] = useState(false);
   const [filesError, setFilesError] = useState<string | null>(null);
+  const [fileTypeFilter, setFileTypeFilter] = useState<string>("all");
 
   const [vrScenes, setVrScenes] = useState<VrScene[]>([]);
   const [isLoadingVrScenes, setIsLoadingVrScenes] = useState(false);
@@ -739,27 +740,79 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                 <p className="mt-3 text-xs text-red-700">{filesError}</p>
               )}
 
+              {!isLoadingFiles && !filesError && files.length > 0 && (
+                <div className="mt-3 flex items-center gap-2">
+                  <label className="text-xs text-gray-500">
+                    Filter po tipu:
+                  </label>
+                  <select
+                    value={fileTypeFilter}
+                    onChange={(e) => setFileTypeFilter(e.target.value)}
+                    className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                  >
+                    <option value="all">Sve datoteke</option>
+                    <option value="plan">Tlocrt</option>
+                    <option value="inspiration">Inspiracija</option>
+                    <option value="space_photo">Fotografije prostora</option>
+                    <option value="kitchen_sketch">Skice kuhinje</option>
+                    <option value="carpenter_3d_export">3D export stolara</option>
+                    <option value="vr_asset">VR asset</option>
+                    <option value="other">Ostalo</option>
+                  </select>
+                </div>
+              )}
+
               {!isLoadingFiles && !filesError && files.length === 0 && (
                 <p className="mt-3 text-xs text-slate-600">
                   Još nema povezanih datoteka za ovaj projekt.
                 </p>
               )}
 
-              {!isLoadingFiles && !filesError && files.length > 0 && (
-                <ul className="mt-3 space-y-2 text-xs text-slate-700">
-                  {files.map((file) => (
+              {!isLoadingFiles && !filesError && files.length > 0 && (() => {
+                const filteredProjectFiles =
+                  fileTypeFilter === "all"
+                    ? files
+                    : fileTypeFilter === "other"
+                    ? files.filter(
+                        (file) =>
+                          ![
+                            "plan",
+                            "inspiration",
+                            "space_photo",
+                            "kitchen_sketch",
+                            "carpenter_3d_export",
+                            "vr_asset",
+                          ].includes(file.file_type)
+                      )
+                    : files.filter((file) => file.file_type === fileTypeFilter);
+
+                if (filteredProjectFiles.length === 0) {
+                  return (
+                    <p className="mt-3 text-xs text-slate-600">
+                      Nema datoteka za odabrani filter.
+                    </p>
+                  );
+                }
+
+                return (
+                  <ul className="mt-3 space-y-2 text-xs text-slate-700">
+                    {filteredProjectFiles.map((file) => (
                     <li
                       key={file.id}
                       className="flex flex-col gap-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex flex-col">
-                        <span className="font-medium">
-                          {file.original_name}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">
+                            {file.original_name}
+                          </span>
+                          <span className="inline-flex items-center rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[11px] text-slate-700">
+                            {mapFileTypeLabel(file.file_type)}
+                          </span>
+                        </div>
                         <span className="text-[11px] text-slate-500">
-                          {mapFileTypeLabel(file.file_type)}
                           {file.size_bytes != null
-                            ? ` • ${(file.size_bytes / (1024 * 1024)).toFixed(
+                            ? `${(file.size_bytes / (1024 * 1024)).toFixed(
                                 2
                               )} MB`
                             : ""}
@@ -777,9 +830,10 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                           : ""}
                       </div>
                     </li>
-                  ))}
-                </ul>
-              )}
+                    ))}
+                  </ul>
+                );
+              })()}
             </section>
 
             {/* VR scene */}

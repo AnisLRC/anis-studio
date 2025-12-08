@@ -17,6 +17,7 @@ import AdminLrcInquiriesPage from './pages/AdminLrcInquiriesPage'
 import AdminInteriorsProjectsPage from './pages/AdminInteriorsProjectsPage'
 import AdminInteriorsProjectDetailPage from './pages/AdminInteriorsProjectDetailPage'
 import AdminLoginPage from './pages/AdminLoginPage'
+import PublicProjectVrPage from './pages/PublicProjectVrPage'
 import AdminRoute from './components/AdminRoute'
 import { AdminAuthProvider } from './providers/AdminAuthProvider'
 
@@ -67,6 +68,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage language={language} />} />
             <Route path="/lrc" element={<LRCPage language={language} />} />
+            <Route path="/vr/:projectId" element={<PublicProjectVrPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route
               path="/admin/settings"
