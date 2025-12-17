@@ -2,6 +2,7 @@ import { ErrorBoundary } from '../ErrorBoundary'
 import WelcomeSection from '../sections/WelcomeSection'
 import PortfolioSection from '../sections/PortfolioSection'
 import TestimonialsSection from '../sections/TestimonialsSection'
+import ContactSection from '../sections/ContactSection'
 
 interface HomePageProps {
   language: 'hr' | 'en'
@@ -20,6 +21,10 @@ export default function HomePage({ language }: HomePageProps) {
       
       <ErrorBoundary name="Testimonials">
         <TestimonialsSection language={language} />
+      </ErrorBoundary>
+
+      <ErrorBoundary name="Contact">
+        <ContactSection language={language} />
       </ErrorBoundary>
     </main>
   )

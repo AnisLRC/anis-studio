@@ -1,195 +1,237 @@
-import { useThemeStore } from '../lib/theme.store'
+import { Link } from 'react-router-dom'
+import SparklesCanvas from '../components/SparklesCanvas'
 
 interface WelcomeSectionProps {
   language?: 'hr' | 'en'
 }
 
 export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps) {
-  const { theme } = useThemeStore()
-  const isDark = theme === 'dark'
   const translations = {
-    slogan: {
-      hr: "Svaka ideja je Bitna!",
-      en: "Every idea Matters!"
+    headline: {
+      hr: 'Svaka ideja je bitna.',
+      en: 'Every idea matters.'
     },
-    buttons: {
-      hr: {
-        lrc: "LRC Shop",
-        interiors: "Interijeri",
-        webAtelier: "Web Atelier"
+    subtitle: {
+      hr: 'Od ručnih kreacija do interijera i web projekata po mjeri.',
+      en: 'From handmade creations to interiors and custom web projects.'
+    },
+    ctaPrimary: {
+      hr: 'Započnimo projekt',
+      en: "Let's start a project"
+    },
+    ctaSecondary: {
+      hr: 'Pogledaj radove',
+      en: 'View our work'
+    },
+    cardsTitle: {
+      hr: 'Što te zanima danas?',
+      en: 'What interests you today?'
+    },
+    cards: {
+      lrc: {
+        title: { hr: 'Želim poklon', en: 'I want a gift' },
+        subtitle: { hr: 'LRC Shop', en: 'LRC Shop' },
+        description: { hr: 'Ručno rađeni pokloni i dekoracije', en: 'Handmade gifts and decorations' }
       },
-      en: {
-        lrc: "LRC Shop",
-        interiors: "Interiors",
-        webAtelier: "Web Atelier"
+      interiors: {
+        title: { hr: 'Želim urediti prostor', en: 'I want to design a space' },
+        subtitle: { hr: 'Interijeri', en: 'Interiors' },
+        description: { hr: '3D vizualizacije i nacrti po mjeri', en: '3D renders and custom designs' }
+      },
+      webAtelier: {
+        title: { hr: 'Trebam web stranicu', en: 'I need a website' },
+        subtitle: { hr: 'Web Atelier', en: 'Web Atelier' },
+        description: { hr: 'Web koji radi za tebe – i izgleda odlično.', en: 'A website that works for you – and looks great.' }
       }
-    }
-  }
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
   return (
-    <section 
-      id="welcome" 
-      className={
-        isDark
-          ? 'relative min-h-[60vh] pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-12 flex items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950'
-          : 'relative min-h-[60vh] pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 md:pb-12 flex items-center justify-center overflow-hidden bg-gradient-to-b from-violet-50 via-white to-violet-50/70'
-      }
-    >
-      {/* Particle efekti pozadine */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className="particle"
-            style={{
-              left: `${20 + i * 15}%`,
-              top: `${30 + i * 10}%`,
-              animationDelay: `${i * 1.5}s`
-            }}
-          />
-        ))}
+    <section className="relative min-h-[78vh] [isolation:isolate]">
+      {/* CLIP WRAPPER - contains only visual background layers */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Aurora gradient layer - Light mode */}
+        <div className="pointer-events-none absolute inset-0 z-[1] dark:hidden">
+          <div style={{
+            position: "absolute",
+            inset: "-35%",
+            filter: "blur(52px) saturate(1.15)",
+            opacity: 0.9,
+            background: "radial-gradient(70% 55% at 50% 22%, rgba(110,68,255,0.26), transparent 62%), radial-gradient(50% 45% at 18% 55%, rgba(189,166,255,0.20), transparent 64%), radial-gradient(48% 42% at 82% 62%, rgba(120,220,255,0.12), transparent 64%), radial-gradient(55% 50% at 70% 85%, rgba(255,180,220,0.10), transparent 65%), linear-gradient(180deg, rgba(255,255,255,0.94), rgba(249,247,251,0.86))"
+          }} />
+        </div>
+
+        {/* Aurora gradient layer - Dark mode */}
+        <div className="pointer-events-none absolute inset-0 z-[1] hidden dark:block">
+          <div style={{
+            position: "absolute",
+            inset: "-35%",
+            filter: "blur(56px) saturate(1.5)",
+            background: "radial-gradient(70% 55% at 50% 22%, rgba(110,68,255,0.45), transparent 62%), radial-gradient(50% 45% at 18% 55%, rgba(255,140,200,0.18), transparent 64%), radial-gradient(48% 42% at 82% 62%, rgba(120,220,255,0.14), transparent 64%), radial-gradient(55% 50% at 70% 85%, rgba(189,166,255,0.12), transparent 65%), linear-gradient(180deg, rgba(10,10,22,0.92), rgba(7,8,18,0.98))"
+          }} />
+        </div>
+
+        {/* Noise overlay */}
+        <div
+          className="pointer-events-none absolute inset-0 z-[2] opacity-[0.10] mix-blend-overlay dark:opacity-[0.12] dark:mix-blend-soft-light"
+          style={{ backgroundImage: "url(/noise.svg)", backgroundSize: "260px 260px" }}
+        />
+
+        {/* Canvas sparkles */}
+        <SparklesCanvas className="pointer-events-none absolute inset-0 z-[3] h-full w-full opacity-70" />
+
+        {/* Bottom fade to page background (light & dark) */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[4] h-40"
+          style={{
+            background: 'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))'
+          }}
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[4] h-40 hidden dark:block"
+          style={{
+            background: 'linear-gradient(to bottom, rgba(7,8,18,0), rgba(7,8,18,1))'
+          }}
+        />
       </div>
 
-      {/* Glavni sadržaj */}
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-slate-900 dark:text-slate-50">
-        {/* Dinamički slogan */}
-        <h1 className="hero-slogan mb-6 sm:mb-8">
-          <span 
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold"
-            style={{
-              fontFamily: 'Poppins, sans-serif',
-              background: 'linear-gradient(135deg, #6E44FF 0%, #BDA6FF 50%, #6E44FF 100%)',
-              backgroundSize: '200% 200%',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              letterSpacing: '-0.02em',
-              lineHeight: '1.1'
-            }}
-          >
-            {translations.slogan[language]}
-          </span>
-          <span 
-            className="hero-star text-3xl sm:text-4xl md:text-5xl lg:text-6xl ml-2 sm:ml-3"
-            aria-hidden="true"
-            style={{
-              filter: 'drop-shadow(0 0 10px rgba(110, 68, 255, 0.5))'
-            }}
-          >
-            ✨
-          </span>
+      {/* Content wrapper */}
+      <div className="relative z-10 mx-auto max-w-5xl px-5 pt-24 pb-16 text-center">
+        {/* Subtle glow behind heading */}
+        <div 
+          className="pointer-events-none absolute left-1/2 top-24 -translate-x-1/2 z-[9] h-40 w-[520px] rounded-full blur-2xl dark:hidden"
+          style={{
+            background: 'radial-gradient(circle, rgba(110,68,255,0.22), transparent 60%)'
+          }}
+        />
+        <div 
+          className="pointer-events-none absolute left-1/2 top-24 -translate-x-1/2 z-[9] h-40 w-[520px] rounded-full blur-2xl hidden dark:block"
+          style={{
+            background: 'radial-gradient(circle, rgba(189,166,255,0.14), transparent 60%)'
+          }}
+        />
+
+        {/* Headline */}
+        <h1 className="font-heading text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight
+          text-plum dark:text-pearl drop-shadow-[0_14px_40px_rgba(110,68,255,0.18)]">
+          {translations.headline[language]}
+          <span className="ml-3 align-middle">✨</span>
         </h1>
 
-        {/* CTA kartice */}
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {/* LRC Shop */}
-          <button
-            type="button"
-            onClick={() => scrollToSection('lrc')}
-            className={
-              "flex items-center gap-3 rounded-2xl px-6 py-4 border transition-transform duration-300 hover:scale-[1.02] " +
-              (isDark
-                ? "bg-slate-900 text-slate-50 border-violet-500 shadow-lg shadow-violet-900/50"
-                : "bg-violet-50 text-violet-900 border-violet-400 shadow-xl shadow-violet-300"
-              )
-            }
-          >
-            <span className="text-2xl">🎨</span>
-            <div className="flex flex-col items-start">
-              <span 
-                className="font-semibold"
-                style={{ color: isDark ? '#f9fafb' : '#1f2933' }}
-              >
-                {translations.buttons[language].lrc}
-              </span>
-              <span 
-                className="text-sm"
-                style={{ color: isDark ? '#e5e7eb' : '#4b5563' }}
-              >
-                {language === 'hr' ? 'Ručno rađeni pokloni i dekoracije' : 'Handmade gifts and decor'}
-              </span>
-            </div>
-          </button>
+        {/* Subtitle */}
+        <p className="mt-5 text-base sm:text-lg md:text-xl text-plum/80 dark:text-pearl/80">
+          {translations.subtitle[language]}
+        </p>
 
-          {/* Interijeri */}
-          <button
-            type="button"
-            onClick={() => scrollToSection('interiors')}
-            className={
-              "flex items-center gap-3 rounded-2xl px-6 py-4 border transition-transform duration-300 hover:scale-[1.02] " +
-              (isDark
-                ? "bg-slate-900 text-slate-50 border-violet-500 shadow-lg shadow-violet-900/50"
-                : "bg-violet-50 text-violet-900 border-violet-400 shadow-xl shadow-violet-300"
-              )
-            }
-          >
-            <span className="text-2xl">🏠</span>
-            <div className="flex flex-col items-start">
-              <span 
-                className="font-semibold"
-                style={{ color: isDark ? '#f9fafb' : '#1f2933' }}
-              >
-                {translations.buttons[language].interiors}
-              </span>
-              <span 
-                className="text-sm"
-                style={{ color: isDark ? '#e5e7eb' : '#4b5563' }}
-              >
-                {language === 'hr' ? '3D vizualizacije i nacrti po mjeri' : '3D renders and custom designs'}
-              </span>
-            </div>
-          </button>
+        {/* CTA buttons */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="#kontakt"
+            className="inline-flex items-center justify-center rounded-2xl px-8 py-4 font-semibold text-white
+              bg-amethyst shadow-[0_18px_50px_rgba(110,68,255,0.35)]
+              hover:translate-y-[-1px] hover:shadow-[0_24px_70px_rgba(110,68,255,0.45)]
+              active:translate-y-0 transition will-change-transform">
+            {translations.ctaPrimary[language]}
+          </a>
 
-          {/* Web Atelier */}
-          <button
-            type="button"
-            onClick={() => scrollToSection('web-atelier')}
-            className={
-              "flex items-center gap-3 rounded-2xl px-6 py-4 border transition-transform duration-300 hover:scale-[1.02] " +
-              (isDark
-                ? "bg-slate-900 text-slate-50 border-violet-500 shadow-lg shadow-violet-900/50"
-                : "bg-violet-50 text-violet-900 border-violet-400 shadow-xl shadow-violet-300"
-              )
-            }
-          >
-            <span className="text-2xl">💻</span>
-            <div className="flex flex-col items-start">
-              <span 
-                className="font-semibold"
-                style={{ color: isDark ? '#f9fafb' : '#1f2933' }}
-              >
-                {translations.buttons[language].webAtelier}
-              </span>
-              <span 
-                className="text-sm"
-                style={{ color: isDark ? '#e5e7eb' : '#4b5563' }}
-              >
-                {language === 'hr' ? 'Web stranice i online projekti po mjeri' : 'Websites and online projects'}
-              </span>
-            </div>
-          </button>
+          <a
+            href="#portfolio"
+            className="inline-flex items-center justify-center rounded-2xl px-8 py-4 font-semibold
+              text-plum dark:text-pearl border border-amethyst/25 dark:border-lavender/20
+              bg-white/55 dark:bg-white/8 backdrop-blur-2xl
+              shadow-[0_10px_30px_rgba(0,0,0,0.06)]
+              hover:bg-white/70 dark:hover:bg-white/12 transition">
+            {translations.ctaSecondary[language]}
+          </a>
         </div>
-      </div>
 
-      {/* Scroll indicator (opcionalno) */}
-      <div 
-        className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce"
-        style={{ animation: 'float 2s ease-in-out infinite' }}
-      >
-        <div className="w-6 h-10 border-2 border-[rgba(110,68,255,0.3)] dark:border-[rgba(189,166,255,0.4)] rounded-full flex items-start justify-center p-2">
-          <div 
-            className="w-1.5 h-3 bg-[rgba(110,68,255,0.5)] dark:bg-[rgba(189,166,255,0.6)] rounded-full"
-            style={{ animation: 'float 1.5s ease-in-out infinite' }}
-          />
+        {/* Scroll indicator */}
+        <div className="mt-10 flex justify-center">
+          <a href="#portfolio" className="group inline-flex flex-col items-center justify-center gap-2">
+            <span className="h-10 w-7 rounded-full border border-amethyst/25 dark:border-lavender/20 bg-white/20 dark:bg-white/5 backdrop-blur-md
+              flex items-start justify-center p-2">
+              <span className="h-2 w-1 rounded-full bg-amethyst/60 dark:bg-lavender/60 animate-bounce" />
+            </span>
+            <span className="text-xs text-amethyst/40 dark:text-lavender/40">↓</span>
+          </a>
+        </div>
+
+        {/* Cards Section */}
+        <h2 className="mt-16 text-2xl sm:text-3xl font-bold text-plum dark:text-pearl">
+          {translations.cardsTitle[language]}
+        </h2>
+
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* LRC Shop Card */}
+          <Link to="/lrc" className="group rounded-[2rem] p-8 text-center
+            bg-[linear-gradient(180deg,rgba(255,255,255,0.70),rgba(255,255,255,0.40))]
+            dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.10),rgba(255,255,255,0.06))]
+            backdrop-blur-2xl
+            border border-amethyst/15 dark:border-lavender/10
+            shadow-[0_20px_60px_rgba(0,0,0,0.10)]
+            hover:-translate-y-2 hover:shadow-[0_30px_90px_rgba(0,0,0,0.14)]
+            transition-all duration-300 will-change-transform">
+            <div className="flex flex-col items-center">
+              <div className="text-5xl mb-4" role="img" aria-label="Gift">
+                🎁
+              </div>
+              <div>
+                <div className="text-lg font-bold text-plum dark:text-pearl">{translations.cards.lrc.title[language]}</div>
+                <div className="mt-1 text-sm font-semibold text-plum/70 dark:text-pearl/70">{translations.cards.lrc.subtitle[language]}</div>
+                <p className="mt-3 text-xs text-plum/60 dark:text-pearl/60">
+                  {translations.cards.lrc.description[language]}
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          {/* Interijeri Card */}
+          <Link to="/interijeri" className="group rounded-[2rem] p-8 text-center
+            bg-[linear-gradient(180deg,rgba(255,255,255,0.70),rgba(255,255,255,0.40))]
+            dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.10),rgba(255,255,255,0.06))]
+            backdrop-blur-2xl
+            border border-amethyst/15 dark:border-lavender/10
+            shadow-[0_20px_60px_rgba(0,0,0,0.10)]
+            hover:-translate-y-2 hover:shadow-[0_30px_90px_rgba(0,0,0,0.14)]
+            transition-all duration-300 will-change-transform">
+            <div className="flex flex-col items-center">
+              <div className="text-5xl mb-4" role="img" aria-label="House">
+                🏠
+              </div>
+              <div>
+                <div className="text-lg font-bold text-plum dark:text-pearl">{translations.cards.interiors.title[language]}</div>
+                <div className="mt-1 text-sm font-semibold text-plum/70 dark:text-pearl/70">{translations.cards.interiors.subtitle[language]}</div>
+                <p className="mt-3 text-xs text-plum/60 dark:text-pearl/60">
+                  {translations.cards.interiors.description[language]}
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          {/* Web Atelier Card */}
+          <Link to="/web-atelier" className="group rounded-[2rem] p-8 text-center
+            bg-[linear-gradient(180deg,rgba(255,255,255,0.70),rgba(255,255,255,0.40))]
+            dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.10),rgba(255,255,255,0.06))]
+            backdrop-blur-2xl
+            border border-amethyst/15 dark:border-lavender/10
+            shadow-[0_20px_60px_rgba(0,0,0,0.10)]
+            hover:-translate-y-2 hover:shadow-[0_30px_90px_rgba(0,0,0,0.14)]
+            transition-all duration-300 will-change-transform">
+            <div className="flex flex-col items-center">
+              <div className="text-5xl mb-4" role="img" aria-label="Laptop">
+                💻
+              </div>
+              <div>
+                <div className="text-lg font-bold text-plum dark:text-pearl">{translations.cards.webAtelier.title[language]}</div>
+                <div className="mt-1 text-sm font-semibold text-plum/70 dark:text-pearl/70">{translations.cards.webAtelier.subtitle[language]}</div>
+                <p className="mt-3 text-xs text-plum/60 dark:text-pearl/60">
+                  {translations.cards.webAtelier.description[language]}
+                </p>
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
     </section>
-  );
+  )
 }

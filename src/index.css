@@ -16,22 +16,27 @@
 
 /* === BASE (text must be visible by default) === */
 @layer base {
-  html { scroll-behavior: smooth; }
+  html { 
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+  }
+  html, body { overflow-x: hidden; }
   html, body, #root { min-height: 100%; }
   body {
-    color: var(--color-ink); /* <-- keeps text dark even after HMR */
-    background:
-      radial-gradient(1200px 800px at 90% -10%, rgba(var(--pearl-1) / .65), transparent 60%),
-      radial-gradient(1600px 1000px at -10% 20%, rgba(var(--pearl-1) / .55), transparent 65%),
-      rgb(var(--pearl-0));
+    color: var(--color-ink);
+    background: rgb(var(--pearl-0));
     font-feature-settings: "cv02","cv03","cv04","cv11";
+  }
+  
+  html.dark body {
+    background: rgb(7 8 18);
   }
   a { color: var(--color-ink); }
   a:hover { color: var(--color-primary); }
   
   /* Smooth transitions for interactive elements */
-  * {
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  a, button, input, textarea, select {
+    transition-property: color, background-color, border-color, text-decoration-color, opacity, box-shadow, transform, filter, backdrop-filter;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
   }
@@ -40,6 +45,11 @@
   *:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+  
+  /* Canvas overflow fix */
+  canvas {
+    max-width: 100%;
   }
 }
 
@@ -125,6 +135,52 @@
     color: var(--color-ink-muted); 
     margin-bottom: 0.75rem;
     letter-spacing: 0.1em;
+  }
+
+  /* Welcome Section Aurora Background */
+  .welcome-aurora {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -20;
+  }
+
+  .welcome-aurora::before {
+    content: "";
+    position: absolute;
+    inset: -35%;
+    filter: blur(56px) saturate(1.5);
+    background:
+      radial-gradient(70% 55% at 50% 22%, rgba(110,68,255,0.60), transparent 62%),
+      radial-gradient(50% 45% at 18% 55%, rgba(189,166,255,0.40), transparent 64%),
+      radial-gradient(48% 42% at 82% 62%, rgba(120,220,255,0.22), transparent 64%),
+      radial-gradient(55% 50% at 70% 85%, rgba(255,180,220,0.18), transparent 65%),
+      linear-gradient(180deg, rgba(255,255,255,0.80), rgba(249,247,251,0.70));
+  }
+
+  html.dark .welcome-aurora::before {
+    background:
+      radial-gradient(70% 55% at 50% 22%, rgba(110,68,255,0.45), transparent 62%),
+      radial-gradient(50% 45% at 18% 55%, rgba(255,140,200,0.18), transparent 64%),
+      radial-gradient(48% 42% at 82% 62%, rgba(120,220,255,0.14), transparent 64%),
+      radial-gradient(55% 50% at 70% 85%, rgba(189,166,255,0.12), transparent 65%),
+      linear-gradient(180deg, rgba(10,10,22,0.92), rgba(7,8,18,0.98));
+  }
+
+  .welcome-noise {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -10;
+    background-image: url("/noise.svg");
+    background-size: 260px 260px;
+    opacity: 0.10;
+    mix-blend-mode: overlay;
+  }
+
+  html.dark .welcome-noise {
+    opacity: 0.12;
+    mix-blend-mode: soft-light;
   }
 }
 
