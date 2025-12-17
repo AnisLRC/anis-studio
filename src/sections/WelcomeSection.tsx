@@ -6,6 +6,8 @@ interface WelcomeSectionProps {
 }
 
 export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps) {
+  const USE_IMAGE_BG = false
+
   const translations = {
     headline: {
       hr: 'Svaka ideja je bitna.',
@@ -48,47 +50,77 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
   return (
     <section className="relative min-h-[78vh] [isolation:isolate]">
+      {/* CTA pulse animation */}
+      <style>{`
+        @keyframes ctaPulse {
+          0%, 100% { box-shadow: 0 18px 50px rgba(110,68,255,0.35); }
+          50% { box-shadow: 0 18px 60px rgba(110,68,255,0.5), 0 0 20px rgba(110,68,255,0.3); }
+        }
+      `}</style>
       {/* CLIP WRAPPER - contains only visual background layers */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Aurora gradient layer - Light mode */}
-        <div className="pointer-events-none absolute inset-0 z-[1] dark:hidden">
-          <div style={{
-            position: "absolute",
-            inset: "-35%",
-            filter: "blur(52px) saturate(1.15)",
-            opacity: 0.9,
-            background: "radial-gradient(70% 55% at 50% 22%, rgba(110,68,255,0.26), transparent 62%), radial-gradient(50% 45% at 18% 55%, rgba(189,166,255,0.20), transparent 64%), radial-gradient(48% 42% at 82% 62%, rgba(120,220,255,0.12), transparent 64%), radial-gradient(55% 50% at 70% 85%, rgba(255,180,220,0.10), transparent 65%), linear-gradient(180deg, rgba(255,255,255,0.94), rgba(249,247,251,0.86))"
-          }} />
-        </div>
-
-        {/* Aurora gradient layer - Dark mode */}
-        <div className="pointer-events-none absolute inset-0 z-[1] hidden dark:block">
-          <div style={{
-            position: "absolute",
-            inset: "-35%",
-            filter: "blur(56px) saturate(1.5)",
-            background: "radial-gradient(70% 55% at 50% 22%, rgba(110,68,255,0.45), transparent 62%), radial-gradient(50% 45% at 18% 55%, rgba(255,140,200,0.18), transparent 64%), radial-gradient(48% 42% at 82% 62%, rgba(120,220,255,0.14), transparent 64%), radial-gradient(55% 50% at 70% 85%, rgba(189,166,255,0.12), transparent 65%), linear-gradient(180deg, rgba(10,10,22,0.92), rgba(7,8,18,0.98))"
-          }} />
-        </div>
+        {USE_IMAGE_BG ? (
+          <>
+            {/* Light image */}
+            <div
+              className="pointer-events-none absolute inset-0 z-[1] dark:hidden"
+              style={{
+                backgroundImage: "url(/hero-sky-light.png)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            />
+            {/* Dark image */}
+            <div
+              className="pointer-events-none absolute inset-0 z-[1] hidden dark:block"
+              style={{
+                backgroundImage: "url(/hero-sky-dark.png)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            />
+          </>
+        ) : (
+          <>
+            {/* Placeholder gradient (light) */}
+            <div
+              className="pointer-events-none absolute inset-0 z-[1] dark:hidden"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 20%, rgba(189,166,255,0.55), transparent 60%), radial-gradient(circle at 20% 60%, rgba(110,68,255,0.18), transparent 55%), radial-gradient(circle at 80% 65%, rgba(120,220,255,0.14), transparent 55%), linear-gradient(180deg, rgba(255,255,255,0.96), rgba(249,247,251,0.9))",
+              }}
+            />
+            {/* Placeholder gradient (dark) */}
+            <div
+              className="pointer-events-none absolute inset-0 z-[1] hidden dark:block"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 20%, rgba(110,68,255,0.35), transparent 60%), radial-gradient(circle at 80% 65%, rgba(120,220,255,0.18), transparent 55%), linear-gradient(180deg, rgba(7,8,18,0.65), rgba(7,8,18,0.95))",
+              }}
+            />
+          </>
+        )}
 
         {/* Noise overlay */}
         <div
-          className="pointer-events-none absolute inset-0 z-[2] opacity-[0.10] mix-blend-overlay dark:opacity-[0.12] dark:mix-blend-soft-light"
+          className="pointer-events-none absolute inset-0 z-[3] opacity-[0.06] mix-blend-overlay dark:opacity-[0.08] dark:mix-blend-soft-light"
           style={{ backgroundImage: "url(/noise.svg)", backgroundSize: "260px 260px" }}
         />
 
         {/* Canvas sparkles */}
-        <SparklesCanvas className="pointer-events-none absolute inset-0 z-[3] h-full w-full opacity-70" />
+        <SparklesCanvas className="pointer-events-none absolute inset-0 z-[4] h-full w-full opacity-60" />
 
         {/* Bottom fade to page background (light & dark) */}
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[4] h-40"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-56"
           style={{
             background: 'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))'
           }}
         />
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[4] h-40 hidden dark:block"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-56 hidden dark:block"
           style={{
             background: 'linear-gradient(to bottom, rgba(7,8,18,0), rgba(7,8,18,1))'
           }}
@@ -113,7 +145,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
         {/* Headline */}
         <h1 className="font-heading text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight
-          text-plum dark:text-pearl drop-shadow-[0_14px_40px_rgba(110,68,255,0.18)]">
+          text-plum/90 dark:text-pearl drop-shadow-[0_14px_40px_rgba(110,68,255,0.18)]">
           {translations.headline[language]}
           <span className="ml-3 align-middle">✨</span>
         </h1>
@@ -128,16 +160,17 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           <a
             href="#kontakt"
             className="inline-flex items-center justify-center rounded-2xl px-8 py-4 font-semibold text-white
-              bg-amethyst shadow-[0_18px_50px_rgba(110,68,255,0.35)]
+              bg-amethyst
               hover:translate-y-[-1px] hover:shadow-[0_24px_70px_rgba(110,68,255,0.45)]
-              active:translate-y-0 transition will-change-transform">
+              active:translate-y-0 transition-transform duration-200 will-change-transform"
+            style={{ animation: 'ctaPulse 3s ease-in-out infinite' }}>
             {translations.ctaPrimary[language]}
           </a>
 
           <a
             href="#portfolio"
             className="inline-flex items-center justify-center rounded-2xl px-8 py-4 font-semibold
-              text-plum dark:text-pearl border border-amethyst/25 dark:border-lavender/20
+              text-plum/90 dark:text-pearl border border-amethyst/25 dark:border-lavender/20
               bg-white/55 dark:bg-white/8 backdrop-blur-2xl
               shadow-[0_10px_30px_rgba(0,0,0,0.06)]
               hover:bg-white/70 dark:hover:bg-white/12 transition">
@@ -157,28 +190,33 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
         </div>
 
         {/* Cards Section */}
-        <h2 className="mt-16 text-2xl sm:text-3xl font-bold text-plum dark:text-pearl">
+        <h2 className="mt-16 text-2xl sm:text-3xl font-bold text-plum/90 dark:text-pearl">
           {translations.cardsTitle[language]}
         </h2>
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* LRC Shop Card */}
-          <Link to="/lrc" className="group rounded-[2rem] p-8 text-center
-            bg-[linear-gradient(180deg,rgba(255,255,255,0.70),rgba(255,255,255,0.40))]
-            dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.10),rgba(255,255,255,0.06))]
-            backdrop-blur-2xl
-            border border-amethyst/15 dark:border-lavender/10
-            shadow-[0_20px_60px_rgba(0,0,0,0.10)]
-            hover:-translate-y-2 hover:shadow-[0_30px_90px_rgba(0,0,0,0.14)]
+          <Link to="/lrc" className="group relative rounded-[2rem] p-8 text-center
+            bg-white/80 dark:bg-white/8 backdrop-blur-2xl
+            border border-amethyst/20 dark:border-lavender/10
+            shadow-[0_15px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
+            hover:-translate-y-2 hover:shadow-[0_25px_70px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
             transition-all duration-300 will-change-transform">
+            {/* Project count badge */}
+            <div className="absolute top-4 right-4">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold
+                bg-amethyst/10 dark:bg-lavender/15 text-amethyst dark:text-lavender border border-amethyst/20 dark:border-lavender/20">
+                50+
+              </span>
+            </div>
             <div className="flex flex-col items-center">
-              <div className="text-5xl mb-4" role="img" aria-label="Gift">
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300" role="img" aria-label="Gift">
                 🎁
               </div>
               <div>
-                <div className="text-lg font-bold text-plum dark:text-pearl">{translations.cards.lrc.title[language]}</div>
-                <div className="mt-1 text-sm font-semibold text-plum/70 dark:text-pearl/70">{translations.cards.lrc.subtitle[language]}</div>
-                <p className="mt-3 text-xs text-plum/60 dark:text-pearl/60">
+                <div className="text-lg font-bold text-plum/90 dark:text-pearl group-hover:text-amethyst dark:group-hover:text-lavender transition-colors">{translations.cards.lrc.title[language]}</div>
+                <div className="mt-1 text-sm font-semibold text-plum/80 dark:text-pearl/70">{translations.cards.lrc.subtitle[language]}</div>
+                <p className="mt-3 text-xs text-plum/75 dark:text-pearl/60">
                   {translations.cards.lrc.description[language]}
                 </p>
               </div>
@@ -186,22 +224,27 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </Link>
 
           {/* Interijeri Card */}
-          <Link to="/interijeri" className="group rounded-[2rem] p-8 text-center
-            bg-[linear-gradient(180deg,rgba(255,255,255,0.70),rgba(255,255,255,0.40))]
-            dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.10),rgba(255,255,255,0.06))]
-            backdrop-blur-2xl
-            border border-amethyst/15 dark:border-lavender/10
-            shadow-[0_20px_60px_rgba(0,0,0,0.10)]
-            hover:-translate-y-2 hover:shadow-[0_30px_90px_rgba(0,0,0,0.14)]
+          <Link to="/interijeri" className="group relative rounded-[2rem] p-8 text-center
+            bg-white/80 dark:bg-white/8 backdrop-blur-2xl
+            border border-amethyst/20 dark:border-lavender/10
+            shadow-[0_15px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
+            hover:-translate-y-2 hover:shadow-[0_25px_70px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
             transition-all duration-300 will-change-transform">
+            {/* Project count badge */}
+            <div className="absolute top-4 right-4">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold
+                bg-amethyst/10 dark:bg-lavender/15 text-amethyst dark:text-lavender border border-amethyst/20 dark:border-lavender/20">
+                20+
+              </span>
+            </div>
             <div className="flex flex-col items-center">
-              <div className="text-5xl mb-4" role="img" aria-label="House">
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300" role="img" aria-label="House">
                 🏠
               </div>
               <div>
-                <div className="text-lg font-bold text-plum dark:text-pearl">{translations.cards.interiors.title[language]}</div>
-                <div className="mt-1 text-sm font-semibold text-plum/70 dark:text-pearl/70">{translations.cards.interiors.subtitle[language]}</div>
-                <p className="mt-3 text-xs text-plum/60 dark:text-pearl/60">
+                <div className="text-lg font-bold text-plum/90 dark:text-pearl group-hover:text-amethyst dark:group-hover:text-lavender transition-colors">{translations.cards.interiors.title[language]}</div>
+                <div className="mt-1 text-sm font-semibold text-plum/80 dark:text-pearl/70">{translations.cards.interiors.subtitle[language]}</div>
+                <p className="mt-3 text-xs text-plum/75 dark:text-pearl/60">
                   {translations.cards.interiors.description[language]}
                 </p>
               </div>
@@ -209,22 +252,27 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </Link>
 
           {/* Web Atelier Card */}
-          <Link to="/web-atelier" className="group rounded-[2rem] p-8 text-center
-            bg-[linear-gradient(180deg,rgba(255,255,255,0.70),rgba(255,255,255,0.40))]
-            dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.10),rgba(255,255,255,0.06))]
-            backdrop-blur-2xl
-            border border-amethyst/15 dark:border-lavender/10
-            shadow-[0_20px_60px_rgba(0,0,0,0.10)]
-            hover:-translate-y-2 hover:shadow-[0_30px_90px_rgba(0,0,0,0.14)]
+          <Link to="/web-atelier" className="group relative rounded-[2rem] p-8 text-center
+            bg-white/80 dark:bg-white/8 backdrop-blur-2xl
+            border border-amethyst/20 dark:border-lavender/10
+            shadow-[0_15px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
+            hover:-translate-y-2 hover:shadow-[0_25px_70px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
             transition-all duration-300 will-change-transform">
+            {/* Project count badge */}
+            <div className="absolute top-4 right-4">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold
+                bg-amethyst/10 dark:bg-lavender/15 text-amethyst dark:text-lavender border border-amethyst/20 dark:border-lavender/20">
+                10+
+              </span>
+            </div>
             <div className="flex flex-col items-center">
-              <div className="text-5xl mb-4" role="img" aria-label="Laptop">
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300" role="img" aria-label="Laptop">
                 💻
               </div>
               <div>
-                <div className="text-lg font-bold text-plum dark:text-pearl">{translations.cards.webAtelier.title[language]}</div>
-                <div className="mt-1 text-sm font-semibold text-plum/70 dark:text-pearl/70">{translations.cards.webAtelier.subtitle[language]}</div>
-                <p className="mt-3 text-xs text-plum/60 dark:text-pearl/60">
+                <div className="text-lg font-bold text-plum/90 dark:text-pearl group-hover:text-amethyst dark:group-hover:text-lavender transition-colors">{translations.cards.webAtelier.title[language]}</div>
+                <div className="mt-1 text-sm font-semibold text-plum/80 dark:text-pearl/70">{translations.cards.webAtelier.subtitle[language]}</div>
+                <p className="mt-3 text-xs text-plum/75 dark:text-pearl/60">
                   {translations.cards.webAtelier.description[language]}
                 </p>
               </div>

@@ -8,7 +8,9 @@
 @theme {
   --color-primary: oklch(0.67 0.20 262);
   --color-primary-600: oklch(0.60 0.20 262);
+  --color-ink: #2E2447;  /* fallback for browsers without oklch() */
   --color-ink: oklch(0.20 0.02 260);        /* dark text */
+  --color-ink-muted: #5c4d70;  /* fallback */
   --color-ink-muted: oklch(0.45 0.02 260);  /* secondary text */
   --pearl-0: 255 255 255;
   --pearl-1: 247 246 255;
@@ -31,7 +33,6 @@
   html.dark body {
     background: rgb(7 8 18);
   }
-  a { color: var(--color-ink); }
   a:hover { color: var(--color-primary); }
   
   /* Smooth transitions for interactive elements */
