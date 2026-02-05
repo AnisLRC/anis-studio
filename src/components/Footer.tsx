@@ -1,3 +1,5 @@
+import { CONTACT_INFO } from '../config/contact'
+
 export default function Footer() {
   return (
     <footer className="border-t bg-gradient-to-b from-white to-[rgba(247,246,255,0.6)]">
@@ -24,7 +26,7 @@ export default function Footer() {
             {/* Email */}
             <a 
               className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[rgba(110,68,255,0.4)]"
-              href="mailto:info.anilrc@gmail.com" 
+              href={`mailto:${CONTACT_INFO.email}`}
               aria-label="Email"
               target="_blank"
               rel="noopener noreferrer"

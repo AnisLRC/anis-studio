@@ -1,5 +1,6 @@
 import { ErrorBoundary } from '../ErrorBoundary'
 import ContactSection from '../components/ContactSection'
+import { CONTACT_INFO } from '../config/contact'
 
 interface ContactPageProps {
   language: 'hr' | 'en'
@@ -24,9 +25,7 @@ export default function ContactPage({ language }: ContactPageProps) {
         email: "Email",
         phone: "Phone"
       }
-    },
-    email: "info.anilrc@gmail.com",
-    phone: "+385 XX XXX XXXX"
+    }
   }
 
   return (
@@ -51,10 +50,10 @@ export default function ContactPage({ language }: ContactPageProps) {
                     {translations.contactInfo[language].email}
                   </div>
                   <a 
-                    href={`mailto:${translations.email}`}
+                    href={`mailto:${CONTACT_INFO.email}`}
                     className="text-sm font-semibold text-[--color-primary] hover:underline"
                   >
-                    {translations.email}
+                    {CONTACT_INFO.email}
                   </a>
                 </div>
               </div>
@@ -66,10 +65,10 @@ export default function ContactPage({ language }: ContactPageProps) {
                     {translations.contactInfo[language].phone}
                   </div>
                   <a 
-                    href={`tel:${translations.phone}`}
+                    href={`tel:${CONTACT_INFO.phone}`}
                     className="text-sm font-semibold text-[--color-primary] hover:underline"
                   >
-                    {translations.phone}
+                    {CONTACT_INFO.phone}
                   </a>
                 </div>
               </div>
@@ -85,6 +84,7 @@ export default function ContactPage({ language }: ContactPageProps) {
     </main>
   )
 }
+
 
 
 

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { submitContactInquiry } from '../lib/contactInquiries'
 
 interface ContactSectionProps {
   language: 'hr' | 'en'
@@ -11,6 +12,8 @@ export default function ContactSection({ language }: ContactSectionProps) {
     message: ''
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [errors, setErrors] = useState<{
     name?: string
     email?: string
@@ -118,7 +121,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
     }
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     
     // Validate form
@@ -139,15 +142,38 @@ export default function ContactSection({ language }: ContactSectionProps) {
       return
     }
     
-    // Demo alert - u production bi ovdje bio API poziv
-    setIsSubmitted(true)
-    setErrors({})
-    
-    // Reset after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false)
-      setFormData({ name: '', email: '', message: '' })
-    }, 3000)
+    // Clear previous error
+    setErrorMessage(null)
+    setIsSubmitting(true)
+
+    try {
+      await submitContactInquiry({
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        language: language
+      })
+
+      // Show success state
+      setIsSubmitted(true)
+      setErrors({})
+
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false)
+        setFormData({ name: '', email: '', message: '' })
+      }, 3000)
+    } catch (error) {
+      // Show error message
+      setErrorMessage(
+        language === 'hr' 
+          ? 'Greška pri slanju poruke. Molimo pokušajte ponovno.'
+          : 'Error sending message. Please try again.'
+      )
+      console.error('Error submitting contact inquiry:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -298,12 +324,22 @@ export default function ContactSection({ language }: ContactSectionProps) {
             <div className="text-center pt-2">
               <button 
                 type="submit" 
-                className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                disabled={isSubmitting}
+                className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ letterSpacing: '0.02em' }}
               >
-                {translations.send[language]}
+                {isSubmitting 
+                  ? (language === 'hr' ? 'Šaljem...' : 'Sending...') 
+                  : translations.send[language]}
               </button>
             </div>
+
+            {/* Error Message */}
+            {errorMessage && (
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-center text-sm animate-fade-in">
+                {errorMessage}
+              </div>
+            )}
           </form>
         </div>
       </div>

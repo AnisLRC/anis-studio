@@ -1,5 +1,20 @@
 # Ani's Studio – razvoj i deploy
 
+## 🚨 PRIJE DEPLOYMENT-a
+
+**OBAVEZNO napraviti prije pusha na produkciju:**
+
+- [ ] Zamijeniti placeholder telefon u `src/config/contact.ts`
+- [ ] Postaviti environment varijable u Vercel:
+  - `VITE_SUPABASE_URL`
+  - `VITE_SUPABASE_ANON_KEY`
+  - `VITE_ADMIN_PASSWORD`
+- [ ] Testirati sve forme s pravim Supabase-om
+- [ ] Verificirati da admin login radi
+- [ ] Provjeriti da `.env` datoteke nisu commited-e u git (koristiti `git status`)
+
+---
+
 ## Kako pokrenuti projekt lokalno
 
 1. Instaliraj dependencies:
@@ -7,32 +22,61 @@
    npm install
    ```
 
-2. Kreiraj `.env.local` fajl u root direktoriju projekta s potrebnim environment varijablama:
+2. Kreiraj `.env.local` fajl u root direktoriju projekta (kopiraj iz `.env.example`):
+   ```bash
+   cp .env.example .env.local
    ```
-   VITE_SUPABASE_URL=your_supabase_url
+   
+   Zatim popuni s pravim vrijednostima:
+   ```
+   VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_ADMIN_PASSWORD=your_secure_admin_password
    ```
 
-3. Pokreni development server:
+3. **VAŽNO - Ukloni .env iz git-a (ako je slučajno commitovan):**
+   ```bash
+   git rm --cached .env
+   git commit -m "Remove .env from git tracking"
+   ```
+
+4. Pokreni development server:
    ```bash
    npm run dev
    ```
 
-4. Otvori aplikaciju u browseru:
+5. Otvori aplikaciju u browseru:
    - Aplikacija će biti dostupna na `http://localhost:5173` (ili sljedeći slobodan port)
 
 ## Kako deployati na Vercel
 
+### Automatski deployment
+
 Projekt je povezan na Vercel i koristi automatski deployment:
 
 - **Automatski deployment**: Svaki `git push` na `main` branch automatski pokreće novi build i deployment na Vercel
-- **Environment varijable**: Postavi potrebne env varijable u Vercel projektu:
-  - `VITE_SUPABASE_URL`
-  - `VITE_SUPABASE_ANON_KEY`
-  - (dodajte druge ako su potrebne)
-- **Provjera build logova**: Ako build padne, provjeri logove:
-  - Vercel Dashboard → Deployments → Last build → Logs
-  - Tamo ćeš vidjeti detaljne informacije o greškama
+
+### Environment varijable u Vercel
+
+Postavi sljedeće env varijable u Vercel Dashboard → Project Settings → Environment Variables:
+
+| Varijabla | Opis | Obavezno |
+|-----------|------|----------|
+| `VITE_SUPABASE_URL` | Supabase project URL | DA |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anonymous key | DA |
+| `VITE_ADMIN_PASSWORD` | Admin panel password | DA |
+
+**Napomena**: Nakon dodavanja environment varijabli, morat ćeš pokrenuti redeploy.
+
+### Provjera build logova
+
+Ako build padne, provjeri logove:
+- Vercel Dashboard → Deployments → Last build → Logs
+- Tamo ćeš vidjeti detaljne informacije o greškama
+
+### Prije svakog deploymenta
+
+Obavezno provjeri [🚨 PRIJE DEPLOYMENT-a](#-prije-deployment-a) checklist na vrhu ovog dokumenta!
 
 ## Kako proširiti projekt
 

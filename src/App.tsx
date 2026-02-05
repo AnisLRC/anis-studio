@@ -8,6 +8,7 @@ import RegisterModal from './components/RegisterModal'
 import AdminDashboard from './components/AdminDashboard'
 import { useGlobalScrollAnimations } from './hooks/useGlobalScrollAnimations'
 import { useThemeStore } from './lib/theme.store'
+import { isSupabaseConfigured } from './lib/supabase'
 import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
 import LRCPage from './pages/LRCPage'
@@ -58,7 +59,14 @@ export default function App() {
           : 'min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300'
       }
     >
-        <BrowserRouter>
+      {/* Development warning banner when Supabase is not configured */}
+      {import.meta.env.DEV && !isSupabaseConfigured && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-amber-500 text-white px-4 py-3 text-center text-sm shadow-lg">
+          <strong>⚠️ Development Mode:</strong> Supabase not configured. Check .env.local file. Forms will use fallback mode.
+        </div>
+      )}
+
+      <BrowserRouter>
         <AdminAuthProvider>
           <Routes>
             <Route

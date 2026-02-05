@@ -9,7 +9,7 @@ interface AdminAuthContextValue {
 
 const AdminAuthContext = createContext<AdminAuthContextValue | undefined>(undefined)
 
-const ADMIN_PASSWORD = 'anis-admin-2025'
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'anis-admin-2025'
 const STORAGE_KEY = 'anis_admin_is_admin'
 
 export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
