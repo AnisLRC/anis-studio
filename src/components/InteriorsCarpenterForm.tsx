@@ -1,7 +1,9 @@
 // src/components/InteriorsCarpenterForm.tsx
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import toast from 'react-hot-toast'
 import { createCarpenter, createProject, uploadProjectFileToStorage, type DrawnBy, type VrPackagePreference } from '../lib/interiors'
+import { UploadProgress } from './UploadProgress'
 
 export interface CarpenterProjectFormValues {
   companyName: string
@@ -113,20 +115,22 @@ const HARDWARE_BRANDS = ['Hettich', 'Blum', 'Grass']
 
 export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFormProps) {
   const inputClass =
-    "w-full rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-400";
+    "w-full rounded-xl border border-slate-200 dark:border-lavender/20 bg-white/80 dark:bg-white/10 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/30 focus:border-violet-400 dark:focus:border-violet-500 text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50";
 
   const textareaClass =
-    "w-full rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-inner resize-y min-h-[96px] focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-400";
+    "w-full rounded-xl border border-slate-200 dark:border-lavender/20 bg-white/80 dark:bg-white/10 px-3 py-2 text-sm shadow-inner resize-y min-h-[96px] focus:outline-none focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/30 focus:border-violet-400 dark:focus:border-violet-500 text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50";
 
   const selectClass = inputClass;
 
   const [values, setValues] = useState<CarpenterProjectFormValues>(INITIAL_VALUES)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
   const [exportFiles, setExportFiles] = useState<File[]>([])
   const [kitchenSketchFiles, setKitchenSketchFiles] = useState<File[]>([])
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [currentFile, setCurrentFile] = useState<string>()
+  const [currentFileIndex, setCurrentFileIndex] = useState(1)
 
   const translations = {
     title: {
@@ -402,8 +406,6 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    setIsSubmitted(false)
-    setSubmitError(null)
 
     const validation = validate(values)
     setErrors(validation.errors)
@@ -569,51 +571,79 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       })
 
       // Upload 3D eksport fajlova stolara (OBJ/FBX...) u Storage + project_files
-      try {
-        if (exportFiles.length > 0) {
-          await Promise.all(
-            exportFiles.map((file) =>
-              uploadProjectFileToStorage(
-                project.id,
-                file,
-                "carpenter_3d_export"
-              )
-            )
+      const totalFiles = exportFiles.length + kitchenSketchFiles.length
+      
+      if (totalFiles > 0) {
+        setIsUploading(true)
+        setUploadProgress(0)
+        setCurrentFileIndex(1)
+        
+        try {
+          const allFiles: Array<{ file: File; type: "carpenter_3d_export" | "kitchen_sketch" }> = []
+          
+          // Collect all files
+          if (exportFiles.length > 0) {
+            for (const file of exportFiles) {
+              allFiles.push({ file, type: "carpenter_3d_export" })
+            }
+          }
+          
+          if (kitchenSketchFiles.length > 0) {
+            for (const file of kitchenSketchFiles) {
+              allFiles.push({ file, type: "kitchen_sketch" })
+            }
+          }
+          
+          // Upload files sequentially to track progress
+          for (let i = 0; i < allFiles.length; i++) {
+            const { file, type } = allFiles[i]
+            setCurrentFile(file.name)
+            setCurrentFileIndex(i + 1)
+            
+            await uploadProjectFileToStorage(project.id, file, type)
+            
+            // Update progress
+            const progress = ((i + 1) / totalFiles) * 100
+            setUploadProgress(progress)
+          }
+          
+          setUploadProgress(100)
+        } catch (error) {
+          console.error(
+            "[InteriorsCarpenterForm] Error uploading project files:",
+            error
           )
+          // ne rušimo submit – projekt je već kreiran
+        } finally {
+          setIsUploading(false)
+          setCurrentFile(undefined)
+          setUploadProgress(0)
+          setCurrentFileIndex(1)
         }
-
-        if (kitchenSketchFiles.length > 0) {
-          await Promise.all(
-            kitchenSketchFiles.map((file) =>
-              uploadProjectFileToStorage(
-                project.id,
-                file,
-                "kitchen_sketch"
-              )
-            )
-          )
-        }
-      } catch (error) {
-        console.error(
-          "[InteriorsCarpenterForm] Error uploading project files:",
-          error
-        )
-        // ne rušimo submit – projekt je već kreiran
       }
 
-      // Mark as submitted
-      setIsSubmitted(true)
+      // Show success toast
+      toast.success(
+        language === 'hr'
+          ? '✨ Uspješno! Vaš zahtjev je poslan. Javit ćemo Vam se uskoro.'
+          : '✨ Success! Your request has been sent. We will contact you soon.',
+        { duration: 5000 }
+      )
 
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setValues(INITIAL_VALUES)
-        setIsSubmitted(false)
-        setExportFiles([])
-        setKitchenSketchFiles([])
-      }, 3000)
+      // Reset form immediately
+      setValues(INITIAL_VALUES)
+      setExportFiles([])
+      setKitchenSketchFiles([])
     } catch (error) {
       console.error('Error submitting carpenter form:', error)
-      setSubmitError(translations.error[language])
+      
+      // Show error toast
+      toast.error(
+        language === 'hr'
+          ? 'Greška pri slanju zahtjeva. Molimo pokušajte ponovno ili nas kontaktirajte direktno.'
+          : 'Error sending request. Please try again or contact us directly.',
+        { duration: 6000 }
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -626,19 +656,19 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         <h2 className="text-xl font-semibold text-slate-900">
           {translations.title[language]}
         </h2>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
           {translations.description[language]}
         </p>
       </div>
 
       {/* Sekcija 1: Podaci o stolaru / studiju */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">
           {translations.sections.carpenterDetails[language]}
         </legend>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Naziv firme / obrta *</span>
             <input
               type="text"
@@ -655,7 +685,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Ime i prezime kontakt osobe *</span>
             <input
               type="text"
@@ -673,7 +703,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>Email *</span>
               <input
                 type="email"
@@ -690,7 +720,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
           </div>
 
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>{translations.fields.phone[language]}</span>
               <input
                 type="tel"
@@ -709,7 +739,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>{translations.fields.location[language]}</span>
               <input
                 type="text"
@@ -724,7 +754,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
           </div>
 
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>{translations.fields.website[language]}</span>
               <input
                 type="url"
@@ -740,7 +770,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>OIB</span>
             <input
               type="text"
@@ -755,13 +785,13 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Sekcija 2: Upit za projekt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">
           {translations.sections.projectInquiry[language]}
         </legend>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Tip projekta *</span>
             <select
               id="projectType"
@@ -788,7 +818,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>Površina (m²)</span>
               <input
                 type="text"
@@ -802,7 +832,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
           </div>
 
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>Budžet (€)</span>
               <input
                 type="text"
@@ -817,7 +847,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Napomene</span>
             <textarea
               className={textareaClass}
@@ -831,10 +861,10 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Tipovi projekata koje rade */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Tipovi projekata koje rade</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Tipovi projekata koje rade</legend>
 
-        <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
+        <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
           Tipovi projekata koje radite
         </p>
         <p className="text-xs text-slate-500 mb-3">
@@ -856,14 +886,14 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Materijali i debljine */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Materijali i debljine koje standardno koriste</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Materijali i debljine koje standardno koriste</legend>
         <p className="text-xs text-slate-500 mb-3">
           Navedite materijale i debljine koje standardno koristite u svojoj proizvodnji. Ovo nam pomaže prilagoditi projekt vašim mogućnostima.
         </p>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Ploče (npr. 18mm, 19mm, 36mm...) *</span>
             <input
               type="text"
@@ -880,7 +910,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Radne ploče (materijali, debljine...) *</span>
             <input
               type="text"
@@ -897,7 +927,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Frontovi (materijali, finiši...) *</span>
             <input
               type="text"
@@ -915,10 +945,10 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Okovi / brendovi */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Okovi / brendovi</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Okovi / brendovi</legend>
 
-        <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
+        <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
           Okovi / brendovi koje koristite
         </p>
         <p className="text-xs text-slate-500 mb-3">
@@ -939,7 +969,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Ostali okovi / napomena</span>
             <input
               type="text"
@@ -953,14 +983,14 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Kapacitet i rokovi */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Kapacitet i rokovi</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Kapacitet i rokovi</legend>
         <p className="text-xs text-slate-500 mb-3">
           Ove informacije nam pomažu planirati suradnju i razumjeti vaše mogućnosti izrade.
         </p>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Koliko projekata mjesečno mogu realno preuzeti? *</span>
             <input
               type="text"
@@ -977,7 +1007,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Prosječan rok izrade u tjednima *</span>
             <input
               type="text"
@@ -994,7 +1024,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Napomena o rokovima</span>
             <textarea
               className={textareaClass}
@@ -1008,8 +1038,8 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Suradnja s Ani's Studiom */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Suradnja s Ani's Studiom / Corpus</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Suradnja s Ani's Studiom / Corpus</legend>
         <p className="text-xs text-slate-500 mb-3">
           Odaberite način suradnje koji vam najviše odgovara. Možete kombinirati različite opcije ovisno o projektu.
         </p>
@@ -1041,7 +1071,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Posebne napomene za suradnju</span>
             <textarea
               className={textareaClass}
@@ -1055,11 +1085,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Kontakt preferencije */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Kontakt preferencije</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Kontakt preferencije</legend>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Način kontaktiranja *</span>
             <select
               className={`${selectClass} ${errors.contactPreference ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
@@ -1079,7 +1109,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Najbolje vrijeme za kontakt</span>
             <input
               type="text"
@@ -1093,8 +1123,8 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Tko crta projekt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">{translations.drawnBy.title[language]}</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">{translations.drawnBy.title[language]}</legend>
 
         <div id="drawnByOption">
           <div className={`flex flex-col gap-2 ${errors.drawnByOption ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
@@ -1152,8 +1182,8 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* VR Block */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">VR opcije</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">VR opcije</legend>
 
         <div>
           <label className="flex items-start gap-2 text-sm text-slate-700">
@@ -1170,7 +1200,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         {values.wantsVr && (
           <>
             <div>
-              <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+              <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
                 <span>{translations.vr.clientsPerYear[language]}</span>
                 <input
                   type="number"
@@ -1184,7 +1214,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
             </div>
 
             <div>
-              <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
+              <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
                 {translations.vr.needsTitle[language]}
               </p>
               <div className="grid gap-2 sm:grid-cols-1">
@@ -1206,14 +1236,14 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Datoteke za projekt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">
           Datoteke za projekt
         </legend>
 
         {/* Skice kuhinje */}
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Skice kuhinje (PDF, slika...)</span>
             <div className="flex items-center gap-3 mt-2">
               <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
@@ -1233,7 +1263,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               )}
             </div>
             {kitchenSketchFiles.length > 0 && (
-              <ul className="mt-2 space-y-1 text-xs text-slate-600">
+              <ul className="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-400">
                 {kitchenSketchFiles.map((file, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
@@ -1247,7 +1277,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
 
         {/* 3D export stolara */}
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>3D export (npr. .fbx, .obj, .zip)</span>
             <div className="flex items-center gap-3 mt-2">
               <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
@@ -1267,7 +1297,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               )}
             </div>
             {exportFiles.length > 0 && (
-              <ul className="mt-2 space-y-1 text-xs text-slate-600">
+              <ul className="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-400">
                 {exportFiles.map((file, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
@@ -1280,17 +1310,17 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
       </fieldset>
 
-      {isSubmitted && (
-        <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          {translations.success[language]}
+      {isUploading && (
+        <div className="mt-4 rounded-xl bg-white/90 px-4 py-4 shadow-sm border border-violet-200">
+          <UploadProgress
+            progress={uploadProgress}
+            currentFile={currentFile}
+            totalFiles={exportFiles.length + kitchenSketchFiles.length}
+            currentFileIndex={currentFileIndex}
+          />
         </div>
       )}
 
-      {submitError && (
-        <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">
-          {submitError}
-        </div>
-      )}
 
       <div className="mt-6 flex justify-center">
         <button

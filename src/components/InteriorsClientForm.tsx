@@ -1,8 +1,10 @@
 // src/components/InteriorsClientForm.tsx
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import toast from 'react-hot-toast'
 import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
 import { createClient, createProject, uploadProjectFileToStorage, type VrLocationPreference, type VrPackagePreference, type ProjectFile } from '../lib/interiors'
+import { UploadProgress } from './UploadProgress'
 
 export interface StolarOption {
   id: string
@@ -140,22 +142,24 @@ const PRIORITY_OPTIONS = [
 
 export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: InteriorsClientFormProps) {
   const inputClass =
-    "w-full rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-400";
+    "w-full rounded-xl border border-slate-200 dark:border-lavender/20 bg-white/80 dark:bg-white/10 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/30 focus:border-violet-400 dark:focus:border-violet-500 text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50";
 
   const textareaClass =
-    "w-full rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-inner resize-y min-h-[96px] focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-400";
+    "w-full rounded-xl border border-slate-200 dark:border-lavender/20 bg-white/80 dark:bg-white/10 px-3 py-2 text-sm shadow-inner resize-y min-h-[96px] focus:outline-none focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/30 focus:border-violet-400 dark:focus:border-violet-500 text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50";
 
   const selectClass = inputClass;
 
   const [values, setValues] = useState<ClientProjectFormValues>(INITIAL_VALUES)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
   const [selectedPlanFileNames, setSelectedPlanFileNames] = useState<string[]>([])
   const [selectedPhotoFileName, setSelectedPhotoFileName] = useState<string | null>(null)
   const [selectedInspirationFileNames, setSelectedInspirationFileNames] = useState<string[]>([])
   const [inspirationFiles, setInspirationFiles] = useState<File[]>([])
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [currentFile, setCurrentFile] = useState<string>()
+  const [currentFileIndex, setCurrentFileIndex] = useState(1)
 
   const addInteriorsRequest = useAdminStore((state: AdminStoreState) => state.addInteriorsRequest)
 
@@ -457,8 +461,6 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    setIsSubmitted(false)
-    setSubmitError(null)
 
     const validation = validate(values)
     setErrors(validation.errors)
@@ -539,37 +541,56 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       })
 
       // Upload povezanih datoteka (tlocrt + inspiracije) u Storage + project_files
-      try {
-        const uploadPromises: Promise<ProjectFile | null>[] = []
-
-        // tlocrt / tlocrti → file_type = "plan"
-        if (values.planFiles && values.planFiles.length > 0) {
-          for (const file of values.planFiles) {
-            uploadPromises.push(
-              uploadProjectFileToStorage(project.id, file, "plan")
-            )
+      const totalFiles = (values.planFiles?.length || 0) + (inspirationFiles?.length || 0)
+      
+      if (totalFiles > 0) {
+        setIsUploading(true)
+        setUploadProgress(0)
+        setCurrentFileIndex(1)
+        
+        try {
+          const allFiles: Array<{ file: File; type: "plan" | "inspiration" }> = []
+          
+          // Collect all files
+          if (values.planFiles && values.planFiles.length > 0) {
+            for (const file of values.planFiles) {
+              allFiles.push({ file, type: "plan" })
+            }
           }
-        }
-
-        // inspiracije → file_type = "inspiration"
-        if (inspirationFiles && inspirationFiles.length > 0) {
-          for (const file of inspirationFiles) {
-            uploadPromises.push(
-              uploadProjectFileToStorage(project.id, file, "inspiration")
-            )
+          
+          if (inspirationFiles && inspirationFiles.length > 0) {
+            for (const file of inspirationFiles) {
+              allFiles.push({ file, type: "inspiration" })
+            }
           }
+          
+          // Upload files sequentially to track progress
+          for (let i = 0; i < allFiles.length; i++) {
+            const { file, type } = allFiles[i]
+            setCurrentFile(file.name)
+            setCurrentFileIndex(i + 1)
+            
+            await uploadProjectFileToStorage(project.id, file, type)
+            
+            // Update progress
+            const progress = ((i + 1) / totalFiles) * 100
+            setUploadProgress(progress)
+          }
+          
+          setUploadProgress(100)
+        } catch (uploadError) {
+          console.error(
+            "[InteriorsClientForm] Error uploading project files:",
+            uploadError
+          )
+          // ne rušimo cijeli submit – projekt je svejedno kreiran
+          // kasnije možemo dodati user-facing upozorenje
+        } finally {
+          setIsUploading(false)
+          setCurrentFile(undefined)
+          setUploadProgress(0)
+          setCurrentFileIndex(1)
         }
-
-        if (uploadPromises.length > 0) {
-          await Promise.all(uploadPromises)
-        }
-      } catch (uploadError) {
-        console.error(
-          "[InteriorsClientForm] Error uploading project files:",
-          uploadError
-        )
-        // ne rušimo cijeli submit – projekt je svejedno kreiran
-        // kasnije možemo dodati user-facing upozorenje
       }
 
       // Reset poruke o odabranom tlocrtu odmah nakon uspješnog slanja
@@ -593,18 +614,20 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         onSubmit(valuesWithoutFiles as ClientProjectFormValues)
       }
 
-      // Mark as submitted
-      setIsSubmitted(true)
+      // Show success toast
+      toast.success(
+        language === 'hr'
+          ? '✨ Uspješno! Vaš zahtjev je poslan. Javit ćemo Vam se uskoro.'
+          : '✨ Success! Your request has been sent. We will contact you soon.',
+        { duration: 5000 }
+      )
 
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setValues(INITIAL_VALUES)
-        setIsSubmitted(false)
-        setSelectedPlanFileNames([])
-        setSelectedPhotoFileName(null)
-        setSelectedInspirationFileNames([])
-        setInspirationFiles([])
-      }, 3000)
+      // Reset form immediately
+      setValues(INITIAL_VALUES)
+      setSelectedPlanFileNames([])
+      setSelectedPhotoFileName(null)
+      setSelectedInspirationFileNames([])
+      setInspirationFiles([])
     } catch (error) {
       console.error('Error submitting client form:', error)
 
@@ -626,7 +649,13 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         }
       }
 
-      setSubmitError(translations.error[language])
+      // Show error toast
+      toast.error(
+        language === 'hr'
+          ? 'Greška pri slanju zahtjeva. Molimo pokušajte ponovno ili nas kontaktirajte direktno.'
+          : 'Error sending request. Please try again or contact us directly.',
+        { duration: 6000 }
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -636,10 +665,10 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto py-8 space-y-8">
       {/* Naslov i podnaslov */}
       <div className="space-y-2 text-center mb-6">
-        <h2 className="text-xl font-semibold text-slate-900">
+        <h2 className="text-xl font-semibold text-plum/90 dark:text-pearl">
           Naručite svoj 3D prikaz interijera po mjeri
         </h2>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-400 dark:text-slate-400">
           Ispunite formu s vašim dimenzijama, potrebama i opisom. Javit ćemo vam se u najkraćem mogućem roku.
         </p>
       </div>
@@ -650,12 +679,12 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </p>
 
       {/* Kontakt podaci */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Kontakt podaci</legend>
-        <p className="text-xs text-slate-500 mb-3">Ove informacije koristimo za kontaktiranje u vezi vašeg projekta.</p>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Kontakt podaci</legend>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Ove informacije koristimo za kontaktiranje u vezi vašeg projekta.</p>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Ime i prezime / naziv klijenta *</span>
             <input
               type="text"
@@ -672,7 +701,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Email *</span>
             <input
               type="email"
@@ -689,7 +718,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>{language === 'hr' ? 'Broj mobitela *' : 'Phone number *'}</span>
             <input
               type="tel"
@@ -708,12 +737,12 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 1 – Osnovne informacije */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Osnovne informacije o prostoru</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Osnovne informacije o prostoru</legend>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>Tip prostora *</span>
               <select
                 id="projectType"
@@ -739,7 +768,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
           </div>
 
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>Grad / lokacija *</span>
               <input
                 type="text"
@@ -756,7 +785,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
           </div>
 
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>Prostor je *</span>
               <select
                 id="spaceStatus"
@@ -778,11 +807,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 2 – Dimenzije i postojeće stanje */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Dimenzije i postojeće stanje</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Dimenzije i postojeće stanje</legend>
 
         <div id="hasPlan">
-          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Imaš li tlocrt ili skicu? *</p>
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Imaš li tlocrt ili skicu? *</p>
           <div className={`flex flex-col gap-1 sm:flex-row sm:flex-wrap ${errors.hasPlan ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
             <label className="inline-flex items-center gap-2 text-sm text-slate-700">
               <input
@@ -826,7 +855,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
 
         {values.hasPlan === 'plan' && (
           <div className="space-y-2">
-            <p className="block text-sm font-medium text-slate-800">
+            <p className="block text-sm font-medium text-plum/90 dark:text-pearl">
               Tlocrt prostora (PDF ili slika)
             </p>
             <p className="text-xs text-slate-500">
@@ -849,7 +878,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
             </div>
 
             {selectedPlanFileNames.length > 0 && (
-              <ul className="mt-2 space-y-1 text-xs text-slate-600">
+              <ul className="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-400">
                 {selectedPlanFileNames.map((name) => (
                   <li key={name} className="flex items-center gap-2">
                     <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
@@ -863,7 +892,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
 
         {(values.hasPlan === 'photos' || values.hasPlan === 'none') && (
           <div>
-            <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
               <span>Učitaj fotografije prostora</span>
               <div className="flex items-center gap-3">
                 <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
@@ -880,7 +909,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
                   Možeš učitati više datoteka (preporučeno 3–5).
                 </span>
               </div>
-              <p className="text-xs text-slate-600 mt-1">
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                 {selectedPhotoFileName 
                   ? `${translations.fileUpload.selectedFile[language]} ${selectedPhotoFileName}`
                   : translations.fileUpload.noFileSelected[language]}
@@ -891,7 +920,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
 
         {/* Dimenzije prostora */}
         <div className="grid gap-4 sm:grid-cols-3">
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Širina prostora (cca)</span>
             <input
               type="text"
@@ -903,7 +932,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
             <span className="text-xs text-slate-500">Unesite približnu širinu prostora u metrima</span>
           </label>
 
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Dužina prostora (cca)</span>
             <input
               type="text"
@@ -915,7 +944,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
             <span className="text-xs text-slate-500">Unesite približnu dužinu prostora u metrima</span>
           </label>
 
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Visina prostora (cca)</span>
             <input
               type="text"
@@ -930,7 +959,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
 
         {/* Posebne karakteristike prostora */}
         <div>
-          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
             Posebne karakteristike prostora
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -953,11 +982,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 3 – Stil, osjećaj, boje */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Stil i osjećaj prostora</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Stil i osjećaj prostora</legend>
 
         <div>
-          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Željeni stil</p>
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Željeni stil</p>
           <div className="grid gap-2 sm:grid-cols-2">
             {STYLE_OPTIONS.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -974,7 +1003,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div>
-          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Kakav osjećaj želiš u prostoru?</p>
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Kakav osjećaj želiš u prostoru?</p>
           <div className="grid gap-2 sm:grid-cols-2">
             {MOOD_OPTIONS.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -991,7 +1020,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div>
-          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Preferirane boje</p>
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Preferirane boje</p>
           <div className="grid gap-2 sm:grid-cols-2">
             {COLOR_OPTIONS.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -1009,11 +1038,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 4 – Funkcija i navike */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Funkcija i navike</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Funkcija i navike</legend>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Tko najviše koristi prostor? *</span>
             <select
               id="mainUsers"
@@ -1036,7 +1065,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div>
-          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Što ti je najvažnije?</p>
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Što ti je najvažnije?</p>
           <div className="grid gap-2 sm:grid-cols-2">
             {PRIORITY_OPTIONS.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -1054,11 +1083,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 5 – Budžet i rok */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Budžet i rok</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Budžet i rok</legend>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Okvirni budžet za namještaj *</span>
             <select
               id="budgetRange"
@@ -1082,7 +1111,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Kada bi ti okvirno odgovaralo da krenemo? *</span>
             <input
               type="date"
@@ -1099,7 +1128,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Koliko si fleksibilna s rokom? *</span>
             <select
               id="flexibility"
@@ -1122,11 +1151,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 6 – Stolar / suradnja */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Stolar</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Stolar</legend>
 
         <div id="hasOwnStolar">
-          <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Imaš li već svog stolara? *</p>
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Imaš li već svog stolara? *</p>
           <div className={`flex flex-col gap-1 sm:flex-row sm:flex-wrap ${errors.hasOwnStolar ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
             <label className="inline-flex items-center gap-2 text-sm text-slate-700">
               <input
@@ -1160,7 +1189,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         {values.hasOwnStolar === 'yes' && (
           <>
             <div>
-              <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+              <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
                 <span>Odaberi svog stolara (ako je registriran)</span>
                 <select
                   value={values.stolarId}
@@ -1178,7 +1207,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
             </div>
 
             <div>
-              <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+              <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
                 <span>Moj stolar još nije registriran (ime + kontakt)</span>
                 <input
                   type="text"
@@ -1213,11 +1242,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 7 – Inspiracija i opis */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Inspiracija i opis</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Inspiracija i opis</legend>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Učitaj slike inspiracije (npr. Pinterest, Instagram)</span>
             <div className="flex items-center gap-3">
               <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
@@ -1239,7 +1268,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
                 {translations.fileUpload.noFilesSelected[language]}
               </p>
             ) : (
-              <div className="mt-1 text-sm text-slate-600">
+              <div className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                 <p>
                   {selectedInspirationFileNames.length === 1
                     ? translations.fileUpload.oneFileSelectedLabel[language]
@@ -1256,7 +1285,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Opiši svojim riječima što ti je najvažnije u ovom prostoru</span>
             <textarea
               id="projectNote"
@@ -1276,11 +1305,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 8 – Kontakt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">Kontakt</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Kontakt</legend>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Kako želiš da te kontaktiram? *</span>
             <select
               id="contactPreference"
@@ -1302,7 +1331,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div>
-          <label className="block space-y-1 text-sm sm:text-base text-slate-800">
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>Kada ti najviše odgovara da te kontaktiram?</span>
             <input
               type="text"
@@ -1317,8 +1346,8 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* VR Block */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-        <legend className="text-lg font-semibold mb-2 text-slate-800">VR opcije</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">VR opcije</legend>
 
         <div>
           <label className="flex items-start gap-2 text-sm text-slate-700">
@@ -1335,7 +1364,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         {values.wantsVr && (
           <>
             <div>
-              <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
+              <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
                 {translations.vr.locationTitle[language]}
               </p>
               <div className="flex flex-col gap-2">
@@ -1376,7 +1405,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
             </div>
 
             <div>
-              <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
+              <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
                 {translations.vr.packageTitle[language]}
               </p>
               <div className="flex flex-col gap-2">
@@ -1419,17 +1448,17 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         )}
       </fieldset>
 
-      {isSubmitted && (
-        <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          {translations.success[language]}
+      {isUploading && (
+        <div className="mt-4 rounded-xl bg-white/90 px-4 py-4 shadow-sm border border-violet-200">
+          <UploadProgress
+            progress={uploadProgress}
+            currentFile={currentFile}
+            totalFiles={(values.planFiles?.length || 0) + (inspirationFiles?.length || 0)}
+            currentFileIndex={currentFileIndex}
+          />
         </div>
       )}
 
-      {submitError && (
-        <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">
-          {submitError}
-        </div>
-      )}
 
       <div className="mt-6 flex justify-center">
         <button
