@@ -1,6 +1,7 @@
 import { ErrorBoundary } from '../ErrorBoundary'
 import ContactSection from '../components/ContactSection'
 import { CONTACT_INFO } from '../config/contact'
+import { AnimatedPage } from '../components/AnimatedPage'
 
 interface ContactPageProps {
   language: 'hr' | 'en'
@@ -29,7 +30,8 @@ export default function ContactPage({ language }: ContactPageProps) {
   }
 
   return (
-    <main>
+    <AnimatedPage>
+      <main>
       {/* Intro Section */}
       <section className="Section fade-in">
         <div className="max-w-6xl mx-auto px-4 py-10 sm:px-6 lg:px-12 lg:py-16">
@@ -82,6 +84,7 @@ export default function ContactPage({ language }: ContactPageProps) {
         <ContactSection language={language} />
       </ErrorBoundary>
     </main>
+    </AnimatedPage>
   )
 }
 

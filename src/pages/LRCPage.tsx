@@ -3,6 +3,7 @@ import LRCSection from "../components/LRCSection";
 import { useSettings } from "../hooks/useSettings";
 import { ErrorBoundary } from "../ErrorBoundary";
 import FAQSection from "../sections/FAQSection";
+import { AnimatedPage } from "../components/AnimatedPage";
 
 interface LRCPageProps {
   language?: 'hr' | 'en';
@@ -13,7 +14,8 @@ const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
   const LRC_FORM_ENABLED = settings?.is_lrc_form_enabled ?? true;
 
   return (
-    <main className="min-h-screen bg-white text-slate-900">
+    <AnimatedPage>
+      <main className="min-h-screen bg-white text-slate-900">
       {/* Glavni sadržaj: webshop uvijek vidljiv, forma ovisno o isFormEnabled */}
       <section className="pb-16 px-4">
         <div className="mx-auto max-w-6xl">
@@ -49,6 +51,7 @@ const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
         <FAQSection language={language} categories={['lrc']} />
       </ErrorBoundary>
     </main>
+    </AnimatedPage>
   );
 };
 

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import { sampleProducts, productTags } from '../data/products'
 import { cartActions } from '../lib/cart.store'
 import { submitLrcInquiry } from '../lib/lrcInquiries'
@@ -19,9 +20,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
     phone: ''
   })
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
-  const [showSuccess, setShowSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const filteredProducts = sampleProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -212,8 +211,6 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
       return
     }
 
-    // Clear previous error
-    setErrorMessage(null)
     setIsSubmitting(true)
 
     try {
@@ -226,10 +223,15 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
         language: language
       })
 
-      // Prikaži success message
-      setShowSuccess(true)
+      // Show success toast
+      toast.success(
+        language === 'hr'
+          ? '✨ Uspješno! Vaš upit je poslan.'
+          : '✨ Success! Your inquiry has been sent.',
+        { duration: 4000 }
+      )
 
-      // Reset forme
+      // Reset form immediately
       setFormData({
         product: '',
         description: '',
@@ -238,12 +240,14 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
         phone: ''
       })
       setUploadedFiles([])
-
-      // Auto-hide success nakon 5s
-      setTimeout(() => setShowSuccess(false), 5000)
     } catch (error) {
-      // Prikaži error message
-      setErrorMessage(translations.errorMessage[language])
+      // Show error toast
+      toast.error(
+        language === 'hr'
+          ? 'Greška pri slanju upita. Pokušajte ponovno.'
+          : 'Error sending inquiry. Please try again.',
+        { duration: 5000 }
+      )
       console.error('Error submitting LRC inquiry:', error)
     } finally {
       setIsSubmitting(false)
@@ -251,29 +255,55 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
   }
 
   return (
-    <section id="lrc" className="Section fade-in">
-      <div className="max-w-7xl mx-auto">
+    <section id="lrc" className="Section fade-in relative section-with-bg">
+      {/* Background wrapper */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        {/* Light mode image */}
+        <div
+          className="absolute inset-0 dark:hidden transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-light.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Dark mode image */}
+        <div
+          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-dark.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
+      </div>
+      
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center mb-8 pt-28">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-lg sm:text-xl italic text-[#6E44FF] mb-3 font-medium">
+          <p className="text-lg sm:text-xl italic text-amethyst dark:text-lavender mb-3 font-medium">
             {translations.subtitle[language]}
           </p>
-          <p className="text-lg sm:text-xl italic text-[#5A4A6B] mb-3 font-medium">
+          <p className="text-lg sm:text-xl italic text-plum/80 dark:text-pearl/70 mb-3 font-medium">
             {translations.description[language]}
           </p>
-          <p className="text-base text-[#5A4A6B] mb-6 whitespace-pre-line">
+          <p className="text-base text-plum/75 dark:text-pearl/60 mb-6 whitespace-pre-line">
             {translations.techniques[language]}
           </p>
           
           {/* Personalizirani pokloni sekcija */}
           <div className="mt-8 mb-8">
-            <h3 className="text-xl md:text-2xl font-semibold tracking-tight mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+            <h3 className="text-xl md:text-2xl font-semibold tracking-tight mb-3 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
               {translations.personalizedGiftsTitle[language]}
             </h3>
-            <p className="mx-auto max-w-2xl text-sm md:text-base text-slate-700">
+            <p className="mx-auto max-w-2xl text-sm md:text-base text-slate-700 dark:text-slate-300">
               {language === 'hr' 
                 ? <>Svaki komad nastaje ručno, u malim serijama ili kao unikat. Ovdje možeš naručiti personalizirane poklone, dekoracije za dom ili posebne prilike –<br />uz dizajn prilagođen tvojoj priči.</>
                 : translations.personalizedGiftsDesc[language]
@@ -285,13 +315,13 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
         {/* Search and Filters */}
         <div className="mb-8 space-y-5">
           <div className="max-w-md mx-auto">
-            <label className="block text-xl font-bold text-[#2E2447] mb-2 text-center">
+            <label className="block text-xl font-bold text-plum/90 dark:text-pearl mb-2 text-center">
               {language === 'hr' ? 'WEBSHOP' : 'WEBSHOP'}
             </label>
             <input
               type="text"
               placeholder={translations.searchPlaceholder[language]}
-              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447] placeholder:text-[#5A4A6B] placeholder:text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white/90 dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50 placeholder:text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ 
@@ -325,7 +355,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
           {filteredProducts.map(product => (
             <article 
               key={product.id} 
-              className="rounded-xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] fade-in"
+              className="rounded-xl overflow-hidden bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-md dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-lg dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-300 hover:scale-[1.02] fade-in"
             >
               {/* Thumb */}
               <div className="w-full aspect-[4/5] overflow-hidden rounded-3xl bg-gradient-to-b from-violet-100/80 to-violet-50/80 relative">
@@ -358,7 +388,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
 
               {/* Body */}
               <div className="p-3 sm:p-5 space-y-2">
-                <h3 className="text-sm sm:text-base font-bold mb-1.5 text-[#2E2447] line-clamp-2">
+                <h3 className="text-sm sm:text-base font-bold mb-1.5 text-plum/90 dark:text-pearl line-clamp-2">
                   {language === 'hr' ? product.nameHr : product.name}
                 </h3>
                 <div className="text-lg sm:text-xl font-bold mb-2 text-[--color-primary]">€{product.price}</div>
@@ -395,14 +425,14 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
 
         {/* Message when form is disabled */}
         {!isFormEnabled && (
-          <div className="rounded-2xl p-6 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.2)] shadow-lg fade-in text-center mb-12">
-            <h3 className="text-xl sm:text-2xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+          <div className="rounded-2xl p-6 sm:p-8 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 shadow-lg fade-in text-center mb-12">
+            <h3 className="text-xl sm:text-2xl font-bold mb-4 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
               {translations.formDisabledTitle[language]}
             </h3>
-            <p className="text-base sm:text-lg text-slate-700 mb-4">
+            <p className="text-base sm:text-lg text-slate-700 dark:text-slate-300 mb-4">
               {translations.formDisabledMessage[language]}
             </p>
-            <p className="text-sm sm:text-base text-slate-600">
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
               {translations.formDisabledAdditional[language]}
             </p>
           </div>
@@ -412,7 +442,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
         {isFormEnabled && (
           <>
             <div className="text-center mb-8">
-              <h3 className="text-xl sm:text-2xl font-bold mb-6" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+              <h3 className="text-xl sm:text-2xl font-bold mb-6 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 {translations.customizationTitle[language]}
               </h3>
             </div>
@@ -421,7 +451,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
               {customizationSteps.map((step) => (
                 <div 
                   key={step.number} 
-                  className="relative rounded-2xl p-6 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-center fade-in"
+                  className="relative rounded-2xl p-6 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-xl dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-300 hover:scale-105 text-center fade-in"
                 >
                   {/* Step Number Badge */}
                   <div className="absolute top-4 left-4 w-10 h-10 rounded-full bg-gradient-to-br from-[#6E44FF] to-[#BDA6FF] text-white font-bold text-lg flex items-center justify-center shadow-md">
@@ -437,7 +467,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
                   </h4>
                   
                   {/* Description */}
-                  <p className="text-sm text-[#5A4A6B]">
+                  <p className="text-sm text-plum/75 dark:text-pearl/60">
                     {step.desc[language]}
                   </p>
                 </div>
@@ -448,12 +478,12 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
 
         {/* Personalization Form - only show if form is enabled */}
         {isFormEnabled && (
-        <div className="rounded-2xl p-5 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
+        <div className="rounded-2xl p-5 sm:p-8 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 shadow-lg fade-in">
           <div className="text-center mb-6 space-y-2">
             <h3 className="text-lg sm:text-xl font-bold mb-2 text-[--color-primary]">
               {translations.formTitle[language]}
             </h3>
-            <p className="text-sm text-slate-700">
+            <p className="text-sm text-slate-700 dark:text-slate-300">
               {translations.formDesc[language]}
             </p>
           </div>
@@ -461,7 +491,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
           <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-5">
             {/* Product Selection */}
             <div>
-              <label className="block text-sm font-medium text-slate-900 mb-1.5">
+              <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
                 {translations.selectProductLabel[language]} *
               </label>
               <select
@@ -469,9 +499,9 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
                 value={formData.product}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-slate-900"
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl"
               >
-                <option value="" className="text-slate-500">{translations.selectProductPlaceholder[language]}</option>
+                <option value="" className="text-slate-500 dark:text-slate-400">{translations.selectProductPlaceholder[language]}</option>
                 {sampleProducts.map(product => (
                   <option key={product.id} value={product.id}>
                     {language === 'hr' ? product.nameHr : product.name}
@@ -482,7 +512,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-slate-900 mb-1.5">
+              <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
                 {translations.descriptionLabel[language]} *
               </label>
               <textarea
@@ -492,13 +522,13 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
                 required
                 rows={4}
                 placeholder={translations.descriptionPlaceholder[language]}
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-slate-900 placeholder:text-slate-500 resize-none"
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50 resize-none"
               />
             </div>
 
             {/* File Upload */}
             <div>
-              <label className="block text-sm font-medium text-slate-900 mb-1.5">
+              <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
                 {translations.addImagesLabel[language]}
               </label>
               <input
@@ -507,7 +537,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
                 accept="image/*"
                 onChange={handleFileUpload}
                 disabled={uploadedFiles.length >= 5}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-slate-900 file:mr-3 file:py-1.5 file:px-3 file:text-sm file:rounded-full file:border-0 file:bg-[rgba(110,68,255,0.1)] file:text-[--color-primary] file:font-semibold hover:file:bg-[rgba(110,68,255,0.2)] file:cursor-pointer"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl file:mr-3 file:py-1.5 file:px-3 file:text-sm file:rounded-full file:border-0 file:bg-[rgba(110,68,255,0.1)] dark:file:bg-[rgba(189,166,255,0.15)] file:text-[--color-primary] file:font-semibold hover:file:bg-[rgba(110,68,255,0.2)] dark:hover:file:bg-[rgba(189,166,255,0.25)] file:cursor-pointer disabled:opacity-50"
               />
               
               {/* File Preview */}
@@ -537,7 +567,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-1.5">
+                <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
                   {translations.nameLabel[language]} *
                 </label>
                 <input
@@ -546,13 +576,13 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-slate-900"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
                 />
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-1.5">
+                <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
                   {translations.emailLabel[language]} *
                 </label>
                 <input
@@ -561,13 +591,13 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-slate-900"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
                 />
               </div>
 
               {/* Phone */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-1.5">
+                <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
                   {translations.phoneLabel[language]}
                 </label>
                 <input
@@ -575,7 +605,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-slate-900"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
                 />
               </div>
             </div>
@@ -590,24 +620,10 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
               >
                 {isSubmitting ? translations.submittingButton[language] : translations.submitButton[language]}
               </button>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {translations.submitHelperText[language]}
               </p>
             </div>
-
-            {/* Success Message */}
-            {showSuccess && (
-              <div className="p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-center text-sm animate-fade-in">
-                {translations.successMessage[language]}
-              </div>
-            )}
-
-            {/* Error Message */}
-            {errorMessage && (
-              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-center text-sm animate-fade-in">
-                {errorMessage}
-              </div>
-            )}
           </form>
         </div>
         )}

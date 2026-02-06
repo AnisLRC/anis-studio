@@ -1,6 +1,7 @@
 import { ErrorBoundary } from '../ErrorBoundary'
 import FAQSection from '../sections/FAQSection'
 import type { FAQItem } from '../sections/FAQSection'
+import { AnimatedPage } from '../components/AnimatedPage'
 
 interface FAQPageProps {
   language: 'hr' | 'en'
@@ -95,13 +96,15 @@ const GLOBAL_FAQ_ITEMS: FAQItem[] = [
 
 export default function FAQPage({ language }: FAQPageProps) {
   return (
-    <main className="px-4 py-12">
+    <AnimatedPage>
+      <main className="px-4 py-12">
       <div className="mx-auto max-w-3xl">
         <ErrorBoundary name="FAQ">
           <FAQSection language={language} items={GLOBAL_FAQ_ITEMS} hideTitle={false} />
         </ErrorBoundary>
       </div>
     </main>
+    </AnimatedPage>
   )
 }
 

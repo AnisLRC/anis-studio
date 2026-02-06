@@ -125,18 +125,44 @@ export default function FAQSection({ language, categories, items, hideTitle = fa
   }
 
   return (
-    <section id="faq" className="Section fade-in">
-      <div className="max-w-3xl mx-auto px-4 py-10 sm:px-6 lg:py-16">
+    <section id="faq" className="Section fade-in relative section-with-bg">
+      {/* Background wrapper */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        {/* Light mode image */}
+        <div
+          className="absolute inset-0 dark:hidden transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-light.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Dark mode image */}
+        <div
+          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-dark.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
+      </div>
+      
+      <div className="max-w-3xl mx-auto px-4 py-10 sm:px-6 lg:py-16 relative z-10">
         {/* Section Header */}
         {!hideTitle && (
           <header className="mb-8 text-center">
             <div className="inline-flex items-center gap-2 mb-2">
               <span className="text-2xl text-pink-500">❓</span>
-              <h2 className="text-2xl sm:text-3xl font-semibold" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+              <h2 className="text-2xl sm:text-3xl font-semibold" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 {translations.title[language]}
               </h2>
             </div>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-plum/70 dark:text-pearl/70">
               {translations.subtitle[language]}
             </p>
           </header>
@@ -145,7 +171,7 @@ export default function FAQSection({ language, categories, items, hideTitle = fa
         {/* FAQ Items */}
         <div className="space-y-3">
           {displayItems.length === 0 ? (
-            <p className="text-center text-[#5A4A6B] py-8">
+            <p className="text-center text-plum/80 dark:text-pearl/80 py-8">
               {language === 'hr' ? 'Nema dostupnih pitanja.' : 'No questions available.'}
             </p>
           ) : (
@@ -154,7 +180,7 @@ export default function FAQSection({ language, categories, items, hideTitle = fa
             return (
               <div
                 key={item.id}
-                className="rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden fade-in"
+                className="rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-md dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-lg dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-200 overflow-hidden fade-in"
                 style={{ 
                   animationDelay: `${index * 0.1}s`,
                   animation: 'fadeInUp 0.6s ease-out forwards',
@@ -164,9 +190,9 @@ export default function FAQSection({ language, categories, items, hideTitle = fa
                 {/* Question */}
                 <button
                   onClick={() => toggleItem(item.id)}
-                  className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-[rgba(110,68,255,0.05)] transition-colors duration-200"
+                  className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(189,166,255,0.1)] transition-colors duration-200"
                 >
-                  <span className="font-semibold text-[#2E2447] text-base flex-1">
+                  <span className="font-semibold text-plum/90 dark:text-pearl text-base flex-1">
                     {item.question[language]}
                   </span>
                   <span
@@ -184,7 +210,7 @@ export default function FAQSection({ language, categories, items, hideTitle = fa
                     isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <div className="px-5 pb-4 text-sm text-[#5A4A6B] leading-relaxed">
+                  <div className="px-5 pb-4 text-sm text-plum/75 dark:text-pearl/70 leading-relaxed">
                     {item.answer[language]}
                   </div>
                 </div>

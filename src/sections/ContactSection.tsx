@@ -44,7 +44,7 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
   }
 
   return (
-    <section id="kontakt" className="relative overflow-hidden py-16 sm:py-20 md:py-24">
+    <section id="kontakt" className="Section fade-in relative section-with-bg py-16 sm:py-20 md:py-24">
       {/* Animated glow pulse keyframes */}
       <style>{`
         @keyframes glowPulse {
@@ -52,10 +52,31 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           50% { box-shadow: 0 0 35px rgba(110,68,255,0.6), 0 22px 60px rgba(110,68,255,0.45); }
         }
       `}</style>
-
-      {/* Background gradient pattern */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amethyst/5 to-amethyst/10 dark:via-lavender/5 dark:to-lavender/8" />
+      {/* Background wrapper */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        {/* Light mode image */}
+        <div
+          className="absolute inset-0 dark:hidden transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-light.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Dark mode image */}
+        <div
+          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-dark.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
+        {/* Additional glow effects */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-amethyst/10 dark:bg-lavender/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lavender/10 dark:bg-amethyst/5 rounded-full blur-3xl" />
       </div>

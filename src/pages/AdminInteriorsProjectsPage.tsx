@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProjects, updateProjectStatus, type ProjectListFilters } from "../lib/interiors";
+import { TableSkeleton } from "../components/Skeleton";
+import { AnimatedPage } from "../components/AnimatedPage";
 
 type Project = Awaited<ReturnType<typeof fetchProjects>>[number];
 
@@ -147,7 +149,8 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8">
+    <AnimatedPage>
+      <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -242,11 +245,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
         </header>
 
         {/* Status poruke */}
-        {isLoading && (
-          <div className="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-            Učitavam projekte...
-          </div>
-        )}
+        {isLoading && <TableSkeleton rows={4} />}
 
         {loadError && (
           <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
@@ -379,6 +378,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
         )}
       </div>
     </div>
+    </AnimatedPage>
   );
 };
 

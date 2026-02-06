@@ -6,7 +6,7 @@ interface WelcomeSectionProps {
 }
 
 export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps) {
-  const USE_IMAGE_BG = false
+  const USE_IMAGE_BG = true
 
   const translations = {
     headline: {
@@ -49,7 +49,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
   }
 
   return (
-    <section className="relative min-h-[78vh] [isolation:isolate]">
+    <section className="relative min-h-[78vh] [isolation:isolate] section-with-bg">
       {/* CTA pulse animation */}
       <style>{`
         @keyframes ctaPulse {
@@ -63,7 +63,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           <>
             {/* Light image */}
             <div
-              className="pointer-events-none absolute inset-0 z-[1] dark:hidden"
+              className="pointer-events-none absolute inset-0 z-[1] dark:hidden transition-opacity duration-500"
               style={{
                 backgroundImage: "url(/hero-sky-light.png)",
                 backgroundSize: "cover",
@@ -73,7 +73,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
             />
             {/* Dark image */}
             <div
-              className="pointer-events-none absolute inset-0 z-[1] hidden dark:block"
+              className="pointer-events-none absolute inset-0 z-[1] hidden dark:block transition-opacity duration-500"
               style={{
                 backgroundImage: "url(/hero-sky-dark.png)",
                 backgroundSize: "cover",

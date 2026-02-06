@@ -94,7 +94,7 @@ export default function LoginModal({ language }: LoginModalProps) {
         {/* Close button */}
         <button
           onClick={() => closeModal('login')}
-          className="absolute top-4 right-4 p-2 text-[#5A4A6B] hover:text-[--color-primary] transition-colors rounded-lg hover:bg-[rgba(110,68,255,0.05)]"
+          className="absolute top-4 right-4 p-2 text-plum/80 dark:text-pearl/70 hover:text-[--color-primary] transition-colors rounded-lg hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(189,166,255,0.15)]"
           aria-label={language === 'hr' ? 'Zatvori' : 'Close'}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@ export default function LoginModal({ language }: LoginModalProps) {
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl sm:text-3xl font-bold mb-6" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
           {translations.title[language]}
         </h2>
 
@@ -111,7 +111,7 @@ export default function LoginModal({ language }: LoginModalProps) {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
-            <label htmlFor="login-email" className="block mb-2 text-sm font-semibold text-[#2E2447]">
+            <label htmlFor="login-email" className="block mb-2 text-sm font-semibold text-plum/90 dark:text-pearl">
               {translations.email[language]}
             </label>
             <input
@@ -120,14 +120,14 @@ export default function LoginModal({ language }: LoginModalProps) {
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
+              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white/90 dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
               placeholder={translations.email[language]}
             />
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor="login-password" className="block mb-2 text-sm font-semibold text-[#2E2447]">
+            <label htmlFor="login-password" className="block mb-2 text-sm font-semibold text-plum/90 dark:text-pearl">
               {translations.password[language]}
             </label>
             <input
@@ -136,14 +136,14 @@ export default function LoginModal({ language }: LoginModalProps) {
               required
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 focus:bg-white focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447]"
+              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white/90 dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
               placeholder={translations.password[language]}
             />
           </div>
 
           {/* Error message */}
           {error && (
-            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
+            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm">
               {error}
             </div>
           )}

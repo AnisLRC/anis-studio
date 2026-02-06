@@ -1,6 +1,7 @@
 import { ErrorBoundary } from '../ErrorBoundary'
 import WebAtelierSection from '../components/WebAtelierSection'
 import FAQSection from '../sections/FAQSection'
+import { AnimatedPage } from '../components/AnimatedPage'
 
 interface WebAtelierPageProps {
   language: 'hr' | 'en'
@@ -8,7 +9,8 @@ interface WebAtelierPageProps {
 
 export default function WebAtelierPage({ language }: WebAtelierPageProps) {
   return (
-    <main className="space-y-10 sm:space-y-14 lg:space-y-16">
+    <AnimatedPage>
+      <main className="space-y-10 sm:space-y-14 lg:space-y-16">
       <ErrorBoundary name="WebAtelier">
         <section id="web-atelier" className="Section">
           <WebAtelierSection language={language} />
@@ -20,6 +22,7 @@ export default function WebAtelierPage({ language }: WebAtelierPageProps) {
         <FAQSection language={language} categories={['web']} />
       </ErrorBoundary>
     </main>
+    </AnimatedPage>
   )
 }
 

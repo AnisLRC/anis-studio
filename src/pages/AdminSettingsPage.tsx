@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSettings } from '../hooks/useSettings'
 import AdminNav from '../components/AdminNav'
+import { AnimatedPage } from '../components/AnimatedPage'
 
 export default function AdminSettingsPage() {
   const { settings, isLoading, error, updateSettings } = useSettings()
@@ -48,7 +49,8 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <AnimatedPage>
+      <div className="min-h-screen bg-slate-50">
       <AdminNav />
       <div className="px-4 py-8">
         <div className="mx-auto max-w-2xl">
@@ -155,6 +157,7 @@ export default function AdminSettingsPage() {
         </div>
       </div>
     </div>
+    </AnimatedPage>
   )
 }
 

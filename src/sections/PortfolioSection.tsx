@@ -52,8 +52,34 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     : portfolioItems.filter(item => item.category === selectedCategory).slice(0, 10)
 
   return (
-    <section id="portfolio" className="py-16 sm:py-20 px-5">
-      <div className="max-w-7xl mx-auto">
+    <section id="portfolio" className="py-16 sm:py-20 px-5 relative section-with-bg">
+      {/* Background wrapper */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        {/* Light mode image */}
+        <div
+          className="absolute inset-0 dark:hidden transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-light.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Dark mode image */}
+        <div
+          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-dark.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
+      </div>
+      
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 text-plum/90 dark:text-pearl">

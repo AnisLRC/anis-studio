@@ -2,7 +2,7 @@ import { CONTACT_INFO } from '../config/contact'
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-gradient-to-b from-white to-[rgba(247,246,255,0.6)]">
+    <footer className="border-t border-slate-200 dark:border-slate-700 bg-gradient-to-b from-white to-[rgba(247,246,255,0.6)] dark:from-slate-900 dark:to-slate-800/90">
       <section className="Section py-10 sm:py-12">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3 hover:scale-105 transition-transform duration-200">
@@ -13,19 +13,19 @@ export default function Footer() {
               }}>
               ✨
             </div>
-            <span className="font-semibold text-lg" style={{ fontFamily: 'Poppins, sans-serif', color: '#2E2447' }}>
+            <span className="font-semibold text-lg text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
               Ani's Studio
             </span>
           </div>
           
-          <p className="text-sm text-[#5A4A6B] text-center max-w-md">
+          <p className="text-sm text-plum/80 dark:text-pearl/70 text-center max-w-md">
             © 2025 Ani's Studio — ručno izrađeno u Hrvatskoj
           </p>
           
           <div className="flex items-center gap-3">
             {/* Email */}
             <a 
-              className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[rgba(110,68,255,0.4)]"
+              className="w-10 h-10 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[rgba(110,68,255,0.4)] dark:hover:border-lavender/40"
               href={`mailto:${CONTACT_INFO.email}`}
               aria-label="Email"
               target="_blank"
@@ -38,7 +38,7 @@ export default function Footer() {
 
             {/* Facebook */}
             <a 
-              className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#1877F2]"
+              className="w-10 h-10 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#1877F2]"
               href="https://www.facebook.com/profile.php?id=61566842910187" 
               aria-label="Facebook"
               target="_blank"
@@ -51,7 +51,7 @@ export default function Footer() {
 
             {/* Instagram */}
             <a 
-              className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-transparent"
+              className="w-10 h-10 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-transparent"
               href="https://www.instagram.com/ani.lrc/" 
               aria-label="Instagram"
               target="_blank"
@@ -71,7 +71,7 @@ export default function Footer() {
 
             {/* LinkedIn */}
             <a 
-              className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#0077B5]"
+              className="w-10 h-10 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#0077B5]"
               href="https://www.linkedin.com/in/anamarija-vinceti%C4%87-92118336/" 
               aria-label="LinkedIn"
               target="_blank"
@@ -84,7 +84,7 @@ export default function Footer() {
 
             {/* TikTok */}
             <a 
-              className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#000000]"
+              className="w-10 h-10 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#000000] dark:hover:border-slate-500"
               href="https://www.tiktok.com/@ani.lrc" 
               aria-label="TikTok"
               target="_blank"
@@ -97,7 +97,7 @@ export default function Footer() {
 
             {/* YouTube */}
             <a 
-              className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#FF0000]"
+              className="w-10 h-10 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#FF0000]"
               href="https://www.youtube.com/channel/UCXbvukeRxI8_z6t_pNAscQQ" 
               aria-label="YouTube"
               target="_blank"

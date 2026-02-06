@@ -4,6 +4,7 @@ import { useAuth } from '../providers/AuthProvider'
 import { useAdminAuth } from '../providers/AdminAuthProvider'
 import { useUi } from '../providers/UiProvider'
 import { useThemeStore } from '../lib/theme.store'
+import { ThemeToggle } from './ThemeToggle'
 
 interface HeaderProps {
   language: 'hr' | 'en'
@@ -53,7 +54,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   }
 
   return (
-    <header className="sticky top-0 z-50 header-glass bg-slate-50/80 dark:bg-slate-50/80 text-slate-900 border-b border-slate-200/60 dark:border-slate-200/60 backdrop-blur">
+    <header className="sticky top-0 z-50 header-glass bg-slate-50/80 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 border-b border-slate-200/60 dark:border-slate-700/60 backdrop-blur">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex items-center justify-between py-2 sm:py-2.5">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 sm:gap-3">
@@ -68,7 +69,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             ✨
           </div>
           <span 
-            className="font-bold text-slate-800"
+            className="font-bold text-slate-800 dark:text-slate-100"
             style={{
               fontFamily: 'Poppins, sans-serif',
               fontSize: 'clamp(0.875rem, 2vw, 1.125rem)',
@@ -95,7 +96,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
               <Link
                 key={key}
                 to={routeMap[key]}
-                className="relative text-[15px] font-medium py-2 transition-colors duration-200 text-slate-800 hover:text-violet-700"
+                className="relative text-[15px] font-medium py-2 transition-colors duration-200 text-slate-800 dark:text-slate-200 hover:text-violet-700 dark:hover:text-violet-400"
               >
                 <span className="after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-0 after:bg-[--color-primary] after:transition-[width] after:duration-300 hover:after:w-full">
                   {navigation[language][key]}
@@ -112,7 +113,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             <div className="hidden sm:flex items-center gap-2">
               <button
                 onClick={() => navigate(isAdmin ? '/admin/settings' : '/admin/login')}
-                className="px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] text-slate-800 hover:text-violet-700"
+                className="px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(110,68,255,0.15)] text-slate-800 dark:text-slate-200 hover:text-violet-700 dark:hover:text-violet-400"
                 aria-label={authLabels[language].login}
               >
                 {authLabels[language].login}
@@ -132,7 +133,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           ) : (
             <button
               onClick={logout}
-              className="hidden sm:block px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] text-slate-800 hover:text-violet-700"
+              className="hidden sm:block px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(110,68,255,0.15)] text-slate-800 dark:text-slate-200 hover:text-violet-700 dark:hover:text-violet-400"
               aria-label={authLabels[language].logout}
             >
               {authLabels[language].logout}
@@ -142,7 +143,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           {/* Cart Button - Elegant Design */}
           <button 
             onClick={onCartClick} 
-            className="relative group p-2 sm:p-2.5 transition-all duration-300 rounded-xl hover:bg-gradient-to-br hover:from-[rgba(110,68,255,0.08)] hover:to-[rgba(189,166,255,0.08)] hover:shadow-md hover:scale-105 active:scale-95 hover:-translate-y-0.5 text-slate-800" 
+            className="relative group p-2 sm:p-2.5 transition-all duration-300 rounded-xl hover:bg-gradient-to-br hover:from-[rgba(110,68,255,0.08)] hover:to-[rgba(189,166,255,0.08)] dark:hover:from-[rgba(110,68,255,0.15)] dark:hover:to-[rgba(189,166,255,0.15)] hover:shadow-md hover:scale-105 active:scale-95 hover:-translate-y-0.5 text-slate-800 dark:text-slate-200" 
             aria-label={language === 'hr' ? 'Košarica' : 'Shopping cart'}
             style={{
               background: cartItemCount > 0 ? 'linear-gradient(135deg, rgba(110,68,255,0.06) 0%, rgba(189,166,255,0.06) 100%)' : 'transparent'
@@ -245,21 +246,14 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           </button>
 
           {/* Theme Toggle */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="hidden min-[360px]:flex rounded-full border border-violet-200/60 bg-white/70 dark:bg-white/70 px-3 py-1 shadow-sm hover:bg-violet-50 transition"
-          >
-            <span className="text-xs font-medium text-slate-800">
-              {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
-            </span>
-          </button>
+          <div className="hidden min-[360px]:block">
+            <ThemeToggle />
+          </div>
 
           {/* Language Toggle */}
           <div
-            className="hidden min-[360px]:flex items-center backdrop-blur-sm"
+            className="hidden min-[360px]:flex items-center backdrop-blur-sm dark:bg-slate-800/60 bg-white/60"
             style={{
-              background: "rgba(255, 255, 255, 0.6)",
               borderRadius: "12px",
               padding: "3px",
               gap: "4px",
@@ -290,7 +284,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
                   className={
                     language === lng
                       ? "text-sm font-semibold text-white"
-                      : "text-sm font-semibold text-slate-800 dark:text-slate-400"
+                      : "text-sm font-semibold text-slate-800 dark:text-slate-300"
                   }
                 >
                   {lng.toUpperCase()}
@@ -302,7 +296,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           {/* Mobile Menu Button - Touch-friendly */}
           <button 
             onClick={() => setIsMobileMenuOpen((v) => !v)} 
-            className="md:hidden mobile-menu-button p-2.5 active:scale-95 transition-all rounded-lg hover:bg-[rgba(110,68,255,0.05)] active:bg-[rgba(110,68,255,0.1)] text-slate-800 hover:text-violet-700" 
+            className="md:hidden mobile-menu-button p-2.5 active:scale-95 transition-all rounded-lg hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(110,68,255,0.15)] active:bg-[rgba(110,68,255,0.1)] dark:active:bg-[rgba(110,68,255,0.2)] text-slate-800 dark:text-slate-200 hover:text-violet-700 dark:hover:text-violet-400" 
             aria-label={language === 'hr' ? 'Otvorite meni' : 'Toggle menu'}
             aria-expanded={isMobileMenuOpen}
             style={{ minWidth: '48px', minHeight: '48px' }}
@@ -320,7 +314,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
       {/* Mobile Navigation - Touch-friendly */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t py-3 sm:py-4 backdrop-blur-sm mobile-menu-enter border-slate-200/60 bg-white/95 dark:bg-white/95">
+        <div className="md:hidden border-t py-3 sm:py-4 backdrop-blur-sm mobile-menu-enter border-slate-200/60 dark:border-slate-700/60 bg-white/95 dark:bg-slate-900/95">
           <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex flex-col gap-2">
             {(['lrc', 'interiors', 'webAtelier', 'about', 'faq', 'contact'] as const).map((key) => {
               const routeMap: Record<typeof key, string> = {
@@ -337,7 +331,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
                   key={key}
                   to={routeMap[key]}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="mobile-menu-item text-left px-3 py-2.5 active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg font-medium text-slate-800 hover:text-violet-700 active:text-violet-700"
+                  className="mobile-menu-item text-left px-3 py-2.5 active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.15)] transition-all rounded-lg font-medium text-slate-800 dark:text-slate-200 hover:text-violet-700 dark:hover:text-violet-400 active:text-violet-700 dark:active:text-violet-400"
                   style={{ minHeight: '48px' }}
                 >
                   {navigation[language][key]}
@@ -347,11 +341,11 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             {/* Mobile Auth Buttons - Touch-friendly */}
             {!isAuthenticated ? (
               <div className="flex flex-col gap-2 pt-3 sm:pt-4 border-t mt-1 border-slate-200/60">
-                <button
-                  onClick={() => navigate(isAdmin ? '/admin/settings' : '/admin/login')}
-                  className="mobile-menu-item text-left px-4 py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg text-slate-800 hover:text-violet-700 active:text-violet-700"
-                  style={{ minHeight: '48px' }}
-                >
+              <button
+                onClick={logout}
+                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.15)] transition-all rounded-lg text-slate-800 dark:text-slate-200 hover:text-violet-700 dark:hover:text-violet-400 active:text-violet-700 dark:active:text-violet-400"
+                style={{ minHeight: '48px' }}
+              >
                   {authLabels[language].login}
                 </button>
                 <button
@@ -369,7 +363,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             ) : (
               <button
                 onClick={logout}
-                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] transition-all rounded-lg text-slate-800 hover:text-violet-700 active:text-violet-700"
+                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.15)] transition-all rounded-lg text-slate-800 dark:text-slate-200 hover:text-violet-700 dark:hover:text-violet-400 active:text-violet-700 dark:active:text-violet-400"
                 style={{ minHeight: '48px' }}
               >
                 {authLabels[language].logout}

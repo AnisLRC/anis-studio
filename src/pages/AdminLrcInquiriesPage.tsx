@@ -3,6 +3,9 @@ import { fetchLrcInquiries, updateLrcInquiryStatus, type LrcInquiry, type LrcInq
 import { isSupabaseConfigured } from '../lib/supabase'
 import { sampleProducts } from '../data/products'
 import AdminNav from '../components/AdminNav'
+import { TableSkeleton } from '../components/Skeleton'
+import { AnimatedPage } from '../components/AnimatedPage'
+import { StatusBadge } from '../components/StatusBadge'
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
@@ -21,18 +24,6 @@ function getProductName(productId: string, language: 'hr' | 'en' = 'hr'): string
   return language === 'hr' ? product.nameHr : product.name
 }
 
-function getStatusBadgeColor(status: LrcInquiryStatus): string {
-  switch (status) {
-    case 'new':
-      return 'bg-blue-100 text-blue-800 border-blue-200'
-    case 'read':
-      return 'bg-green-100 text-green-800 border-green-200'
-    case 'archived':
-      return 'bg-gray-100 text-gray-800 border-gray-200'
-    default:
-      return 'bg-slate-100 text-slate-800 border-slate-200'
-  }
-}
 
 const AdminLrcInquiriesPage: React.FC = () => {
   const [inquiries, setInquiries] = useState<LrcInquiry[]>([])
@@ -104,7 +95,8 @@ const AdminLrcInquiriesPage: React.FC = () => {
   }
 
   return (
-    <main className="min-h-screen bg-white text-slate-900">
+    <AnimatedPage>
+      <main className="min-h-screen bg-white text-slate-900">
       <AdminNav />
       <section className="max-w-5xl mx-auto px-4 py-10">
         {/* Header */}
@@ -156,11 +148,7 @@ const AdminLrcInquiriesPage: React.FC = () => {
         )}
 
         {/* Loading state */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-12">
-            <p className="text-slate-600">Učitavanje...</p>
-          </div>
-        )}
+        {isLoading && <TableSkeleton rows={5} />}
 
         {/* Empty state */}
         {!isLoading && !error && inquiries.length === 0 && (
@@ -254,11 +242,10 @@ const AdminLrcInquiriesPage: React.FC = () => {
                         <span className="uppercase">{inquiry.language}</span>
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusBadgeColor(inquiry.status)}`}
-                        >
-                          {inquiry.status === 'new' ? 'Novi' : inquiry.status === 'read' ? 'Pročitano' : 'Arhivirano'}
-                        </span>
+                        <StatusBadge
+                          status={inquiry.status === 'new' ? 'new' : inquiry.status === 'read' ? 'read' : 'archived'}
+                          label={inquiry.status === 'new' ? 'Novi' : inquiry.status === 'read' ? 'Pročitano' : 'Arhivirano'}
+                        />
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <div className="flex flex-wrap gap-2">
@@ -332,6 +319,7 @@ const AdminLrcInquiriesPage: React.FC = () => {
         )}
       </section>
     </main>
+    </AnimatedPage>
   )
 }
 

@@ -117,11 +117,37 @@ export default function AboutSection({ language }: AboutSectionProps) {
   }
 
   return (
-    <section id="about" className="Section fade-in">
-      <div className="max-w-6xl mx-auto">
+    <section id="about" className="Section fade-in relative section-with-bg">
+      {/* Background wrapper */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        {/* Light mode image */}
+        <div
+          className="absolute inset-0 dark:hidden transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-light.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Dark mode image */}
+        <div
+          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-dark.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
+      </div>
+      
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+          <h2 className="text-2xl sm:text-3xl font-bold text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
         </div>
@@ -130,7 +156,7 @@ export default function AboutSection({ language }: AboutSectionProps) {
         <div className="flex flex-col lg:flex-row gap-12 items-start mb-16">
           {/* Bio Text - Left Side (60%) */}
           <div className="flex-1 lg:w-[60%] order-2 lg:order-1">
-            <div className="space-y-6 text-base text-[#5A4A6B] leading-relaxed">
+            <div className="space-y-6 text-base text-plum/80 dark:text-pearl/70 leading-relaxed">
               {translations.bio[language].map((paragraph, index) => (
                 <p 
                   key={index}
@@ -167,7 +193,7 @@ export default function AboutSection({ language }: AboutSectionProps) {
           {translations.skills[language].map((skill, index) => (
             <div
               key={index}
-              className="group relative rounded-xl p-4 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl hover:border-[rgba(110,68,255,0.4)] transition-all duration-300 hover:scale-105 hover:-translate-y-1 text-center fade-in cursor-pointer"
+              className="group relative rounded-xl p-4 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-xl dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] hover:border-[rgba(110,68,255,0.4)] dark:hover:border-lavender/40 transition-all duration-300 hover:scale-105 hover:-translate-y-1 text-center fade-in cursor-pointer"
               style={{ 
                 animationDelay: `${0.6 + index * 0.1}s`,
                 animation: 'fadeInUp 0.6s ease-out forwards',
@@ -185,7 +211,7 @@ export default function AboutSection({ language }: AboutSectionProps) {
               </h4>
 
               {/* Description */}
-              <p className="text-[10px] text-[#5A4A6B] leading-tight">
+              <p className="text-[10px] text-plum/75 dark:text-pearl/60 leading-tight">
                 {skill.desc}
               </p>
             </div>
@@ -206,11 +232,10 @@ export default function AboutSection({ language }: AboutSectionProps) {
               <button
                 key={index}
                 onClick={handleClick}
-                className="pill px-6 py-3 text-base font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
+                className="pill px-6 py-3 text-base font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer text-plum/90 dark:text-pearl"
                 style={{
                   background: 'linear-gradient(135deg, rgba(189, 166, 255, 0.15) 0%, rgba(110, 68, 255, 0.1) 100%)',
-                  borderColor: 'rgba(110, 68, 255, 0.3)',
-                  color: '#2E2447'
+                  borderColor: 'rgba(110, 68, 255, 0.3)'
                 }}
               >
                 <span className="font-semibold">{badge.section}</span>

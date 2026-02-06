@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import toast from 'react-hot-toast'
 import { submitContactInquiry } from '../lib/contactInquiries'
 
 interface ContactSectionProps {
@@ -11,9 +12,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
     email: '',
     message: ''
   })
-  const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [errors, setErrors] = useState<{
     name?: string
     email?: string
@@ -142,8 +141,6 @@ export default function ContactSection({ language }: ContactSectionProps) {
       return
     }
     
-    // Clear previous error
-    setErrorMessage(null)
     setIsSubmitting(true)
 
     try {
@@ -154,22 +151,37 @@ export default function ContactSection({ language }: ContactSectionProps) {
         language: language
       })
 
-      // Show success state
-      setIsSubmitted(true)
-      setErrors({})
-
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setIsSubmitted(false)
-        setFormData({ name: '', email: '', message: '' })
-      }, 3000)
-    } catch (error) {
-      // Show error message
-      setErrorMessage(
+      // Show success toast
+      toast.success(
         language === 'hr' 
-          ? 'Greška pri slanju poruke. Molimo pokušajte ponovno.'
-          : 'Error sending message. Please try again.'
+          ? '✨ Hvala vam! Vaša poruka je poslana.'
+          : '✨ Thank you! Your message has been sent.',
+        { duration: 4000 }
       )
+      
+      // Reset form immediately
+      setFormData({ name: '', email: '', message: '' })
+      setErrors({})
+    } catch (error) {
+      // Show error toast with specific message
+      let errorMsg = language === 'hr' 
+        ? 'Greška pri slanju poruke. Molimo pokušajte ponovno.'
+        : 'Error sending message. Please try again.'
+      
+      // Check for specific error types
+      if (error instanceof Error) {
+        if (error.message.includes('permission') || error.message.includes('policy')) {
+          errorMsg = language === 'hr'
+            ? 'Greška dozvola. Kontaktirajte administratora.'
+            : 'Permission error. Please contact administrator.'
+        } else if (error.message.includes('fetch') || error.message.includes('network')) {
+          errorMsg = language === 'hr'
+            ? 'Greška mreže. Provjerite internet konekciju.'
+            : 'Network error. Check your internet connection.'
+        }
+      }
+      
+      toast.error(errorMsg, { duration: 5000 })
       console.error('Error submitting contact inquiry:', error)
     } finally {
       setIsSubmitting(false)
@@ -191,36 +203,19 @@ export default function ContactSection({ language }: ContactSectionProps) {
     }
   }
 
-  if (isSubmitted) {
-    return (
-      <section id="contact" className="Section fade-in">
-        <div className="max-w-4xl mx-auto px-4 py-10 sm:px-6 lg:px-12 lg:py-16">
-          <div className="text-center p-12 rounded-2xl bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg">
-            <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--color-primary)' }}>
-              {translations.successTitle[language]}
-            </h2>
-            <p className="text-lg text-[#5A4A6B]">
-              {translations.successMessage[language]}
-            </p>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   return (
     <section id="contact" className="Section fade-in">
       <div className="max-w-4xl mx-auto px-4 py-10 sm:px-6 lg:px-12 lg:py-16">
         <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-base text-[#5A4A6B]">
+          <p className="text-base text-plum/80 dark:text-pearl/70">
             {translations.subtitle[language]}
           </p>
         </div>
 
-        <div className="rounded-2xl p-5 sm:p-8 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg fade-in">
+        <div className="rounded-2xl p-5 sm:p-8 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-lg fade-in">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div
               style={{ 
@@ -231,7 +226,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
             >
               <label 
                 htmlFor="name" 
-                className="block mb-1.5 text-sm font-medium text-[#2E2447]"
+                className="block mb-1.5 text-sm font-medium text-plum/90 dark:text-pearl"
               >
                 {translations.name[language]}
               </label>
@@ -241,10 +236,10 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-3 py-2.5 text-sm rounded-xl border bg-white focus:bg-white focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447] ${
+                className={`w-full px-3 py-2.5 text-sm rounded-xl border bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50 ${
                   errors.name 
                     ? 'border-red-500 focus:border-red-500' 
-                    : 'border-[rgba(110,68,255,0.2)] focus:border-[--color-primary]'
+                    : 'border-[rgba(110,68,255,0.2)] dark:border-lavender/20 focus:border-[--color-primary]'
                 }`}
                 placeholder={translations.name[language]}
               />
@@ -264,7 +259,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
             >
               <label 
                 htmlFor="email" 
-                className="block mb-1.5 text-sm font-medium text-[#2E2447]"
+                className="block mb-1.5 text-sm font-medium text-plum/90 dark:text-pearl"
               >
                 {translations.email[language]}
               </label>
@@ -274,10 +269,10 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-3 py-2.5 text-sm rounded-xl border bg-white focus:bg-white focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-[#2E2447] ${
+                className={`w-full px-3 py-2.5 text-sm rounded-xl border bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50 ${
                   errors.email 
                     ? 'border-red-500 focus:border-red-500' 
-                    : 'border-[rgba(110,68,255,0.2)] focus:border-[--color-primary]'
+                    : 'border-[rgba(110,68,255,0.2)] dark:border-lavender/20 focus:border-[--color-primary]'
                 }`}
                 placeholder={translations.email[language]}
               />
@@ -297,7 +292,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
             >
               <label 
                 htmlFor="message" 
-                className="block mb-1.5 text-sm font-medium text-[#2E2447]"
+                className="block mb-1.5 text-sm font-medium text-plum/90 dark:text-pearl"
               >
                 {translations.message[language]}
               </label>
@@ -307,10 +302,10 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 value={formData.message}
                 onChange={handleChange}
                 rows={4}
-                className={`w-full px-3 py-2.5 text-sm rounded-xl border bg-white focus:bg-white focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-none text-[#2E2447] ${
+                className={`w-full px-3 py-2.5 text-sm rounded-xl border bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50 ${
                   errors.message 
                     ? 'border-red-500 focus:border-red-500' 
-                    : 'border-[rgba(110,68,255,0.2)] focus:border-[--color-primary]'
+                    : 'border-[rgba(110,68,255,0.2)] dark:border-lavender/20 focus:border-[--color-primary]'
                 }`}
                 placeholder={translations.message[language]}
               />
@@ -333,13 +328,6 @@ export default function ContactSection({ language }: ContactSectionProps) {
                   : translations.send[language]}
               </button>
             </div>
-
-            {/* Error Message */}
-            {errorMessage && (
-              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-center text-sm animate-fade-in">
-                {errorMessage}
-              </div>
-            )}
           </form>
         </div>
       </div>

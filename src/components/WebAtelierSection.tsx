@@ -195,27 +195,53 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
   }
 
   return (
-    <section id="web-atelier" className="Section fade-in">
-      <div className="max-w-6xl mx-auto">
+    <section id="web-atelier" className="Section fade-in relative section-with-bg">
+      {/* Background wrapper */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
+        {/* Light mode image */}
+        <div
+          className="absolute inset-0 dark:hidden transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-light.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Dark mode image */}
+        <div
+          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
+          style={{
+            backgroundImage: "url(/hero-sky-dark.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
+      </div>
+      
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
             {translations.title[language]}
           </h2>
-          <p className="text-lg sm:text-xl italic text-[#6E44FF] mb-3 font-medium">
+          <p className="text-lg sm:text-xl italic text-amethyst dark:text-lavender mb-3 font-medium">
             {translations.subtitle[language]}
           </p>
-          <p className="text-lg sm:text-xl italic text-[#5A4A6B] mb-3 font-medium">
+          <p className="text-lg sm:text-xl italic text-plum/80 dark:text-pearl/70 mb-3 font-medium">
             {translations.description[language]}
           </p>
-          <p className="text-base text-[#5A4A6B] mb-8">
+          <p className="text-base text-plum/75 dark:text-pearl/60 mb-8">
             {translations.description2[language]}
           </p>
         </div>
 
         {/* Landing Page Steps */}
         <div className="text-center mb-8">
-          <h3 className="text-xl sm:text-2xl font-bold mb-6" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+          <h3 className="text-xl sm:text-2xl font-bold mb-6 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
             {translations.stepsTitle[language]}
           </h3>
         </div>
@@ -224,7 +250,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
           {landingPageSteps.map((step) => (
             <div 
               key={step.number}
-              className="relative rounded-xl p-4 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-center fade-in"
+              className="relative rounded-xl p-4 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-xl dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-300 hover:scale-105 text-center fade-in"
             >
               {/* Step Number Badge */}
               <div className="absolute top-2 left-2 w-8 h-8 rounded-full bg-gradient-to-br from-[#6E44FF] to-[#BDA6FF] text-white font-bold text-sm flex items-center justify-center shadow-md">
@@ -240,7 +266,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
               </h4>
 
               {/* Description */}
-              <p className="text-[10px] text-[#5A4A6B] leading-tight">
+              <p className="text-[10px] text-plum/75 dark:text-pearl/60 leading-tight">
                 {step.desc[language]}
               </p>
             </div>
@@ -250,7 +276,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
         {/* Showcase Gallery */}
         <div className="mb-12">
           <div className="text-center mb-8">
-            <h3 className="text-xl sm:text-2xl font-bold mb-6" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+            <h3 className="text-xl sm:text-2xl font-bold mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
               {language === 'hr' ? '💻 Primjeri naših radova' : '💻 Examples of Our Work'}
             </h3>
           </div>
