@@ -3,6 +3,7 @@ import { AnimatedPage } from '../components/AnimatedPage'
 import { InteriorsFormPageLayout } from '../components/InteriorsFormPageLayout'
 import { InteriorsClientForm } from '../components/InteriorsClientForm'
 import { INTERIORS_STOLAR_OPTIONS } from '../data/interiorsPublic'
+import { PageSEO } from '../components/PageSEO'
 
 interface InterijeriClientsPageProps {
   language: 'hr' | 'en'
@@ -13,6 +14,11 @@ export default function InterijeriClientsPage({ language }: InterijeriClientsPag
 
   return (
     <AnimatedPage>
+      <PageSEO
+        title="Upit za klijente — Interijeri"
+        description="Forma za upit za projekte uređenja interijera u Ani's Studio."
+        noIndex
+      />
       <main className="min-w-0">
         <ErrorBoundary name="InterijeriKlijenti">
           <InteriorsFormPageLayout language={language} title={title}>

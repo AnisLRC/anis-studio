@@ -143,13 +143,11 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
       hr: {
         title: "Spremni za svoju landing stranicu?",
         description: "Vaša web stranica koja donosi klijente — brzo, jednostavno i efektno.",
-        button: "Pogledaj pakete",
         paymentNote: "Plaćanja karticom putem Stripe-a."
       },
       en: {
         title: "Ready for your landing page?",
         description: "Your website that brings customers — fast, simple and effective.",
-        button: "View packages",
         paymentNote: "Card payments via Stripe."
       }
     },
@@ -161,10 +159,6 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
       text: {
         hr: 'Ispunite kratku formu s osnovnim informacijama o web stranici koju želite, a ja ću pripremiti prijedlog strukture, dizajna i sljedećih koraka.',
         en: 'Fill out a short form with basic information about the website you want, and I will prepare a proposed structure, design, and next steps.'
-      },
-      button: {
-        hr: 'Pošalji upit',
-        en: 'Send Inquiry'
       }
     }
   }
@@ -353,19 +347,19 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
             <p className="mx-auto mb-6 max-w-2xl text-sm leading-relaxed text-plum/80 dark:text-pearl/75 sm:text-base">
               {translations.cta[language].description}
             </p>
-            <a
-              href="#web-atelier-pricing"
+            <Link
+              to="/web-atelier/upit"
               className="btn btn-primary mb-4 inline-flex min-h-[48px] w-full max-w-sm touch-manipulation items-center justify-center sm:w-auto"
             >
-              {translations.cta[language].button}
-            </a>
+              {translations.requestQuote[language]}
+            </Link>
             <p className="mx-auto max-w-md text-xs text-plum/65 dark:text-pearl/60">
               {translations.cta[language].paymentNote}
             </p>
           </div>
         </div>
 
-        {/* CTA — web project form na /web-atelier/upit */}
+        {/* Supporting copy — same form as primary CTA above; no second button */}
         <div className="mx-auto mt-10 flex w-full max-w-4xl justify-center sm:mt-12">
           <div className="w-full rounded-3xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8 md:p-10">
             <div className="mx-auto flex w-full max-w-2xl flex-col items-center space-y-4 text-center sm:space-y-5">
@@ -375,13 +369,6 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
               <p className="w-full text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:text-[0.9375rem] sm:leading-relaxed">
                 {translations.formInquiryCta.text[language]}
               </p>
-              <Link
-                to="/web-atelier/upit"
-                className="btn btn-primary inline-flex min-h-[48px] w-full max-w-md items-center justify-center px-8 py-3 text-base font-semibold shadow-md transition-all duration-300 hover:shadow-lg sm:w-auto sm:px-12 sm:py-4"
-                style={{ letterSpacing: '0.02em' }}
-              >
-                {translations.formInquiryCta.button[language]}
-              </Link>
             </div>
           </div>
         </div>

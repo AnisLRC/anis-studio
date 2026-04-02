@@ -17,8 +17,8 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
       en: 'Send us an inquiry or contact us directly – we respond quickly!'
     },
     ctaButton: {
-      hr: 'Kontaktiraj nas',
-      en: 'Contact us'
+      hr: 'Pokreni projekt',
+      en: "Let's start a project"
     },
     email: {
       hr: 'Email',

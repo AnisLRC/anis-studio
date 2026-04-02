@@ -2,6 +2,7 @@ import { ErrorBoundary } from '../ErrorBoundary'
 import WebAtelierSection from '../components/WebAtelierSection'
 import FAQSection from '../sections/FAQSection'
 import { AnimatedPage } from '../components/AnimatedPage'
+import { PageSEO } from '../components/PageSEO'
 
 interface WebAtelierPageProps {
   language: 'hr' | 'en'
@@ -10,6 +11,11 @@ interface WebAtelierPageProps {
 export default function WebAtelierPage({ language }: WebAtelierPageProps) {
   return (
     <AnimatedPage>
+      <PageSEO
+        title="Ani's Web Atelier — Izrada web stranica i digitalnog dizajna"
+        description="Moderni web atelier za izradu personaliziranih web stranica, vizualnog identiteta i digitalne prisutnosti za male biznise i kreativce."
+        canonical="/web-atelier"
+      />
       <main className="min-w-0 space-y-0">
       <ErrorBoundary name="WebAtelier">
         <WebAtelierSection language={language} />

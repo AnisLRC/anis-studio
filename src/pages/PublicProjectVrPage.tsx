@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { PageSEO } from "../components/PageSEO";
 import {
   fetchProjectById,
   fetchVrScenesForProject,
@@ -155,6 +156,11 @@ const PublicProjectVrPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
+      <PageSEO
+        title="VR pregled interijera"
+        description="Privatni VR pregled vašeg interijera — Ani's Studio."
+        noIndex
+      />
       <div className="mx-auto max-w-3xl space-y-8">
         {/* Header */}
         <header className="space-y-3">

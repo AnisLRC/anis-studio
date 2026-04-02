@@ -23,7 +23,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
       hr: 'Za stolare, salone i studije namještaja koji šalju projekt, suradnju ili razradu za izradu.',
       en: 'For carpenters, showrooms and furniture studios sending a project, collaboration or production detailing.',
     },
-    ctaAction: { hr: 'Otvori formu', en: 'Open form' },
+    ctaAction: { hr: 'Zatraži ponudu', en: 'Request quote' },
   }
 
   const translations = {

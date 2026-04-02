@@ -11,12 +11,12 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
   const translations = {
     headline: {
-      hr: 'Svaka ideja je bitna.',
-      en: 'Every idea matters.'
+      hr: 'Mjesto gdje ideje postaju stvarnost.',
+      en: 'Where ideas become reality.'
     },
     subtitle: {
-      hr: 'Od ručnih kreacija do interijera i web projekata po mjeri.',
-      en: 'From handmade creations to interiors and custom web projects.'
+      hr: 'Ručno izrađeni pokloni i dekoracije, 2D/3D interijeri i digitalni projekti po mjeri vašeg prostora, stila i priče.',
+      en: 'Handcrafted gifts and decorations, 2D/3D interiors, and digital projects tailored to your space, style, and story.'
     },
     ctaPrimary: {
       hr: 'Započnimo projekt',

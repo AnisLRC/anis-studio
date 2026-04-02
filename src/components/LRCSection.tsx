@@ -82,8 +82,8 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
       en: 'Have an idea for a personalized product, gift, or decoration? Open the form and send us your request.'
     },
     formCtaButton: {
-      hr: 'Otvori formu',
-      en: 'Open form'
+      hr: 'Pošalji upit',
+      en: 'Send inquiry'
     },
     formDisabledTitle: {
       hr: "LRC radionice",

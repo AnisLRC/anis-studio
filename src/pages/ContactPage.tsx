@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom'
 import { ErrorBoundary } from '../ErrorBoundary'
 import ContactSection from '../components/ContactSection'
 import { CONTACT_INFO } from '../config/contact'
 import { AnimatedPage } from '../components/AnimatedPage'
+import { PageSEO } from '../components/PageSEO'
 
 interface ContactPageProps {
   language: 'hr' | 'en'
@@ -26,11 +28,38 @@ export default function ContactPage({ language }: ContactPageProps) {
         email: "Email",
         phone: "Phone"
       }
+    },
+    serviceRouting: {
+      title: {
+        hr: 'Znate što vam treba?',
+        en: 'Know what you need?'
+      },
+      text: {
+        hr: 'Izravni put do upita za konkretnu uslugu. Opća kontakt forma ispod i dalje je na raspolaganju za sve ostalo.',
+        en: 'Go straight to the inquiry for the service you have in mind. The general contact form below is still available for everything else.'
+      },
+      links: {
+        hr: [
+          { label: 'LRC upit', to: '/lrc/upit' },
+          { label: 'Interijeri', to: '/interijeri' },
+          { label: 'Web Atelier', to: '/web-atelier/upit' }
+        ],
+        en: [
+          { label: 'LRC inquiry', to: '/lrc/upit' },
+          { label: 'Interiors', to: '/interijeri' },
+          { label: 'Web Atelier', to: '/web-atelier/upit' }
+        ]
+      }
     }
   }
 
   return (
     <AnimatedPage>
+      <PageSEO
+        title="Kontakt"
+        description="Kontaktirajte Ani's Studio za upit, projekt ili suradnju. Dostupni smo putem e-maila, telefona i kontakt forme."
+        canonical="/kontakt"
+      />
       <main className="min-w-0">
       {/* Intro + contact cards */}
       <section className="Section fade-in">
@@ -82,6 +111,40 @@ export default function ContactPage({ language }: ContactPageProps) {
           className="mx-auto max-w-3xl border-b border-[rgba(110,68,255,0.1)] px-4 sm:px-6 lg:px-8 dark:border-lavender/12"
           aria-hidden
         />
+      </section>
+
+      {/* Service-specific inquiry shortcuts */}
+      <section
+        className="Section fade-in px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8"
+        aria-labelledby="contact-service-routing-heading"
+      >
+        <div className="mx-auto max-w-3xl">
+          <div className="rounded-2xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-5 text-center shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-6">
+            <h2
+              id="contact-service-routing-heading"
+              className="font-heading text-base font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-lg"
+            >
+              {translations.serviceRouting.title[language]}
+            </h2>
+            <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:text-[0.9375rem]">
+              {translations.serviceRouting.text[language]}
+            </p>
+            <nav
+              className="mt-5 flex flex-col items-stretch gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3"
+              aria-label={language === 'hr' ? 'Izravni upiti po uslugama' : 'Service-specific inquiries'}
+            >
+              {translations.serviceRouting.links[language].map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/80 px-4 py-2.5 text-sm font-semibold text-[--color-primary] shadow-sm transition-all duration-200 hover:border-[--color-primary]/40 hover:bg-amethyst/5 dark:border-lavender/25 dark:bg-white/[0.06] dark:text-lavender dark:hover:bg-white/10"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
       </section>
 
       {/* Contact Form Section */}

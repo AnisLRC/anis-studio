@@ -3,6 +3,7 @@ import { ErrorBoundary } from '../ErrorBoundary'
 import { AnimatedPage } from '../components/AnimatedPage'
 import { WebAtelierFormPageLayout } from '../components/WebAtelierFormPageLayout'
 import { WebProjectForm, type WebAtelierPaket } from '../components/WebProjectForm'
+import { PageSEO } from '../components/PageSEO'
 
 interface WebAtelierInquiryPageProps {
   language: 'hr' | 'en'
@@ -18,6 +19,11 @@ export default function WebAtelierInquiryPage({ language }: WebAtelierInquiryPag
 
   return (
     <AnimatedPage>
+      <PageSEO
+        title="Upit za web projekt — Web Atelier"
+        description="Forma za upit za izradu web stranice ili digitalnog projekta u Ani's Web Atelierju."
+        noIndex
+      />
       <main className="min-w-0 bg-pearl text-plum dark:bg-[#070812] dark:text-pearl">
         <ErrorBoundary name="WebAtelierUpit">
           <WebAtelierFormPageLayout language={language} title={title}>

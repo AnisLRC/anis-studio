@@ -2,6 +2,7 @@ import { ErrorBoundary } from '../ErrorBoundary'
 import { AnimatedPage } from '../components/AnimatedPage'
 import { InteriorsFormPageLayout } from '../components/InteriorsFormPageLayout'
 import { InteriorsCarpenterForm } from '../components/InteriorsCarpenterForm'
+import { PageSEO } from '../components/PageSEO'
 
 interface InterijeriStolariPageProps {
   language: 'hr' | 'en'
@@ -13,6 +14,11 @@ export default function InterijeriStolariPage({ language }: InterijeriStolariPag
 
   return (
     <AnimatedPage>
+      <PageSEO
+        title="Upit za stolare i studije — Interijeri"
+        description="Forma za upit za stolare i studije namještaja u Ani's Studio."
+        noIndex
+      />
       <main className="min-w-0">
         <ErrorBoundary name="InterijeriStolari">
           <InteriorsFormPageLayout language={language} title={title}>

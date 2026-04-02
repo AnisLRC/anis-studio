@@ -4,6 +4,7 @@ import { useSettings } from "../hooks/useSettings";
 import { ErrorBoundary } from "../ErrorBoundary";
 import FAQSection from "../sections/FAQSection";
 import { AnimatedPage } from "../components/AnimatedPage";
+import { PageSEO } from "../components/PageSEO";
 
 interface LRCPageProps {
   language?: 'hr' | 'en';
@@ -15,6 +16,11 @@ const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
 
   return (
     <AnimatedPage>
+      <PageSEO
+        title="Ani's LRC — Lasersko rezanje, graviranje i radionice"
+        description="Personalizirani laserski graviri i rezanje — epoksy smola, svilka, drvo i staklo. Radionice i po mjeri napravljeni pokloni u Ani's LRC studiju."
+        canonical="/lrc"
+      />
       <main className="min-h-screen min-w-0 bg-pearl text-plum dark:bg-[#070812] dark:text-pearl">
       {/* Glavni sadržaj: webshop uvijek vidljiv, forma ovisno o isFormEnabled */}
       <section className="pb-10 sm:pb-14">

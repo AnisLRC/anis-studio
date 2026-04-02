@@ -3,6 +3,7 @@ import { AnimatedPage } from '../components/AnimatedPage'
 import { LrcFormPageLayout } from '../components/LrcFormPageLayout'
 import LRCInquiryForm from '../components/LRCInquiryForm'
 import { useSettings } from '../hooks/useSettings'
+import { PageSEO } from '../components/PageSEO'
 
 interface LrcInquiryPageProps {
   language?: 'hr' | 'en'
@@ -31,6 +32,11 @@ export default function LrcInquiryPage({ language = 'hr' }: LrcInquiryPageProps)
 
   return (
     <AnimatedPage>
+      <PageSEO
+        title="Upit za LRC radionicu"
+        description="Forma za prijavu i personalizaciju LRC proizvoda u Ani's Studio."
+        noIndex
+      />
       <main className="min-w-0 bg-pearl text-plum dark:bg-[#070812] dark:text-pearl">
         <ErrorBoundary name="LrcUpit">
           {isLoading ? (

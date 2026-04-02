@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 
 interface PortfolioSectionProps {
@@ -22,6 +23,20 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     placeholder: {
       hr: "Uskoro",
       en: "Coming soon"
+    },
+    portfolioCta: {
+      heading: {
+        hr: 'Sviđa vam se što vidite?',
+        en: 'Like what you see?'
+      },
+      subline: {
+        hr: 'Javite nam se kratkim upitom — pričamo o vašem projektu i sljedećim koracima.',
+        en: "Send a short message — we'll talk about your project and next steps."
+      },
+      button: {
+        hr: 'Pokreni projekt',
+        en: "Let's start a project"
+      }
     }
   }
 
@@ -158,6 +173,27 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
             </p>
           </div>
         )}
+
+        {/* Conversion CTA — after portfolio grid */}
+        <div className="mx-auto mt-10 max-w-xl sm:mt-12" aria-labelledby="portfolio-cta-heading">
+          <div className="rounded-2xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 text-center shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8">
+            <h3
+              id="portfolio-cta-heading"
+              className="font-heading text-xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-2xl"
+            >
+              {translations.portfolioCta.heading[language]}
+            </h3>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:mt-4 sm:text-[0.9375rem] sm:leading-relaxed">
+              {translations.portfolioCta.subline[language]}
+            </p>
+            <Link
+              to="/kontakt"
+              className="btn btn-primary mt-6 inline-flex min-h-[48px] w-full max-w-sm items-center justify-center px-8 py-3 text-base font-semibold shadow-md transition-all duration-300 hover:shadow-lg sm:mt-7 sm:w-auto sm:px-10 sm:py-3.5"
+            >
+              {translations.portfolioCta.button[language]}
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   )

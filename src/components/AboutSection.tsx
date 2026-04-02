@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
 
 interface AboutSectionProps {
@@ -89,34 +90,34 @@ export default function AboutSection({ language }: AboutSectionProps) {
         { 
           title: "Ručno izrađeno",
           section: "LRC",
-          scrollTo: "lrc"
+          to: "/lrc"
         },
         { 
           title: "Personalizirano",
           section: "Interijeri",
-          scrollTo: "interiors"
+          to: "/interijeri"
         },
         { 
           title: "Sigurna kupnja",
           section: "Web Atelier",
-          scrollTo: "web-atelier"
+          to: "/web-atelier"
         }
       ],
       en: [
         { 
           title: "Handmade",
           section: "LRC",
-          scrollTo: "lrc"
+          to: "/lrc"
         },
         { 
           title: "Personalized",
           section: "Interiors",
-          scrollTo: "interiors"
+          to: "/interijeri"
         },
         { 
           title: "Secure Purchase",
           section: "Web Atelier",
-          scrollTo: "web-atelier"
+          to: "/web-atelier"
         }
       ]
     }
@@ -247,31 +248,25 @@ export default function AboutSection({ language }: AboutSectionProps) {
         </div>
         </div>
         
-        {/* Badges */}
-        <div className="mt-10 flex flex-wrap justify-center gap-4 border-t border-[rgba(110,68,255,0.1)] pt-10 dark:border-lavender/15 sm:mt-12 sm:gap-5 sm:pt-12">
-          {translations.badges[language].map((badge, index) => {
-            const handleClick = () => {
-              const section = document.querySelector(`#${badge.scrollTo}`)
-              if (section) {
-                section.scrollIntoView({ behavior: 'smooth' })
-              }
-            }
-
-            return (
-              <button
-                key={index}
-                onClick={handleClick}
-                className="pill px-6 py-3 text-base font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer text-plum/90 dark:text-pearl"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(189, 166, 255, 0.15) 0%, rgba(110, 68, 255, 0.1) 100%)',
-                  borderColor: 'rgba(110, 68, 255, 0.3)'
-                }}
-              >
-                <span className="font-semibold">{badge.section}</span>
-              </button>
-            )
-          })}
-        </div>
+        {/* Badges — service navigation */}
+        <nav
+          className="mt-10 flex flex-wrap justify-center gap-4 border-t border-[rgba(110,68,255,0.1)] pt-10 dark:border-lavender/15 sm:mt-12 sm:gap-5 sm:pt-12"
+          aria-label={language === 'hr' ? 'Usluge' : 'Services'}
+        >
+          {translations.badges[language].map((badge, index) => (
+            <Link
+              key={index}
+              to={badge.to}
+              className="pill px-6 py-3 text-base font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer text-plum/90 dark:text-pearl"
+              style={{
+                background: 'linear-gradient(135deg, rgba(189, 166, 255, 0.15) 0%, rgba(110, 68, 255, 0.1) 100%)',
+                borderColor: 'rgba(110, 68, 255, 0.3)'
+              }}
+            >
+              <span className="font-semibold">{badge.section}</span>
+            </Link>
+          ))}
+        </nav>
       </div>
     </section>
   )
