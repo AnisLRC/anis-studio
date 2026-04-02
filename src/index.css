@@ -1,3 +1,6 @@
+/* Design tokens (--space-*, --clr-*, typography) — must load before mobile.css */
+@import "./styles/tokens.css";
+
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
@@ -439,9 +442,9 @@
 /* === UTILITIES === */
 @layer utilities {
   .Section { 
-    @apply mx-auto max-w-7xl px-6 sm:px-8; 
-    padding-top: clamp(1.5rem, 2.5vw, 2.5rem); 
-    padding-bottom: clamp(1.5rem, 2.5vw, 2.5rem); 
+    @apply mx-auto max-w-7xl min-w-0 overflow-x-clip px-4 sm:px-6 md:px-8; 
+    padding-top: clamp(1.25rem, 2.2vw, 2.5rem); 
+    padding-bottom: clamp(1.25rem, 2.2vw, 2.5rem); 
   }
   
   .hero-bg {

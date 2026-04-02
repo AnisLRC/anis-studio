@@ -7,6 +7,8 @@ interface FAQSectionProps {
   categories?: FaqCategory[]
   items?: FAQItem[]
   hideTitle?: boolean
+  /** Layout tuned for the dedicated /faq page only (does not affect embedded FAQ on other pages). */
+  standalonePage?: boolean
 }
 
 export interface FAQItem {
@@ -97,7 +99,13 @@ export const FAQ_ITEMS: FAQItem[] = [
   }
 ]
 
-export default function FAQSection({ language, categories, items, hideTitle = false }: FAQSectionProps) {
+export default function FAQSection({
+  language,
+  categories,
+  items,
+  hideTitle = false,
+  standalonePage = false,
+}: FAQSectionProps) {
   const [openItems, setOpenItems] = useState<number[]>([])
 
   const translations = {
@@ -152,24 +160,56 @@ export default function FAQSection({ language, categories, items, hideTitle = fa
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>
       
-      <div className="max-w-3xl mx-auto px-4 py-10 sm:px-6 lg:py-16 relative z-10">
+      <div
+        className={
+          standalonePage
+            ? 'relative z-10 mx-auto min-w-0 max-w-3xl px-1 py-6 sm:px-2 sm:py-8 md:py-10 lg:py-12'
+            : 'relative z-10 mx-auto min-w-0 max-w-3xl py-8 sm:py-10 lg:py-12'
+        }
+      >
         {/* Section Header */}
         {!hideTitle && (
-          <header className="mb-8 text-center">
-            <div className="inline-flex items-center gap-2 mb-2">
-              <span className="text-2xl text-pink-500">❓</span>
-              <h2 className="text-2xl sm:text-3xl font-semibold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <header
+            className={
+              standalonePage
+                ? 'mx-auto mb-8 max-w-2xl text-center sm:mb-10 lg:mb-12'
+                : 'mb-6 text-center sm:mb-8'
+            }
+          >
+            <div
+              className={
+                standalonePage
+                  ? 'mb-3 flex flex-col items-center gap-2 sm:mb-4 sm:flex-row sm:justify-center sm:gap-3'
+                  : 'mb-2 inline-flex items-center gap-2'
+              }
+            >
+              <span className="text-2xl text-pink-500" aria-hidden>
+                ❓
+              </span>
+              <h2
+                className={
+                  standalonePage
+                    ? 'font-heading text-3xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-4xl md:text-[2.25rem] md:leading-tight'
+                    : 'font-heading text-2xl font-bold tracking-tight text-balance text-plum dark:text-pearl sm:text-3xl'
+                }
+              >
                 {translations.title[language]}
               </h2>
             </div>
-            <p className="text-sm text-plum/70 dark:text-pearl/70">
+            <p
+              className={
+                standalonePage
+                  ? 'mx-auto max-w-xl text-pretty text-base leading-relaxed text-plum/78 dark:text-pearl/75 sm:text-lg'
+                  : 'mx-auto max-w-2xl px-1 text-sm leading-relaxed text-plum/75 dark:text-pearl/75 sm:text-base'
+              }
+            >
               {translations.subtitle[language]}
             </p>
           </header>
         )}
 
         {/* FAQ Items */}
-        <div className="space-y-3">
+        <div className={standalonePage ? 'space-y-3 sm:space-y-4' : 'space-y-4'}>
           {displayItems.length === 0 ? (
             <p className="text-center text-plum/80 dark:text-pearl/80 py-8">
               {language === 'hr' ? 'Nema dostupnih pitanja.' : 'No questions available.'}
@@ -189,10 +229,11 @@ export default function FAQSection({ language, categories, items, hideTitle = fa
               >
                 {/* Question */}
                 <button
+                  type="button"
                   onClick={() => toggleItem(item.id)}
-                  className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(189,166,255,0.1)] transition-colors duration-200"
+                  className="flex min-h-[48px] w-full items-center justify-between gap-3 px-4 py-3 text-left sm:gap-4 sm:px-5 sm:py-4 hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(189,166,255,0.1)] transition-colors duration-200"
                 >
-                  <span className="font-semibold text-plum/90 dark:text-pearl text-base flex-1">
+                  <span className="min-w-0 flex-1 font-semibold text-base text-plum/90 dark:text-pearl">
                     {item.question[language]}
                   </span>
                   <span
@@ -207,10 +248,10 @@ export default function FAQSection({ language, categories, items, hideTitle = fa
                 {/* Answer */}
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    isOpen ? 'max-h-[min(70vh,28rem)] opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <div className="px-5 pb-4 text-sm text-plum/75 dark:text-pearl/70 leading-relaxed">
+                  <div className="max-h-[min(65vh,26rem)] overflow-y-auto px-4 pb-4 pt-0 text-sm leading-relaxed text-plum/75 dark:text-pearl/70 sm:px-5">
                     {item.answer[language]}
                   </div>
                 </div>

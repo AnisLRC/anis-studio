@@ -9,12 +9,15 @@ import LoginModal from './components/LoginModal'
 import RegisterModal from './components/RegisterModal'
 import { useGlobalScrollAnimations } from './hooks/useGlobalScrollAnimations'
 import { useThemeStore } from './lib/theme.store'
-import { isSupabaseConfigured } from './lib/supabase'
 import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
 import LRCPage from './pages/LRCPage'
+import LrcInquiryPage from './pages/LrcInquiryPage'
 import InterijeriPage from './pages/InterijeriPage'
+import InterijeriClientsPage from './pages/InterijeriClientsPage'
+import InterijeriStolariPage from './pages/InterijeriStolariPage'
 import WebAtelierPage from './pages/WebAtelierPage'
+import WebAtelierInquiryPage from './pages/WebAtelierInquiryPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import FAQPage from './pages/FAQPage'
@@ -55,8 +58,12 @@ function AnimatedRoutes({
           }
         >
           <Route path="/" element={<HomePage language={language} />} />
+          <Route path="/lrc/upit" element={<LrcInquiryPage language={language} />} />
           <Route path="/lrc" element={<LRCPage language={language} />} />
+          <Route path="/interijeri/klijenti" element={<InterijeriClientsPage language={language} />} />
+          <Route path="/interijeri/stolari" element={<InterijeriStolariPage language={language} />} />
           <Route path="/interijeri" element={<InterijeriPage language={language} />} />
+          <Route path="/web-atelier/upit" element={<WebAtelierInquiryPage language={language} />} />
           <Route path="/web-atelier" element={<WebAtelierPage language={language} />} />
           <Route path="/o-nama" element={<AboutPage language={language} />} />
           <Route path="/kontakt" element={<ContactPage language={language} />} />

@@ -1,4 +1,4 @@
-import { WebProjectForm } from './WebProjectForm'
+import { Link } from 'react-router-dom'
 
 interface WebAtelierSectionProps {
   language: 'hr' | 'en'
@@ -142,14 +142,28 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
       hr: {
         title: "Spremni za svoju landing stranicu?",
         description: "Vaša web stranica koja donosi klijente — brzo, jednostavno i efektno.",
-        button: "Zatraži ponudu",
+        button: "Pogledaj pakete",
         paymentNote: "Plaćanja karticom putem Stripe-a."
       },
       en: {
         title: "Ready for your landing page?",
         description: "Your website that brings customers — fast, simple and effective.",
-        button: "Request a Landing Page Quote",
+        button: "View packages",
         paymentNote: "Card payments via Stripe."
+      }
+    },
+    formInquiryCta: {
+      title: {
+        hr: 'Pošaljite upit za web projekt',
+        en: 'Send a web project inquiry'
+      },
+      text: {
+        hr: 'Ispunite kratku formu s osnovnim informacijama o web stranici koju želite, a ja ću pripremiti prijedlog strukture, dizajna i sljedećih koraka.',
+        en: 'Fill out a short form with basic information about the website you want, and I will prepare a proposed structure, design, and next steps.'
+      },
+      button: {
+        hr: 'Pošalji upit',
+        en: 'Send Inquiry'
       }
     }
   }
@@ -187,13 +201,6 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
     }
   ]
 
-  const scrollToContact = () => {
-    const contactSection = document.querySelector('#contact')
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
   return (
     <section id="web-atelier" className="Section fade-in relative section-with-bg">
       {/* Background wrapper */}
@@ -222,35 +229,35 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>
       
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="relative z-10 mx-auto w-full max-w-6xl min-w-0">
         {/* Section Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <div className="mx-auto mb-7 max-w-3xl text-center sm:mb-8">
+          <h2 className="mb-2 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-2.5 sm:text-3xl">
             {translations.title[language]}
           </h2>
-          <p className="text-lg sm:text-xl italic text-amethyst dark:text-lavender mb-3 font-medium">
+          <p className="mb-2 text-lg font-semibold italic text-amethyst dark:text-lavender sm:text-xl">
             {translations.subtitle[language]}
           </p>
-          <p className="text-lg sm:text-xl italic text-plum/80 dark:text-pearl/70 mb-3 font-medium">
+          <p className="mb-2 text-lg font-medium italic text-plum/80 dark:text-pearl/75 sm:text-xl">
             {translations.description[language]}
           </p>
-          <p className="text-base text-plum/75 dark:text-pearl/60 mb-8">
+          <p className="mx-auto max-w-2xl text-base leading-relaxed text-plum/75 dark:text-pearl/65">
             {translations.description2[language]}
           </p>
         </div>
 
         {/* Landing Page Steps */}
-        <div className="text-center mb-8">
-          <h3 className="text-xl sm:text-2xl font-bold mb-6 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <div className="mx-auto mb-5 max-w-3xl text-center">
+          <h3 className="font-heading text-xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:text-2xl">
             {translations.stepsTitle[language]}
           </h3>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-12">
+        <div className="mb-10 grid grid-cols-1 gap-4 sm:mb-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:gap-4 md:gap-5">
           {landingPageSteps.map((step) => (
             <div 
               key={step.number}
-              className="relative rounded-xl p-4 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-xl dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-300 hover:scale-105 text-center fade-in"
+              className="relative flex h-full min-h-[148px] flex-col rounded-xl p-4 text-center bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-xl dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-300 hover:scale-[1.02] sm:hover:scale-105 fade-in"
             >
               {/* Step Number Badge */}
               <div className="absolute top-2 left-2 w-8 h-8 rounded-full bg-gradient-to-br from-[#6E44FF] to-[#BDA6FF] text-white font-bold text-sm flex items-center justify-center shadow-md">
@@ -266,7 +273,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
               </h4>
 
               {/* Description */}
-              <p className="text-[10px] text-plum/75 dark:text-pearl/60 leading-tight">
+              <p className="mt-auto text-[11px] leading-snug text-plum/75 dark:text-pearl/60 sm:text-[10px] sm:leading-tight">
                 {step.desc[language]}
               </p>
             </div>
@@ -274,17 +281,17 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
         </div>
 
         {/* Showcase Gallery */}
-        <div className="mb-12">
-          <div className="text-center mb-8">
-            <h3 className="text-xl sm:text-2xl font-bold mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <div className="mx-auto mb-10 max-w-6xl sm:mb-12">
+          <div className="mx-auto mb-6 max-w-3xl text-center sm:mb-8">
+            <h3 className="mb-4 font-heading text-xl font-bold text-balance text-plum dark:text-pearl sm:mb-6 sm:text-2xl">
               {language === 'hr' ? '💻 Primjeri naših radova' : '💻 Examples of Our Work'}
             </h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-3">
             {[1, 2, 3].map((item) => (
               <div
                 key={item}
-                className="rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] fade-in"
+                className="flex h-full flex-col overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.01] dark:bg-white/8 fade-in"
               >
                 <div
                   className="aspect-video bg-gradient-to-br from-[rgba(189,166,255,0.2)] to-[rgba(110,68,255,0.15)] flex items-center justify-center"
@@ -294,7 +301,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
                 >
                   <div className="text-center p-4">
                     <div className="text-4xl mb-3 opacity-80">💻</div>
-                    <p className="text-xs text-[#5A4A6B] font-medium opacity-80">
+                    <p className="text-xs font-medium text-[--color-ink-muted] opacity-80 dark:text-pearl/70">
                       {language === 'hr' ? 'Fotografija dolazi uskoro' : 'Photo coming soon'}
                     </p>
                   </div>
@@ -305,14 +312,17 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <div
+          id="web-atelier-pricing"
+          className="mx-auto mb-10 grid w-full max-w-6xl scroll-mt-28 grid-cols-1 gap-5 sm:mb-12 sm:scroll-mt-32 md:grid-cols-3 md:gap-6"
+        >
           {translations.pricingPlans[language].map((plan, index) => (
             <div 
               key={index} 
-              className={`rounded-2xl p-6 bg-white/80 backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 fade-in ${
+              className={`flex h-full flex-col rounded-2xl p-5 sm:p-6 bg-white/80 dark:bg-white/8 backdrop-blur-sm border shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] fade-in ${
                 plan.popular 
                   ? 'border-2 border-[--color-primary] ring-2 ring-[--color-primary]/20' 
-                  : 'border-[rgba(110,68,255,0.15)]'
+                  : 'border-[rgba(110,68,255,0.15)] dark:border-lavender/15'
               }`}
             >
               {plan.popular && (
@@ -329,57 +339,69 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
                   </span>
                 </div>
               )}
-              <h3 className="text-xl font-bold text-center mb-2 text-[#2E2447]">{plan.name}</h3>
-              <div className="text-center mb-4">
+              <h3 className="mb-2 text-center text-xl font-bold text-plum dark:text-pearl">{plan.name}</h3>
+              <div className="mb-4 text-center">
                 <span className="text-3xl font-bold text-[--color-primary]">{plan.price}</span>
               </div>
-              <p className="text-center text-[#5A4A6B] mb-4">{plan.description}</p>
-              <ul className="space-y-2 mb-6">
+              <p className="mb-4 text-center text-sm text-[--color-ink-muted] dark:text-pearl/75">{plan.description}</p>
+              <ul className="mb-6 flex-1 space-y-2">
                 {plan.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-start gap-2">
-                    <span className="text-[--color-primary] font-bold mt-0.5">✓</span>
-                    <span className="text-xs text-[#2E2447]">{feature}</span>
+                    <span className="text-[--color-primary] font-bold mt-0.5 shrink-0">✓</span>
+                    <span className="text-xs text-plum dark:text-pearl/90">{feature}</span>
                   </li>
                 ))}
               </ul>
-              <button 
-                className="btn btn-primary w-full"
-                onClick={scrollToContact}
+              <Link
+                to={`/web-atelier/upit?paket=${(['start', 'pro', 'premium'] as const)[index]}`}
+                className="btn btn-primary mt-auto inline-flex w-full min-h-[48px] touch-manipulation items-center justify-center"
               >
                 {translations.requestQuote[language]}
-              </button>
+              </Link>
             </div>
           ))}
         </div>
 
-        {/* CTA Section */}
-        <div className="rounded-2xl p-5 sm:p-8 text-center bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] border border-[rgba(110,68,255,0.2)] shadow-lg fade-in">
-          <h3 className="text-lg sm:text-xl font-bold mb-3 text-[--color-primary]">
-            {translations.cta[language].title}
-          </h3>
-          <p className="text-sm text-[#5A4A6B] mb-6 max-w-2xl mx-auto">
-            {translations.cta[language].description}
-          </p>
-          <button 
-            className="btn btn-primary mb-4"
-            onClick={scrollToContact}
-          >
-            {translations.cta[language].button}
-          </button>
-          <p className="text-xs text-[#5A4A6B]">
-            {translations.cta[language].paymentNote}
-          </p>
+        {/* CTA Section — aligned with inquiry CTA below */}
+        <div className="fade-in mx-auto w-full max-w-4xl">
+          <div className="flex flex-col items-center rounded-2xl border border-[rgba(110,68,255,0.2)] bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] p-5 text-center shadow-lg sm:p-8">
+            <h3 className="mb-3 max-w-2xl font-heading text-lg font-bold text-[--color-primary] sm:mb-4 sm:text-xl">
+              {translations.cta[language].title}
+            </h3>
+            <p className="mx-auto mb-6 max-w-2xl text-sm leading-relaxed text-plum/80 dark:text-pearl/75 sm:text-base">
+              {translations.cta[language].description}
+            </p>
+            <a
+              href="#web-atelier-pricing"
+              className="btn btn-primary mb-4 inline-flex min-h-[48px] w-full max-w-sm touch-manipulation items-center justify-center sm:w-auto"
+            >
+              {translations.cta[language].button}
+            </a>
+            <p className="mx-auto max-w-md text-xs text-plum/65 dark:text-pearl/60">
+              {translations.cta[language].paymentNote}
+            </p>
+          </div>
         </div>
 
-        {/* Web Project Form (test zona) */}
-        <div className="mt-12 border-t border-slate-200 pt-8">
-          <h2 className="mb-4 text-lg font-semibold text-slate-900">
-            Upit za web projekt
-          </h2>
-          <p className="mb-4 text-sm text-slate-600">
-            Ispunite osnovne informacije o web stranici koju želite, a ja ću na temelju toga pripremiti prijedlog strukture, dizajna i daljnje korake.
-          </p>
-          <WebProjectForm language={language} />
+        {/* CTA — web project form na /web-atelier/upit */}
+        <div className="mx-auto mt-10 flex w-full max-w-4xl justify-center sm:mt-12">
+          <div className="w-full rounded-3xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8 md:p-10">
+            <div className="mx-auto flex w-full max-w-2xl flex-col items-center space-y-4 text-center sm:space-y-5">
+              <h3 className="w-full font-heading text-xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-2xl">
+                {translations.formInquiryCta.title[language]}
+              </h3>
+              <p className="w-full text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:text-[0.9375rem] sm:leading-relaxed">
+                {translations.formInquiryCta.text[language]}
+              </p>
+              <Link
+                to="/web-atelier/upit"
+                className="btn btn-primary inline-flex min-h-[48px] w-full max-w-md items-center justify-center px-8 py-3 text-base font-semibold shadow-md transition-all duration-300 hover:shadow-lg sm:w-auto sm:px-12 sm:py-4"
+                style={{ letterSpacing: '0.02em' }}
+              >
+                {translations.formInquiryCta.button[language]}
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

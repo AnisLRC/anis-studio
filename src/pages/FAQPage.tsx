@@ -97,12 +97,10 @@ const GLOBAL_FAQ_ITEMS: FAQItem[] = [
 export default function FAQPage({ language }: FAQPageProps) {
   return (
     <AnimatedPage>
-      <main className="px-4 py-12">
-      <div className="mx-auto max-w-3xl">
+      <main className="min-w-0">
         <ErrorBoundary name="FAQ">
-          <FAQSection language={language} items={GLOBAL_FAQ_ITEMS} hideTitle={false} />
+          <FAQSection language={language} items={GLOBAL_FAQ_ITEMS} hideTitle={false} standalonePage />
         </ErrorBoundary>
-      </div>
     </main>
     </AnimatedPage>
   )

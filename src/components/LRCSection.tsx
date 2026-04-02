@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import toast from 'react-hot-toast'
+import { Link } from 'react-router-dom'
 import { sampleProducts, productTags } from '../data/products'
 import { cartActions } from '../lib/cart.store'
-import { submitLrcInquiry } from '../lib/lrcInquiries'
 
 interface LRCSectionProps {
   language?: 'hr' | 'en'
@@ -12,15 +11,6 @@ interface LRCSectionProps {
 export default function LRCSection({ language = 'hr', isFormEnabled = true }: LRCSectionProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTag, setSelectedTag] = useState('all')
-  const [formData, setFormData] = useState({
-    product: '',
-    description: '',
-    name: '',
-    email: '',
-    phone: ''
-  })
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const filteredProducts = sampleProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -43,7 +33,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
       en: "A creative workshop of unique souvenirs & functional items"
     },
     techniques: {
-      hr: "🔥 Lasersko rezanje · Lasersko graviranje · Epoksidna smola · Svila · Mandela\n🎨 Ručno izrađeno s ljubavlju i preciznošću",
+      hr: "🔥 Lasersko rezanje · Lasersko graviranje · Epoksidna smola · Svila · Mandala\n🎨 Ručno izrađeno s ljubavlju i preciznošću",
       en: "🔥 Laser cutting · Laser engraving · Epoxy resin · Silk · Mandala\n🎨 Handmade with love and precision"
     },
     personalizedGiftsTitle: {
@@ -82,61 +72,17 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
       title: { hr: "Pošalji upit", en: "Send inquiry" },
       desc: { hr: "Pošalji nam upit i javit ćemo ti se u najkraćem roku", en: "Send us your inquiry and we'll get back to you soon" }
     },
-    formTitle: {
-      hr: "Personaliziraj svoj proizvod",
-      en: "Customize your product"
+    formCtaTitle: {
+      hr: 'Pošaljite upit za personalizaciju',
+      en: 'Send a personalization inquiry'
     },
-    formDesc: {
-      hr: "Ispuni formu i pošalji nam svoju ideju",
-      en: "Fill out the form and send us your idea"
+    formCtaText: {
+      hr: 'Imate ideju za personalizirani proizvod, poklon ili dekoraciju? Otvorite formu i pošaljite nam svoj upit.',
+      en: 'Have an idea for a personalized product, gift, or decoration? Open the form and send us your request.'
     },
-    selectProductLabel: {
-      hr: "Odaberi proizvod",
-      en: "Choose product"
-    },
-    selectProductPlaceholder: {
-      hr: "Odaberi proizvod...",
-      en: "Choose a product..."
-    },
-    descriptionLabel: {
-      hr: "Opiši svoju želju",
-      en: "Describe your wish"
-    },
-    descriptionPlaceholder: {
-      hr: "Detaljno opiši što želiš personalizirati...",
-      en: "Describe in detail what you want to customize..."
-    },
-    addImagesLabel: {
-      hr: "Dodaj slike (opciono, max 5)",
-      en: "Add images (optional, max 5)"
-    },
-    nameLabel: {
-      hr: "Tvoje ime",
-      en: "Your name"
-    },
-    emailLabel: {
-      hr: "Email",
-      en: "Email"
-    },
-    phoneLabel: {
-      hr: "Telefon (opciono)",
-      en: "Phone (optional)"
-    },
-    submitButton: {
-      hr: "Prijavi se na LRC radionice",
-      en: "Apply for LRC workshops"
-    },
-    successMessage: {
-      hr: "Upit uspješno poslan! Javit ćemo ti se uskoro.",
-      en: "Inquiry sent successfully! We'll get back to you soon."
-    },
-    errorMessage: {
-      hr: "Greška pri slanju upita. Molimo pokušajte ponovno.",
-      en: "Error sending inquiry. Please try again."
-    },
-    submittingButton: {
-      hr: "Šaljem...",
-      en: "Sending..."
+    formCtaButton: {
+      hr: 'Otvori formu',
+      en: 'Open form'
     },
     formDisabledTitle: {
       hr: "LRC radionice",
@@ -149,10 +95,6 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
     formDisabledAdditional: {
       hr: "Ako želite da vam javimo kad otvorimo nove termine, javite nam se na info.anilrc@gmail.com ili nas pratite na društvenim mrežama.",
       en: "If you would like us to notify you when we open new dates, contact us at info.anilrc@gmail.com or follow us on social media."
-    },
-    submitHelperText: {
-      hr: "Nakon slanja prijave, javit ćemo ti se e-mailom u roku od 3 radna dana s dodatnim informacijama o radionicama i terminima.",
-      en: "After submitting your application, we will contact you via email within 3 business days with additional information about workshops and dates."
     }
   }
 
@@ -183,77 +125,6 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
     }
   ]
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files) {
-      const fileArray = Array.from(files).slice(0, 5 - uploadedFiles.length)
-      setUploadedFiles(prev => [...prev, ...fileArray])
-    }
-  }
-
-  const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // Validacija
-    if (!formData.product || !formData.description || !formData.name || !formData.email) {
-      alert(language === 'hr' ? 'Molimo ispunite sva obavezna polja' : 'Please fill in all required fields')
-      return
-    }
-
-    setIsSubmitting(true)
-
-    try {
-      await submitLrcInquiry({
-        product: formData.product,
-        description: formData.description,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || undefined,
-        language: language
-      })
-
-      // Show success toast
-      toast.success(
-        language === 'hr'
-          ? '✨ Uspješno! Vaš upit je poslan.'
-          : '✨ Success! Your inquiry has been sent.',
-        { duration: 4000 }
-      )
-
-      // Reset form immediately
-      setFormData({
-        product: '',
-        description: '',
-        name: '',
-        email: '',
-        phone: ''
-      })
-      setUploadedFiles([])
-    } catch (error) {
-      // Show error toast
-      toast.error(
-        language === 'hr'
-          ? 'Greška pri slanju upita. Pokušajte ponovno.'
-          : 'Error sending inquiry. Please try again.',
-        { duration: 5000 }
-      )
-      console.error('Error submitting LRC inquiry:', error)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   return (
     <section id="lrc" className="Section fade-in relative section-with-bg">
       {/* Background wrapper */}
@@ -282,28 +153,37 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>
       
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto min-w-0 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-8 pt-28">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            {translations.title[language]}
-          </h2>
-          <p className="text-lg sm:text-xl italic text-amethyst dark:text-lavender mb-3 font-medium">
-            {translations.subtitle[language]}
-          </p>
-          <p className="text-lg sm:text-xl italic text-plum/80 dark:text-pearl/70 mb-3 font-medium">
-            {translations.description[language]}
-          </p>
-          <p className="text-base text-plum/75 dark:text-pearl/60 mb-6 whitespace-pre-line">
-            {translations.techniques[language]}
-          </p>
-          
+        <div className="mb-8 pt-10 text-center sm:mb-10 sm:pt-12">
+          <div className="mx-auto flex max-w-[min(100%,26rem)] flex-col items-center px-4 sm:max-w-xl sm:px-5">
+            <h2 className="mb-1.5 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-2 sm:text-3xl">
+              {translations.title[language]}
+            </h2>
+            <p className="mb-1.5 text-lg font-semibold italic text-amethyst dark:text-lavender sm:mb-2 sm:text-xl">
+              {translations.subtitle[language]}
+            </p>
+            <p className="mb-3 text-base font-medium italic leading-relaxed text-plum/80 dark:text-pearl/75 sm:mb-4 sm:text-lg">
+              {translations.description[language]}
+            </p>
+            <div className="w-full max-w-md space-y-2 sm:space-y-2.5">
+              {translations.techniques[language].split('\n').map((line, i) => (
+                <p
+                  key={i}
+                  className="text-center text-[0.9375rem] leading-relaxed text-plum/75 dark:text-pearl/65 sm:text-base"
+                >
+                  {line.trim()}
+                </p>
+              ))}
+            </div>
+          </div>
+
           {/* Personalizirani pokloni sekcija */}
-          <div className="mt-8 mb-8">
-            <h3 className="text-xl md:text-2xl font-semibold tracking-tight mb-3 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <div className="mt-7 mb-8 sm:mt-8 sm:mb-10">
+            <h3 className="mb-2.5 font-heading text-lg font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-3 sm:text-xl md:text-2xl">
               {translations.personalizedGiftsTitle[language]}
             </h3>
-            <p className="mx-auto max-w-2xl text-sm md:text-base text-slate-700 dark:text-slate-300">
+            <p className="mx-auto max-w-2xl text-sm leading-relaxed text-plum/80 dark:text-pearl/80 md:text-base">
               {language === 'hr' 
                 ? <>Svaki komad nastaje ručno, u malim serijama ili kao unikat. Ovdje možeš naručiti personalizirane poklone, dekoracije za dom ili posebne prilike –<br />uz dizajn prilagođen tvojoj priči.</>
                 : translations.personalizedGiftsDesc[language]
@@ -313,9 +193,9 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-8 space-y-5">
-          <div className="max-w-md mx-auto">
-            <label className="block text-xl font-bold text-plum/90 dark:text-pearl mb-2 text-center">
+        <div className="mb-10 space-y-4 sm:mb-12">
+          <div className="mx-auto max-w-md">
+            <label className="mb-3 block text-center font-heading text-xs font-bold uppercase tracking-[0.2em] text-[--color-primary] dark:text-lavender sm:text-sm">
               {language === 'hr' ? 'WEBSHOP' : 'WEBSHOP'}
             </label>
             <input
@@ -333,9 +213,10 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
             />
           </div>
           
-          <div className="flex flex-wrap justify-center gap-3 items-center">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
             {productTags.map(tag => (
               <button
+                type="button"
                 key={tag.id}
                 className={`pill transition-all duration-200 h-11 ${
                   selectedTag === tag.id 
@@ -351,11 +232,12 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="mb-10 sm:mb-12">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-5 lg:grid-cols-4 xl:grid-cols-5 xl:gap-5">
           {filteredProducts.map(product => (
             <article 
               key={product.id} 
-              className="rounded-xl overflow-hidden bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-md dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-lg dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-300 hover:scale-[1.02] fade-in"
+              className="flex h-full flex-col overflow-hidden rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-md dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-lg dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-300 hover:scale-[1.02] fade-in"
             >
               {/* Thumb */}
               <div className="w-full aspect-[4/5] overflow-hidden rounded-3xl bg-gradient-to-b from-violet-100/80 to-violet-50/80 relative">
@@ -387,13 +269,13 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
               </div>
 
               {/* Body */}
-              <div className="p-3 sm:p-5 space-y-2">
-                <h3 className="text-sm sm:text-base font-bold mb-1.5 text-plum/90 dark:text-pearl line-clamp-2">
+              <div className="flex flex-1 flex-col space-y-2 p-3.5 sm:p-5">
+                <h3 className="line-clamp-2 font-heading text-sm font-semibold leading-snug text-plum/90 dark:text-pearl sm:text-base">
                   {language === 'hr' ? product.nameHr : product.name}
                 </h3>
-                <div className="text-lg sm:text-xl font-bold mb-2 text-[--color-primary]">€{product.price}</div>
+                <div className="mb-1 text-lg font-bold text-[--color-primary] sm:text-xl">€{product.price}</div>
 
-                <div className="flex flex-wrap gap-1.5 mb-3">
+                <div className="mb-1 flex flex-wrap gap-1.5">
                   {product.tags.map(tag => (
                     <span 
                       key={tag} 
@@ -405,7 +287,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
                 </div>
                 
                 <button 
-                  className="btn btn-primary w-full text-xs sm:text-sm py-2"
+                  className="btn btn-primary mt-auto w-full text-xs sm:text-sm py-2"
                   onClick={() => {
                     cartActions.addItem({
                       id: product.id,
@@ -422,17 +304,18 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
             </article>
           ))}
         </div>
+        </div>
 
         {/* Message when form is disabled */}
         {!isFormEnabled && (
-          <div className="rounded-2xl p-6 sm:p-8 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 shadow-lg fade-in text-center mb-12">
-            <h3 className="text-xl sm:text-2xl font-bold mb-4 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <div className="fade-in mb-10 rounded-2xl border border-[rgba(110,68,255,0.2)] bg-white/80 p-6 text-center shadow-lg backdrop-blur-sm dark:border-lavender/20 dark:bg-white/8 sm:mb-12 sm:p-8">
+            <h3 className="mb-3 font-heading text-xl font-bold text-balance text-plum/90 dark:text-pearl sm:mb-4 sm:text-2xl">
               {translations.formDisabledTitle[language]}
             </h3>
-            <p className="text-base sm:text-lg text-slate-700 dark:text-slate-300 mb-4">
+            <p className="mb-3 text-base leading-relaxed text-plum/85 dark:text-pearl/85 sm:text-lg">
               {translations.formDisabledMessage[language]}
             </p>
-            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+            <p className="text-sm leading-relaxed text-[--color-ink-muted] dark:text-pearl/70 sm:text-base">
               {translations.formDisabledAdditional[language]}
             </p>
           </div>
@@ -441,191 +324,60 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
         {/* Customization Steps - only show if form is enabled */}
         {isFormEnabled && (
           <>
-            <div className="text-center mb-8">
-              <h3 className="text-xl sm:text-2xl font-bold mb-6 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="mb-6 text-center sm:mb-8">
+              <h3 className="font-heading text-xl font-bold text-plum/90 dark:text-pearl sm:text-2xl">
                 {translations.customizationTitle[language]}
               </h3>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="mb-0 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
               {customizationSteps.map((step) => (
                 <div 
                   key={step.number} 
-                  className="relative rounded-2xl p-6 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-xl dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-300 hover:scale-105 text-center fade-in"
+                  className="relative flex h-full min-h-[200px] flex-col rounded-2xl border border-[rgba(110,68,255,0.15)] bg-white/80 p-5 text-center shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:border-lavender/15 dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] sm:hover:scale-105 sm:p-6 fade-in"
                 >
                   {/* Step Number Badge */}
-                  <div className="absolute top-4 left-4 w-10 h-10 rounded-full bg-gradient-to-br from-[#6E44FF] to-[#BDA6FF] text-white font-bold text-lg flex items-center justify-center shadow-md">
+                  <div className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#6E44FF] to-[#BDA6FF] text-lg font-bold text-white shadow-md">
                     {step.number}
                   </div>
                   
                   {/* Icon */}
-                  <div className="text-5xl mb-4 mt-6">{step.icon}</div>
+                  <div className="mb-3 mt-6 text-5xl">{step.icon}</div>
                   
                   {/* Title */}
-                  <h4 className="text-base font-bold text-[--color-primary] mb-2">
+                  <h4 className="mb-2 font-heading text-sm font-bold text-[--color-primary] sm:text-base">
                     {step.title[language]}
                   </h4>
                   
                   {/* Description */}
-                  <p className="text-sm text-plum/75 dark:text-pearl/60">
+                  <p className="mt-auto text-sm leading-relaxed text-plum/70 dark:text-pearl/65">
                     {step.desc[language]}
                   </p>
                 </div>
               ))}
             </div>
-          </>
-        )}
 
-        {/* Personalization Form - only show if form is enabled */}
-        {isFormEnabled && (
-        <div className="rounded-2xl p-5 sm:p-8 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 shadow-lg fade-in">
-          <div className="text-center mb-6 space-y-2">
-            <h3 className="text-lg sm:text-xl font-bold mb-2 text-[--color-primary]">
-              {translations.formTitle[language]}
-            </h3>
-            <p className="text-sm text-slate-700 dark:text-slate-300">
-              {translations.formDesc[language]}
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-5">
-            {/* Product Selection */}
-            <div>
-              <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
-                {translations.selectProductLabel[language]} *
-              </label>
-              <select
-                name="product"
-                value={formData.product}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl"
-              >
-                <option value="" className="text-slate-500 dark:text-slate-400">{translations.selectProductPlaceholder[language]}</option>
-                {sampleProducts.map(product => (
-                  <option key={product.id} value={product.id}>
-                    {language === 'hr' ? product.nameHr : product.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
-                {translations.descriptionLabel[language]} *
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-                rows={4}
-                placeholder={translations.descriptionPlaceholder[language]}
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50 resize-none"
-              />
-            </div>
-
-            {/* File Upload */}
-            <div>
-              <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
-                {translations.addImagesLabel[language]}
-              </label>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleFileUpload}
-                disabled={uploadedFiles.length >= 5}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl file:mr-3 file:py-1.5 file:px-3 file:text-sm file:rounded-full file:border-0 file:bg-[rgba(110,68,255,0.1)] dark:file:bg-[rgba(189,166,255,0.15)] file:text-[--color-primary] file:font-semibold hover:file:bg-[rgba(110,68,255,0.2)] dark:hover:file:bg-[rgba(189,166,255,0.25)] file:cursor-pointer disabled:opacity-50"
-              />
-              
-              {/* File Preview */}
-              {uploadedFiles.length > 0 && (
-                <div className="mt-3 grid grid-cols-5 gap-2">
-                  {uploadedFiles.map((file, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={`Preview ${index + 1}`}
-                        className="w-full h-16 object-cover rounded-lg border border-[rgba(110,68,255,0.2)]"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeFile(index)}
-                        className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
+            {/* CTA — full form na /lrc/upit */}
+            <div className="fade-in mx-auto mt-10 w-full max-w-4xl sm:mt-12">
+              <div className="rounded-3xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8 md:p-10">
+                <div className="mx-auto max-w-2xl space-y-4 text-center sm:space-y-5">
+                  <h3 className="font-heading text-xl font-bold tracking-tight text-plum/95 dark:text-pearl sm:text-2xl">
+                    {translations.formCtaTitle[language]}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:text-[0.9375rem] sm:leading-relaxed">
+                    {translations.formCtaText[language]}
+                  </p>
+                  <Link
+                    to="/lrc/upit"
+                    className="btn btn-primary inline-flex min-h-[48px] w-full max-w-md items-center justify-center px-8 py-3 text-base font-semibold shadow-md transition-all duration-300 hover:shadow-lg sm:w-auto sm:px-12 sm:py-4"
+                    style={{ letterSpacing: '0.02em' }}
+                  >
+                    {translations.formCtaButton[language]}
+                  </Link>
                 </div>
-              )}
-            </div>
-
-            {/* Contact Fields Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {/* Name */}
-              <div>
-                <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
-                  {translations.nameLabel[language]} *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
-                  {translations.emailLabel[language]} *
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
-                />
-              </div>
-
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-medium text-plum/90 dark:text-pearl mb-1.5">
-                  {translations.phoneLabel[language]}
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
-                />
               </div>
             </div>
-
-            {/* Submit Button */}
-            <div className="text-center pt-2 space-y-2">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ letterSpacing: '0.02em' }}
-              >
-                {isSubmitting ? translations.submittingButton[language] : translations.submitButton[language]}
-              </button>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {translations.submitHelperText[language]}
-              </p>
-            </div>
-          </form>
-        </div>
+          </>
         )}
       </div>
     </section>

@@ -204,19 +204,19 @@ export default function ContactSection({ language }: ContactSectionProps) {
   }
 
   return (
-    <section id="contact" className="Section fade-in">
-      <div className="max-w-4xl mx-auto px-4 py-10 sm:px-6 lg:px-12 lg:py-16">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+    <section id="contact" className="Section fade-in scroll-mt-[72px]">
+      <div className="mx-auto min-w-0 max-w-3xl px-4 pb-12 pt-7 sm:px-6 sm:pb-14 sm:pt-9 lg:px-8 lg:pb-16 lg:pt-10">
+        <div className="mx-auto mb-9 max-w-2xl text-center sm:mb-10">
+          <h2 className="mb-3.5 font-heading text-2xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:mb-4 sm:text-3xl">
             {translations.title[language]}
           </h2>
-          <p className="text-base text-plum/80 dark:text-pearl/70">
+          <p className="mx-auto max-w-xl text-pretty text-base leading-relaxed text-plum/78 dark:text-pearl/75 sm:text-[1.0625rem]">
             {translations.subtitle[language]}
           </p>
         </div>
 
-        <div className="rounded-2xl p-5 sm:p-8 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-lg fade-in">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="fade-in rounded-3xl border border-[rgba(110,68,255,0.14)] bg-white/85 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] ring-1 ring-[rgba(110,68,255,0.06)] backdrop-blur-sm dark:border-lavender/18 dark:bg-white/[0.07] dark:shadow-[0_12px_48px_rgba(0,0,0,0.2)] dark:ring-lavender/10 sm:p-8 md:p-9">
+          <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-6 sm:space-y-7">
             <div
               style={{ 
                 animationDelay: '0.1s',
@@ -226,7 +226,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
             >
               <label 
                 htmlFor="name" 
-                className="block mb-1.5 text-sm font-medium text-plum/90 dark:text-pearl"
+                className="mb-2 block text-sm font-semibold text-plum/90 dark:text-pearl"
               >
                 {translations.name[language]}
               </label>
@@ -236,7 +236,8 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-3 py-2.5 text-sm rounded-xl border bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50 ${
+                autoComplete="name"
+                className={`min-h-[44px] w-full rounded-xl border bg-white px-4 py-3 text-base outline-none transition-all duration-200 placeholder:text-plum/60 focus:ring-2 focus:ring-[--color-primary]/20 dark:bg-white/10 dark:text-pearl dark:placeholder:text-pearl/50 dark:focus:bg-white/15 ${
                   errors.name 
                     ? 'border-red-500 focus:border-red-500' 
                     : 'border-[rgba(110,68,255,0.2)] dark:border-lavender/20 focus:border-[--color-primary]'
@@ -244,7 +245,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 placeholder={translations.name[language]}
               />
               {errors.name && (
-                <p className="mt-1 text-xs text-red-500">
+                <p className="mt-1.5 text-xs text-red-500">
                   {errors.name}
                 </p>
               )}
@@ -259,7 +260,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
             >
               <label 
                 htmlFor="email" 
-                className="block mb-1.5 text-sm font-medium text-plum/90 dark:text-pearl"
+                className="mb-2 block text-sm font-semibold text-plum/90 dark:text-pearl"
               >
                 {translations.email[language]}
               </label>
@@ -269,7 +270,8 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-3 py-2.5 text-sm rounded-xl border bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50 ${
+                autoComplete="email"
+                className={`min-h-[44px] w-full rounded-xl border bg-white px-4 py-3 text-base outline-none transition-all duration-200 placeholder:text-plum/60 focus:ring-2 focus:ring-[--color-primary]/20 dark:bg-white/10 dark:text-pearl dark:placeholder:text-pearl/50 dark:focus:bg-white/15 ${
                   errors.email 
                     ? 'border-red-500 focus:border-red-500' 
                     : 'border-[rgba(110,68,255,0.2)] dark:border-lavender/20 focus:border-[--color-primary]'
@@ -277,7 +279,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 placeholder={translations.email[language]}
               />
               {errors.email && (
-                <p className="mt-1 text-xs text-red-500">
+                <p className="mt-1.5 text-xs text-red-500">
                   {errors.email}
                 </p>
               )}
@@ -292,7 +294,7 @@ export default function ContactSection({ language }: ContactSectionProps) {
             >
               <label 
                 htmlFor="message" 
-                className="block mb-1.5 text-sm font-medium text-plum/90 dark:text-pearl"
+                className="mb-2 block text-sm font-semibold text-plum/90 dark:text-pearl"
               >
                 {translations.message[language]}
               </label>
@@ -301,8 +303,8 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                rows={4}
-                className={`w-full px-3 py-2.5 text-sm rounded-xl border bg-white dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none resize-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50 ${
+                rows={5}
+                className={`min-h-[120px] w-full resize-y rounded-xl border bg-white px-4 py-3 text-base outline-none transition-all duration-200 placeholder:text-plum/60 focus:ring-2 focus:ring-[--color-primary]/20 dark:bg-white/10 dark:text-pearl dark:placeholder:text-pearl/50 dark:focus:bg-white/15 ${
                   errors.message 
                     ? 'border-red-500 focus:border-red-500' 
                     : 'border-[rgba(110,68,255,0.2)] dark:border-lavender/20 focus:border-[--color-primary]'
@@ -310,17 +312,17 @@ export default function ContactSection({ language }: ContactSectionProps) {
                 placeholder={translations.message[language]}
               />
               {errors.message && (
-                <p className="mt-1 text-xs text-red-500">
+                <p className="mt-1.5 text-xs text-red-500">
                   {errors.message}
                 </p>
               )}
             </div>
 
-            <div className="text-center pt-2">
+            <div className="pt-2 text-center">
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="btn btn-primary px-12 py-4 text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn btn-primary min-h-[48px] w-full max-w-xs px-8 py-3 text-base font-semibold shadow-md transition-all duration-300 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-12 sm:py-4"
                 style={{ letterSpacing: '0.02em' }}
               >
                 {isSubmitting 

@@ -52,7 +52,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     : portfolioItems.filter(item => item.category === selectedCategory).slice(0, 10)
 
   return (
-    <section id="portfolio" className="py-16 sm:py-20 px-5 relative section-with-bg">
+    <section id="portfolio" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
       {/* Background wrapper */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         {/* Light mode image */}
@@ -79,19 +79,19 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>
       
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto min-w-0 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 text-plum/90 dark:text-pearl">
+        <div className="mb-6 text-center sm:mb-8">
+          <h2 className="mb-3 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-3.5 sm:text-3xl md:text-4xl">
             {translations.title[language]}
           </h2>
-          <p className="text-base sm:text-lg text-plum/80 dark:text-pearl/70 max-w-2xl mx-auto">
+          <p className="mx-auto max-w-2xl px-1 text-base leading-relaxed text-plum/80 dark:text-pearl/75 sm:text-lg">
             {translations.subtitle[language]}
           </p>
         </div>
 
         {/* Category Filters - with glow on active */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
+        <div className="mb-6 flex flex-wrap justify-center gap-2.5 sm:mb-8 sm:gap-3">
           {(['all', 'lrc', 'interiors', 'web-atelier'] as const).map((category) => (
             <button
               key={category}
@@ -110,17 +110,17 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
           ))}
         </div>
 
-        {/* Portfolio Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
+        {/* Portfolio Grid — single column on narrow phones */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
           {filteredItems.map((item, index) => (
             <div
               key={item.id}
-              className="group rounded-2xl overflow-hidden cursor-pointer
+              className="group flex h-full flex-col rounded-2xl overflow-hidden cursor-pointer
                 bg-white/85 dark:bg-white/8 backdrop-blur-xl
                 border border-amethyst/15 dark:border-lavender/15
                 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
                 hover:shadow-[0_20px_50px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)]
-                hover:scale-105 hover:-translate-y-1
+                hover:scale-[1.02] hover:-translate-y-1 sm:hover:scale-105
                 transition-all duration-300"
               style={{ animationDelay: `${index * 50}ms` }}
             >
@@ -146,22 +146,22 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
               </div>
 
               {/* Item Info */}
-              <div className="p-3 sm:p-4">
+              <div className="flex min-h-0 flex-1 flex-col p-3 sm:p-4">
                 <h3 className="text-sm sm:text-base font-semibold text-plum/90 dark:text-pearl mb-2 line-clamp-2 group-hover:text-amethyst dark:group-hover:text-lavender transition-colors">
                   {item.title}
                 </h3>
                 
                 {/* Category Badge */}
                 <span className="
-                  inline-flex items-center gap-1 px-2.5 py-1 
+                  mt-auto inline-flex w-fit max-w-full items-center gap-1 px-2.5 py-1 
                   text-[10px] sm:text-xs font-semibold rounded-full
                   bg-gradient-to-r from-amethyst/15 to-lavender/15 
                   dark:from-amethyst/25 dark:to-lavender/20
                   text-amethyst dark:text-lavender
                   border border-amethyst/20 dark:border-lavender/20
                 ">
-                  <span className="text-xs">{categoryIcons[item.category]}</span>
-                  {translations.categories[language][item.category === 'lrc' ? 1 : item.category === 'interiors' ? 2 : 3]}
+                  <span className="text-xs shrink-0">{categoryIcons[item.category]}</span>
+                  <span className="truncate">{translations.categories[language][item.category === 'lrc' ? 1 : item.category === 'interiors' ? 2 : 3]}</span>
                 </span>
               </div>
             </div>

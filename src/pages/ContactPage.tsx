@@ -31,52 +31,57 @@ export default function ContactPage({ language }: ContactPageProps) {
 
   return (
     <AnimatedPage>
-      <main>
-      {/* Intro Section */}
+      <main className="min-w-0">
+      {/* Intro + contact cards */}
       <section className="Section fade-in">
-        <div className="max-w-6xl mx-auto px-4 py-10 sm:px-6 lg:px-12 lg:py-16">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
-              {translations.introTitle[language]}
-            </h1>
-            <p className="text-base text-[#5A4A6B] max-w-2xl mx-auto mb-8">
-              {translations.introText[language]}
-            </p>
-            
-            {/* Contact Info Block */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <div className="flex items-center gap-3 px-6 py-3 rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md">
-                <span className="text-2xl">📧</span>
-                <div>
-                  <div className="text-xs text-[#5A4A6B] font-medium">
-                    {translations.contactInfo[language].email}
-                  </div>
-                  <a 
-                    href={`mailto:${CONTACT_INFO.email}`}
-                    className="text-sm font-semibold text-[--color-primary] hover:underline"
-                  >
-                    {CONTACT_INFO.email}
-                  </a>
+        <div className="mx-auto min-w-0 max-w-3xl px-4 py-12 text-center sm:px-6 sm:py-14 lg:px-8 lg:py-16">
+          <h1 className="mb-5 font-heading text-3xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:mb-6 sm:text-4xl md:text-[2.35rem] md:leading-tight">
+            {translations.introTitle[language]}
+          </h1>
+          <p className="mx-auto mb-9 max-w-xl text-pretty text-base leading-[1.65] text-plum/82 dark:text-pearl/80 sm:mb-11 sm:text-lg sm:leading-relaxed">
+            {translations.introText[language]}
+          </p>
+
+          <div className="mx-auto flex w-full max-w-2xl flex-col items-stretch justify-center gap-4 sm:max-w-none sm:flex-row sm:items-stretch sm:justify-center sm:gap-5 md:gap-6">
+            <div className="flex w-full items-center gap-3 rounded-2xl border border-[rgba(110,68,255,0.16)] bg-white/85 px-5 py-4 text-left shadow-md backdrop-blur-sm dark:border-lavender/18 dark:bg-white/[0.07] sm:min-w-[260px] sm:flex-1 sm:max-w-xs">
+              <span className="text-2xl shrink-0" aria-hidden>
+                📧
+              </span>
+              <div className="min-w-0">
+                <div className="text-xs font-medium text-[--color-ink-muted] dark:text-pearl/70">
+                  {translations.contactInfo[language].email}
                 </div>
+                <a
+                  href={`mailto:${CONTACT_INFO.email}`}
+                  className="break-all text-sm font-semibold text-[--color-primary] transition-colors hover:underline dark:text-lavender"
+                >
+                  {CONTACT_INFO.email}
+                </a>
               </div>
-              
-              <div className="flex items-center gap-3 px-6 py-3 rounded-xl bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-md">
-                <span className="text-2xl">📞</span>
-                <div>
-                  <div className="text-xs text-[#5A4A6B] font-medium">
-                    {translations.contactInfo[language].phone}
-                  </div>
-                  <a 
-                    href={`tel:${CONTACT_INFO.phone}`}
-                    className="text-sm font-semibold text-[--color-primary] hover:underline"
-                  >
-                    {CONTACT_INFO.phone}
-                  </a>
+            </div>
+
+            <div className="flex w-full items-center gap-3 rounded-2xl border border-[rgba(110,68,255,0.16)] bg-white/85 px-5 py-4 text-left shadow-md backdrop-blur-sm dark:border-lavender/18 dark:bg-white/[0.07] sm:min-w-[260px] sm:flex-1 sm:max-w-xs">
+              <span className="text-2xl shrink-0" aria-hidden>
+                📞
+              </span>
+              <div className="min-w-0">
+                <div className="text-xs font-medium text-[--color-ink-muted] dark:text-pearl/70">
+                  {translations.contactInfo[language].phone}
                 </div>
+                <a
+                  href={`tel:${CONTACT_INFO.phone}`}
+                  className="text-sm font-semibold text-[--color-primary] transition-colors hover:underline dark:text-lavender"
+                >
+                  {CONTACT_INFO.phone}
+                </a>
               </div>
             </div>
           </div>
         </div>
+        <div
+          className="mx-auto max-w-3xl border-b border-[rgba(110,68,255,0.1)] px-4 sm:px-6 lg:px-8 dark:border-lavender/12"
+          aria-hidden
+        />
       </section>
 
       {/* Contact Form Section */}

@@ -10,16 +10,16 @@ interface WebAtelierPageProps {
 export default function WebAtelierPage({ language }: WebAtelierPageProps) {
   return (
     <AnimatedPage>
-      <main className="space-y-10 sm:space-y-14 lg:space-y-16">
+      <main className="min-w-0 space-y-0">
       <ErrorBoundary name="WebAtelier">
-        <section id="web-atelier" className="Section">
-          <WebAtelierSection language={language} />
-        </section>
+        <WebAtelierSection language={language} />
       </ErrorBoundary>
 
       {/* FAQ Section */}
       <ErrorBoundary name="FAQ">
-        <FAQSection language={language} categories={['web']} />
+        <div className="border-t border-[rgba(110,68,255,0.1)] dark:border-lavender/15">
+          <FAQSection language={language} categories={['web']} />
+        </div>
       </ErrorBoundary>
     </main>
     </AnimatedPage>

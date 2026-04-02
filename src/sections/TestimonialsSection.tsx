@@ -182,7 +182,7 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
   }
 
   return (
-    <section id="testimonials" className="py-16 sm:py-20 px-5 relative section-with-bg">
+    <section id="testimonials" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
       {/* Star pulse animation */}
       <style>{`
         @keyframes starPulse {
@@ -217,19 +217,19 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-6xl mx-auto min-w-0 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 text-plum/90 dark:text-pearl">
+        <div className="mb-6 text-center sm:mb-8">
+          <h2 className="mb-3 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-3.5 sm:text-3xl md:text-4xl">
             <span className="mr-2">💬</span>
             {translations.title[language]}
           </h2>
-          <p className="text-base sm:text-lg text-plum/80 dark:text-pearl/70 max-w-2xl mx-auto mb-8">
+          <p className="mx-auto mb-4 max-w-2xl px-1 text-base leading-relaxed text-plum/80 dark:text-pearl/75 sm:mb-5 sm:text-lg">
             {translations.subtitle[language]}
           </p>
 
           {/* Filter Buttons - matching Portfolio style */}
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
             {(['all', 'lrc', 'interiors', 'web-atelier'] as const).map((category) => (
               <button
                 key={category}
@@ -253,12 +253,12 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
         </div>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
           {filteredTestimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}
               className="
-                group relative rounded-2xl p-6
+                group relative flex h-full flex-col rounded-2xl p-5 sm:p-6
                 bg-white/80 dark:bg-white/8 backdrop-blur-xl
                 border border-amethyst/20 dark:border-lavender/10
                 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
@@ -291,12 +291,12 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
               </div>
 
               {/* Testimonial Text */}
-              <p className="text-sm sm:text-base text-plum/90 dark:text-pearl/90 mb-5 leading-relaxed line-clamp-4">
+              <p className="mb-5 min-h-0 flex-1 text-sm leading-relaxed text-plum/90 dark:text-pearl/90 sm:text-base line-clamp-4">
                 "{testimonial.text[language]}"
               </p>
 
               {/* Author Info */}
-              <div className="flex items-center gap-3 pt-4 border-t border-amethyst/10 dark:border-lavender/10">
+              <div className="mt-auto flex items-center gap-3 border-t border-amethyst/10 pt-4 dark:border-lavender/10">
                 {/* Avatar with gradient */}
                 <div
                   className={`

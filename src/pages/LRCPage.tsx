@@ -15,40 +15,27 @@ const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
 
   return (
     <AnimatedPage>
-      <main className="min-h-screen bg-white text-slate-900">
+      <main className="min-h-screen min-w-0 bg-pearl text-plum dark:bg-[#070812] dark:text-pearl">
       {/* Glavni sadržaj: webshop uvijek vidljiv, forma ovisno o isFormEnabled */}
-      <section className="pb-16 px-4">
-        <div className="mx-auto max-w-6xl">
+      <section className="pb-10 sm:pb-14">
+        <div className="mx-auto max-w-6xl min-w-0">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <p className="text-slate-600">{language === 'hr' ? 'Učitavanje postavki prijava...' : 'Loading application settings...'}</p>
+            <div className="flex min-h-[40vh] items-center justify-center px-4 py-10 sm:py-12">
+              <p className="text-center text-sm leading-relaxed text-[--color-ink-muted] dark:text-pearl/70 sm:text-base">
+                {language === 'hr' ? 'Učitavanje postavki prijava...' : 'Loading application settings...'}
+              </p>
             </div>
           ) : (
-            <>
-              {error && (
-                <div className="rounded-xl bg-yellow-50 border border-yellow-200 p-6 text-center mb-6">
-                  <p className="text-sm text-yellow-800 mb-2">
-                    {language === 'hr' 
-                      ? 'Trenutno ne možemo učitati postavke prijave. Ako imate problem s prijavom, javite se na e-mail.'
-                      : 'We cannot load application settings at the moment. If you have issues with your application, please contact us via email.'}
-                  </p>
-                  <a 
-                    href="mailto:info.anilrc@gmail.com" 
-                    className="text-sm text-yellow-900 underline hover:text-yellow-700"
-                  >
-                    info.anilrc@gmail.com
-                  </a>
-                </div>
-              )}
-              <LRCSection language={language} isFormEnabled={error ? true : LRC_FORM_ENABLED} />
-            </>
+            <LRCSection language={language} isFormEnabled={error ? true : LRC_FORM_ENABLED} />
           )}
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ Section — subtle handoff from LRC content */}
       <ErrorBoundary name="FAQ">
-        <FAQSection language={language} categories={['lrc']} />
+        <div className="border-t border-[rgba(110,68,255,0.1)] dark:border-lavender/15">
+          <FAQSection language={language} categories={['lrc']} />
+        </div>
       </ErrorBoundary>
     </main>
     </AnimatedPage>

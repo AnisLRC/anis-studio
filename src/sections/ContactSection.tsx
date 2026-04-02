@@ -44,7 +44,7 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
   }
 
   return (
-    <section id="kontakt" className="Section fade-in relative section-with-bg py-16 sm:py-20 md:py-24">
+    <section id="kontakt" className="Section fade-in relative section-with-bg py-14 sm:py-16 md:py-20">
       {/* Animated glow pulse keyframes */}
       <style>{`
         @keyframes glowPulse {
@@ -81,23 +81,23 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lavender/10 dark:bg-amethyst/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-5xl px-5">
+      <div className="relative z-10 mx-auto min-w-0 max-w-5xl px-4 sm:px-6">
         {/* Header */}
         <div className="text-center">
           <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold text-plum/90 dark:text-pearl">
             {translations.title[language]}
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-plum/80 dark:text-pearl/70 max-w-2xl mx-auto">
+          <p className="mx-auto mt-4 max-w-2xl px-1 text-base sm:text-lg text-plum/80 dark:text-pearl/70">
             {translations.subtitle[language]}
           </p>
         </div>
 
         {/* Contact Cards */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-3 sm:gap-5 md:gap-6">
           {/* Email Card */}
           <a
             href="mailto:info.anilrc@gmail.com"
-            className="group rounded-2xl p-6 text-center
+            className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
               bg-white/70 dark:bg-white/15 backdrop-blur-xl
               border border-amethyst/15 dark:border-lavender/25
               shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
@@ -128,7 +128,7 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           {/* Phone Card */}
           <a
             href="tel:+385955526625"
-            className="group rounded-2xl p-6 text-center
+            className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
               bg-white/70 dark:bg-white/15 backdrop-blur-xl
               border border-amethyst/15 dark:border-lavender/25
               shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
@@ -159,7 +159,7 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           {/* Message Card */}
           <Link
             to="/kontakt"
-            className="group rounded-2xl p-6 text-center
+            className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
               bg-white/70 dark:bg-white/15 backdrop-blur-xl
               border border-amethyst/15 dark:border-lavender/25
               shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]

@@ -170,7 +170,7 @@ export const productTags = [
   { id: 'wood', label: { hr: 'Gravura', en: 'Engraving' } },
   { id: 'plaster', label: { hr: 'Gips', en: 'Plaster' } },
   { id: 'laser', label: { hr: 'Laser', en: 'Laser' } },
-  { id: 'mandala', label: { hr: 'Mandela', en: 'Mandala' } },
+  { id: 'mandala', label: { hr: 'Mandala', en: 'Mandala' } },
   { id: 'jewelry', label: { hr: 'Nakit', en: 'Jewelry' } },
   { id: 'silk', label: { hr: 'Svila', en: 'Silk' } }
 ]

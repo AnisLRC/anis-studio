@@ -2,9 +2,9 @@ import { CONTACT_INFO } from '../config/contact'
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200 dark:border-slate-700 bg-gradient-to-b from-white to-[rgba(247,246,255,0.6)] dark:from-slate-900 dark:to-slate-800/90">
+    <footer className="border-t border-[rgba(110,68,255,0.12)] dark:border-lavender/20 bg-gradient-to-b from-white to-[rgba(247,246,255,0.6)] dark:from-[#070812] dark:to-[#12101c]/95">
       <section className="Section py-10 sm:py-12">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 min-w-0">
           <div className="flex items-center gap-3 hover:scale-105 transition-transform duration-200">
             <div className="size-8 rounded-xl flex items-center justify-center transition-all duration-200 hover:shadow-lg"
               style={{ 
@@ -22,7 +22,7 @@ export default function Footer() {
             © 2025 Ani's Studio — ručno izrađeno u Hrvatskoj
           </p>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3 min-w-0">
             {/* Email */}
             <a 
               className="w-10 h-10 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[rgba(110,68,255,0.4)] dark:hover:border-lavender/40"

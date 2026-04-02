@@ -73,7 +73,7 @@ export default function LoginModal({ language }: LoginModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 z-[1060] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[1060] flex min-h-0 items-center justify-center overflow-y-auto overscroll-contain p-4 sm:p-5"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           closeModal('login')
@@ -88,13 +88,14 @@ export default function LoginModal({ language }: LoginModalProps) {
 
       {/* Modal */}
       <div 
-        className="relative glass-morphism rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-xl"
+        className="relative my-auto w-full min-w-0 max-w-md max-h-[min(90dvh,720px)] overflow-y-auto overscroll-contain rounded-2xl p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-xl glass-morphism sm:p-8 sm:pb-8"
         style={{ animation: 'fade-in-up 0.3s ease-out' }}
       >
         {/* Close button */}
         <button
+          type="button"
           onClick={() => closeModal('login')}
-          className="absolute top-4 right-4 p-2 text-plum/80 dark:text-pearl/70 hover:text-[--color-primary] transition-colors rounded-lg hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(189,166,255,0.15)]"
+          className="absolute right-3 top-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg p-0 text-plum/80 touch-manipulation dark:text-pearl/70 hover:text-[--color-primary] transition-colors hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(189,166,255,0.15)] sm:right-4 sm:top-4"
           aria-label={language === 'hr' ? 'Zatvori' : 'Close'}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +104,7 @@ export default function LoginModal({ language }: LoginModalProps) {
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h2 className="mb-6 pr-12 font-heading text-2xl font-bold text-plum/90 dark:text-pearl sm:mb-7 sm:text-3xl">
           {translations.title[language]}
         </h2>
 
@@ -111,7 +112,7 @@ export default function LoginModal({ language }: LoginModalProps) {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
-            <label htmlFor="login-email" className="block mb-2 text-sm font-semibold text-plum/90 dark:text-pearl">
+            <label htmlFor="login-email" className="mb-2 block text-sm font-semibold text-plum/90 dark:text-pearl">
               {translations.email[language]}
             </label>
             <input
@@ -120,14 +121,15 @@ export default function LoginModal({ language }: LoginModalProps) {
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white/90 dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
+              autoComplete="email"
+              className="min-h-[44px] w-full rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 px-4 py-3 text-base text-plum/90 outline-none transition-all duration-200 placeholder:text-plum/60 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 dark:border-lavender/20 dark:bg-white/10 dark:text-pearl dark:placeholder:text-pearl/50 dark:focus:bg-white/15"
               placeholder={translations.email[language]}
             />
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor="login-password" className="block mb-2 text-sm font-semibold text-plum/90 dark:text-pearl">
+            <label htmlFor="login-password" className="mb-2 block text-sm font-semibold text-plum/90 dark:text-pearl">
               {translations.password[language]}
             </label>
             <input
@@ -136,14 +138,15 @@ export default function LoginModal({ language }: LoginModalProps) {
               required
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-[rgba(110,68,255,0.2)] dark:border-lavender/20 bg-white/90 dark:bg-white/10 focus:bg-white dark:focus:bg-white/15 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 transition-all duration-200 outline-none text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50"
+              autoComplete="current-password"
+              className="min-h-[44px] w-full rounded-xl border border-[rgba(110,68,255,0.2)] bg-white/90 px-4 py-3 text-base text-plum/90 outline-none transition-all duration-200 placeholder:text-plum/60 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20 dark:border-lavender/20 dark:bg-white/10 dark:text-pearl dark:placeholder:text-pearl/50 dark:focus:bg-white/15"
               placeholder={translations.password[language]}
             />
           </div>
 
           {/* Error message */}
           {error && (
-            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400">
               {error}
             </div>
           )}
@@ -152,7 +155,7 @@ export default function LoginModal({ language }: LoginModalProps) {
           <button
             type="submit"
             disabled={isSubmitting || isLoading}
-            className="w-full btn btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary min-h-[48px] w-full py-3 text-base disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting || isLoading 
               ? (language === 'hr' ? 'Prijavljivanje...' : 'Signing in...')
@@ -161,11 +164,11 @@ export default function LoginModal({ language }: LoginModalProps) {
           </button>
 
           {/* Switch to register */}
-          <div className="text-center pt-2">
+          <div className="pt-1 text-center">
             <button
               type="button"
               onClick={handleSwitchToRegister}
-              className="text-sm text-[#5A4A6B] hover:text-[--color-primary] transition-colors"
+              className="min-h-[44px] touch-manipulation px-2 text-sm text-[--color-ink-muted] underline-offset-2 hover:text-[--color-primary] hover:underline dark:text-pearl/70"
             >
               {translations.switchToRegister[language]}
             </button>

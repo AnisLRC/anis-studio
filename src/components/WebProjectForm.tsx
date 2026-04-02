@@ -125,11 +125,37 @@ const FEATURES = [
   'Drugo',
 ]
 
-interface WebProjectFormProps {
-  language?: 'hr' | 'en'
+export type WebAtelierPaket = 'start' | 'pro' | 'premium'
+
+function initialValuesFromPaket(
+  language: 'hr' | 'en',
+  paket?: WebAtelierPaket
+): WebProjectFormValues {
+  if (!paket) return { ...INITIAL_VALUES }
+  const label =
+    language === 'hr'
+      ? { start: 'Start (299 €)', pro: 'Pro (499 €)', premium: 'Premium (799 €)' }
+      : { start: 'Start (299 €)', pro: 'Pro (499 €)', premium: 'Premium (799 €)' }
+  const note =
+    language === 'hr'
+      ? `Željeni Web Atelier paket: ${label[paket]}.\n`
+      : `Preferred Web Atelier package: ${label[paket]}.\n`
+  return {
+    ...INITIAL_VALUES,
+    budgetRange: 'under-1000',
+    extraNotes: note,
+  }
 }
 
-export function WebProjectForm({ language = 'hr' }: WebProjectFormProps) {
+interface WebProjectFormProps {
+  language?: 'hr' | 'en'
+  /** Hide the in-form title block when the page layout already provides an H1 (e.g. /web-atelier/upit). */
+  hidePageTitle?: boolean
+  /** Prefill from `?paket=` on /web-atelier/upit (notes + rough budget tier). */
+  initialPaket?: WebAtelierPaket
+}
+
+export function WebProjectForm({ language = 'hr', hidePageTitle = false, initialPaket }: WebProjectFormProps) {
   const inputClass =
     "w-full rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-400";
   
@@ -138,7 +164,9 @@ export function WebProjectForm({ language = 'hr' }: WebProjectFormProps) {
   
   const selectClass = inputClass;
 
-  const [values, setValues] = useState<WebProjectFormValues>(INITIAL_VALUES)
+  const [values, setValues] = useState<WebProjectFormValues>(() =>
+    initialValuesFromPaket(language, initialPaket)
+  )
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitted, setIsSubmitted] = useState(false)
 
@@ -297,15 +325,16 @@ export function WebProjectForm({ language = 'hr' }: WebProjectFormProps) {
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-8">
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Naslov i podnaslov */}
-        <div className="space-y-1 text-center mb-4">
-          <h2 className="text-xl font-semibold text-slate-900">
-            Upit za web projekt
-          </h2>
-          <p className="text-sm text-slate-600">
-            Ispunite formu s detaljima o vašem web projektu.
-          </p>
-        </div>
+        {!hidePageTitle && (
+          <div className="mb-4 space-y-1 text-center">
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-pearl">
+              Upit za web projekt
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-pearl/70">
+              Ispunite formu s detaljima o vašem web projektu.
+            </p>
+          </div>
+        )}
 
         {/* Legenda za checkboxe i radio gumbe */}
         <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">

@@ -49,7 +49,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
   }
 
   return (
-    <section className="relative min-h-[78vh] [isolation:isolate] section-with-bg">
+    <section className="relative min-h-[min(72svh,720px)] sm:min-h-[78vh] overflow-x-clip [isolation:isolate] section-with-bg">
       {/* CTA pulse animation */}
       <style>{`
         @keyframes ctaPulse {
@@ -128,38 +128,41 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
       </div>
 
       {/* Content wrapper */}
-      <div className="relative z-10 mx-auto max-w-5xl px-5 pt-24 pb-16 text-center">
+      <div className="relative z-10 mx-auto min-w-0 max-w-5xl px-4 pb-12 pt-20 text-center sm:px-6 sm:pb-14 sm:pt-24">
         {/* Subtle glow behind heading */}
         <div 
-          className="pointer-events-none absolute left-1/2 top-24 -translate-x-1/2 z-[9] h-40 w-[520px] rounded-full blur-2xl dark:hidden"
+          className="pointer-events-none absolute left-1/2 top-24 -translate-x-1/2 z-[9] h-40 w-[min(520px,calc(100vw-2rem))] max-w-full rounded-full blur-2xl dark:hidden"
           style={{
             background: 'radial-gradient(circle, rgba(110,68,255,0.22), transparent 60%)'
           }}
         />
         <div 
-          className="pointer-events-none absolute left-1/2 top-24 -translate-x-1/2 z-[9] h-40 w-[520px] rounded-full blur-2xl hidden dark:block"
+          className="pointer-events-none absolute left-1/2 top-24 -translate-x-1/2 z-[9] h-40 w-[min(520px,calc(100vw-2rem))] max-w-full rounded-full blur-2xl hidden dark:block"
           style={{
             background: 'radial-gradient(circle, rgba(189,166,255,0.14), transparent 60%)'
           }}
         />
 
+        {/* Hero text block — constrained width for readability */}
+        <div className="mx-auto max-w-[min(100%,34rem)] sm:max-w-2xl">
         {/* Headline */}
-        <h1 className="font-heading text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight
+        <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight break-words text-balance
           text-plum/90 dark:text-pearl drop-shadow-[0_14px_40px_rgba(110,68,255,0.18)]">
           {translations.headline[language]}
-          <span className="ml-3 align-middle">✨</span>
+          <span className="ml-1.5 sm:ml-3 inline-block align-middle">✨</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="mt-5 text-base sm:text-lg md:text-xl text-plum/80 dark:text-pearl/80">
+        <p className="mt-4 sm:mt-5 text-[0.9375rem] leading-relaxed sm:text-lg md:text-xl text-plum/80 dark:text-pearl/80">
           {translations.subtitle[language]}
         </p>
+        </div>
 
         {/* CTA buttons */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="mt-7 sm:mt-8 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:gap-4 mx-auto">
           <a
-            href="#kontakt"
-            className="inline-flex items-center justify-center rounded-2xl px-8 py-4 font-semibold text-white
+            href="#contact"
+            className="inline-flex min-h-[48px] w-full sm:w-auto items-center justify-center rounded-2xl px-6 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-semibold text-white
               bg-amethyst
               hover:translate-y-[-1px] hover:shadow-[0_24px_70px_rgba(110,68,255,0.45)]
               active:translate-y-0 transition-transform duration-200 will-change-transform"
@@ -169,7 +172,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
           <a
             href="#portfolio"
-            className="inline-flex items-center justify-center rounded-2xl px-8 py-4 font-semibold
+            className="inline-flex min-h-[48px] w-full sm:w-auto items-center justify-center rounded-2xl px-6 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-semibold
               text-plum/90 dark:text-pearl border border-amethyst/25 dark:border-lavender/20
               bg-white/55 dark:bg-white/8 backdrop-blur-2xl
               shadow-[0_10px_30px_rgba(0,0,0,0.06)]
@@ -190,13 +193,13 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
         </div>
 
         {/* Cards Section */}
-        <h2 className="mt-16 text-2xl sm:text-3xl font-bold text-plum/90 dark:text-pearl">
+        <h2 className="mt-10 font-heading text-2xl font-bold text-balance text-plum/90 dark:text-pearl sm:mt-14 sm:text-3xl">
           {translations.cardsTitle[language]}
         </h2>
 
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 md:grid-cols-3">
           {/* LRC Shop Card */}
-          <Link to="/lrc" className="group relative rounded-[2rem] p-8 text-center
+          <Link to="/lrc" className="group relative rounded-[2rem] p-6 sm:p-8 text-center
             bg-white/80 dark:bg-white/8 backdrop-blur-2xl
             border border-amethyst/20 dark:border-lavender/10
             shadow-[0_15px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
@@ -224,7 +227,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </Link>
 
           {/* Interijeri Card */}
-          <Link to="/interijeri" className="group relative rounded-[2rem] p-8 text-center
+          <Link to="/interijeri" className="group relative rounded-[2rem] p-6 sm:p-8 text-center
             bg-white/80 dark:bg-white/8 backdrop-blur-2xl
             border border-amethyst/20 dark:border-lavender/10
             shadow-[0_15px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
@@ -252,7 +255,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </Link>
 
           {/* Web Atelier Card */}
-          <Link to="/web-atelier" className="group relative rounded-[2rem] p-8 text-center
+          <Link to="/web-atelier" className="group relative rounded-[2rem] p-6 sm:p-8 text-center
             bg-white/80 dark:bg-white/8 backdrop-blur-2xl
             border border-amethyst/20 dark:border-lavender/10
             shadow-[0_15px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]

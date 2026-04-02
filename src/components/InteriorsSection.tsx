@@ -1,11 +1,29 @@
-import { InteriorsClientForm } from './InteriorsClientForm'
-import { InteriorsCarpenterForm } from './InteriorsCarpenterForm'
+import { Link } from 'react-router-dom'
 
 interface InteriorsSectionProps {
   language: 'hr' | 'en'
 }
 
 export default function InteriorsSection({ language }: InteriorsSectionProps) {
+
+  const chooser = {
+    sectionTitle: { hr: 'Odaberite vrstu upita', en: 'Choose the type of inquiry' },
+    sectionIntro: {
+      hr: 'Trebate 3D prikaz interijera po mjeri ili šaljete upit za suradnju? Odaberite opciju koja najbolje odgovara vašem projektu.',
+      en: 'Need a bespoke 3D interior visualization or sending a collaboration inquiry? Choose the option that best fits your project.',
+    },
+    clientsTitle: { hr: 'Upit za klijente', en: 'Client inquiry' },
+    clientsText: {
+      hr: 'Za privatne klijente koji žele idejno rješenje, 2D nacrt ili 3D prikaz prostora.',
+      en: 'For private clients who want a concept, 2D drawing or 3D visualization of the space.',
+    },
+    stolariTitle: { hr: 'Upit za stolare i studije', en: 'Inquiry for carpenters & studios' },
+    stolariText: {
+      hr: 'Za stolare, salone i studije namještaja koji šalju projekt, suradnju ili razradu za izradu.',
+      en: 'For carpenters, showrooms and furniture studios sending a project, collaboration or production detailing.',
+    },
+    ctaAction: { hr: 'Otvori formu', en: 'Open form' },
+  }
 
   const translations = {
     title: {
@@ -42,7 +60,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
     },
     step5: {
       title: { hr: "Pošaljite upit", en: "Send inquiry" },
-      desc: { hr: "Ispunite formu ispod s vašim dimenzijama i opisom", en: "Fill out the form below with your dimensions and description" }
+      desc: { hr: "Koristite obrazac za klijente za slanje upita.", en: "Use the client inquiry form to send your request." }
     },
     step6: {
       title: { hr: "Primite prikaz", en: "Receive visualization" },
@@ -89,13 +107,11 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
     }
   ]
 
-  const stolars = [
-    { id: '1', name: 'Stolarija Jurić (Rijeka)' },
-    { id: '2', name: 'Stolarija Novak (Zagreb)' },
-  ]
-
   return (
-    <section id="interiors" className="Section fade-in relative section-with-bg">
+    <section
+      id="interiors"
+      className="Section fade-in relative section-with-bg !pt-[clamp(1.5rem,2.5vw,2.75rem)] !pb-[clamp(2rem,3.5vw,3.5rem)] sm:!pb-[clamp(2.25rem,3.5vw,3.75rem)]"
+    >
       {/* Background wrapper */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         {/* Light mode image */}
@@ -122,66 +138,132 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>
       
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* Section Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <div className="relative z-10 mx-auto flex min-w-0 w-full max-w-6xl flex-col px-0">
+        {/* Section Header — single centered column */}
+        <div className="mx-auto mb-10 w-full max-w-3xl text-center sm:mb-12">
+          <h2 className="mb-2.5 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-3 sm:text-3xl">
             {translations.title[language]}
           </h2>
-          <p className="text-lg sm:text-xl italic text-amethyst dark:text-lavender mb-3 font-medium">
+          <p className="mx-auto mb-2 max-w-2xl text-lg font-semibold italic leading-snug text-amethyst dark:text-lavender sm:text-xl">
             {translations.subtitle[language]}
           </p>
-          <p className="text-base text-plum/80 dark:text-pearl/70 mb-8">
+          <p className="mx-auto max-w-xl text-base leading-relaxed text-plum/80 dark:text-pearl/75">
             {translations.description[language]}
           </p>
         </div>
 
-        {/* Visualization Steps */}
-        <div className="text-center mb-8">
-          <h3 className="text-xl sm:text-2xl font-bold mb-6 text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        {/* Visualization Steps — heading + balanced grid below */}
+        <div className="mx-auto mb-7 max-w-3xl text-center sm:mb-8">
+          <h3 className="font-heading text-xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:text-2xl">
             {translations.stepsTitle[language]}
           </h3>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-12">
+        <div className="mx-auto mb-12 grid w-full max-w-5xl grid-cols-1 gap-4 sm:mb-14 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-5">
           {visualizationSteps.map((step) => (
             <div 
               key={step.number} 
-              className="relative rounded-xl p-4 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-xl dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-300 hover:scale-105 text-center fade-in"
+              className="relative flex min-h-[148px] w-full max-w-md flex-col items-center rounded-xl border border-[rgba(110,68,255,0.15)] bg-white/80 p-4 pt-9 text-center shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:border-lavender/15 dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] sm:max-w-none sm:hover:scale-[1.02] fade-in"
             >
-              {/* Step Number Badge */}
-              <div className="absolute top-2 left-2 w-8 h-8 rounded-full bg-gradient-to-br from-[#6E44FF] to-[#BDA6FF] text-white font-bold text-sm flex items-center justify-center shadow-md">
+              {/* Step Number Badge — centered on card top */}
+              <div className="absolute left-1/2 top-3 z-10 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-br from-[#6E44FF] to-[#BDA6FF] text-sm font-bold text-white shadow-md">
                 {step.number}
               </div>
 
               {/* Icon */}
-              <div className="text-3xl mb-3 mt-4">{step.icon}</div>
+              <div className="mb-2 mt-1 text-3xl">{step.icon}</div>
               
               {/* Title */}
-              <h4 className="text-xs font-bold text-[--color-primary] mb-1.5">
+              <h4 className="mb-1.5 max-w-[14rem] text-xs font-bold leading-tight text-[--color-primary] sm:max-w-none">
                 {step.title[language]}
               </h4>
               
               {/* Description */}
-              <p className="text-[10px] text-plum/75 dark:text-pearl/60 leading-tight">
+              <p className="mt-auto max-w-none text-[11px] leading-relaxed text-plum/75 dark:text-pearl/65 sm:text-xs">
                 {step.desc[language]}
               </p>
             </div>
           ))}
         </div>
-        
-        <InteriorsClientForm stolars={stolars} language={language} />
-        
-        <div className="mt-12 border-t border-slate-200 dark:border-slate-700 pt-8">
-          <h2 className="mb-4 text-lg font-semibold text-plum/90 dark:text-pearl">
-            {language === 'hr' ? 'Za stolare i studije namještaja' : 'For carpenters and furniture studios'}
-          </h2>
-          <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
-            {language === 'hr' 
-              ? 'Istim obrascem šaljete i svoje podatke i konkretan upit za projekt.'
-              : 'With the same form you send both your details and a specific project inquiry.'}
-          </p>
-          <InteriorsCarpenterForm language={language} />
+
+        {/* Chooser — forms on /interijeri/klijenti and /interijeri/stolari */}
+        <div className="mx-auto w-full max-w-5xl">
+          <div className="rounded-3xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8 md:p-10">
+            <header className="mx-auto mb-7 max-w-2xl text-center sm:mb-9">
+              <p className="mb-3 font-heading text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-amethyst/80 dark:text-lavender/85">
+                {language === 'hr' ? 'Upit' : 'Inquiry'}
+              </p>
+              <h3 className="font-heading text-xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-2xl md:text-[1.65rem]">
+                {chooser.sectionTitle[language]}
+              </h3>
+              <p className="mx-auto mt-4 text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:text-[0.95rem] sm:leading-relaxed">
+                {chooser.sectionIntro[language]}
+              </p>
+              <div
+                className="mx-auto mt-8 h-px max-w-xs bg-gradient-to-r from-transparent via-[rgba(110,68,255,0.35)] to-transparent dark:via-lavender/35"
+                aria-hidden
+              />
+            </header>
+
+            <nav
+              className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6"
+              aria-label={language === 'hr' ? 'Vrste upita' : 'Inquiry types'}
+            >
+              <Link
+                to="/interijeri/klijenti"
+                className="group relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-[rgba(110,68,255,0.16)] bg-white/90 p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-[--color-primary]/35 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-primary] dark:border-lavender/18 dark:bg-white/[0.06] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.14)] sm:p-7 sm:text-left"
+              >
+                <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(110,68,255,0.25)] to-transparent opacity-0 transition-opacity group-hover:opacity-100 dark:via-lavender/30" aria-hidden />
+                <div className="mb-4 flex justify-center sm:mb-5 sm:justify-start">
+                  <span
+                    className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#6E44FF]/12 to-[#BDA6FF]/10 text-xl shadow-inner dark:from-[#6E44FF]/22 dark:to-[#BDA6FF]/12"
+                    aria-hidden
+                  >
+                    🏠
+                  </span>
+                </div>
+                <h4 className="font-heading text-lg font-bold leading-snug text-plum/95 dark:text-pearl sm:text-xl">
+                  {chooser.clientsTitle[language]}
+                </h4>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-plum/76 dark:text-pearl/70 sm:text-[0.9375rem]">
+                  {chooser.clientsText[language]}
+                </p>
+                <span className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#6E44FF] to-[#8B6FFF] px-4 py-3 text-sm font-semibold text-white shadow-md transition-[transform,box-shadow] duration-300 group-hover:shadow-lg group-hover:brightness-[1.03] dark:from-[#6E44FF] dark:to-[#9D7FFF] sm:w-auto sm:self-start">
+                  {chooser.ctaAction[language]}
+                  <span className="ml-1.5 transition-transform group-hover:translate-x-0.5" aria-hidden>
+                    →
+                  </span>
+                </span>
+              </Link>
+
+              <Link
+                to="/interijeri/stolari"
+                className="group relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-[rgba(110,68,255,0.16)] bg-white/90 p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-[--color-primary]/35 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-primary] dark:border-lavender/18 dark:bg-white/[0.06] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.14)] sm:p-7 sm:text-left"
+              >
+                <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(110,68,255,0.25)] to-transparent opacity-0 transition-opacity group-hover:opacity-100 dark:via-lavender/30" aria-hidden />
+                <div className="mb-4 flex justify-center sm:mb-5 sm:justify-start">
+                  <span
+                    className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#6E44FF]/12 to-[#BDA6FF]/10 text-xl shadow-inner dark:from-[#6E44FF]/22 dark:to-[#BDA6FF]/12"
+                    aria-hidden
+                  >
+                    🪚
+                  </span>
+                </div>
+                <h4 className="font-heading text-lg font-bold leading-snug text-plum/95 dark:text-pearl sm:text-xl">
+                  {chooser.stolariTitle[language]}
+                </h4>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-plum/76 dark:text-pearl/70 sm:text-[0.9375rem]">
+                  {chooser.stolariText[language]}
+                </p>
+                <span className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#6E44FF] to-[#8B6FFF] px-4 py-3 text-sm font-semibold text-white shadow-md transition-[transform,box-shadow] duration-300 group-hover:shadow-lg group-hover:brightness-[1.03] dark:from-[#6E44FF] dark:to-[#9D7FFF] sm:w-auto sm:self-start">
+                  {chooser.ctaAction[language]}
+                  <span className="ml-1.5 transition-transform group-hover:translate-x-0.5" aria-hidden>
+                    →
+                  </span>
+                </span>
+              </Link>
+            </nav>
+          </div>
         </div>
       </div>
     </section>

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { ReactNode } from 'react'
+import type { Transition } from 'motion-dom'
+import type { ReactNode } from 'react'
 
 interface AnimatedPageProps {
   children: ReactNode
@@ -20,15 +21,16 @@ const pageVariants = {
   }
 }
 
-const pageTransition = {
+const pageTransition: Transition = {
   type: 'tween',
   ease: 'anticipate',
-  duration: 0.4
+  duration: 0.4,
 }
 
 export const AnimatedPage = ({ children }: AnimatedPageProps) => {
   return (
     <motion.div
+      className="min-w-0 w-full"
       initial="initial"
       animate="animate"
       exit="exit"

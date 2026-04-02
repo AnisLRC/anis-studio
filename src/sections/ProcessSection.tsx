@@ -8,22 +8,22 @@ export default function ProcessSection() {
   ];
   return (
     <section id="process" className="Section fade-in">
-      <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
-        <div>
-          <h2 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#2E2447', fontFamily: 'Poppins, sans-serif' }}>
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4 sm:mb-10">
+        <div className="min-w-0">
+          <h2 className="mb-2 text-3xl font-bold font-heading text-plum dark:text-pearl sm:text-4xl">
             Naš proces
           </h2>
-          <p className="text-[#5A4A6B] text-lg">
+          <p className="text-lg text-[--color-ink-muted] dark:text-pearl/75">
             Od ideje do realizacije — korak po korak
           </p>
         </div>
-        <a href="#contact" className="btn btn-primary hidden sm:inline-flex">Zatraži ponudu</a>
+        <a href="#contact" className="btn btn-primary hidden sm:inline-flex shrink-0">Zatraži ponudu</a>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-5 lg:gap-6">
         {steps.map((s) => (
           <article 
             key={s.n} 
-            className="rounded-2xl p-6 bg-white/80 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 fade-in"
+            className="flex h-full min-h-[120px] flex-col rounded-2xl p-5 sm:p-6 bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] sm:hover:scale-105 fade-in"
           >
             <div className="flex items-center gap-3 mb-3">
               <span 
@@ -35,9 +35,9 @@ export default function ProcessSection() {
               >
                 {s.n}
               </span>
-              <h3 className="text-lg font-bold text-[#2E2447]">{s.t}</h3>
+              <h3 className="text-lg font-bold text-plum dark:text-pearl">{s.t}</h3>
             </div>
-            <p className="text-sm text-[#5A4A6B] leading-relaxed">{s.d}</p>
+            <p className="mt-auto text-sm leading-relaxed text-[--color-ink-muted] dark:text-pearl/75">{s.d}</p>
           </article>
         ))}
       </div>

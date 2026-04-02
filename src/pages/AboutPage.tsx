@@ -12,18 +12,14 @@ export default function AboutPage({ language }: AboutPageProps) {
     title: {
       hr: "✨ O Ani's Studiu",
       en: "✨ About Ani's Studio"
-    },
-    testimonialsTitle: {
-      hr: "Što kažu klijenti",
-      en: "What Our Clients Say"
     }
   }
 
   return (
     <AnimatedPage>
-      <main className="space-y-10 sm:space-y-14 lg:space-y-16">
+      <main className="min-w-0 space-y-12 sm:space-y-14 lg:space-y-[4.25rem]">
       {/* Page Title */}
-      <section className="Section fade-in relative section-with-bg">
+      <section className="Section fade-in relative section-with-bg overflow-x-clip">
         {/* Background wrapper */}
         <div className="absolute inset-0 overflow-hidden -z-10">
           {/* Light mode image */}
@@ -50,12 +46,10 @@ export default function AboutPage({ language }: AboutPageProps) {
           <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
         </div>
         
-        <div className="max-w-6xl mx-auto px-4 py-10 sm:px-6 lg:px-12 lg:py-16 relative z-10">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              {translations.title[language]}
-            </h1>
-          </div>
+        <div className="relative z-10 mx-auto min-w-0 max-w-2xl px-4 py-12 text-center sm:px-6 sm:py-14 lg:py-16">
+          <h1 className="break-words font-heading text-3xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
+            {translations.title[language]}
+          </h1>
         </div>
       </section>
 
@@ -68,14 +62,7 @@ export default function AboutPage({ language }: AboutPageProps) {
 
       {/* Testimonials Section */}
       <ErrorBoundary name="Testimonials">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              {translations.testimonialsTitle[language]}
-            </h2>
-          </div>
-          <TestimonialsSection language={language} />
-        </div>
+        <TestimonialsSection language={language} />
       </ErrorBoundary>
     </main>
     </AnimatedPage>

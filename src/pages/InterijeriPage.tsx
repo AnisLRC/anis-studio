@@ -10,16 +10,16 @@ interface InterijeriPageProps {
 export default function InterijeriPage({ language }: InterijeriPageProps) {
   return (
     <AnimatedPage>
-      <main className="space-y-10 sm:space-y-14 lg:space-y-16">
+      <main className="min-w-0">
       <ErrorBoundary name="Interijeri">
-        <section id="interiors" className="Section">
-          <InteriorsSection language={language} />
-        </section>
+        <InteriorsSection language={language} />
       </ErrorBoundary>
 
-      {/* FAQ Section */}
+      {/* FAQ — shared axis with Interiors; soft divider */}
       <ErrorBoundary name="FAQ">
-        <FAQSection language={language} categories={['interiors']} />
+        <div className="border-t border-[rgba(110,68,255,0.12)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] dark:border-lavender/12 dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+          <FAQSection language={language} categories={['interiors']} />
+        </div>
       </ErrorBoundary>
     </main>
     </AnimatedPage>

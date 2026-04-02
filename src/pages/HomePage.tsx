@@ -12,7 +12,7 @@ interface HomePageProps {
 export default function HomePage({ language }: HomePageProps) {
   return (
     <AnimatedPage>
-      <main className="space-y-10 sm:space-y-14 lg:space-y-16">
+      <main className="min-w-0 space-y-10 sm:space-y-12 lg:space-y-14">
       <ErrorBoundary name="Welcome">
         <WelcomeSection language={language} />
       </ErrorBoundary>

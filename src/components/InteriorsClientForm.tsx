@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import toast from 'react-hot-toast'
 import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
-import { createClient, createProject, uploadProjectFileToStorage, type VrLocationPreference, type VrPackagePreference, type ProjectFile } from '../lib/interiors'
+import { createClient, createProject, uploadProjectFileToStorage, type VrLocationPreference, type VrPackagePreference } from '../lib/interiors'
 import { UploadProgress } from './UploadProgress'
 
 export interface StolarOption {
