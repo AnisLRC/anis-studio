@@ -184,10 +184,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
         <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 md:grid-cols-3">
           {/* LRC Shop Card */}
           <Link to="/lrc" className="group relative rounded-[2rem] p-6 sm:p-8 text-center
-            bg-white/80 dark:bg-white/8 backdrop-blur-2xl
+            bg-[rgba(248,246,255,0.72)] dark:bg-white/8 backdrop-blur-2xl
             border border-amethyst/20 dark:border-lavender/10
-            shadow-[0_15px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
-            hover:-translate-y-2 hover:shadow-[0_25px_70px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
+            shadow-[0_8px_32px_rgba(46,36,71,0.07)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
+            hover:-translate-y-2 hover:shadow-[0_18px_48px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
             transition-all duration-300 will-change-transform">
             {/* Project count badge */}
             <div className="absolute top-4 right-4">
@@ -212,10 +212,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
           {/* Interijeri Card */}
           <Link to="/interijeri" className="group relative rounded-[2rem] p-6 sm:p-8 text-center
-            bg-white/80 dark:bg-white/8 backdrop-blur-2xl
+            bg-[rgba(248,246,255,0.72)] dark:bg-white/8 backdrop-blur-2xl
             border border-amethyst/20 dark:border-lavender/10
-            shadow-[0_15px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
-            hover:-translate-y-2 hover:shadow-[0_25px_70px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
+            shadow-[0_8px_32px_rgba(46,36,71,0.07)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
+            hover:-translate-y-2 hover:shadow-[0_18px_48px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
             transition-all duration-300 will-change-transform">
             {/* Project count badge */}
             <div className="absolute top-4 right-4">
@@ -240,10 +240,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
           {/* Web Atelier Card */}
           <Link to="/web-atelier" className="group relative rounded-[2rem] p-6 sm:p-8 text-center
-            bg-white/80 dark:bg-white/8 backdrop-blur-2xl
+            bg-[rgba(248,246,255,0.72)] dark:bg-white/8 backdrop-blur-2xl
             border border-amethyst/20 dark:border-lavender/10
-            shadow-[0_15px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
-            hover:-translate-y-2 hover:shadow-[0_25px_70px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
+            shadow-[0_8px_32px_rgba(46,36,71,0.07)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
+            hover:-translate-y-2 hover:shadow-[0_18px_48px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
             transition-all duration-300 will-change-transform">
             {/* Project count badge */}
             <div className="absolute top-4 right-4">

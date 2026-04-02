@@ -202,7 +202,7 @@ export default function FAQSection({
             return (
               <div
                 key={item.id}
-                className="rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-md dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-lg dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-200 overflow-hidden fade-in"
+                className="rounded-xl bg-[rgba(248,246,255,0.74)] dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/15 shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-md dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] transition-all duration-200 overflow-hidden fade-in"
                 style={{ 
                   animationDelay: `${index * 0.1}s`,
                   animation: 'fadeInUp 0.6s ease-out forwards',

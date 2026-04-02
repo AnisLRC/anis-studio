@@ -113,10 +113,10 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
             <div
               key={item.id}
               className="group flex h-full flex-col rounded-2xl overflow-hidden cursor-pointer
-                bg-white/85 dark:bg-white/8 backdrop-blur-xl
-                border border-amethyst/15 dark:border-lavender/15
-                shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
-                hover:shadow-[0_20px_50px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)]
+                bg-[rgba(248,246,255,0.76)] dark:bg-white/8 backdrop-blur-xl
+                border border-amethyst/18 dark:border-lavender/15
+                shadow-[0_4px_16px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
+                hover:shadow-[0_16px_40px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)]
                 hover:scale-[1.02] hover:-translate-y-1 sm:hover:scale-105
                 transition-all duration-300"
               style={{ animationDelay: `${index * 50}ms` }}

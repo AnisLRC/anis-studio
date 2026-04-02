@@ -80,10 +80,10 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           <a
             href="mailto:info.anilrc@gmail.com"
             className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
-              bg-white/70 dark:bg-white/15 backdrop-blur-xl
-              border border-amethyst/15 dark:border-lavender/25
-              shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
-              hover:shadow-[0_15px_40px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
+              bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
+              border border-amethyst/20 dark:border-lavender/25
+              shadow-[0_4px_20px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
+              hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
               hover:-translate-y-2
               transition-all duration-300"
           >
@@ -111,10 +111,10 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           <a
             href="tel:+385955526625"
             className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
-              bg-white/70 dark:bg-white/15 backdrop-blur-xl
-              border border-amethyst/15 dark:border-lavender/25
-              shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
-              hover:shadow-[0_15px_40px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
+              bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
+              border border-amethyst/20 dark:border-lavender/25
+              shadow-[0_4px_20px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
+              hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
               hover:-translate-y-2
               transition-all duration-300"
           >
@@ -142,10 +142,10 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           <Link
             to="/kontakt"
             className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
-              bg-white/70 dark:bg-white/15 backdrop-blur-xl
-              border border-amethyst/15 dark:border-lavender/25
-              shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
-              hover:shadow-[0_15px_40px_rgba(110,68,255,0.15)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
+              bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
+              border border-amethyst/20 dark:border-lavender/25
+              shadow-[0_4px_20px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
+              hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
               hover:-translate-y-2
               transition-all duration-300"
           >

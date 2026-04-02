@@ -32,7 +32,7 @@ export function InteriorsFormPageLayout({ language, title, children }: Interiors
           </h1>
         </div>
         <div className="mx-auto min-w-0 max-w-4xl">
-          <div className="overflow-hidden rounded-3xl border border-[rgba(110,68,255,0.12)] bg-white/50 shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)]">
+          <div className="overflow-hidden rounded-3xl border border-[rgba(110,68,255,0.16)] bg-[rgba(248,246,255,0.62)] shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)]">
             <div className="p-6 sm:p-8 md:p-10">{children}</div>
           </div>
         </div>

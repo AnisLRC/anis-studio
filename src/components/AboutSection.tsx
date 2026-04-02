@@ -222,7 +222,7 @@ export default function AboutSection({ language }: AboutSectionProps) {
           {translations.skills[language].map((skill, index) => (
             <div
               key={index}
-              className="group relative cursor-pointer rounded-xl border border-[rgba(110,68,255,0.15)] bg-white/80 p-4 text-center shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-[rgba(110,68,255,0.35)] hover:shadow-xl dark:border-lavender/15 dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:hover:border-lavender/35 dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] sm:p-5 fade-in"
+              className="group relative cursor-pointer rounded-xl border border-[rgba(110,68,255,0.15)] bg-[rgba(248,246,255,0.72)] p-4 text-center shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-[rgba(110,68,255,0.35)] hover:shadow-md dark:border-lavender/15 dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:hover:border-lavender/35 dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)] sm:p-5 fade-in"
               style={{ 
                 animationDelay: `${0.6 + index * 0.1}s`,
                 animation: 'fadeInUp 0.6s ease-out forwards',
