@@ -611,3 +611,23 @@
     -webkit-backdrop-filter: blur(12px);
   }
 }
+
+/* ─── Performance: defer paint for below-the-fold sections ─── */
+/* content-visibility: auto lets the browser skip rendering work for off-screen
+   sections on first load, measurably improving LCP and TTI on mobile.
+   contain-intrinsic-size is a fallback for scroll height estimation.
+   The hero (#welcome / first section) is deliberately excluded. */
+@supports (content-visibility: auto) {
+  #portfolio,
+  #testimonials,
+  #kontakt,
+  #lrc,
+  #interiors,
+  #web-atelier,
+  #about,
+  #faq,
+  #process {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 600px;
+  }
+}

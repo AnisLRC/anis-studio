@@ -34,7 +34,8 @@ export default function SparklesCanvas({ density = 55, className }: Props) {
     }
 
     const isMobile = window.matchMedia('(max-width: 640px)').matches
-    const N = Math.max(24, Math.floor((isMobile ? density * 0.55 : density)))
+    // Reduce density on small screens to lower canvas draw cost per frame
+    const N = Math.max(14, Math.floor(isMobile ? density * 0.38 : density))
 
     const dots = Array.from({ length: N }, () => ({
       x: Math.random() * w,
