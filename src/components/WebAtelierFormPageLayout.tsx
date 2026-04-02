@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
+import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
 
 interface WebAtelierFormPageLayoutProps {
   language: 'hr' | 'en'
@@ -13,24 +14,7 @@ export function WebAtelierFormPageLayout({ language, title, children }: WebAteli
   return (
     <section className="Section fade-in relative section-with-bg min-h-[min(100dvh,auto)]">
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div
-          className="absolute inset-0 dark:hidden transition-opacity duration-500"
-          style={{
-            backgroundImage: 'url(/hero-sky-light.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-        <div
-          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
-          style={{
-            backgroundImage: 'url(/hero-sky-dark.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
+        <DecorativeSkyBackdrop priority="high" />
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>
 

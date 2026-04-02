@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
 import { sampleProducts, productTags } from '../data/products'
 import { cartActions } from '../lib/cart.store'
 
@@ -129,26 +130,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
     <section id="lrc" className="Section fade-in relative section-with-bg">
       {/* Background wrapper */}
       <div className="absolute inset-0 overflow-hidden -z-10">
-        {/* Light mode image */}
-        <div
-          className="absolute inset-0 dark:hidden transition-opacity duration-500"
-          style={{
-            backgroundImage: "url(/hero-sky-light.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
-        {/* Dark mode image */}
-        <div
-          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
-          style={{
-            backgroundImage: "url(/hero-sky-dark.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
+        <DecorativeSkyBackdrop priority="high" />
         {/* Overlay for readability */}
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>

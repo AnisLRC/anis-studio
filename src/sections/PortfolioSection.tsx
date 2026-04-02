@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 
 interface PortfolioSectionProps {
   language: 'hr' | 'en'
@@ -55,26 +56,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     <section id="portfolio" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
       {/* Background wrapper */}
       <div className="absolute inset-0 overflow-hidden -z-10">
-        {/* Light mode image */}
-        <div
-          className="absolute inset-0 dark:hidden transition-opacity duration-500"
-          style={{
-            backgroundImage: "url(/hero-sky-light.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
-        {/* Dark mode image */}
-        <div
-          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
-          style={{
-            backgroundImage: "url(/hero-sky-dark.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
+        <DecorativeSkyBackdrop priority="lazy" />
         {/* Overlay for readability */}
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>

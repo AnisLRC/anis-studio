@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
 
 interface WebAtelierSectionProps {
   language: 'hr' | 'en'
@@ -205,26 +206,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
     <section id="web-atelier" className="Section fade-in relative section-with-bg">
       {/* Background wrapper */}
       <div className="absolute inset-0 overflow-hidden -z-10">
-        {/* Light mode image */}
-        <div
-          className="absolute inset-0 dark:hidden transition-opacity duration-500"
-          style={{
-            backgroundImage: "url(/hero-sky-light.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
-        {/* Dark mode image */}
-        <div
-          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
-          style={{
-            backgroundImage: "url(/hero-sky-dark.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
+        <DecorativeSkyBackdrop priority="high" />
         {/* Overlay for readability */}
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { Toaster } from 'react-hot-toast'
 import CartDrawer from './components/CartDrawer'
+import { RouteFallback } from './components/RouteFallback'
 import { useCart } from './lib/cart.store'
 import { ErrorBoundary } from './ErrorBoundary'
 import LoginModal from './components/LoginModal'
@@ -11,24 +12,28 @@ import { useGlobalScrollAnimations } from './hooks/useGlobalScrollAnimations'
 import { useThemeStore } from './lib/theme.store'
 import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
-import LRCPage from './pages/LRCPage'
-import LrcInquiryPage from './pages/LrcInquiryPage'
-import InterijeriPage from './pages/InterijeriPage'
-import InterijeriClientsPage from './pages/InterijeriClientsPage'
-import InterijeriStolariPage from './pages/InterijeriStolariPage'
-import WebAtelierPage from './pages/WebAtelierPage'
-import WebAtelierInquiryPage from './pages/WebAtelierInquiryPage'
-import AboutPage from './pages/AboutPage'
-import ContactPage from './pages/ContactPage'
-import FAQPage from './pages/FAQPage'
-import AdminSettingsPage from './pages/AdminSettingsPage'
-import AdminLrcInquiriesPage from './pages/AdminLrcInquiriesPage'
-import AdminInteriorsProjectsPage from './pages/AdminInteriorsProjectsPage'
-import AdminInteriorsProjectDetailPage from './pages/AdminInteriorsProjectDetailPage'
-import AdminLoginPage from './pages/AdminLoginPage'
-import PublicProjectVrPage from './pages/PublicProjectVrPage'
 import AdminRoute from './components/AdminRoute'
 import { AdminAuthProvider } from './providers/AdminAuthProvider'
+
+const LRCPage = lazy(() => import('./pages/LRCPage'))
+const LrcInquiryPage = lazy(() => import('./pages/LrcInquiryPage'))
+const InterijeriPage = lazy(() => import('./pages/InterijeriPage'))
+const InterijeriClientsPage = lazy(() => import('./pages/InterijeriClientsPage'))
+const InterijeriStolariPage = lazy(() => import('./pages/InterijeriStolariPage'))
+const WebAtelierPage = lazy(() => import('./pages/WebAtelierPage'))
+const WebAtelierInquiryPage = lazy(() => import('./pages/WebAtelierInquiryPage'))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
+const ContactPage = lazy(() => import('./pages/ContactPage'))
+const FAQPage = lazy(() => import('./pages/FAQPage'))
+const PublicProjectVrPage = lazy(() => import('./pages/PublicProjectVrPage'))
+
+const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'))
+const AdminSettingsPage = lazy(() => import('./pages/AdminSettingsPage'))
+const AdminLrcInquiriesPage = lazy(() => import('./pages/AdminLrcInquiriesPage'))
+const AdminInteriorsProjectsPage = lazy(() => import('./pages/AdminInteriorsProjectsPage'))
+const AdminInteriorsProjectDetailPage = lazy(
+  () => import('./pages/AdminInteriorsProjectDetailPage')
+)
 
 // Routes component with AnimatePresence
 function AnimatedRoutes({
@@ -43,76 +48,87 @@ function AnimatedRoutes({
   onCartClick: () => void
 }) {
   const location = useLocation()
-  
+
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route
-          element={
-            <MainLayout
-              language={language}
-              onLanguageChange={onLanguageChange}
-              cartItemCount={cartCount}
-              onCartClick={onCartClick}
+      <Suspense fallback={<RouteFallback />}>
+        <Routes location={location} key={location.pathname}>
+          <Route
+            element={
+              <MainLayout
+                language={language}
+                onLanguageChange={onLanguageChange}
+                cartItemCount={cartCount}
+                onCartClick={onCartClick}
+              />
+            }
+          >
+            <Route path="/" element={<HomePage language={language} />} />
+            <Route path="/lrc/upit" element={<LrcInquiryPage language={language} />} />
+            <Route path="/lrc" element={<LRCPage language={language} />} />
+            <Route
+              path="/interijeri/klijenti"
+              element={<InterijeriClientsPage language={language} />}
             />
-          }
-        >
-          <Route path="/" element={<HomePage language={language} />} />
-          <Route path="/lrc/upit" element={<LrcInquiryPage language={language} />} />
-          <Route path="/lrc" element={<LRCPage language={language} />} />
-          <Route path="/interijeri/klijenti" element={<InterijeriClientsPage language={language} />} />
-          <Route path="/interijeri/stolari" element={<InterijeriStolariPage language={language} />} />
-          <Route path="/interijeri" element={<InterijeriPage language={language} />} />
-          <Route path="/web-atelier/upit" element={<WebAtelierInquiryPage language={language} />} />
-          <Route path="/web-atelier" element={<WebAtelierPage language={language} />} />
-          <Route path="/o-nama" element={<AboutPage language={language} />} />
-          <Route path="/kontakt" element={<ContactPage language={language} />} />
-          <Route path="/faq" element={<FAQPage language={language} />} />
-          <Route path="/vr/:projectId" element={<PublicProjectVrPage />} />
-        </Route>
+            <Route
+              path="/interijeri/stolari"
+              element={<InterijeriStolariPage language={language} />}
+            />
+            <Route path="/interijeri" element={<InterijeriPage language={language} />} />
+            <Route
+              path="/web-atelier/upit"
+              element={<WebAtelierInquiryPage language={language} />}
+            />
+            <Route path="/web-atelier" element={<WebAtelierPage language={language} />} />
+            <Route path="/o-nama" element={<AboutPage language={language} />} />
+            <Route path="/kontakt" element={<ContactPage language={language} />} />
+            <Route path="/faq" element={<FAQPage language={language} />} />
+            <Route path="/vr/:projectId" element={<PublicProjectVrPage />} />
+          </Route>
 
-        {/* Admin routes - no public header/footer */}
-        <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route
-          path="/admin/settings"
-          element={
-            <AdminRoute>
-              <AdminSettingsPage />
-            </AdminRoute>
-          }
-        />
-        <Route
-          path="/admin/lrc-inquiries"
-          element={
-            <AdminRoute>
-              <AdminLrcInquiriesPage />
-            </AdminRoute>
-          }
-        />
-        <Route
-          path="/admin/interiors-projects"
-          element={
-            <AdminRoute>
-              <AdminInteriorsProjectsPage />
-            </AdminRoute>
-          }
-        />
-        <Route
-          path="/admin/interiors-projects/:id"
-          element={
-            <AdminRoute>
-              <AdminInteriorsProjectDetailPage />
-            </AdminRoute>
-          }
-        />
-      </Routes>
+          {/* Admin routes - no public header/footer */}
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route
+            path="/admin/settings"
+            element={
+              <AdminRoute>
+                <AdminSettingsPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/lrc-inquiries"
+            element={
+              <AdminRoute>
+                <AdminLrcInquiriesPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/interiors-projects"
+            element={
+              <AdminRoute>
+                <AdminInteriorsProjectsPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/interiors-projects/:id"
+            element={
+              <AdminRoute>
+                <AdminInteriorsProjectDetailPage />
+              </AdminRoute>
+            }
+          />
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   )
 }
 
 export default function App() {
   const { initializeTheme } = useThemeStore()
-  
+
   const [language, setLanguage] = useState<'hr' | 'en'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('language') as 'hr' | 'en') || 'hr'
@@ -139,7 +155,7 @@ export default function App() {
   return (
     <div className="min-h-screen">
       {/* Toast Notifications */}
-      <Toaster 
+      <Toaster
         position="top-center"
         toastOptions={{
           duration: 4000,

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import SparklesCanvas from '../components/SparklesCanvas'
+import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 
 interface WelcomeSectionProps {
   language?: 'hr' | 'en'
@@ -61,26 +62,9 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
       <div className="absolute inset-0 overflow-hidden">
         {USE_IMAGE_BG ? (
           <>
-            {/* Light image */}
-            <div
-              className="pointer-events-none absolute inset-0 z-[1] dark:hidden transition-opacity duration-500"
-              style={{
-                backgroundImage: "url(/hero-sky-light.png)",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }}
-            />
-            {/* Dark image */}
-            <div
-              className="pointer-events-none absolute inset-0 z-[1] hidden dark:block transition-opacity duration-500"
-              style={{
-                backgroundImage: "url(/hero-sky-dark.png)",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }}
-            />
+            <div className="pointer-events-none absolute inset-0 z-[1]">
+              <DecorativeSkyBackdrop priority="high" />
+            </div>
           </>
         ) : (
           <>

@@ -206,6 +206,9 @@ export default function LRCInquiryForm({ language }: LRCInquiryFormProps) {
                     <img
                       src={URL.createObjectURL(file)}
                       alt={`Preview ${index + 1}`}
+                      width={256}
+                      height={256}
+                      decoding="async"
                       className="h-16 w-full rounded-lg border border-[rgba(110,68,255,0.2)] object-cover"
                     />
                     <button

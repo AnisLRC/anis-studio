@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 
 interface TestimonialsSectionProps {
   language: 'hr' | 'en'
@@ -193,26 +194,7 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
 
       {/* Background wrapper */}
       <div className="absolute inset-0 overflow-hidden -z-10">
-        {/* Light mode image */}
-        <div
-          className="absolute inset-0 dark:hidden transition-opacity duration-500"
-          style={{
-            backgroundImage: "url(/hero-sky-light.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
-        {/* Dark mode image */}
-        <div
-          className="absolute inset-0 hidden dark:block transition-opacity duration-500"
-          style={{
-            backgroundImage: "url(/hero-sky-dark.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
+        <DecorativeSkyBackdrop priority="lazy" />
         {/* Overlay for readability */}
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>

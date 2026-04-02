@@ -109,6 +109,13 @@
     box-shadow: 0 1px 0 0 rgba(0 0 0 / .04), 0 4px 12px rgba(110, 68, 255, 0.08);
   }
 
+  /* Dark mode: header glass must not stay on the light “white 88%” mix (hurts mobile menu contrast). */
+  html.dark .header-glass {
+    background: color-mix(in oklab, rgb(7 8 18) 94%, transparent);
+    border-bottom-color: rgba(189, 166, 255, 0.12);
+    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.04), 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+
   .btn{ 
     @apply inline-flex items-center justify-center rounded-2xl px-6 py-3 font-semibold transition-all duration-200; 
     white-space: nowrap;

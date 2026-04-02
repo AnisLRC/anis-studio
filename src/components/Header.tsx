@@ -312,8 +312,8 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
       {/* Mobile Navigation - Touch-friendly */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t py-3 sm:py-4 backdrop-blur-sm mobile-menu-enter border-[rgba(110,68,255,0.12)] dark:border-lavender/20 bg-pearl/95 dark:bg-[#070812]/98">
-          <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex flex-col gap-2">
+        <div className="md:hidden border-t py-3 sm:py-4 backdrop-blur-sm dark:backdrop-blur-none mobile-menu-enter border-[rgba(110,68,255,0.12)] dark:border-lavender/25 bg-pearl/95 dark:bg-[#070812] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+          <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex flex-col gap-2 text-plum dark:text-pearl">
             {(['lrc', 'interiors', 'webAtelier', 'about', 'faq', 'contact'] as const).map((key) => {
               const routeMap: Record<typeof key, string> = {
                 lrc: '/lrc',
@@ -329,7 +329,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
                   key={key}
                   to={routeMap[key]}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="mobile-menu-item text-left px-3 py-2.5 active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.15)] transition-all rounded-lg font-medium text-plum/90 dark:text-pearl/90 hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
+                  className="mobile-menu-item text-left px-3 py-2.5 active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.2)] transition-all rounded-lg font-medium text-plum/90 dark:text-pearl hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
                   style={{ minHeight: '48px' }}
                 >
                   {navigation[language][key]}
@@ -338,13 +338,13 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             })}
             {/* Mobile Auth Buttons - Touch-friendly */}
             {!isAuthenticated ? (
-              <div className="flex flex-col gap-2 pt-3 sm:pt-4 border-t mt-1 border-[rgba(110,68,255,0.12)] dark:border-lavender/20">
+              <div className="flex flex-col gap-2 pt-3 sm:pt-4 border-t mt-1 border-[rgba(110,68,255,0.12)] dark:border-lavender/25">
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false)
                   navigate(isAdmin ? '/admin/settings' : '/admin/login')
                 }}
-                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.15)] transition-all rounded-lg text-plum/90 dark:text-pearl/90 hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
+                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.2)] transition-all rounded-lg text-plum/90 dark:text-pearl hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
                 style={{ minHeight: '48px' }}
               >
                   {authLabels[language].login}
@@ -370,7 +370,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
                   setIsMobileMenuOpen(false)
                   logout()
                 }}
-                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.15)] transition-all rounded-lg text-plum/90 dark:text-pearl/90 hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
+                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.2)] transition-all rounded-lg text-plum/90 dark:text-pearl hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
                 style={{ minHeight: '48px' }}
               >
                 {authLabels[language].logout}

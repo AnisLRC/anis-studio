@@ -1,4 +1,5 @@
 import { ErrorBoundary } from '../ErrorBoundary'
+import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 import AboutSection from '../components/AboutSection'
 import TestimonialsSection from '../sections/TestimonialsSection'
 import { AnimatedPage } from '../components/AnimatedPage'
@@ -22,26 +23,7 @@ export default function AboutPage({ language }: AboutPageProps) {
       <section className="Section fade-in relative section-with-bg overflow-x-clip">
         {/* Background wrapper */}
         <div className="absolute inset-0 overflow-hidden -z-10">
-          {/* Light mode image */}
-          <div
-            className="absolute inset-0 dark:hidden transition-opacity duration-500"
-            style={{
-              backgroundImage: "url(/hero-sky-light.png)",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          />
-          {/* Dark mode image */}
-          <div
-            className="absolute inset-0 hidden dark:block transition-opacity duration-500"
-            style={{
-              backgroundImage: "url(/hero-sky-dark.png)",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          />
+          <DecorativeSkyBackdrop priority="high" />
           {/* Overlay for readability */}
           <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
         </div>
