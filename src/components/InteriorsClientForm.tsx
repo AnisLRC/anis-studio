@@ -662,7 +662,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto py-8 space-y-8">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-8 pb-1">
       {/* Naslov i podnaslov */}
       <div className="space-y-2 text-center mb-6">
         <h2 className="text-xl font-semibold text-plum/90 dark:text-pearl">
@@ -679,8 +679,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </p>
 
       {/* Kontakt podaci */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Kontakt podaci</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50 dark:ring-slate-700/50">
+        <legend className="sr-only">Kontakt podaci</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Kontakt podaci
+        </div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Ove informacije koristimo za kontaktiranje u vezi vašeg projekta.</p>
 
         <div>
@@ -737,8 +740,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 1 – Osnovne informacije */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Osnovne informacije o prostoru</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50 dark:ring-slate-700/50">
+        <legend className="sr-only">Osnovne informacije o prostoru</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Osnovne informacije o prostoru
+        </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
@@ -807,8 +813,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 2 – Dimenzije i postojeće stanje */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Dimenzije i postojeće stanje</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Dimenzije i postojeće stanje</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Dimenzije i postojeće stanje
+        </div>
 
         <div id="hasPlan">
           <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Imaš li tlocrt ili skicu? *</p>
@@ -982,8 +991,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 3 – Stil, osjećaj, boje */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Stil i osjećaj prostora</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Stil i osjećaj prostora</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Stil i osjećaj prostora
+        </div>
 
         <div>
           <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Željeni stil</p>
@@ -1038,8 +1050,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 4 – Funkcija i navike */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Funkcija i navike</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Funkcija i navike</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Funkcija i navike
+        </div>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
@@ -1083,8 +1098,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 5 – Budžet i rok */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Budžet i rok</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Budžet i rok</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Budžet i rok
+        </div>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
@@ -1151,8 +1169,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 6 – Stolar / suradnja */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Stolar</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Stolar</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Stolar
+        </div>
 
         <div id="hasOwnStolar">
           <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Imaš li već svog stolara? *</p>
@@ -1242,8 +1263,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 7 – Inspiracija i opis */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Inspiracija i opis</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Inspiracija i opis</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Inspiracija i opis
+        </div>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
@@ -1305,8 +1329,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* KORAK 8 – Kontakt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Kontakt</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Kontakt</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Kontakt
+        </div>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
@@ -1346,8 +1373,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       </fieldset>
 
       {/* VR Block */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">VR opcije</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">VR opcije</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          VR opcije
+        </div>
 
         <div>
           <label className="flex items-start gap-2 text-sm text-slate-700">

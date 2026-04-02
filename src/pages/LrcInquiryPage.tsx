@@ -60,7 +60,9 @@ export default function LrcInquiryPage({ language = 'hr' }: LrcInquiryPageProps)
             </LrcFormPageLayout>
           ) : (
             <LrcFormPageLayout language={language} title={title}>
-              <LRCInquiryForm language={language} />
+              <div className="mx-auto min-w-0 max-w-4xl">
+                <LRCInquiryForm language={language} />
+              </div>
             </LrcFormPageLayout>
           )}
         </ErrorBoundary>

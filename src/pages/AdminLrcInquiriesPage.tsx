@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { fetchLrcInquiries, updateLrcInquiryStatus, type LrcInquiry, type LrcInquiryStatus } from '../lib/lrcInquiries'
 import { isSupabaseConfigured } from '../lib/supabase'
-import { sampleProducts } from '../data/products'
+import { lrcInquiryCustomIdeaOption, sampleProducts } from '../data/products'
 import AdminNav from '../components/AdminNav'
 import { TableSkeleton } from '../components/Skeleton'
 import { AnimatedPage } from '../components/AnimatedPage'
@@ -19,6 +19,9 @@ function formatDate(dateString: string): string {
 }
 
 function getProductName(productId: string, language: 'hr' | 'en' = 'hr'): string {
+  if (productId === lrcInquiryCustomIdeaOption.id) {
+    return language === 'hr' ? lrcInquiryCustomIdeaOption.nameHr : lrcInquiryCustomIdeaOption.name
+  }
   const product = sampleProducts.find(p => p.id === productId)
   if (!product) return productId
   return language === 'hr' ? product.nameHr : product.name

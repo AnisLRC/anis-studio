@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { sampleProducts } from '../data/products'
+import { lrcInquiryCustomIdeaOption, sampleProducts } from '../data/products'
 import { submitLrcInquiry } from '../lib/lrcInquiries'
 
 interface LRCInquiryFormProps {
@@ -56,16 +56,16 @@ export default function LRCInquiryForm({ language }: LRCInquiryFormProps) {
       en: 'Phone (optional)'
     },
     submitButton: {
-      hr: 'Prijavi se na LRC radionice',
-      en: 'Apply for LRC workshops'
+      hr: 'Pošalji svoju ideju',
+      en: 'Send your idea'
     },
     submittingButton: {
       hr: 'Šaljem...',
       en: 'Sending...'
     },
     submitHelperText: {
-      hr: 'Nakon slanja prijave, javit ćemo ti se e-mailom u roku od 3 radna dana s dodatnim informacijama o radionicama i terminima.',
-      en: 'After submitting your application, we will contact you via email within 3 business days with additional information about workshops and dates.'
+      hr: 'Nakon slanja upita, javit ćemo vam se e-mailom u roku od 3 radna dana s više informacija i sljedećim koracima.',
+      en: 'After you submit your inquiry, we will contact you by email within 3 business days with more information and next steps.'
     }
   }
 
@@ -137,15 +137,15 @@ export default function LRCInquiryForm({ language }: LRCInquiryFormProps) {
   }
 
   return (
-    <div className="fade-in mx-auto w-full max-w-4xl">
-      <div className="rounded-3xl border border-[rgba(110,68,255,0.14)] bg-white/85 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.07)] backdrop-blur-sm dark:border-lavender/18 dark:bg-white/[0.07] dark:shadow-[0_12px_48px_rgba(0,0,0,0.22)] sm:p-8 md:p-10">
-        <div className="mx-auto mb-8 max-w-2xl space-y-3 text-center sm:mb-10 sm:space-y-3.5">
+    <div className="fade-in mx-auto w-full min-w-0 max-w-4xl">
+      <div className="rounded-2xl bg-white/80 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.07)] ring-1 ring-[rgba(110,68,255,0.14)] backdrop-blur-sm dark:bg-white/[0.08] dark:shadow-[0_12px_48px_rgba(0,0,0,0.22)] dark:ring-lavender/25 sm:rounded-3xl sm:p-8 md:p-10">
+        <div className="mx-auto mb-7 max-w-2xl space-y-3 px-0.5 text-center sm:mb-9 sm:space-y-3.5 sm:px-0">
           <p className="text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:text-[0.9375rem] sm:leading-relaxed">
             {translations.formDesc[language]}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-7 sm:space-y-8">
+        <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-6 sm:space-y-8">
           <div className="space-y-2">
             <label htmlFor="lrc-product" className="block text-left text-sm font-semibold tracking-tight text-plum/90 dark:text-pearl">
               {translations.selectProductLabel[language]} *
@@ -159,6 +159,9 @@ export default function LRCInquiryForm({ language }: LRCInquiryFormProps) {
               className="min-h-[48px] w-full rounded-xl border border-[rgba(110,68,255,0.18)] bg-white px-4 py-3 text-base shadow-sm outline-none transition-all duration-200 focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/25 dark:border-lavender/22 dark:bg-white/10 dark:text-pearl dark:focus:bg-white/15"
             >
               <option value="" className="text-plum/55 dark:text-pearl/55">{translations.selectProductPlaceholder[language]}</option>
+              <option value={lrcInquiryCustomIdeaOption.id}>
+                {language === 'hr' ? lrcInquiryCustomIdeaOption.nameHr : lrcInquiryCustomIdeaOption.name}
+              </option>
               {sampleProducts.map(product => (
                 <option key={product.id} value={product.id}>
                   {language === 'hr' ? product.nameHr : product.name}
@@ -187,7 +190,7 @@ export default function LRCInquiryForm({ language }: LRCInquiryFormProps) {
             <label htmlFor="lrc-files" className="block text-left text-sm font-semibold tracking-tight text-plum/90 dark:text-pearl">
               {translations.addImagesLabel[language]}
             </label>
-            <div className="rounded-xl border-2 border-dashed border-[rgba(110,68,255,0.22)] bg-white/70 px-3 py-4 dark:border-lavender/25 dark:bg-white/[0.04] sm:px-4 sm:py-5">
+            <div className="rounded-xl border-2 border-dashed border-[rgba(110,68,255,0.22)] bg-white/70 px-4 py-4 dark:border-lavender/25 dark:bg-white/[0.04] sm:px-5 sm:py-5">
               <input
                 id="lrc-files"
                 type="file"
@@ -273,7 +276,7 @@ export default function LRCInquiryForm({ language }: LRCInquiryFormProps) {
             </div>
           </div>
 
-          <div className="space-y-4 border-t border-[rgba(110,68,255,0.1)] pt-8 text-center dark:border-lavender/12 sm:space-y-4 sm:pt-10">
+          <div className="space-y-4 border-t border-[rgba(110,68,255,0.1)] px-0.5 pt-8 text-center dark:border-lavender/12 sm:space-y-4 sm:px-0 sm:pt-10">
             <button
               type="submit"
               disabled={isSubmitting}
@@ -282,7 +285,7 @@ export default function LRCInquiryForm({ language }: LRCInquiryFormProps) {
             >
               {isSubmitting ? translations.submittingButton[language] : translations.submitButton[language]}
             </button>
-            <p className="mx-auto max-w-lg px-1 text-[0.8125rem] leading-relaxed text-plum/62 dark:text-pearl/58 sm:px-0 sm:text-sm">
+            <p className="mx-auto max-w-lg px-1 text-[0.8125rem] leading-relaxed text-plum/62 dark:text-pearl/58 sm:px-2 sm:text-sm">
               {translations.submitHelperText[language]}
             </p>
           </div>

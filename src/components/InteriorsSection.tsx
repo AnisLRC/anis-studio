@@ -172,9 +172,11 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
         <div className="mx-auto w-full max-w-5xl">
           <div className="rounded-3xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8 md:p-10">
             <header className="mx-auto mb-7 max-w-2xl text-center sm:mb-9">
-              <p className="mb-3 font-heading text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-amethyst/80 dark:text-lavender/85">
-                {language === 'hr' ? 'Upit' : 'Inquiry'}
-              </p>
+              <div className="mb-3 flex w-full justify-center">
+                <p className="font-heading text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-amethyst/80 dark:text-lavender/85 [text-indent:0.2em]">
+                  {language === 'hr' ? 'Upit' : 'Inquiry'}
+                </p>
+              </div>
               <h3 className="font-heading text-xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-2xl md:text-[1.65rem]">
                 {chooser.sectionTitle[language]}
               </h3>

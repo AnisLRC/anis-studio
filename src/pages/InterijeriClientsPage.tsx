@@ -22,9 +22,7 @@ export default function InterijeriClientsPage({ language }: InterijeriClientsPag
       <main className="min-w-0">
         <ErrorBoundary name="InterijeriKlijenti">
           <InteriorsFormPageLayout language={language} title={title}>
-            <div className="mx-auto max-w-4xl">
-              <InteriorsClientForm stolars={INTERIORS_STOLAR_OPTIONS} language={language} />
-            </div>
+            <InteriorsClientForm stolars={INTERIORS_STOLAR_OPTIONS} language={language} />
           </InteriorsFormPageLayout>
         </ErrorBoundary>
       </main>

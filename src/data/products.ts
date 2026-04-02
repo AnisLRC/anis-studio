@@ -11,6 +11,15 @@ export interface Product {
   descriptionHr: string
 }
 
+/** LRC inquiry form only — not listed in the public catalog grid */
+export const LRC_INQUIRY_CUSTOM_IDEA_ID = 'custom-idea'
+
+export const lrcInquiryCustomIdeaOption = {
+  id: LRC_INQUIRY_CUSTOM_IDEA_ID,
+  name: 'I have my own idea / a new product',
+  nameHr: 'Imam svoju ideju / novi proizvod',
+} as const
+
 export const sampleProducts: Product[] = [
   {
     id: '1',

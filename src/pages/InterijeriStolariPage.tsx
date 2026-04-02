@@ -22,9 +22,7 @@ export default function InterijeriStolariPage({ language }: InterijeriStolariPag
       <main className="min-w-0">
         <ErrorBoundary name="InterijeriStolari">
           <InteriorsFormPageLayout language={language} title={title}>
-            <div className="mx-auto max-w-4xl">
-              <InteriorsCarpenterForm language={language} />
-            </div>
+            <InteriorsCarpenterForm language={language} />
           </InteriorsFormPageLayout>
         </ErrorBoundary>
       </main>

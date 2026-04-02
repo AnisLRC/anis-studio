@@ -342,8 +342,11 @@ export function WebProjectForm({ language = 'hr', hidePageTitle = false, initial
         </p>
 
         {/* 1) Osnovne informacije */}
-        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Osnovne informacije</legend>
+        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:bg-white/8 dark:ring-slate-700/50">
+          <legend className="sr-only">Osnovne informacije</legend>
+          <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+            Osnovne informacije
+          </div>
 
           <div>
             <label className="block space-y-1 text-sm sm:text-base text-slate-800">
@@ -423,8 +426,11 @@ export function WebProjectForm({ language = 'hr', hidePageTitle = false, initial
         </fieldset>
 
         {/* 2) Vrsta web projekta */}
-        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Koji tip web projekta želiš? *</legend>
+        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:bg-white/8 dark:ring-slate-700/50">
+          <legend className="sr-only">Koji tip web projekta želiš? *</legend>
+          <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+            Koji tip web projekta želiš? *
+          </div>
           <div className={`grid gap-2 sm:grid-cols-2 ${errors.projectTypes ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`} id="projectTypes">
             {PROJECT_TYPES.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -460,8 +466,11 @@ export function WebProjectForm({ language = 'hr', hidePageTitle = false, initial
         </fieldset>
 
         {/* 3) Ciljevi projekta */}
-        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Koji su glavni ciljevi tvog online projekta?</legend>
+        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:bg-white/8 dark:ring-slate-700/50">
+          <legend className="sr-only">Koji su glavni ciljevi tvog online projekta?</legend>
+          <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+            Koji su glavni ciljevi tvog online projekta?
+          </div>
           <div className="grid gap-2 sm:grid-cols-2">
             {GOALS.map(option => (
               <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
@@ -493,8 +502,11 @@ export function WebProjectForm({ language = 'hr', hidePageTitle = false, initial
         </fieldset>
 
         {/* 4) Sadržaj */}
-        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Sadržaj</legend>
+        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:bg-white/8 dark:ring-slate-700/50">
+          <legend className="sr-only">Sadržaj</legend>
+          <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+            Sadržaj
+          </div>
 
           <div>
             <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">Jesu li tekstovi spremni?</p>
@@ -589,8 +601,11 @@ export function WebProjectForm({ language = 'hr', hidePageTitle = false, initial
         </fieldset>
 
         {/* 5) Dizajn i stil */}
-        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Dizajn i stil</legend>
+        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:bg-white/8 dark:ring-slate-700/50">
+          <legend className="sr-only">Dizajn i stil</legend>
+          <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+            Dizajn i stil
+          </div>
 
           <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
             Kakav stil dizajna želiš?
@@ -648,8 +663,11 @@ export function WebProjectForm({ language = 'hr', hidePageTitle = false, initial
         </fieldset>
 
         {/* 6) Funkcionalnosti */}
-        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Funkcionalnosti</legend>
+        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:bg-white/8 dark:ring-slate-700/50">
+          <legend className="sr-only">Funkcionalnosti</legend>
+          <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+            Funkcionalnosti
+          </div>
 
           <p className="text-sm sm:text-base font-medium text-slate-800 mb-2">
             Koje funkcionalnosti želiš u projektu?
@@ -698,8 +716,11 @@ export function WebProjectForm({ language = 'hr', hidePageTitle = false, initial
         </fieldset>
 
         {/* 7) Budžet i rok */}
-        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Budžet i rok</legend>
+        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:bg-white/8 dark:ring-slate-700/50">
+          <legend className="sr-only">Budžet i rok</legend>
+          <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+            Budžet i rok
+          </div>
 
           <div>
             <label className="block space-y-1 text-sm sm:text-base text-slate-800">
@@ -753,8 +774,11 @@ export function WebProjectForm({ language = 'hr', hidePageTitle = false, initial
         </fieldset>
 
         {/* 8) Kontakt i napomene */}
-        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100">
-          <legend className="text-lg font-semibold mb-2 text-slate-800">Kontakt i napomene</legend>
+        <fieldset className="space-y-4 rounded-2xl bg-white/70 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:bg-white/8 dark:ring-slate-700/50">
+          <legend className="sr-only">Kontakt i napomene</legend>
+          <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+            Kontakt i napomene
+          </div>
 
           <div>
             <label className="block space-y-1 text-sm sm:text-base text-slate-800">

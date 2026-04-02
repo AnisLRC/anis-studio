@@ -650,7 +650,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto py-8 space-y-8">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-8 pb-1">
       {/* Naslov i podnaslov */}
       <div className="space-y-2 text-center mb-6">
         <h2 className="text-xl font-semibold text-slate-900">
@@ -662,10 +662,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </div>
 
       {/* Sekcija 1: Podaci o stolaru / studiju */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">{translations.sections.carpenterDetails[language]}</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
           {translations.sections.carpenterDetails[language]}
-        </legend>
+        </div>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
@@ -785,10 +786,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Sekcija 2: Upit za projekt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">{translations.sections.projectInquiry[language]}</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
           {translations.sections.projectInquiry[language]}
-        </legend>
+        </div>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
@@ -861,8 +863,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Tipovi projekata koje rade */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Tipovi projekata koje rade</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Tipovi projekata koje rade</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Tipovi projekata koje rade
+        </div>
 
         <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
           Tipovi projekata koje radite
@@ -886,8 +891,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Materijali i debljine */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Materijali i debljine koje standardno koriste</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Materijali i debljine koje standardno koriste</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Materijali i debljine koje standardno koriste
+        </div>
         <p className="text-xs text-slate-500 mb-3">
           Navedite materijale i debljine koje standardno koristite u svojoj proizvodnji. Ovo nam pomaže prilagoditi projekt vašim mogućnostima.
         </p>
@@ -945,8 +953,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Okovi / brendovi */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Okovi / brendovi</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Okovi / brendovi</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Okovi / brendovi
+        </div>
 
         <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
           Okovi / brendovi koje koristite
@@ -983,8 +994,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Kapacitet i rokovi */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Kapacitet i rokovi</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Kapacitet i rokovi</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Kapacitet i rokovi
+        </div>
         <p className="text-xs text-slate-500 mb-3">
           Ove informacije nam pomažu planirati suradnju i razumjeti vaše mogućnosti izrade.
         </p>
@@ -1038,8 +1052,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Suradnja s Ani's Studiom */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Suradnja s Ani's Studiom / Corpus</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Suradnja s Ani's Studiom / Corpus</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Suradnja s Ani's Studiom / Corpus
+        </div>
         <p className="text-xs text-slate-500 mb-3">
           Odaberite način suradnje koji vam najviše odgovara. Možete kombinirati različite opcije ovisno o projektu.
         </p>
@@ -1085,8 +1102,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Kontakt preferencije */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">Kontakt preferencije</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Kontakt preferencije</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          Kontakt preferencije
+        </div>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
@@ -1123,8 +1143,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Tko crta projekt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">{translations.drawnBy.title[language]}</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">{translations.drawnBy.title[language]}</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          {translations.drawnBy.title[language]}
+        </div>
 
         <div id="drawnByOption">
           <div className={`flex flex-col gap-2 ${errors.drawnByOption ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
@@ -1182,8 +1205,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* VR Block */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">VR opcije</legend>
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">VR opcije</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          VR opcije
+        </div>
 
         <div>
           <label className="flex items-start gap-2 text-sm text-slate-700">
@@ -1236,10 +1262,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       </fieldset>
 
       {/* Datoteke za projekt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-4 sm:p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="text-lg font-semibold mb-2 text-plum/90 dark:text-pearl">
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Datoteke za projekt</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
           Datoteke za projekt
-        </legend>
+        </div>
 
         {/* Skice kuhinje */}
         <div>
