@@ -51,11 +51,18 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
   return (
     <section className="relative min-h-[min(72svh,720px)] sm:min-h-[78vh] overflow-x-clip [isolation:isolate] section-with-bg">
-      {/* CTA pulse animation */}
+      {/* CTA pulse + scroll cue arrow */}
       <style>{`
         @keyframes ctaPulse {
           0%, 100% { box-shadow: 0 18px 50px rgba(110,68,255,0.35); }
           50% { box-shadow: 0 18px 60px rgba(110,68,255,0.5), 0 0 20px rgba(110,68,255,0.3); }
+        }
+        @keyframes scrollCueArrow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(5px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .scroll-cue-arrow { animation: none !important; }
         }
       `}</style>
       {/* CLIP WRAPPER - contains only visual background layers */}
@@ -165,14 +172,36 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </a>
         </div>
 
-        {/* Scroll indicator */}
+        {/* Scroll indicator — text-first SCROLL cue */}
         <div className="mt-10 flex justify-center">
-          <a href="#portfolio" className="group inline-flex flex-col items-center justify-center gap-2">
-            <span className="h-10 w-7 rounded-full border border-amethyst/25 dark:border-lavender/20 bg-white/20 dark:bg-white/5 backdrop-blur-md
-              flex items-start justify-center p-2">
-              <span className="h-2 w-1 rounded-full bg-amethyst/60 dark:bg-lavender/60 animate-bounce" />
+          <a
+            href="#portfolio"
+            className="group inline-flex min-h-[48px] flex-col items-center justify-center gap-2.5 rounded-2xl px-6 py-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amethyst/40 dark:focus-visible:outline-lavender/40"
+            aria-label={language === 'hr' ? 'Scroll do istaknutih radova' : 'Scroll to featured work'}
+          >
+            <span className="text-[0.6875rem] sm:text-xs font-semibold tracking-[0.38em] text-plum/50 dark:text-pearl/55 group-hover:text-amethyst/85 dark:group-hover:text-lavender/80 transition-colors">
+              SCROLL
             </span>
-            <span className="text-xs text-amethyst/40 dark:text-lavender/40">↓</span>
+            <span
+              className="scroll-cue-arrow flex flex-col items-center text-amethyst dark:text-lavender"
+              aria-hidden="true"
+              style={{ animation: 'scrollCueArrow 2.8s ease-in-out infinite' }}
+            >
+              <svg
+                className="h-5 w-5 shrink-0 opacity-95 drop-shadow-[0_1px_2px_rgba(110,68,255,0.4)] dark:drop-shadow-[0_1px_3px_rgba(189,166,255,0.5)]"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 9l6 6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2.25"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
           </a>
         </div>
 

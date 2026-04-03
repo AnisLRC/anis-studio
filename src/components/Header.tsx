@@ -55,26 +55,21 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
     <header className="sticky top-0 z-50 overflow-x-clip header-glass bg-pearl/90 dark:bg-[#070812]/95 text-plum dark:text-pearl border-b border-[rgba(110,68,255,0.12)] dark:border-lavender/20 backdrop-blur supports-[backdrop-filter]:bg-pearl/85 dark:supports-[backdrop-filter]:bg-[#070812]/90">
       <nav className="mx-auto max-w-7xl min-w-0 px-3 sm:px-6 md:px-8 flex items-center justify-between gap-1.5 sm:gap-3 py-2 sm:py-2.5">
         {/* Logo */}
-        <Link to="/" className="flex min-w-0 shrink items-center gap-2 sm:gap-3">
-          <div 
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-lg sm:text-xl hover:scale-110 hover:shadow-[0_6px_16px_rgba(110,68,255,0.4)] transition-all duration-300"
-            style={{
-              background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
-              borderRadius: '8px',
-              boxShadow: '0 4px 12px rgba(110, 68, 255, 0.3)',
-            }}
+        <Link
+          to="/"
+          className="group/logo flex min-w-0 shrink items-center gap-2 sm:gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amethyst/40 dark:focus-visible:ring-lavender/40"
+        >
+          <span
+            className="inline-block transition-[transform,filter] duration-300 ease-out group-hover/logo:-translate-y-px group-focus-visible/logo:-translate-y-px group-hover/logo:drop-shadow-[0_10px_28px_rgba(110,68,255,0.22)] group-focus-visible/logo:drop-shadow-[0_10px_28px_rgba(110,68,255,0.22)] dark:group-hover/logo:drop-shadow-[0_12px_32px_rgba(189,166,255,0.14)] dark:group-focus-visible/logo:drop-shadow-[0_12px_32px_rgba(189,166,255,0.14)] [@media(prefers-reduced-motion:reduce)]:!translate-y-0 [@media(prefers-reduced-motion:reduce)]:transition-none [@media(prefers-reduced-motion:reduce)]:drop-shadow-none [@media(prefers-reduced-motion:reduce)]:group-hover/logo:drop-shadow-none [@media(prefers-reduced-motion:reduce)]:group-focus-visible/logo:drop-shadow-none"
           >
-            ✨
-          </div>
-          <span 
-            className="font-bold text-plum dark:text-pearl truncate"
-            style={{
-              fontFamily: 'Poppins, sans-serif',
-              fontSize: 'clamp(0.875rem, 2vw, 1.125rem)',
-              letterSpacing: '-0.02em'
-            }}
-          >
-            Ani's Studio
+            <img
+              src="/logo-reference-purple.png"
+              alt="Ani's Studio"
+              width={320}
+              height={132}
+              decoding="async"
+              className="block h-10 w-auto max-w-[min(100%,320px)] object-contain object-left sm:h-11 md:h-12 lg:h-14 lg:max-w-[360px]"
+            />
           </span>
         </Link>
 

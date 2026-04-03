@@ -5,16 +5,18 @@ export default function Footer() {
     <footer className="border-t border-[rgba(110,68,255,0.12)] dark:border-lavender/20 bg-gradient-to-b from-white to-[rgba(247,246,255,0.6)] dark:from-[#070812] dark:to-[#12101c]/95">
       <section className="Section py-10 sm:py-12">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 min-w-0">
-          <div className="flex items-center gap-3 hover:scale-105 transition-transform duration-200">
-            <div className="size-8 rounded-xl flex items-center justify-center transition-all duration-200 hover:shadow-lg"
-              style={{ 
-                background: "linear-gradient(135deg,#BDA6FF 0%,#6E44FF 100%)", 
-                boxShadow: "0 3px 8px rgba(110,68,255,.25)" 
-              }}>
-              ✨
-            </div>
-            <span className="font-semibold text-lg text-plum/90 dark:text-pearl" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Ani's Studio
+          <div className="group/logo-ft inline-flex items-center rounded-md">
+            <span
+              className="inline-block transition-[transform,filter] duration-300 ease-out group-hover/logo-ft:-translate-y-0.5 group-hover/logo-ft:drop-shadow-[0_12px_34px_rgba(110,68,255,0.24)] dark:group-hover/logo-ft:drop-shadow-[0_14px_38px_rgba(189,166,255,0.16)] [@media(prefers-reduced-motion:reduce)]:!translate-y-0 [@media(prefers-reduced-motion:reduce)]:transition-none [@media(prefers-reduced-motion:reduce)]:drop-shadow-none [@media(prefers-reduced-motion:reduce)]:group-hover/logo-ft:drop-shadow-none"
+            >
+              <img
+                src="/logo-reference-purple.png"
+                alt="Ani's Studio"
+                width={320}
+                height={132}
+                decoding="async"
+                className="block h-12 w-auto max-w-[min(100%,360px)] object-contain object-left sm:h-14 md:h-16 lg:max-w-[420px]"
+              />
             </span>
           </div>
           
