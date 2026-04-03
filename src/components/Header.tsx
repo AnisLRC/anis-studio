@@ -4,6 +4,7 @@ import { useAuth } from '../providers/AuthProvider'
 import { useAdminAuth } from '../providers/AdminAuthProvider'
 import { useUi } from '../providers/UiProvider'
 import { ThemeToggle } from './ThemeToggle'
+import { BrandDescriptor } from './BrandDescriptor'
 
 interface HeaderProps {
   language: 'hr' | 'en'
@@ -57,7 +58,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
         {/* Logo */}
         <Link
           to="/"
-          className="group/logo flex min-w-0 shrink items-center gap-2 sm:gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amethyst/40 dark:focus-visible:ring-lavender/40"
+          className="group/logo flex min-w-0 shrink items-center gap-2 sm:gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amethyst/40 dark:focus-visible:ring-lavender/40 lg:gap-4"
         >
           <span
             className="inline-block transition-[transform,filter] duration-300 ease-out group-hover/logo:-translate-y-px group-focus-visible/logo:-translate-y-px group-hover/logo:drop-shadow-[0_10px_28px_rgba(110,68,255,0.22)] group-focus-visible/logo:drop-shadow-[0_10px_28px_rgba(110,68,255,0.22)] dark:group-hover/logo:drop-shadow-[0_12px_32px_rgba(189,166,255,0.14)] dark:group-focus-visible/logo:drop-shadow-[0_12px_32px_rgba(189,166,255,0.14)] [@media(prefers-reduced-motion:reduce)]:!translate-y-0 [@media(prefers-reduced-motion:reduce)]:transition-none [@media(prefers-reduced-motion:reduce)]:drop-shadow-none [@media(prefers-reduced-motion:reduce)]:group-hover/logo:drop-shadow-none [@media(prefers-reduced-motion:reduce)]:group-focus-visible/logo:drop-shadow-none"
@@ -68,9 +69,10 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
               width={320}
               height={132}
               decoding="async"
-              className="block h-10 w-auto max-w-[min(100%,320px)] object-contain object-left sm:h-11 md:h-12 lg:h-14 lg:max-w-[360px]"
+              className="block h-12 w-auto max-w-[min(100%,320px)] object-contain object-left sm:h-[3.25rem] md:h-[3.75rem] lg:h-[4.25rem] lg:max-w-[400px]"
             />
           </span>
+          <BrandDescriptor className="hidden min-w-0 border-l border-amethyst/15 pl-3 dark:border-lavender/20 lg:flex lg:max-w-[min(100%,20rem)] xl:max-w-none xl:pl-4" />
         </Link>
 
         {/* Desktop Navigation */}

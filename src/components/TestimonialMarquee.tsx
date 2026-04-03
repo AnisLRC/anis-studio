@@ -1,4 +1,13 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FocusEvent,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+} from 'react'
+import clsx from 'clsx'
 import type { Testimonial } from '../data/testimonials'
 import { TESTIMONIALS } from '../data/testimonials'
 
@@ -16,6 +25,19 @@ function usePrefersReducedMotion() {
     return () => mq.removeEventListener('change', onChange)
   }, [])
   return reduce
+}
+
+/** True when primary pointer is coarse (typical touch / tablet touch). */
+function useCoarsePointer() {
+  const [coarse, setCoarse] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(pointer: coarse)')
+    setCoarse(mq.matches)
+    const onChange = () => setCoarse(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+  return coarse
 }
 
 const avatarGradients = [
@@ -48,23 +70,67 @@ function MarqueeRow({
   renderStars: (rating: number) => ReactNode
 }) {
   const loop = [...items, ...items]
+  const rowRef = useRef<HTMLDivElement>(null)
+  const [activeKey, setActiveKey] = useState<string | null>(null)
+  const isCoarse = useCoarsePointer()
+
+  useEffect(() => {
+    if (activeKey === null) return
+    const onPointerDown = (e: PointerEvent) => {
+      if (!rowRef.current?.contains(e.target as Node)) setActiveKey(null)
+    }
+    document.addEventListener('pointerdown', onPointerDown, true)
+    return () => document.removeEventListener('pointerdown', onPointerDown, true)
+  }, [activeKey])
+
+  useEffect(() => {
+    if (activeKey === null) return
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveKey(null)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [activeKey])
+
+  const handleRowFocusOut = (e: FocusEvent<HTMLDivElement>) => {
+    const next = e.relatedTarget as Node | null
+    if (next && rowRef.current?.contains(next)) return
+    setActiveKey(null)
+  }
+
+  const paused = activeKey !== null
 
   return (
     <div
-      className={`testimonial-marquee-row group/marquee relative overflow-hidden py-1 ${reverse ? 'row-reverse' : ''}`}
+      ref={rowRef}
+      data-paused={paused ? 'true' : 'false'}
+      onBlur={handleRowFocusOut}
+      className={clsx(
+        'testimonial-marquee-row group/marquee relative py-2',
+        'overflow-x-hidden overflow-y-visible',
+        reverse ? 'row-reverse' : ''
+      )}
     >
-      <div className="testimonial-marquee-track flex w-max gap-3 sm:gap-4">
-        {loop.map((testimonial, index) => (
-          <TestimonialCard
-            key={`${testimonial.id}-${index}`}
-            testimonial={testimonial}
-            language={language}
-            cardIndex={index % items.length}
-            verifiedLabel={verifiedLabel}
-            renderStars={renderStars}
-            layout="marquee"
-          />
-        ))}
+      <div className="testimonial-marquee-track isolate flex w-max gap-3 sm:gap-4">
+        {loop.map((testimonial, index) => {
+          const cardKey = `${testimonial.id}-${index}`
+          return (
+            <TestimonialCard
+              key={cardKey}
+              testimonial={testimonial}
+              language={language}
+              cardIndex={index % items.length}
+              verifiedLabel={verifiedLabel}
+              renderStars={renderStars}
+              layout="marquee"
+              isCoarse={isCoarse}
+              expandedTap={isCoarse && activeKey === cardKey}
+              onCoarseToggle={() =>
+                setActiveKey((prev) => (prev === cardKey ? null : cardKey))
+              }
+            />
+          )
+        })}
       </div>
     </div>
   )
@@ -77,6 +143,9 @@ function TestimonialCard({
   verifiedLabel,
   renderStars,
   layout,
+  isCoarse,
+  expandedTap,
+  onCoarseToggle,
 }: {
   testimonial: Testimonial
   language: 'hr' | 'en'
@@ -84,18 +153,81 @@ function TestimonialCard({
   verifiedLabel: string
   renderStars: (rating: number) => ReactNode
   layout: 'marquee' | 'grid'
+  isCoarse?: boolean
+  expandedTap?: boolean
+  onCoarseToggle?: () => void
 }) {
   const widthClass =
     layout === 'marquee'
       ? 'w-[min(100vw-2rem,304px)] shrink-0 sm:w-[328px]'
       : 'w-full min-w-0'
 
+  const isMarquee = layout === 'marquee'
+  const coarse = Boolean(isCoarse && isMarquee)
+  const tapOpen = Boolean(expandedTap)
+
+  const handleMarqueeClick = (e: MouseEvent) => {
+    if (!coarse || !onCoarseToggle) return
+    e.stopPropagation()
+    onCoarseToggle()
+  }
+
+  const handleMarqueeKeyDown = (e: KeyboardEvent) => {
+    if (!coarse || !onCoarseToggle) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onCoarseToggle()
+    }
+  }
+
+  const quoteClass = clsx(
+    'min-h-0 text-left text-[0.8125rem] leading-relaxed text-plum/88 dark:text-pearl/88 sm:text-sm',
+    layout === 'grid' &&
+      'line-clamp-4 sm:line-clamp-5 group-hover/card:line-clamp-none group-focus-within/card:line-clamp-none',
+    isMarquee &&
+      !tapOpen &&
+      'line-clamp-3 sm:line-clamp-4',
+    isMarquee &&
+      tapOpen &&
+      'line-clamp-none',
+    /* Desktop hover: avoid sticky “hover” on coarse touch devices */
+    isMarquee &&
+      !coarse &&
+      'group-hover/card:line-clamp-none',
+    /* Keyboard / focus always shows full text on the focused card */
+    isMarquee && 'group-focus-within/card:line-clamp-none'
+  )
+
+  const articleClass = clsx(
+    'group/card flex flex-col rounded-xl border border-amethyst/18 bg-white/[0.82] p-4 shadow-[0_8px_28px_rgba(46,36,71,0.06)] backdrop-blur-xl transition-[transform,box-shadow,border-color] duration-300 ease-out sm:rounded-2xl sm:p-[1.125rem] dark:border-lavender/12 dark:bg-white/[0.07] dark:shadow-[0_10px_36px_rgba(0,0,0,0.22)]',
+    'min-h-[218px] sm:min-h-[228px]',
+    isMarquee && 'relative touch-manipulation',
+    isMarquee && 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amethyst/40 dark:focus-visible:outline-lavender/40',
+    widthClass,
+    isMarquee && [
+      'z-0',
+      '[@media(hover:hover)_and_(pointer:fine)]:hover:z-30 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-[1.02]',
+      '[@media(hover:hover)_and_(pointer:fine)]:hover:border-amethyst/28 [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_16px_44px_rgba(110,68,255,0.14)] dark:[@media(hover:hover)_and_(pointer:fine)]:hover:border-lavender/22 dark:[@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_48px_rgba(189,166,255,0.1)]',
+      'focus-within:z-30 focus-within:scale-[1.02] focus-within:border-amethyst/28 focus-within:shadow-[0_16px_44px_rgba(110,68,255,0.14)] dark:focus-within:border-lavender/22 dark:focus-within:shadow-[0_18px_48px_rgba(189,166,255,0.1)]',
+    ],
+    isMarquee &&
+      tapOpen &&
+      'z-30 scale-[1.02] border-amethyst/28 shadow-[0_16px_44px_rgba(110,68,255,0.14)] dark:border-lavender/22 dark:shadow-[0_18px_48px_rgba(189,166,255,0.1)]',
+    layout === 'grid' &&
+      'dark:focus-within:border-lavender/22 dark:focus-within:shadow-[0_12px_40px_rgba(0,0,0,0.28)] dark:hover:border-lavender/18 dark:hover:shadow-[0_12px_40px_rgba(189,166,255,0.08)] hover:border-amethyst/25 hover:shadow-[0_12px_36px_rgba(110,68,255,0.09)]'
+  )
+
   return (
     <article
       tabIndex={0}
-      className={`group/card flex min-h-[218px] flex-col rounded-xl border border-amethyst/18 bg-white/[0.82] p-4 shadow-[0_8px_28px_rgba(46,36,71,0.06)] backdrop-blur-xl transition-[box-shadow,border-color] duration-300 sm:min-h-[228px] sm:rounded-2xl sm:p-[1.125rem] dark:border-lavender/12 dark:bg-white/[0.07] dark:shadow-[0_10px_36px_rgba(0,0,0,0.22)] dark:focus-within:border-lavender/22 dark:focus-within:shadow-[0_12px_40px_rgba(0,0,0,0.28)] dark:hover:border-lavender/18 dark:hover:shadow-[0_12px_40px_rgba(189,166,255,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amethyst/40 dark:focus-visible:outline-lavender/40 hover:border-amethyst/25 hover:shadow-[0_12px_36px_rgba(110,68,255,0.09)] ${widthClass}`}
+      role="article"
+      data-expanded={isMarquee && tapOpen ? 'true' : 'false'}
+      aria-expanded={coarse ? tapOpen : undefined}
+      onClick={isMarquee ? handleMarqueeClick : undefined}
+      onKeyDown={isMarquee ? handleMarqueeKeyDown : undefined}
+      className={articleClass}
     >
-      {/* Header: avatar left | name + verified (verified always directly under name) */}
+      {/* Header: avatar left | name + verified */}
       <div className="flex items-start gap-3 sm:gap-3.5">
         <div
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[0.6875rem] font-bold tracking-wide text-white shadow-[0_2px_12px_rgba(110,68,255,0.28)] ring-1 ring-white/25 dark:ring-white/10 sm:h-11 sm:w-11 sm:text-sm ${avatarGradients[cardIndex % avatarGradients.length]}`}
@@ -120,11 +252,12 @@ function TestimonialCard({
 
       <div className="mt-3 flex min-h-0 flex-1 flex-col sm:mt-3.5">
         <div className="rounded-lg border border-amethyst/10 bg-white/55 px-3 py-2.5 dark:border-lavender/10 dark:bg-white/[0.05] sm:px-3.5 sm:py-3">
-          <p className="line-clamp-3 min-h-0 flex-1 text-left text-[0.8125rem] leading-relaxed text-plum/88 dark:text-pearl/88 sm:line-clamp-4 sm:text-sm">
+          <p className={quoteClass}>
             &ldquo;{testimonial.text[language]}&rdquo;
           </p>
         </div>
       </div>
+
     </article>
   )
 }
@@ -201,7 +334,8 @@ export default function TestimonialMarquee({ language }: TestimonialMarqueeProps
           animation-direction: reverse;
         }
         .testimonial-marquee-row:hover .testimonial-marquee-track,
-        .testimonial-marquee-row:focus-within .testimonial-marquee-track {
+        .testimonial-marquee-row:focus-within .testimonial-marquee-track,
+        .testimonial-marquee-row[data-paused="true"] .testimonial-marquee-track {
           animation-play-state: paused;
         }
         @media (prefers-reduced-motion: reduce) {
