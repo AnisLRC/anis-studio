@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { trackEvent } from '../lib/analytics'
 import SparklesCanvas from '../components/SparklesCanvas'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 
@@ -15,8 +16,18 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
       en: 'Where ideas become reality.'
     },
     subtitle: {
-      hr: 'Ručno izrađeni pokloni i dekoracije, 2D/3D interijeri i digitalni projekti po mjeri vašeg prostora, stila i priče.',
-      en: 'Handcrafted gifts and decorations, 2D/3D interiors, and digital projects tailored to your space, style, and story.'
+      hr: 'Ručno izrađeni pokloni i dekoracije, 3D vizualizacija interijera i web stranice — sve po mjeri tvoje priče.',
+      en: 'Handcrafted gifts and decorations, 3D interior visualization and websites — all tailored to your story.'
+    },
+    bridge: {
+      hr: [
+        "Ani's Studio je kreativni studio koji radi projekte po mjeri — od personaliziranih poklona i dekoracija, preko 3D vizualizacije interijera, do web stranica za male obrte i poduzetnike.",
+        'Svaki projekt je prilagođen tvojoj priči, stilu i potrebama. Ne radiš s korporacijom ili agencijom — radiš direktno sa mnom, kroz proces koji je transparentan i osoban.',
+      ],
+      en: [
+        "Ani's Studio is a creative studio for bespoke projects — from personalized gifts and decorations to 3D interior visualization and websites for small businesses.",
+        "Each project is tailored to your story, style, and needs. You don't work with a corporation or agency — you work directly with me, through a process that's transparent and personal.",
+      ],
     },
     ctaPrimary: {
       hr: 'Započnimo projekt',
@@ -32,20 +43,29 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
     },
     cards: {
       lrc: {
-        title: { hr: 'Želim poklon', en: 'I want a gift' },
+        title: { hr: 'Želim poklon koji ima priču', en: 'I want a gift with a story' },
         subtitle: { hr: 'LRC Shop', en: 'LRC Shop' },
-        description: { hr: 'Ručno rađeni pokloni i dekoracije', en: 'Handmade gifts and decorations' }
+        description: {
+          hr: 'Personalizirani ručni radovi — lasersko graviranje, epoksidna smola, svila',
+          en: 'Personalized handmade work — laser engraving, epoxy resin, silk',
+        },
       },
       interiors: {
-        title: { hr: 'Želim urediti prostor', en: 'I want to design a space' },
+        title: { hr: 'Želim vidjeti prostor prije nego ga napravim', en: 'I want to see the space before I build it' },
         subtitle: { hr: 'Interijeri', en: 'Interiors' },
-        description: { hr: '3D vizualizacije i nacrti po mjeri', en: '3D renders and custom designs' }
+        description: {
+          hr: '3D prikazi interijera — vidiš točno kako će izgledati',
+          en: '3D interior renders — see exactly how it will look',
+        },
       },
       webAtelier: {
-        title: { hr: 'Trebam web stranicu', en: 'I need a website' },
+        title: { hr: 'Trebam web koji donosi klijente', en: 'I need a website that brings clients' },
         subtitle: { hr: 'Web Atelier', en: 'Web Atelier' },
-        description: { hr: 'Web koji radi za tebe – i izgleda odlično.', en: 'A website that works for you – and looks great.' }
-      }
+        description: {
+          hr: 'Landing stranice za male biznise — brzo, profesionalno, bez komplikacija',
+          en: 'Landing pages for small businesses — fast, professional, uncomplicated',
+        },
+      },
     }
   }
 
@@ -205,6 +225,24 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </a>
         </div>
 
+        {/* Bridge — što je Ani's Studio, zašto tri linije */}
+        <div
+          className="mx-auto mt-10 max-w-[min(100%,34rem)] space-y-4 border-t border-amethyst/10 px-1 pt-10 text-center dark:border-lavender/15 sm:mt-12 sm:max-w-2xl sm:space-y-5 sm:pt-12"
+          aria-labelledby="welcome-bridge-heading"
+        >
+          <h2 id="welcome-bridge-heading" className="sr-only">
+            {language === 'hr' ? 'Što je Ani\'s Studio' : "What is Ani's Studio"}
+          </h2>
+          {translations.bridge[language].map((paragraph, i) => (
+            <p
+              key={i}
+              className="text-[0.9375rem] leading-relaxed text-plum/78 dark:text-pearl/75 sm:text-base sm:leading-relaxed"
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
+
         {/* Cards Section */}
         <h2 className="mt-10 font-heading text-2xl font-bold text-balance text-plum/90 dark:text-pearl sm:mt-14 sm:text-3xl">
           {translations.cardsTitle[language]}
@@ -212,7 +250,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 md:grid-cols-3">
           {/* LRC Shop Card */}
-          <Link to="/lrc" className="group relative rounded-[2rem] p-6 sm:p-8 text-center
+          <Link
+            to="/lrc"
+            onClick={() => trackEvent('homepage_line_click', { line: 'lrc' })}
+            className="group relative rounded-[2rem] p-6 sm:p-8 text-center
             bg-[rgba(248,246,255,0.72)] dark:bg-white/8 backdrop-blur-2xl
             border border-amethyst/20 dark:border-lavender/10
             shadow-[0_8px_32px_rgba(46,36,71,0.07)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
@@ -240,7 +281,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </Link>
 
           {/* Interijeri Card */}
-          <Link to="/interijeri" className="group relative rounded-[2rem] p-6 sm:p-8 text-center
+          <Link
+            to="/interijeri"
+            onClick={() => trackEvent('homepage_line_click', { line: 'interijeri' })}
+            className="group relative rounded-[2rem] p-6 sm:p-8 text-center
             bg-[rgba(248,246,255,0.72)] dark:bg-white/8 backdrop-blur-2xl
             border border-amethyst/20 dark:border-lavender/10
             shadow-[0_8px_32px_rgba(46,36,71,0.07)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
@@ -268,7 +312,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </Link>
 
           {/* Web Atelier Card */}
-          <Link to="/web-atelier" className="group relative rounded-[2rem] p-6 sm:p-8 text-center
+          <Link
+            to="/web-atelier"
+            onClick={() => trackEvent('homepage_line_click', { line: 'web-atelier' })}
+            className="group relative rounded-[2rem] p-6 sm:p-8 text-center
             bg-[rgba(248,246,255,0.72)] dark:bg-white/8 backdrop-blur-2xl
             border border-amethyst/20 dark:border-lavender/10
             shadow-[0_8px_32px_rgba(46,36,71,0.07)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]

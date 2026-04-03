@@ -9,12 +9,12 @@ interface PortfolioSectionProps {
 export default function PortfolioSection({ language }: PortfolioSectionProps) {
   const translations = {
     title: {
-      hr: "Naši najbolji radovi",
-      en: "Our Best Work"
+      hr: 'Pregled rada kroz tri kreativna smjera studija.',
+      en: "A look at work across the studio's three creative directions.",
     },
     subtitle: {
-      hr: "Pogledajte izbor naših kreativnih projekata",
-      en: "Browse through a selection of our creative projects"
+      hr: 'Prikaz kroz tri smjera — sadržaj i fotografije dopunjuju se kako radovi postaju dostupni.',
+      en: 'A view across three directions — images and project details are added as work becomes available.',
     },
     categories: {
       hr: ['Svi', 'LRC', 'Interijeri', 'Web Atelier'],

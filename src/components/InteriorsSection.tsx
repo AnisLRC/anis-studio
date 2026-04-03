@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { trackEvent } from '../lib/analytics'
 import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
 
 interface InteriorsSectionProps {
@@ -15,29 +16,29 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
     },
     clientsTitle: { hr: 'Upit za klijente', en: 'Client inquiry' },
     clientsText: {
-      hr: 'Za privatne klijente koji žele idejno rješenje, 2D nacrt ili 3D prikaz prostora.',
-      en: 'For private clients who want a concept, 2D drawing or 3D visualization of the space.',
+      hr: 'Za privatne klijente koji žele vidjeti prostor prije nego naruče namještaj ili krenu u uređenje.',
+      en: 'For private clients who want to see the space before ordering furniture or starting a renovation.',
     },
     stolariTitle: { hr: 'Upit za stolare i studije', en: 'Inquiry for carpenters & studios' },
     stolariText: {
-      hr: 'Za stolare, salone i studije namještaja koji šalju projekt, suradnju ili razradu za izradu.',
-      en: 'For carpenters, showrooms and furniture studios sending a project, collaboration or production detailing.',
+      hr: 'Za stolare i salone kojima treba profesionalan 3D prikaz za lakšu prezentaciju klijentu.',
+      en: 'For carpenters and showrooms who need a professional 3D render for easier client presentations.',
     },
     ctaAction: { hr: 'Zatraži ponudu', en: 'Request quote' },
   }
 
   const translations = {
     title: {
-      hr: "🏠 Ani's Interijeri",
-      en: "🏠 Ani's Interiors"
+      hr: "🏠 Ani's Interijeri — 3D vizualizacija prostora",
+      en: "🏠 Ani's Interijeri — 3D space visualization",
     },
     subtitle: {
-      hr: "Realistični 2D crteži i 3D renderi na temelju vaših dimenzija i ideja",
-      en: "Realistic 2D drawings and 3D renders based on your dimensions and ideas"
+      hr: 'Vidiš svoj prostor prije nego ga napraviš — realistični 3D prikazi na temelju tvojih mjera, ideja i željenog stila.',
+      en: 'See your space before you build it — realistic 3D visuals based on your dimensions, ideas, and desired style.',
     },
-    description: {
-      hr: "Usluga dostupna diljem Hrvatske",
-      en: "Service available across Croatia"
+    bridge: {
+      hr: "Ani's Interijeri pomaže ti da jasnije vidiš kako će prostor izgledati prije izrade ili uređenja. Usluga je namijenjena privatnim klijentima koji uređuju dom, ali i stolarima ili salonima kojima treba profesionalan prikaz za prezentaciju klijentu.",
+      en: "Ani's Interijeri helps you see more clearly how a space will look before production or renovation. It's for private clients updating their home, and for carpenters or showrooms who need a professional presentation for their clients.",
     },
     stepsTitle: {
       hr: "Kako do Vašeg 3D prikaza",
@@ -129,9 +130,11 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
           <p className="mx-auto mb-2 max-w-2xl text-lg font-semibold italic leading-snug text-amethyst dark:text-lavender sm:text-xl">
             {translations.subtitle[language]}
           </p>
-          <p className="mx-auto max-w-xl text-base leading-relaxed text-plum/80 dark:text-pearl/75">
-            {translations.description[language]}
-          </p>
+          <div className="mx-auto mt-6 max-w-2xl border-t border-amethyst/10 px-2 pt-6 text-center dark:border-lavender/15 sm:mt-7 sm:px-3 sm:pt-7">
+            <p className="text-sm leading-relaxed text-plum/78 dark:text-pearl/75 sm:text-[0.9375rem] sm:leading-relaxed">
+              {translations.bridge[language]}
+            </p>
+          </div>
         </div>
 
         {/* Visualization Steps — heading + balanced grid below */}
@@ -195,6 +198,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
             >
               <Link
                 to="/interijeri/klijenti"
+                onClick={() => trackEvent('interiors_chooser_click', { type: 'klijenti' })}
                 className="group relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-[rgba(110,68,255,0.16)] bg-[rgba(248,246,255,0.80)] p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[--color-primary]/35 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-primary] dark:border-lavender/18 dark:bg-white/[0.06] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.14)] sm:p-7 sm:text-left"
               >
                 <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(110,68,255,0.25)] to-transparent opacity-0 transition-opacity group-hover:opacity-100 dark:via-lavender/30" aria-hidden />
@@ -222,6 +226,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
 
               <Link
                 to="/interijeri/stolari"
+                onClick={() => trackEvent('interiors_chooser_click', { type: 'stolari' })}
                 className="group relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-[rgba(110,68,255,0.16)] bg-[rgba(248,246,255,0.80)] p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[--color-primary]/35 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-primary] dark:border-lavender/18 dark:bg-white/[0.06] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.14)] sm:p-7 sm:text-left"
               >
                 <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(110,68,255,0.25)] to-transparent opacity-0 transition-opacity group-hover:opacity-100 dark:via-lavender/30" aria-hidden />

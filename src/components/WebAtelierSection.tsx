@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { trackEvent } from '../lib/analytics'
 import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
 
 interface WebAtelierSectionProps {
@@ -8,20 +9,24 @@ interface WebAtelierSectionProps {
 export default function WebAtelierSection({ language }: WebAtelierSectionProps) {
   const translations = {
     title: {
-      hr: "💻 Ani's Web Atelier",
-      en: "💻 Ani's Web Atelier"
+      hr: "💻 Ani's Web Atelier — Landing stranice za male obrte i poduzetnike",
+      en: "💻 Ani's Web Atelier — Landing pages for small businesses and entrepreneurs",
     },
     subtitle: {
-      hr: "Custom Landing Pages",
-      en: "Custom Landing Pages"
+      hr: 'Web stranica koja jasno predstavlja tvoju ponudu i pomaže ti da ostaviš profesionalan dojam — bez komplikacija i bez tehničkog kaosa.',
+      en: 'A website that clearly presents your offer and helps you make a professional impression — without hassle or technical chaos.',
     },
-    description: {
-      hr: "Vaša web stranica koja radi za Vas — više klijenata, manje komplikacija",
-      en: "Your website that works for you — more customers, less hassle"
+    bridge: {
+      hr: "Ani's Web Atelier namijenjen je malim obrtima, poduzetnicima i brendovima kojima treba jasna, uredna i profesionalna web prisutnost. Umjesto kompliciranog procesa, dobivaš konkretan paket, jasan tijek suradnje i stranicu koja je prilagođena tvojoj priči i cilju.",
+      en: "Ani's Web Atelier is for small businesses, entrepreneurs, and brands that need a clear, polished, professional web presence. Instead of a complicated process, you get a concrete package, a straightforward collaboration flow, and a page tailored to your story and goals.",
     },
-    description2: {
-      hr: "Sve u jednom paketu — Vi odlučujete, mi izvodimo.",
-      en: "Everything in one package — You decide, we execute."
+    showcaseTitle: {
+      hr: 'Pregled web smjera studija',
+      en: 'A look at the studio’s web direction',
+    },
+    showcaseIntro: {
+      hr: 'Primjeri i prikazi rada dopunjuju se postupno. Ovdje možeš steći dojam smjera, pristupa i vrste web stranica koje studio razvija.',
+      en: 'Examples and previews are added gradually. Here you can get a sense of the direction, approach, and types of websites the studio builds.',
     },
     stepsTitle: {
       hr: "Kako do svoje landing stranice",
@@ -142,25 +147,17 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
     cta: {
       hr: {
         title: "Spremni za svoju landing stranicu?",
-        description: "Vaša web stranica koja donosi klijente — brzo, jednostavno i efektno.",
-        paymentNote: "Plaćanja karticom putem Stripe-a."
+        description:
+          "U kratkoj formi za upit opišite što trebate — vratit ću vam prijedlog strukture, dizajna i sljedećih koraka. Suradnja je jasna i usmjerena na stranicu koja donosi klijente, brzo i bez nepotrebnih komplikacija.",
+        paymentNote: "Plaćanja karticom putem Stripe-a.",
       },
       en: {
         title: "Ready for your landing page?",
-        description: "Your website that brings customers — fast, simple and effective.",
-        paymentNote: "Card payments via Stripe."
-      }
-    },
-    formInquiryCta: {
-      title: {
-        hr: 'Pošaljite upit za web projekt',
-        en: 'Send a web project inquiry'
+        description:
+          "Use the short inquiry form to describe what you need — I'll reply with a proposed structure, design, and next steps. Clear collaboration focused on a page that brings clients, quickly and without unnecessary friction.",
+        paymentNote: "Card payments via Stripe.",
       },
-      text: {
-        hr: 'Ispunite kratku formu s osnovnim informacijama o web stranici koju želite, a ja ću pripremiti prijedlog strukture, dizajna i sljedećih koraka.',
-        en: 'Fill out a short form with basic information about the website you want, and I will prepare a proposed structure, design, and next steps.'
-      }
-    }
+    },
   }
 
   const landingPageSteps = [
@@ -214,12 +211,11 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
           <p className="mb-2 text-lg font-semibold italic text-amethyst dark:text-lavender sm:text-xl">
             {translations.subtitle[language]}
           </p>
-          <p className="mb-2 text-lg font-medium italic text-plum/80 dark:text-pearl/75 sm:text-xl">
-            {translations.description[language]}
-          </p>
-          <p className="mx-auto max-w-2xl text-base leading-relaxed text-plum/75 dark:text-pearl/65">
-            {translations.description2[language]}
-          </p>
+          <div className="mx-auto mt-6 max-w-2xl border-t border-amethyst/10 px-2 pt-6 text-center dark:border-lavender/15 sm:mt-7 sm:px-3 sm:pt-7">
+            <p className="text-sm leading-relaxed text-plum/78 dark:text-pearl/75 sm:text-[0.9375rem] sm:leading-relaxed">
+              {translations.bridge[language]}
+            </p>
+          </div>
         </div>
 
         {/* Landing Page Steps */}
@@ -256,12 +252,15 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
           ))}
         </div>
 
-        {/* Showcase Gallery */}
+        {/* Showcase — smjer rada, sadržaj se dopunjuje */}
         <div className="mx-auto mb-10 max-w-6xl sm:mb-12">
           <div className="mx-auto mb-6 max-w-3xl text-center sm:mb-8">
-            <h3 className="mb-4 font-heading text-xl font-bold text-balance text-plum dark:text-pearl sm:mb-6 sm:text-2xl">
-              {language === 'hr' ? '💻 Primjeri naših radova' : '💻 Examples of Our Work'}
+            <h3 className="font-heading text-xl font-bold text-balance text-plum dark:text-pearl sm:text-2xl">
+              {translations.showcaseTitle[language]}
             </h3>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:mt-5 sm:text-[0.9375rem] sm:leading-relaxed">
+              {translations.showcaseIntro[language]}
+            </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-3">
             {[1, 2, 3].map((item) => (
@@ -330,6 +329,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
               </ul>
               <Link
                 to={`/web-atelier/upit?paket=${(['start', 'pro', 'premium'] as const)[index]}`}
+                onClick={() => trackEvent('inquiry_cta_click', { source: 'web-atelier' })}
                 className="btn btn-primary mt-auto inline-flex w-full min-h-[48px] touch-manipulation items-center justify-center"
               >
                 {translations.requestQuote[language]}
@@ -338,7 +338,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
           ))}
         </div>
 
-        {/* CTA Section — aligned with inquiry CTA below */}
+        {/* Završni CTA — jedan blok: što slijedi + jedan gumb na formu */}
         <div className="fade-in mx-auto w-full max-w-4xl">
           <div className="flex flex-col items-center rounded-2xl border border-[rgba(110,68,255,0.2)] bg-gradient-to-br from-[rgba(189,166,255,0.15)] to-[rgba(110,68,255,0.1)] p-5 text-center shadow-lg sm:p-8">
             <h3 className="mb-3 max-w-2xl font-heading text-lg font-bold text-[--color-primary] sm:mb-4 sm:text-xl">
@@ -349,6 +349,7 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
             </p>
             <Link
               to="/web-atelier/upit"
+              onClick={() => trackEvent('inquiry_cta_click', { source: 'web-atelier' })}
               className="btn btn-primary mb-4 inline-flex min-h-[48px] w-full max-w-sm touch-manipulation items-center justify-center sm:w-auto"
             >
               {translations.requestQuote[language]}
@@ -356,20 +357,6 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
             <p className="mx-auto max-w-md text-xs text-plum/65 dark:text-pearl/60">
               {translations.cta[language].paymentNote}
             </p>
-          </div>
-        </div>
-
-        {/* Supporting copy — same form as primary CTA above; no second button */}
-        <div className="mx-auto mt-10 flex w-full max-w-4xl justify-center sm:mt-12">
-          <div className="w-full rounded-3xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8 md:p-10">
-            <div className="mx-auto flex w-full max-w-2xl flex-col items-center space-y-4 text-center sm:space-y-5">
-              <h3 className="w-full font-heading text-xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-2xl">
-                {translations.formInquiryCta.title[language]}
-              </h3>
-              <p className="w-full text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:text-[0.9375rem] sm:leading-relaxed">
-                {translations.formInquiryCta.text[language]}
-              </p>
-            </div>
           </div>
         </div>
       </div>

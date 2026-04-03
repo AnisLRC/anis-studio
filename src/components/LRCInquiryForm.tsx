@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { lrcInquiryCustomIdeaOption, sampleProducts } from '../data/products'
+import { trackEvent } from '../lib/analytics'
 import { submitLrcInquiry } from '../lib/lrcInquiries'
 
 interface LRCInquiryFormProps {
@@ -114,6 +115,7 @@ export default function LRCInquiryForm({ language }: LRCInquiryFormProps) {
           : '✨ Success! Your inquiry has been sent.',
         { duration: 4000 }
       )
+      trackEvent('form_submit_success', { form: 'lrc' })
 
       setFormData({
         product: '',

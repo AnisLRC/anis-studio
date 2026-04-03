@@ -3,12 +3,13 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import toast from 'react-hot-toast'
 import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
+import { trackEvent } from '../lib/analytics'
 import { createClient, createProject, uploadProjectFileToStorage, type VrLocationPreference, type VrPackagePreference } from '../lib/interiors'
 import { UploadProgress } from './UploadProgress'
 
 export interface StolarOption {
   id: string
-  name: string // npr. "Stolarija Jurić (Rijeka)"
+  name: string // npr. "Josip Radat"
 }
 
 export interface ClientProjectFormValues {
@@ -621,6 +622,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
           : '✨ Success! Your request has been sent. We will contact you soon.',
         { duration: 5000 }
       )
+      trackEvent('form_submit_success', { form: 'interiors-client' })
 
       // Reset form immediately
       setValues(INITIAL_VALUES)
@@ -1237,7 +1239,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
                   onChange={e =>
                     handleChange('stolarNotRegistered', e.target.value)
                   }
-                  placeholder="npr. Stolarija Jurić, 091 234 5678"
+                  placeholder="npr. ime i prezime ili naziv tvrtke, 091 234 5678"
                 />
                 <span className="text-xs text-slate-500">Unesite naziv stolarije i broj telefona</span>
               </label>

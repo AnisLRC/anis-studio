@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import toast from 'react-hot-toast'
+import { trackEvent } from '../lib/analytics'
 import { createCarpenter, createProject, uploadProjectFileToStorage, type DrawnBy, type VrPackagePreference } from '../lib/interiors'
 import { UploadProgress } from './UploadProgress'
 
@@ -629,6 +630,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
           : '✨ Success! Your request has been sent. We will contact you soon.',
         { duration: 5000 }
       )
+      trackEvent('form_submit_success', { form: 'interiors-carpenter' })
 
       // Reset form immediately
       setValues(INITIAL_VALUES)

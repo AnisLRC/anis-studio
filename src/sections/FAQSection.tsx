@@ -75,6 +75,18 @@ export const FAQ_ITEMS: FAQItem[] = [
     }
   },
   {
+    id: 7,
+    category: 'lrc',
+    question: {
+      hr: 'Zašto nisu dostupne sve fotografije proizvoda?',
+      en: "Why aren't all product photos available yet?"
+    },
+    answer: {
+      hr: 'Fotografije proizvoda dopunjuju se postupno. Ako te zanima određeni proizvod, pošalji upit i javit ću ti koje su mogućnosti personalizacije te mogu li podijeliti dodatne primjere sličnog rada.',
+      en: 'Product photos are added gradually. If you are interested in a specific product, send an inquiry and I will share customization options and whether I can provide more examples of similar work.'
+    }
+  },
+  {
     id: 5,
     category: 'interiors',
     question: {

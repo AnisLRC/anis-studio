@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
 import { sampleProducts, productTags } from '../data/products'
 import { cartActions } from '../lib/cart.store'
+import { trackEvent } from '../lib/analytics'
 
 interface LRCSectionProps {
   language?: 'hr' | 'en'
@@ -13,6 +14,22 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTag, setSelectedTag] = useState('all')
 
+  /** Prikazuj samo tagove za koje postoji barem jedan proizvod (osim "Sve"). */
+  const visibleProductTags = useMemo(
+    () =>
+      productTags.filter((tag) => {
+        if (tag.id === 'all') return true
+        return sampleProducts.some((p) => p.tags.includes(tag.id))
+      }),
+    []
+  )
+
+  useEffect(() => {
+    if (selectedTag !== 'all' && !visibleProductTags.some((t) => t.id === selectedTag)) {
+      setSelectedTag('all')
+    }
+  }, [selectedTag, visibleProductTags])
+
   const filteredProducts = sampleProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -22,28 +39,30 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
 
   const translations = {
     title: {
-      hr: "🌸 Ani's LRC",
-      en: "🌸 Ani's LRC"
+      hr: "🌸 Ani's LRC — Personalizirani ručni radovi",
+      en: "🌸 Ani's LRC — Personalized handmade work",
     },
     subtitle: {
-      hr: "Laser Resin Crafting",
-      en: "Laser Resin Crafting"
+      hr: 'Lasersko graviranje, epoksidna smola, svila i drugi detalji po mjeri — svaki komad nastaje s pažnjom i prilagođava se tvojoj ideji, prostoru ili poklon-prigodi.',
+      en: 'Laser engraving, epoxy resin, silk and other made-to-order details — each piece is crafted with care and tailored to your idea, space, or gift occasion.',
     },
-    description: {
-      hr: "Kreativna radionica jedinstvenih suvenira i funkcionalnih uporabnih predmeta",
-      en: "A creative workshop of unique souvenirs & functional items"
+    bridge: {
+      hr: [
+        "Ani's LRC je radionica personaliziranih ručnih radova — od poklona i dekoracija do funkcionalnih predmeta za posebne prilike i svakodnevnu upotrebu.",
+        'Možeš odabrati proizvod iz ponude i prilagoditi ga gravurom, bojama, materijalima ili detaljima, a možeš i poslati svoju ideju za potpuno unikatan komad.',
+      ],
+      en: [
+        "Ani's LRC is a workshop for personalized handmade pieces — from gifts and decorations to functional items for special occasions and everyday use.",
+        'You can pick a product from the catalog and tailor it with engraving, colors, materials, or details — or send your own idea for a completely unique piece.',
+      ],
     },
-    techniques: {
-      hr: "🔥 Lasersko rezanje · Lasersko graviranje · Epoksidna smola · Svila · Mandala\n🎨 Ručno izrađeno s ljubavlju i preciznošću",
-      en: "🔥 Laser cutting · Laser engraving · Epoxy resin · Silk · Mandala\n🎨 Handmade with love and precision"
+    offerTitle: {
+      hr: 'Ponuda proizvoda',
+      en: 'Product catalog',
     },
-    personalizedGiftsTitle: {
-      hr: "Personalizirani pokloni i ručno rađene dekoracije",
-      en: "Personalized gifts and handmade decorations"
-    },
-    personalizedGiftsDesc: {
-      hr: "Svaki komad nastaje ručno, u malim serijama ili kao unikat. Ovdje možeš naručiti personalizirane poklone, dekoracije za dom ili posebne prilike – uz dizajn prilagođen tvojoj priči.",
-      en: "Each piece is created by hand, in small series or as a unique item. Here you can order personalized gifts, home decorations or special occasions – with a design tailored to your story."
+    offerIntro: {
+      hr: 'Pregledaj ponudu i odaberi proizvod koji te zanima. Svaki proizvod možeš personalizirati — gravura, boje, materijali ili detalji prilagođavaju se tvojoj želji. Fotografije proizvoda dopunjuju se postupno, a opis i osnovne informacije možeš pregledati odmah.',
+      en: 'Browse the catalog and choose what interests you. Every product can be personalized — engraving, colors, materials, or details adapted to your wishes. Product photos are added over time; descriptions and key details are available right away.',
     },
     searchPlaceholder: {
       hr: "Pretraži proizvod...",
@@ -138,47 +157,41 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
       <div className="max-w-7xl mx-auto min-w-0 relative z-10">
         {/* Section Header */}
         <div className="mb-8 pt-10 text-center sm:mb-10 sm:pt-12">
-          <div className="mx-auto flex max-w-[min(100%,26rem)] flex-col items-center px-4 sm:max-w-xl sm:px-5">
+          <div className="mx-auto flex max-w-[min(100%,26rem)] flex-col items-center px-4 sm:max-w-2xl sm:px-5">
             <h2 className="mb-1.5 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-2 sm:text-3xl">
               {translations.title[language]}
             </h2>
-            <p className="mb-1.5 text-lg font-semibold italic text-amethyst dark:text-lavender sm:mb-2 sm:text-xl">
+            <p className="mb-3 text-base font-medium leading-relaxed text-plum/85 dark:text-pearl/80 sm:mb-4 sm:text-lg">
               {translations.subtitle[language]}
             </p>
-            <p className="mb-3 text-base font-medium italic leading-relaxed text-plum/80 dark:text-pearl/75 sm:mb-4 sm:text-lg">
-              {translations.description[language]}
-            </p>
-            <div className="w-full max-w-md space-y-2 sm:space-y-2.5">
-              {translations.techniques[language].split('\n').map((line, i) => (
-                <p
-                  key={i}
-                  className="text-center text-[0.9375rem] leading-relaxed text-plum/75 dark:text-pearl/65 sm:text-base"
-                >
-                  {line.trim()}
-                </p>
-              ))}
-            </div>
           </div>
 
-          {/* Personalizirani pokloni sekcija */}
-          <div className="mt-7 mb-8 sm:mt-8 sm:mb-10">
-            <h3 className="mb-2.5 font-heading text-lg font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-3 sm:text-xl md:text-2xl">
-              {translations.personalizedGiftsTitle[language]}
-            </h3>
-            <p className="mx-auto max-w-2xl text-sm leading-relaxed text-plum/80 dark:text-pearl/80 md:text-base">
-              {language === 'hr' 
-                ? <>Svaki komad nastaje ručno, u malim serijama ili kao unikat. Ovdje možeš naručiti personalizirane poklone, dekoracije za dom ili posebne prilike –<br />uz dizajn prilagođen tvojoj priči.</>
-                : translations.personalizedGiftsDesc[language]
-              }
-            </p>
+          {/* Kratko objašnjenje — što LRC nudi */}
+          <div className="mx-auto mt-6 max-w-2xl space-y-3 border-t border-amethyst/10 px-4 pt-6 text-center dark:border-lavender/15 sm:mt-7 sm:space-y-4 sm:px-5 sm:pt-7">
+            {translations.bridge[language].map((paragraph, i) => (
+              <p
+                key={i}
+                className="text-sm leading-relaxed text-plum/78 dark:text-pearl/75 sm:text-[0.9375rem] sm:leading-relaxed"
+              >
+                {paragraph}
+              </p>
+            ))}
           </div>
         </div>
 
-        {/* Search and Filters */}
+        {/* Ponuda / pretraga i filteri */}
         <div className="mb-10 space-y-4 sm:mb-12">
+          <div className="mx-auto max-w-2xl px-4 text-center sm:px-5">
+            <h3 className="font-heading text-lg font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:text-xl">
+              {translations.offerTitle[language]}
+            </h3>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:mt-4 sm:text-[0.9375rem] sm:leading-relaxed">
+              {translations.offerIntro[language]}
+            </p>
+          </div>
           <div className="mx-auto max-w-md">
             <label className="mb-3 block text-center font-heading text-xs font-bold uppercase tracking-[0.2em] text-[--color-primary] dark:text-lavender sm:text-sm">
-              {language === 'hr' ? 'WEBSHOP' : 'WEBSHOP'}
+              {language === 'hr' ? 'PRETRAŽI' : 'SEARCH'}
             </label>
             <input
               type="text"
@@ -196,7 +209,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-            {productTags.map(tag => (
+            {visibleProductTags.map(tag => (
               <button
                 type="button"
                 key={tag.id}
@@ -351,6 +364,7 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
                   </p>
                   <Link
                     to="/lrc/upit"
+                    onClick={() => trackEvent('inquiry_cta_click', { source: 'lrc' })}
                     className="btn btn-primary inline-flex min-h-[48px] w-full max-w-md items-center justify-center px-8 py-3 text-base font-semibold shadow-md transition-all duration-300 hover:shadow-lg sm:w-auto sm:px-12 sm:py-4"
                     style={{ letterSpacing: '0.02em' }}
                   >

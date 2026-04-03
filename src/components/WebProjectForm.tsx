@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
+import { trackEvent } from '../lib/analytics'
 
 export interface WebProjectFormValues {
   // 1) Osnovne informacije
@@ -314,7 +315,8 @@ export function WebProjectForm({ language = 'hr', hidePageTitle = false, initial
         : '',
       budgetRange: values.budgetRange || '',
     })
-    
+    trackEvent('form_submit_success', { form: 'web-atelier' })
+
     // Reset form after 3 seconds
     setTimeout(() => {
       setValues(INITIAL_VALUES)
