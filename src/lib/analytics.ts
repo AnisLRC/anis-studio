@@ -21,23 +21,24 @@ export function initGoogleAnalytics(): void {
   if (!id || initStarted) return
   initStarted = true
 
+  // Standard GA4 stub: push `arguments`, not a rest-array — gtag.js expects this shape.
   window.dataLayer = window.dataLayer || []
   function gtag(...args: unknown[]) {
-    window.dataLayer!.push(args)
+    // Create an Arguments-like object so gtag.js receives the same shape
+    // (using an IIFE `.apply` produces an actual Arguments object).
+    const argsLike = (function () {
+      return arguments
+    }).apply(null, args as unknown as any)
+    window.dataLayer!.push(argsLike as unknown as IArguments)
   }
   window.gtag = gtag
+
+  gtag('js', new Date())
+  gtag('config', id)
 
   const script = document.createElement('script')
   script.async = true
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`
-  script.onload = () => {
-    try {
-      gtag('js', new Date())
-      gtag('config', id)
-    } catch {
-      /* ignore */
-    }
-  }
   script.onerror = () => {
     /* silent — tracking optional */
   }
