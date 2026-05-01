@@ -39,12 +39,18 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
 
   const translations = {
     title: {
-      hr: "🌸 Ani's LRC — Personalizirani ručni radovi",
-      en: "🌸 Ani's LRC — Personalized handmade work",
+      hr: "Ani's LRC — Personalizirani ručni radovi",
+      en: "Ani's LRC — Personalized handmade work",
     },
-    subtitle: {
-      hr: 'Lasersko graviranje, epoksidna smola, svila i drugi detalji po mjeri — svaki komad nastaje s pažnjom i prilagođava se tvojoj ideji, prostoru ili poklon-prigodi.',
-      en: 'Laser engraving, epoxy resin, silk and other made-to-order details — each piece is crafted with care and tailored to your idea, space, or gift occasion.',
+    lrcBadge: {
+      hr: {
+        line1: 'LRC = Laser Resin Crafting',
+        line2: '(lasersko graviranje + epoksidna smola)',
+      },
+      en: {
+        line1: 'LRC = Laser Resin Crafting',
+        line2: '(laser engraving + epoxy resin)',
+      },
     },
     bridge: {
       hr: [
@@ -146,28 +152,65 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
   ]
 
   return (
-    <section id="lrc" className="Section fade-in relative section-with-bg">
-      {/* Background wrapper */}
-      <div className="absolute inset-0 overflow-hidden -z-10">
+    <section id="lrc" className="Section fade-in relative section-with-bg isolate overflow-hidden">
+      {/* Background wrapper (full-width hero background) */}
+      <div className="absolute inset-0 overflow-hidden">
         <DecorativeSkyBackdrop priority="high" />
+
+        {/* Light theme full-bleed hero background (full-width) */}
+        <div
+          className="absolute inset-0 bg-center bg-cover dark:hidden pointer-events-none select-none z-0"
+          aria-hidden
+          style={{
+            backgroundImage: `url('/lrc_image/bg-lrc-hero-light.png')`,
+            backgroundSize: '100% auto',
+            backgroundPosition: 'center top',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.42,
+          }}
+        />
+
+        {/* Dark theme full-bleed hero background (full-width) */}
+        <div
+          className="absolute inset-0 hidden bg-center bg-cover dark:block pointer-events-none select-none z-0"
+          aria-hidden
+          style={{
+            backgroundImage: `url('/lrc_image/bg-lrc-hero-dark.png')`,
+            backgroundSize: '100% auto',
+            backgroundPosition: 'center top',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.62,
+          }}
+        />
+
         {/* Overlay for readability */}
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
       </div>
       
       <div className="max-w-7xl mx-auto min-w-0 relative z-10">
-        {/* Section Header */}
-        <div className="mb-8 pt-10 text-center sm:mb-10 sm:pt-12">
-          <div className="mx-auto flex max-w-[min(100%,26rem)] flex-col items-center px-4 sm:max-w-2xl sm:px-5">
-            <h2 className="mb-1.5 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-2 sm:text-3xl">
-              {translations.title[language]}
-            </h2>
-            <p className="mb-3 text-base font-medium leading-relaxed text-plum/85 dark:text-pearl/80 sm:mb-4 sm:text-lg">
-              {translations.subtitle[language]}
-            </p>
+        {/* Section Header — PNG floral backdrop (theme-specific), behind title + badge */}
+        <div className="relative mb-8 overflow-visible pt-10 text-center sm:mb-10 sm:pt-12">
+            <div className="relative mx-auto min-h-[min(300px,45vh)] w-full max-w-7xl sm:min-h-[min(420px,56vh)]">
+            <div className="relative z-10 mx-auto flex max-w-[min(100%,26rem)] flex-col items-center px-4 sm:max-w-2xl sm:px-5">
+              <h2 className="mb-3 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:text-3xl">
+                {translations.title[language]}
+              </h2>
+              <div
+                role="note"
+                className="w-full max-w-md rounded-2xl border border-[rgba(110,68,255,0.18)] bg-white/65 px-3 py-2.5 text-center shadow-sm backdrop-blur-sm dark:border-lavender/18 dark:bg-white/[0.07] sm:max-w-lg sm:px-4 sm:py-3"
+              >
+                <p className="text-[11px] font-medium leading-snug tracking-wide text-plum/88 dark:text-pearl/88 sm:text-xs sm:leading-snug">
+                  {translations.lrcBadge[language].line1}
+                </p>
+                <p className="mt-0.5 text-[10px] leading-snug text-plum/68 dark:text-pearl/65 sm:text-[11px] sm:leading-snug">
+                  {translations.lrcBadge[language].line2}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Kratko objašnjenje — što LRC nudi */}
-          <div className="mx-auto mt-6 max-w-2xl space-y-3 border-t border-amethyst/10 px-4 pt-6 text-center dark:border-lavender/15 sm:mt-7 sm:space-y-4 sm:px-5 sm:pt-7">
+          <div className="relative z-10 mx-auto mt-5 max-w-2xl space-y-3 border-t border-amethyst/10 px-4 pt-5 text-center dark:border-lavender/15 sm:mt-6 sm:space-y-4 sm:px-5 sm:pt-6">
             {translations.bridge[language].map((paragraph, i) => (
               <p
                 key={i}

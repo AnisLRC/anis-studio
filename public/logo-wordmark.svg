@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" fill="none" role="img" aria-labelledby="logoWordmarkTitle">
+  <title id="logoWordmarkTitle">Ani's Studio</title>
+  <defs>
+    <style type="text/css">
+      @import url("https://fonts.googleapis.com/css2?family=Great+Vibes&amp;family=Poppins:wght@500;600&amp;display=swap");
+    </style>
+    <!-- Horizontal script gradient: lighter lavender left → deeper amethyst right (inspired by reference, not a copy) -->
+    <linearGradient id="scriptGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#D4C2FF"/>
+      <stop offset="55%" stop-color="#9B7DFF"/>
+      <stop offset="100%" stop-color="#5A32C9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Subtle original leaf sprig: three simple leaves, placed high to avoid clashing with script -->
+  <g aria-hidden="true" opacity="0.9">
+    <path d="M188 22c3-7 10-8 12-2s-4 11-11 8-4-5-1-6z" fill="#6E44FF"/>
+    <path d="M202 18c5-6 14-5 15 2s-7 10-13 6-4-6-2-8z" fill="#8E6EEB"/>
+    <path d="M214 24c4-5 11-4 12 1s-6 8-11 5-3-4-1-6z" fill="#BDA6FF"/>
+  </g>
+
+  <text
+    x="160"
+    y="84"
+    text-anchor="middle"
+    font-family="Great Vibes, 'Segoe Script', 'Apple Chancery', cursive"
+    font-size="76"
+    fill="url(#scriptGrad)"
+  >Ani&#x2019;s</text>
+
+  <text
+    x="160"
+    y="118"
+    text-anchor="middle"
+    font-family="Poppins, system-ui, -apple-system, sans-serif"
+    font-size="12.5"
+    font-weight="600"
+    letter-spacing="0.48em"
+    fill="#4F3F63"
+  >STUDIO</text>
+</svg>
