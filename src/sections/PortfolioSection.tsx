@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
+import { usePortfolioItems } from '../hooks/usePortfolioItems'
 
 interface PortfolioSectionProps {
   language: 'hr' | 'en'
@@ -42,6 +43,9 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
 
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'lrc' | 'interiors' | 'web-atelier'>('all')
 
+  const { items: portfolioItems, resolvedKind } = usePortfolioItems(language)
+  const portfolioLoading = resolvedKind === 'loading'
+
   // Category icons
   const categoryIcons: Record<string, string> = {
     'lrc': '🎁',
@@ -49,23 +53,15 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     'web-atelier': '💻'
   }
 
-  // Placeholder portfolio items
-  const portfolioItems = [
-    { id: 1, category: 'lrc', title: language === 'hr' ? 'Personalizirani poklon' : 'Customized Gift' },
-    { id: 2, category: 'lrc', title: language === 'hr' ? 'Epoksidno umjetničko djelo' : 'Epoxy Art Piece' },
-    { id: 3, category: 'interiors', title: language === 'hr' ? 'Moderna kuhinja' : 'Modern Kitchen' },
-    { id: 4, category: 'interiors', title: language === 'hr' ? 'Ugradni ormar' : 'Built-in Wardrobe' },
-    { id: 5, category: 'web-atelier', title: language === 'hr' ? 'Landing stranica' : 'Landing Page' },
-    { id: 6, category: 'lrc', title: language === 'hr' ? 'Laser graviranje' : 'Laser Engraving' },
-    { id: 7, category: 'interiors', title: language === 'hr' ? 'Radni prostor' : 'Workspace' },
-    { id: 8, category: 'web-atelier', title: language === 'hr' ? 'E-commerce stranica' : 'E-commerce Site' },
-    { id: 9, category: 'lrc', title: language === 'hr' ? 'Makrame ukras' : 'Macrame Decoration' },
-    { id: 10, category: 'interiors', title: language === 'hr' ? 'Dnevni boravak' : 'Living Room' }
-  ]
-
-  const filteredItems = selectedCategory === 'all' 
-    ? portfolioItems.slice(0, 10)
-    : portfolioItems.filter(item => item.category === selectedCategory).slice(0, 10)
+  const filteredItems = useMemo(() => {
+    const list =
+      selectedCategory === 'all'
+        ? portfolioItems
+        : portfolioItems.filter((item) => item.category === selectedCategory)
+    const useFallbackLimits =
+      list.length === 0 || portfolioItems.every((item) => item.key.startsWith('fallback-'))
+    return useFallbackLimits ? list.slice(0, 10) : list
+  }, [portfolioItems, selectedCategory])
 
   return (
     <section id="portfolio" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
@@ -108,10 +104,15 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
         </div>
 
         {/* Portfolio Grid — single column on narrow phones */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
+        <div
+          className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 transition-opacity duration-300 ${
+            portfolioLoading ? 'opacity-95' : 'opacity-100'
+          }`}
+          aria-busy={portfolioLoading}
+        >
           {filteredItems.map((item, index) => (
             <div
-              key={item.id}
+              key={item.key}
               className="group flex h-full flex-col rounded-2xl overflow-hidden cursor-pointer
                 bg-[rgba(248,246,255,0.76)] dark:bg-white/8 backdrop-blur-xl
                 border border-amethyst/18 dark:border-lavender/15
@@ -121,25 +122,35 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
                 transition-all duration-300"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              {/* Shimmer Placeholder Image */}
+              {/* Supabase image when available; otherwise same shimmer + icon placeholder */}
               <div className="aspect-square relative overflow-hidden">
-                {/* Shimmer animation background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 via-amethyst/20 to-lavender/30 dark:from-lavender/15 dark:via-amethyst/10 dark:to-lavender/15" />
-                
-                {/* Shimmer sweep effect */}
-                <div 
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-                />
-                
-                {/* Centered icon + text */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-4xl sm:text-5xl mb-2 opacity-60 group-hover:scale-110 transition-transform duration-300">
-                    {categoryIcons[item.category]}
-                  </div>
-                  <p className="text-xs text-plum/70 dark:text-pearl/50 font-medium">
-                    {translations.placeholder[language]}
-                  </p>
-                </div>
+                {item.imageUrl ? (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.imageAlt ?? ''}
+                    loading="lazy"
+                    decoding="async"
+                    draggable={false}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  />
+                ) : (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 via-amethyst/20 to-lavender/30 dark:from-lavender/15 dark:via-amethyst/10 dark:to-lavender/15" />
+
+                    <div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
+                    />
+
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="text-4xl sm:text-5xl mb-2 opacity-60 group-hover:scale-110 transition-transform duration-300">
+                        {categoryIcons[item.category]}
+                      </div>
+                      <p className="text-xs text-plum/70 dark:text-pearl/50 font-medium">
+                        {translations.placeholder[language]}
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Item Info */}
