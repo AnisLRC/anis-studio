@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProjects, updateProjectStatus, type ProjectListFilters } from "../lib/interiors";
 import { TableSkeleton } from "../components/Skeleton";
-import { AnimatedPage } from "../components/AnimatedPage";
 
 type Project = Awaited<ReturnType<typeof fetchProjects>>[number];
 
@@ -149,8 +148,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
   });
 
   return (
-    <AnimatedPage>
-      <div className="min-h-screen bg-slate-50 px-4 py-8">
+    <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -378,7 +376,6 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
         )}
       </div>
     </div>
-    </AnimatedPage>
   );
 };
 

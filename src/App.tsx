@@ -11,6 +11,7 @@ import RegisterModal from './components/RegisterModal'
 import { useGlobalScrollAnimations } from './hooks/useGlobalScrollAnimations'
 import { useThemeStore } from './lib/theme.store'
 import MainLayout from './layouts/MainLayout'
+import AdminLayout from './layouts/AdminLayout'
 import HomePage from './pages/HomePage'
 import AdminRoute from './components/AdminRoute'
 import { AdminAuthProvider } from './providers/AdminAuthProvider'
@@ -89,40 +90,21 @@ function AnimatedRoutes({
             <Route path="/vr/:projectId" element={<PublicProjectVrPage />} />
           </Route>
 
-          {/* Admin routes - no public header/footer */}
+          {/* Admin routes - no public header/footer; login outside persistent shell */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route
-            path="/admin/settings"
+            path="/admin"
             element={
               <AdminRoute>
-                <AdminSettingsPage />
+                <AdminLayout />
               </AdminRoute>
             }
-          />
-          <Route
-            path="/admin/lrc-inquiries"
-            element={
-              <AdminRoute>
-                <AdminLrcInquiriesPage />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/interiors-projects"
-            element={
-              <AdminRoute>
-                <AdminInteriorsProjectsPage />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/interiors-projects/:id"
-            element={
-              <AdminRoute>
-                <AdminInteriorsProjectDetailPage />
-              </AdminRoute>
-            }
-          />
+          >
+            <Route path="settings" element={<AdminSettingsPage />} />
+            <Route path="lrc-inquiries" element={<AdminLrcInquiriesPage />} />
+            <Route path="interiors-projects" element={<AdminInteriorsProjectsPage />} />
+            <Route path="interiors-projects/:id" element={<AdminInteriorsProjectDetailPage />} />
+          </Route>
         </Routes>
       </Suspense>
     </AnimatePresence>

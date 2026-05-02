@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { fetchLrcInquiries, updateLrcInquiryStatus, type LrcInquiry, type LrcInquiryStatus } from '../lib/lrcInquiries'
 import { isSupabaseConfigured } from '../lib/supabase'
 import { lrcInquiryCustomIdeaOption, sampleProducts } from '../data/products'
-import AdminNav from '../components/AdminNav'
 import { TableSkeleton } from '../components/Skeleton'
-import { AnimatedPage } from '../components/AnimatedPage'
 import { StatusBadge } from '../components/StatusBadge'
 
 function formatDate(dateString: string): string {
@@ -98,9 +96,7 @@ const AdminLrcInquiriesPage: React.FC = () => {
   }
 
   return (
-    <AnimatedPage>
-      <main className="min-h-screen bg-white text-slate-900">
-      <AdminNav />
+    <main className="min-h-screen bg-white text-slate-900">
       <section className="max-w-5xl mx-auto px-4 py-10">
         {/* Header */}
         <header className="mb-8 border-b pb-4">
@@ -322,7 +318,6 @@ const AdminLrcInquiriesPage: React.FC = () => {
         )}
       </section>
     </main>
-    </AnimatedPage>
   )
 }
 

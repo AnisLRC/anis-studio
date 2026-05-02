@@ -60,7 +60,7 @@ const AdminNav: React.FC = () => {
                   }`
                 }
               >
-                Interijeri projekti
+                Interijer projekti
               </NavLink>
             </nav>
           </div>
