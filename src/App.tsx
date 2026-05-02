@@ -35,6 +35,7 @@ const AdminInteriorsProjectsPage = lazy(() => import('./pages/AdminInteriorsProj
 const AdminInteriorsProjectDetailPage = lazy(
   () => import('./pages/AdminInteriorsProjectDetailPage')
 )
+const AdminPortfolioPage = lazy(() => import('./pages/AdminPortfolioPage'))
 
 // Routes component with AnimatePresence
 function AnimatedRoutes({
@@ -104,6 +105,7 @@ function AnimatedRoutes({
             <Route path="lrc-inquiries" element={<AdminLrcInquiriesPage />} />
             <Route path="interiors-projects" element={<AdminInteriorsProjectsPage />} />
             <Route path="interiors-projects/:id" element={<AdminInteriorsProjectDetailPage />} />
+            <Route path="portfolio" element={<AdminPortfolioPage />} />
           </Route>
         </Routes>
       </Suspense>

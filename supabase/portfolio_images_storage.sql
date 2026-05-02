@@ -1,8 +1,10 @@
 -- ============================================
 -- Supabase Storage: portfolio-images bucket + RLS
 -- ============================================
--- • Bucket: portfolio-images (javno čitanje za slike na webu)
--- • Upload / update / delete: samo authenticated (nema anon upload)
+-- • Bucket: portfolio-images, public = true — slike servira Supabase javnim URL-om (getPublicUrl),
+--   ne treba široka public SELECT pravila koja bi anon korisnicima dopuštala LIST /pregled svih putanja u bucketu.
+-- • Bez policy "portfolio_images_public_select"; postojeća se uklanja dropom ispod ako je još u bazi.
+-- • Upload / update / delete: samo authenticated (nema anon upload, niti public update/delete).
 -- • MIME: image/jpeg, image/png, image/webp
 -- • Limit ~10 MB po datoteci
 --
@@ -30,12 +32,8 @@ drop policy if exists "portfolio_images_authenticated_insert" on storage.objects
 drop policy if exists "portfolio_images_authenticated_update" on storage.objects;
 drop policy if exists "portfolio_images_authenticated_delete" on storage.objects;
 
--- Javno čitanje (anon + authenticated) za ovaj bucket
-create policy "portfolio_images_public_select"
-on storage.objects
-for select
-to public
-using (bucket_id = 'portfolio-images');
+-- Nema CREATE za portfolio_images_public_select: bucket ostaje public radi javnih URL-ova (getPublicUrl),
+-- ali se ne dodaje policy koja bi `public` roli dopuštala SELECT nad svim objektima (što uključuje listanje).
 
 -- Samo prijavljeni korisnici uploadaju
 create policy "portfolio_images_authenticated_insert"
