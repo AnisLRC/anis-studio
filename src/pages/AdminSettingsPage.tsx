@@ -59,7 +59,7 @@ export default function AdminSettingsPage() {
           <h1 className="text-2xl font-semibold text-slate-900">
             Postavke sustava
           </h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-slate-700">
             Upravljaj postavkama Ani's Studio sustava.
           </p>
         </header>
@@ -67,7 +67,7 @@ export default function AdminSettingsPage() {
         {/* Error message */}
         {error && (
           <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
-            <p className="text-sm text-red-800">
+            <p className="text-sm text-red-950 font-medium">
               Greška: {error}
             </p>
           </div>
@@ -76,7 +76,7 @@ export default function AdminSettingsPage() {
         {/* Success message */}
         {successMessage && (
           <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
-            <p className="text-sm text-green-800">{successMessage}</p>
+            <p className="text-sm text-green-950 font-medium">{successMessage}</p>
           </div>
         )}
 
@@ -86,7 +86,7 @@ export default function AdminSettingsPage() {
             <h2 className="text-lg font-semibold text-slate-900">
               LRC prijave
             </h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-slate-700">
               Kada je isključeno, public LRC forma se skriva i na stranici se prikazuje poruka da trenutno nema otvorenih prijava za LRC radionice.
             </p>
           </div>
@@ -94,7 +94,7 @@ export default function AdminSettingsPage() {
           <div className="px-6 py-6">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <p className="text-slate-600">Učitavanje postavki...</p>
+                <p className="text-slate-700 font-medium">Učitavanje postavki...</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -103,7 +103,7 @@ export default function AdminSettingsPage() {
                     <p className="text-base font-medium text-slate-900">
                       Omogući LRC prijave
                     </p>
-                    <p className="mt-1 text-sm text-slate-600">
+                    <p className="mt-1 text-sm text-slate-700">
                       {localEnabled
                         ? 'Prijave su trenutno omogućene i forma za prijavu na LRC radionice je vidljiva korisnicima.'
                         : 'Prijave su trenutno onemogućene i korisnici vide poruku da trenutno nema otvorenih prijava za LRC radionice.'}
@@ -138,7 +138,7 @@ export default function AdminSettingsPage() {
                 {/* Toggle Error Message */}
                 {toggleError && (
                   <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                    <p className="text-xs text-red-700">{toggleError}</p>
+                    <p className="text-xs text-red-950 font-semibold">{toggleError}</p>
                   </div>
                 )}
               </div>
@@ -148,7 +148,7 @@ export default function AdminSettingsPage() {
 
         {/* Info Box */}
         <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-          <p className="text-sm text-blue-800">
+          <p className="text-sm text-blue-950 leading-relaxed font-medium">
             <strong>Napomena:</strong> Promjene se primjenjuju odmah. Kada su LRC prijave
             onemogućene, korisnici vide poruku da trenutno nema otvorenih prijava za LRC radionice,
             ali webshop s gotovim proizvodima ostaje dostupan.

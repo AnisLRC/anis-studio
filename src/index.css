@@ -625,6 +625,40 @@
   }
 }
 
+/* ─── Admin SPA: readable typography on light layouts when html.dark is on ─────────
+     Global html.dark styles set light body heading/p colours for marketing UI.
+     Utilities like text-slate-600 lose specificity to html.dark p rules, and the
+     global h1 gradient + transparent fill makes admin headings invisible on cards. ─ */
+.admin-scope {
+  color: rgb(30 41 59); /* slate-800 */
+}
+
+html.dark .admin-scope {
+  color: rgb(30 41 59);
+}
+
+html.dark .admin-scope h1 {
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: normal;
+  line-height: inherit;
+  background-image: none;
+  background-clip: unset;
+  -webkit-background-clip: unset;
+  color: rgb(15 23 42);
+  -webkit-text-fill-color: rgb(15 23 42);
+}
+
+html.dark .admin-scope h2,
+html.dark .admin-scope h3 {
+  color: rgb(15 23 42);
+}
+
+html.dark .admin-scope p {
+  color: rgb(51 65 85); /* slate-600 */
+  max-width: none;
+}
+
 /* ─── Performance: defer paint for below-the-fold sections ─── */
 /* content-visibility: auto lets the browser skip rendering work for off-screen
    sections on first load, measurably improving LCP and TTI on mobile.

@@ -8,7 +8,7 @@
 - [ ] Postaviti environment varijable u Vercel:
   - `VITE_SUPABASE_URL`
   - `VITE_SUPABASE_ANON_KEY`
-  - `VITE_ADMIN_PASSWORD`
+- [ ] U Supabase Auth kreirati admin korisnika (email + lozinka) za `/admin/login`
 - [ ] Testirati sve forme s pravim Supabase-om
 - [ ] Verificirati da admin login radi
 - [ ] Provjeriti da `.env` datoteke nisu commited-e u git (koristiti `git status`)
@@ -31,8 +31,8 @@
    ```
    VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   VITE_ADMIN_PASSWORD=your_secure_admin_password
    ```
+   Admin prijava: Supabase Dashboard → Authentication → Users (korisnik za `/admin/login`).
 
 3. **VAŽNO - Ukloni .env iz git-a (ako je slučajno commitovan):**
    ```bash
@@ -64,7 +64,6 @@ Postavi sljedeće env varijable u Vercel Dashboard → Project Settings → Envi
 |-----------|------|----------|
 | `VITE_SUPABASE_URL` | Supabase project URL | DA |
 | `VITE_SUPABASE_ANON_KEY` | Supabase anonymous key | DA |
-| `VITE_ADMIN_PASSWORD` | Admin panel password | DA |
 
 **Napomena**: Nakon dodavanja environment varijabli, morat ćeš pokrenuti redeploy.
 

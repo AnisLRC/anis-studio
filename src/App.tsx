@@ -48,11 +48,14 @@ function AnimatedRoutes({
   onCartClick: () => void
 }) {
   const location = useLocation()
+  // Avoid remounting the whole route tree between admin URLs (better dashboard UX).
+  // Public URLs still key by pathname so AnimatePresence + page exits behave as before.
+  const routeKey = location.pathname.startsWith('/admin') ? '/admin' : location.pathname
 
   return (
     <AnimatePresence mode="wait">
       <Suspense fallback={<RouteFallback />}>
-        <Routes location={location} key={location.pathname}>
+        <Routes location={location} key={routeKey}>
           <Route
             element={
               <MainLayout
