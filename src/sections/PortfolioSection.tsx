@@ -63,6 +63,17 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     return useFallbackLimits ? list.slice(0, 10) : list
   }, [portfolioItems, selectedCategory])
 
+  const isFallbackGallery = useMemo(
+    () =>
+      portfolioItems.length > 0 &&
+      portfolioItems.every((item) => item.key.startsWith('fallback-')),
+    [portfolioItems]
+  )
+
+  const gridClasses = isFallbackGallery
+    ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 transition-opacity duration-300'
+    : 'mx-auto grid w-full max-w-[68rem] grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2 md:gap-8 transition-opacity duration-300'
+
   return (
     <section id="portfolio" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
       {/* Background wrapper */}
@@ -105,75 +116,126 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
 
         {/* Portfolio Grid — single column on narrow phones */}
         <div
-          className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 transition-opacity duration-300 ${
+          className={`${gridClasses} ${
             portfolioLoading ? 'opacity-95' : 'opacity-100'
           }`}
           aria-busy={portfolioLoading}
         >
-          {filteredItems.map((item, index) => (
-            <div
-              key={item.key}
-              className="group flex h-full flex-col rounded-2xl overflow-hidden cursor-pointer
-                bg-[rgba(248,246,255,0.76)] dark:bg-white/8 backdrop-blur-xl
-                border border-amethyst/18 dark:border-lavender/15
-                shadow-[0_4px_16px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
-                hover:shadow-[0_16px_40px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)]
-                hover:scale-[1.02] hover:-translate-y-1 sm:hover:scale-105
-                transition-all duration-300"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              {/* Supabase image when available; otherwise same shimmer + icon placeholder */}
-              <div className="aspect-square relative overflow-hidden">
-                {item.imageUrl ? (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.imageAlt ?? ''}
-                    loading="lazy"
-                    decoding="async"
-                    draggable={false}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                  />
+          {filteredItems.map((item, index) => {
+            const isFallbackItem = item.key.startsWith('fallback-')
+
+            return (
+              <div
+                key={item.key}
+                className={`
+                  group flex h-full flex-col overflow-hidden cursor-pointer rounded-2xl border border-amethyst/18 backdrop-blur-xl
+                  bg-[rgba(248,246,255,0.76)] shadow-[0_4px_16px_rgba(46,36,71,0.07)]
+                  hover:shadow-[0_16px_40px_rgba(110,68,255,0.12)] dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:border-lavender/15
+                  dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)]
+                  transition-all duration-300
+                  ${isFallbackItem ? 'hover:scale-[1.02] hover:-translate-y-1 sm:hover:scale-105' : 'hover:-translate-y-0.5 sm:hover:-translate-y-1'}`
+                }
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                {isFallbackItem ? (
+                  <>
+                    {/* Fallback: thumbnail-style square placeholders (unchanged look) */}
+                    <div className="relative aspect-square overflow-hidden">
+                      {item.imageUrl ? (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.imageAlt ?? ''}
+                          loading="lazy"
+                          decoding="async"
+                          draggable={false}
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        />
+                      ) : (
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 via-amethyst/20 to-lavender/30 dark:from-lavender/15 dark:via-amethyst/10 dark:to-lavender/15" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <div className="mb-2 text-4xl opacity-60 transition-transform duration-300 group-hover:scale-110 sm:text-5xl">
+                              {categoryIcons[item.category]}
+                            </div>
+                            <p className="text-xs font-medium text-plum/70 dark:text-pearl/50">
+                              {translations.placeholder[language]}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex min-h-0 flex-1 flex-col p-3 sm:p-4">
+                      <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-plum/90 transition-colors dark:text-pearl group-hover:text-amethyst dark:group-hover:text-lavender sm:text-base">
+                        {item.title}
+                      </h3>
+                      <span className="mt-auto inline-flex max-w-full w-fit items-center gap-1 rounded-full border border-amethyst/20 bg-gradient-to-r from-amethyst/15 to-lavender/15 px-2.5 py-1 text-[10px] font-semibold text-amethyst dark:border-lavender/20 dark:from-amethyst/25 dark:to-lavender/20 dark:text-lavender sm:text-xs">
+                        <span className="shrink-0 text-xs">{categoryIcons[item.category]}</span>
+                        <span className="truncate">
+                          {
+                            translations.categories[language][
+                              item.category === 'lrc' ? 1 : item.category === 'interiors' ? 2 : 3
+                            ]
+                          }
+                        </span>
+                      </span>
+                    </div>
+                  </>
                 ) : (
                   <>
-                    <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 via-amethyst/20 to-lavender/30 dark:from-lavender/15 dark:via-amethyst/10 dark:to-lavender/15" />
-
-                    <div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-                    />
-
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <div className="text-4xl sm:text-5xl mb-2 opacity-60 group-hover:scale-110 transition-transform duration-300">
-                        {categoryIcons[item.category]}
-                      </div>
-                      <p className="text-xs text-plum/70 dark:text-pearl/50 font-medium">
-                        {translations.placeholder[language]}
-                      </p>
+                    {/* Real Supabase: full board in frame */}
+                    <div className="relative aspect-[4/3] w-full shrink-0 border-b border-amethyst/[0.14] bg-white/[0.94] dark:border-lavender/10 dark:bg-slate-950/45">
+                      {item.imageUrl ? (
+                        <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-5 lg:p-6">
+                          <img
+                            src={item.imageUrl}
+                            alt={item.imageAlt ?? ''}
+                            loading="lazy"
+                            decoding="async"
+                            draggable={false}
+                            className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 via-amethyst/20 to-lavender/30 dark:from-lavender/15 dark:via-amethyst/10 dark:to-lavender/15" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/35 dark:via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <div className="mb-2 text-4xl opacity-55 transition-transform duration-300 group-hover:scale-110 sm:text-5xl">
+                              {categoryIcons[item.category]}
+                            </div>
+                            <p className="text-xs font-medium text-plum/70 dark:text-pearl/50">
+                              {translations.placeholder[language]}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex min-h-0 flex-1 flex-col gap-2 p-4 sm:p-5">
+                      <h3 className="line-clamp-3 text-base font-semibold leading-snug text-plum/90 dark:text-pearl transition-colors group-hover:text-amethyst dark:group-hover:text-lavender sm:text-lg">
+                        {item.title}
+                      </h3>
+                      {item.description ? (
+                        <p className="line-clamp-3 text-sm leading-relaxed text-plum/[0.84] dark:text-pearl/[0.74]">
+                          {item.description}
+                        </p>
+                      ) : null}
+                      <span className="mt-auto inline-flex max-w-full w-fit items-center gap-1 rounded-full border border-amethyst/20 bg-gradient-to-r from-amethyst/15 to-lavender/15 px-2.5 py-1 text-[11px] font-semibold text-amethyst dark:border-lavender/20 dark:from-amethyst/25 dark:to-lavender/20 dark:text-lavender sm:text-xs">
+                        <span className="shrink-0 text-xs">{categoryIcons[item.category]}</span>
+                        <span className="truncate">
+                          {
+                            translations.categories[language][
+                              item.category === 'lrc' ? 1 : item.category === 'interiors' ? 2 : 3
+                            ]
+                          }
+                        </span>
+                      </span>
                     </div>
                   </>
                 )}
               </div>
-
-              {/* Item Info */}
-              <div className="flex min-h-0 flex-1 flex-col p-3 sm:p-4">
-                <h3 className="text-sm sm:text-base font-semibold text-plum/90 dark:text-pearl mb-2 line-clamp-2 group-hover:text-amethyst dark:group-hover:text-lavender transition-colors">
-                  {item.title}
-                </h3>
-                
-                {/* Category Badge */}
-                <span className="
-                  mt-auto inline-flex w-fit max-w-full items-center gap-1 px-2.5 py-1 
-                  text-[10px] sm:text-xs font-semibold rounded-full
-                  bg-gradient-to-r from-amethyst/15 to-lavender/15 
-                  dark:from-amethyst/25 dark:to-lavender/20
-                  text-amethyst dark:text-lavender
-                  border border-amethyst/20 dark:border-lavender/20
-                ">
-                  <span className="text-xs shrink-0">{categoryIcons[item.category]}</span>
-                  <span className="truncate">{translations.categories[language][item.category === 'lrc' ? 1 : item.category === 'interiors' ? 2 : 3]}</span>
-                </span>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Empty State */}

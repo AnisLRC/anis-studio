@@ -9,6 +9,8 @@ export interface PortfolioGridItem {
   key: string
   category: PortfolioGridCategory
   title: string
+  /** Mapped from description / description_en; null when empty or fallback item */
+  description: string | null
   imageUrl: string | null
   imageAlt: string | null
 }
@@ -39,6 +41,7 @@ function buildFallbackGridItems(language: 'hr' | 'en'): PortfolioGridItem[] {
     key: `fallback-${row.id}`,
     category: row.category,
     title: language === 'hr' ? row.titleHr : row.titleEn,
+    description: null,
     imageUrl: null,
     imageAlt: null,
   }))
@@ -50,6 +53,18 @@ function titleForLanguage(item: PortfolioItem, language: 'hr' | 'en'): string {
     if (t) return t
   }
   return item.title.trim() || ''
+}
+
+function descriptionForLanguage(item: PortfolioItem, language: 'hr' | 'en'): string | null {
+  if (language === 'en') {
+    const dEn = item.description_en?.trim()
+    if (dEn) return dEn
+    const dHr = item.description?.trim()
+    if (dHr) return dHr
+    return null
+  }
+  const d = item.description?.trim()
+  return d ? d : null
 }
 
 function imageAltForLanguage(item: PortfolioItem, language: 'hr' | 'en'): string | null {
@@ -70,6 +85,7 @@ function mapRemoteToGrid(rows: PortfolioItem[], language: 'hr' | 'en'): Portfoli
     key: item.id,
     category: item.category,
     title: titleForLanguage(item, language),
+    description: descriptionForLanguage(item, language),
     imageUrl: item.image_url?.trim() || null,
     imageAlt: item.image_url ? imageAltForLanguage(item, language) : null,
   }))
