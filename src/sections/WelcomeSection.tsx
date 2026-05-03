@@ -179,15 +179,22 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
         {/* CTA buttons */}
         <div className="mt-7 sm:mt-8 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:gap-4 mx-auto">
-          <a
-            href="#contact"
+          <Link
+            to="/interijeri"
+            onClick={() =>
+              trackEvent('homepage_line_click', {
+                line: 'welcome_primary_cta',
+                destination: '/interijeri',
+                intent: 'interiors_service_page',
+              })
+            }
             className="inline-flex min-h-[48px] w-full sm:w-auto items-center justify-center rounded-2xl px-6 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-semibold text-white
               bg-amethyst
               hover:translate-y-[-1px] hover:shadow-[0_24px_70px_rgba(110,68,255,0.45)]
               active:translate-y-0 transition-transform duration-200 will-change-transform"
             style={{ animation: 'ctaPulse 3s ease-in-out infinite' }}>
             {translations.ctaPrimary[language]}
-          </a>
+          </Link>
 
           <a
             href="#portfolio"

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 import { usePortfolioItems, type PortfolioGridItem } from '../hooks/usePortfolioItems'
@@ -91,6 +92,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
   }, [visibleFilterCategories, selectedCategory])
 
   useEffect(() => {
+    if (typeof document === 'undefined') return
     if (!lightboxItem) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -130,9 +132,12 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
   }, [lightboxNavItems, lightboxItem])
 
   useEffect(() => {
+    if (typeof document === 'undefined') return
     if (!lightboxItem) return
-    const onKeyDown = (e: KeyboardEvent) => {
+
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.preventDefault()
         setLightboxItem(null)
         return
       }
@@ -140,7 +145,8 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
       if (e.key === 'ArrowLeft') {
         e.preventDefault()
         const i = lightboxNavItems.findIndex((x) => x.key === lightboxItem.key)
-        const idx = i < 0 ? lightboxNavItems.length - 1 : (i - 1 + lightboxNavItems.length) % lightboxNavItems.length
+        const idx =
+          i < 0 ? lightboxNavItems.length - 1 : (i - 1 + lightboxNavItems.length) % lightboxNavItems.length
         setLightboxItem(lightboxNavItems[idx])
         return
       }
@@ -151,20 +157,13 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
         setLightboxItem(lightboxNavItems[idx])
       }
     }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
+
+    document.addEventListener('keydown', handleKeyDown, true)
+    return () => document.removeEventListener('keydown', handleKeyDown, true)
   }, [lightboxItem, lightboxNavItems])
 
-  const isFallbackGallery = useMemo(
-    () =>
-      portfolioItems.length > 0 &&
-      portfolioItems.every((item) => item.key.startsWith('fallback-')),
-    [portfolioItems]
-  )
-
-  const gridClasses = isFallbackGallery
-    ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 transition-opacity duration-300'
-    : 'mx-auto grid w-full max-w-[68rem] grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2 md:gap-8 transition-opacity duration-300'
+  const gridClasses =
+    'grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 sm:gap-5 transition-opacity duration-300'
 
   const categoryLabelFor = (cat: PortfolioGridItem['category']) =>
     translations.categories[language][cat === 'lrc' ? 1 : cat === 'interiors' ? 2 : 3]
@@ -187,7 +186,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-violet-600 text-white shadow-lg touch-manipulation hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#111018]'
 
   return (
-    <section id="portfolio" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
+    <section id="portfolio" className="section-with-bg relative overflow-x-clip px-4 py-10 sm:px-6 sm:py-12 md:px-8 md:py-14">
       {/* Background wrapper */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <DecorativeSkyBackdrop priority="lazy" />
@@ -197,17 +196,17 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
       
       <div className="max-w-7xl mx-auto min-w-0 relative z-10">
         {/* Section Header */}
-        <div className="mb-6 text-center sm:mb-8">
-          <h2 className="mb-3 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-3.5 sm:text-3xl md:text-4xl">
+        <div className="mb-5 text-center sm:mb-6">
+          <h2 className="mb-3 font-heading text-2xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:mb-3 sm:text-3xl md:text-4xl">
             {translations.title[language]}
           </h2>
-          <p className="mx-auto max-w-2xl px-1 text-base leading-relaxed text-plum/80 dark:text-pearl/75 sm:text-lg">
+          <p className="mx-auto max-w-2xl px-1 text-base leading-relaxed text-plum/80 dark:text-pearl/75 sm:text-[1.0625rem]">
             {translations.subtitle[language]}
           </p>
         </div>
 
         {/* Category Filters - with glow on active */}
-        <div className="mb-6 flex flex-wrap justify-center gap-2.5 sm:mb-8 sm:gap-3">
+        <div className="mb-5 flex flex-wrap justify-center gap-2.5 sm:mb-6 sm:gap-3">
           {visibleFilterCategories.map((category) => (
             <button
               key={category}
@@ -226,123 +225,71 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
           ))}
         </div>
 
-        {/* Portfolio Grid — single column on narrow phones */}
-        <div
-          className={`${gridClasses} ${
-            portfolioLoading ? 'opacity-95' : 'opacity-100'
-          }`}
-          aria-busy={portfolioLoading}
-        >
+        {/* Portfolio Grid — compact cards, centered block under heading/filters */}
+        <div className="mx-auto w-full max-w-6xl">
+          <div
+            className={`${gridClasses} ${
+              portfolioLoading ? 'opacity-95' : 'opacity-100'
+            }`}
+            aria-busy={portfolioLoading}
+          >
           {filteredItems.map((item, index) => {
             const isFallbackItem = item.key.startsWith('fallback-')
 
             const cardClassName = `
-                  group flex h-full flex-col overflow-hidden rounded-2xl border border-amethyst/18 backdrop-blur-xl
-                  bg-[rgba(248,246,255,0.76)] shadow-[0_4px_16px_rgba(46,36,71,0.07)]
-                  hover:shadow-[0_16px_40px_rgba(110,68,255,0.12)] dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:border-lavender/15
-                  dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)]
-                  transition-all duration-300
-                  ${isFallbackItem ? 'cursor-pointer hover:scale-[1.02] hover:-translate-y-1 sm:hover:scale-105' : 'cursor-pointer hover:-translate-y-0.5 sm:hover:-translate-y-1'}`
+                  group flex h-full flex-col overflow-hidden rounded-2xl border border-[rgba(110,68,255,0.15)]
+                  bg-[rgba(248,246,255,0.72)] text-left shadow-sm backdrop-blur-sm
+                  transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md
+                  dark:border-lavender/15 dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.25)]
+                  dark:hover:shadow-[0_12px_40px_rgba(189,166,255,0.12)]
+                  ${isFallbackItem ? 'cursor-default' : 'cursor-pointer'}`
             const cardStyle = { animationDelay: `${index * 50}ms` } as const
+
+            const categoryChipLabel =
+              translations.categories[language][
+                item.category === 'lrc' ? 1 : item.category === 'interiors' ? 2 : 3
+              ]
 
             const cardInner = (
               <>
-                {isFallbackItem ? (
-                  <>
-                    {/* Fallback: thumbnail-style square placeholders (unchanged look) */}
-                    <div className="relative aspect-square overflow-hidden">
-                      {item.imageUrl ? (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.imageAlt ?? ''}
-                          loading="lazy"
-                          decoding="async"
-                          draggable={false}
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                        />
-                      ) : (
-                        <>
-                          <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 via-amethyst/20 to-lavender/30 dark:from-lavender/15 dark:via-amethyst/10 dark:to-lavender/15" />
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <div className="mb-2 text-4xl opacity-60 transition-transform duration-300 group-hover:scale-110 sm:text-5xl">
-                              {categoryIcons[item.category]}
-                            </div>
-                            <p className="text-xs font-medium text-plum/70 dark:text-pearl/50">
-                              {translations.placeholder[language]}
-                            </p>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <div className="flex min-h-0 flex-1 flex-col p-3 sm:p-4">
-                      <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-plum/90 transition-colors dark:text-pearl group-hover:text-amethyst dark:group-hover:text-lavender sm:text-base">
-                        {item.title}
-                      </h3>
-                      <span className="mt-auto inline-flex max-w-full w-fit items-center gap-1 rounded-full border border-amethyst/20 bg-gradient-to-r from-amethyst/15 to-lavender/15 px-2.5 py-1 text-[10px] font-semibold text-amethyst dark:border-lavender/20 dark:from-amethyst/25 dark:to-lavender/20 dark:text-lavender sm:text-xs">
-                        <span className="shrink-0 text-xs">{categoryIcons[item.category]}</span>
-                        <span className="truncate">
-                          {
-                            translations.categories[language][
-                              item.category === 'lrc' ? 1 : item.category === 'interiors' ? 2 : 3
-                            ]
-                          }
+                <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-amethyst/[0.14] dark:border-lavender/10">
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.imageAlt ?? ''}
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    />
+                  ) : (
+                    <>
+                      <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 via-amethyst/20 to-lavender/30 dark:from-lavender/15 dark:via-amethyst/10 dark:to-lavender/15" />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span
+                          className="text-3xl opacity-60 transition-transform duration-300 group-hover:scale-105 dark:opacity-50"
+                          aria-hidden
+                        >
+                          {categoryIcons[item.category]}
                         </span>
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* Real Supabase: full board in frame */}
-                    <div className="relative aspect-[4/3] w-full shrink-0 border-b border-amethyst/[0.14] bg-white/[0.94] dark:border-lavender/10 dark:bg-slate-950/45">
-                      {item.imageUrl ? (
-                        <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-5 lg:p-6">
-                          <img
-                            src={item.imageUrl}
-                            alt={item.imageAlt ?? ''}
-                            loading="lazy"
-                            decoding="async"
-                            draggable={false}
-                            className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
-                          />
-                        </div>
-                      ) : (
-                        <>
-                          <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 via-amethyst/20 to-lavender/30 dark:from-lavender/15 dark:via-amethyst/10 dark:to-lavender/15" />
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/35 dark:via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <div className="mb-2 text-4xl opacity-55 transition-transform duration-300 group-hover:scale-110 sm:text-5xl">
-                              {categoryIcons[item.category]}
-                            </div>
-                            <p className="text-xs font-medium text-plum/70 dark:text-pearl/50">
-                              {translations.placeholder[language]}
-                            </p>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <div className="flex min-h-0 flex-1 flex-col gap-2 p-4 sm:p-5">
-                      <h3 className="line-clamp-3 text-base font-semibold leading-snug text-plum/90 dark:text-pearl transition-colors group-hover:text-amethyst dark:group-hover:text-lavender sm:text-lg">
-                        {item.title}
-                      </h3>
-                      {item.description ? (
-                        <p className="line-clamp-3 text-sm leading-relaxed text-plum/[0.84] dark:text-pearl/[0.74]">
-                          {item.description}
+                        <p className="mt-1 text-[10px] font-medium text-plum/70 dark:text-pearl/50 sm:text-xs">
+                          {translations.placeholder[language]}
                         </p>
-                      ) : null}
-                      <span className="mt-auto inline-flex max-w-full w-fit items-center gap-1 rounded-full border border-amethyst/20 bg-gradient-to-r from-amethyst/15 to-lavender/15 px-2.5 py-1 text-[11px] font-semibold text-amethyst dark:border-lavender/20 dark:from-amethyst/25 dark:to-lavender/20 dark:text-lavender sm:text-xs">
-                        <span className="shrink-0 text-xs">{categoryIcons[item.category]}</span>
-                        <span className="truncate">
-                          {
-                            translations.categories[language][
-                              item.category === 'lrc' ? 1 : item.category === 'interiors' ? 2 : 3
-                            ]
-                          }
-                        </span>
-                      </span>
-                    </div>
-                  </>
-                )}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex min-h-0 flex-1 flex-col gap-2 p-3 sm:p-3.5">
+                  <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-plum/90 transition-colors dark:text-pearl group-hover:text-amethyst dark:group-hover:text-lavender sm:text-sm">
+                    {item.title}
+                  </h3>
+                  <span className="mt-auto inline-flex w-fit max-w-full items-center gap-1 rounded-full border border-amethyst/20 bg-gradient-to-r from-amethyst/15 to-lavender/15 px-2 py-0.5 text-[10px] font-semibold text-amethyst dark:border-lavender/20 dark:from-amethyst/25 dark:to-lavender/20 dark:text-lavender sm:text-[11px]">
+                    <span className="shrink-0 text-xs" aria-hidden>
+                      {categoryIcons[item.category]}
+                    </span>
+                    <span className="truncate">{categoryChipLabel}</span>
+                  </span>
+                </div>
               </>
             )
 
@@ -358,7 +305,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
               <button
                 key={item.key}
                 type="button"
-                className={`${cardClassName} w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amethyst/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(248,246,255,0.76)] dark:focus-visible:ring-lavender/60 dark:focus-visible:ring-offset-slate-900/80`}
+                className={`${cardClassName} w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-primary] focus-visible:ring-offset-2 dark:focus-visible:ring-lavender/60 dark:focus-visible:ring-offset-slate-900`}
                 style={cardStyle}
                 onClick={() => setLightboxItem(item)}
                 aria-label={
@@ -371,6 +318,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
               </button>
             )
           })}
+          </div>
         </div>
 
         {/* Empty State */}
@@ -383,7 +331,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
         )}
 
         {/* Conversion CTA — after portfolio grid */}
-        <div className="mx-auto mt-10 max-w-xl sm:mt-12" aria-labelledby="portfolio-cta-heading">
+        <div className="mx-auto mt-8 max-w-xl sm:mt-10" aria-labelledby="portfolio-cta-heading">
           <div className="rounded-2xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 text-center shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8">
             <h3
               id="portfolio-cta-heading"
@@ -404,46 +352,91 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
         </div>
       </div>
 
-      {lightboxItem ? (
-        <div
-          className="fixed inset-0 z-[1040] overflow-y-auto bg-black/80"
-          role="presentation"
-        >
-          <button
-            type="button"
-            onClick={() => setLightboxItem(null)}
-            className="fixed right-4 top-4 z-[9999] flex items-center gap-2 rounded-full border border-white/20 bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg touch-manipulation hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-            aria-label="Zatvori prikaz"
-          >
-            <span>{language === 'hr' ? 'Zatvori' : 'Close'}</span>
-            <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-
-          <div
-            className="flex min-h-dvh w-full justify-center px-4 pb-8 pt-24"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) setLightboxItem(null)
-            }}
-            role="presentation"
-          >
+      {lightboxItem && typeof document !== 'undefined'
+        ? createPortal(
             <div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="portfolio-lightbox-title"
-              className="portfolio-lightbox-panel relative flex h-fit w-full max-w-6xl flex-col overflow-x-hidden rounded-3xl border border-white/10 bg-[#111018] shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
-              onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto overscroll-contain bg-black/80 px-4 py-6"
+              role="presentation"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setLightboxItem(null)
+              }}
             >
-              <div className="flex flex-col gap-5 px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8">
-                <div className="relative">
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="portfolio-lightbox-title"
+                className="portfolio-lightbox-panel relative z-[9999] flex max-h-[calc(100vh-2rem)] w-full max-w-6xl flex-col overflow-y-auto overflow-x-hidden rounded-3xl border border-white/10 bg-[#111018] shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setLightboxItem(null)}
+                  className="absolute right-3 top-3 z-30 flex items-center gap-2 rounded-full border border-white/20 bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-lg touch-manipulation hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#111018] sm:right-4 sm:top-4 sm:px-4 sm:py-2.5"
+                  aria-label={language === 'hr' ? 'Zatvori prikaz' : 'Close preview'}
+                >
+                  <span>{language === 'hr' ? 'Zatvori' : 'Close'}</span>
+                  <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <div className="flex min-h-0 flex-col gap-5 px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8">
+                  <div className="relative shrink-0">
+                    {showLightboxNav ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={goLightboxPrev}
+                          className={`${navBtnClass} absolute left-1 top-1/2 z-10 hidden -translate-y-1/2 md:flex`}
+                          aria-label={language === 'hr' ? 'Prethodna portfolio stavka' : 'Previous portfolio item'}
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={goLightboxNext}
+                          className={`${navBtnClass} absolute right-1 top-1/2 z-10 hidden -translate-y-1/2 md:flex`}
+                          aria-label={language === 'hr' ? 'Sljedeća portfolio stavka' : 'Next portfolio item'}
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </>
+                    ) : null}
+                    {lightboxItem.imageUrl ? (
+                      <div className="flex w-full min-h-0 min-w-0 shrink-0 justify-center rounded-xl bg-black/25 p-2 sm:p-4">
+                        <img
+                          src={lightboxItem.imageUrl}
+                          alt={lightboxItem.imageAlt ?? ''}
+                          decoding="async"
+                          className="h-auto w-full max-h-[55vh] max-w-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="relative flex aspect-[4/3] w-full max-h-[55vh] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-slate-900/80">
+                        <div className="absolute inset-0 bg-gradient-to-br from-amethyst/25 via-[#111018] to-plum/40" />
+                        <div className="relative flex flex-col items-center">
+                          <span className="mb-2 text-5xl opacity-70" aria-hidden>
+                            {categoryIcons[lightboxItem.category]}
+                          </span>
+                          <p className="portfolio-lightbox-placeholder-caption text-sm font-medium text-zinc-400">
+                            {translations.placeholder[language]}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {showLightboxNav ? (
-                    <>
+                    <div className="flex shrink-0 items-center justify-center gap-10 md:hidden">
                       <button
                         type="button"
                         onClick={goLightboxPrev}
-                        className={`${navBtnClass} absolute left-1 top-1/2 z-10 hidden -translate-y-1/2 md:flex`}
-                        aria-label="Prethodna portfolio stavka"
+                        className={navBtnClass}
+                        aria-label={language === 'hr' ? 'Prethodna portfolio stavka' : 'Previous portfolio item'}
                       >
                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -452,84 +445,39 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
                       <button
                         type="button"
                         onClick={goLightboxNext}
-                        className={`${navBtnClass} absolute right-1 top-1/2 z-10 hidden -translate-y-1/2 md:flex`}
-                        aria-label="Sljedeća portfolio stavka"
+                        className={navBtnClass}
+                        aria-label={language === 'hr' ? 'Sljedeća portfolio stavka' : 'Next portfolio item'}
                       >
                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </button>
-                    </>
+                    </div>
                   ) : null}
-                  {lightboxItem.imageUrl ? (
-                    <div className="flex w-full min-w-0 shrink-0 justify-center rounded-xl bg-black/25 p-2 sm:p-4">
-                      <img
-                        src={lightboxItem.imageUrl}
-                        alt={lightboxItem.imageAlt ?? ''}
-                        decoding="async"
-                        className="h-auto w-full max-h-[58dvh] max-w-full object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <div className="relative flex aspect-[4/3] w-full max-h-[58dvh] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-slate-900/80">
-                      <div className="absolute inset-0 bg-gradient-to-br from-amethyst/25 via-[#111018] to-plum/40" />
-                      <div className="relative flex flex-col items-center">
-                        <span className="mb-2 text-5xl opacity-70">{categoryIcons[lightboxItem.category]}</span>
-                        <p className="portfolio-lightbox-placeholder-caption text-sm font-medium text-zinc-400">
-                          {translations.placeholder[language]}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
 
-                {showLightboxNav ? (
-                  <div className="flex items-center justify-center gap-10 md:hidden">
-                    <button
-                      type="button"
-                      onClick={goLightboxPrev}
-                      className={navBtnClass}
-                      aria-label="Prethodna portfolio stavka"
+                  <div className="mx-auto flex w-full max-w-3xl min-h-0 flex-col items-center space-y-3 text-center sm:max-w-4xl">
+                    <h2
+                      id="portfolio-lightbox-title"
+                      className="w-full text-balance font-heading text-xl font-bold leading-snug text-white sm:text-2xl"
                     >
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={goLightboxNext}
-                      className={navBtnClass}
-                      aria-label="Sljedeća portfolio stavka"
-                    >
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                      {lightboxItem.title}
+                    </h2>
+                    {lightboxItem.description ? (
+                      <p className="portfolio-lightbox-description w-full text-balance text-sm leading-relaxed text-zinc-200 sm:text-base sm:leading-relaxed">
+                        {lightboxItem.description}
+                      </p>
+                    ) : null}
+                    <span className="portfolio-lightbox-badge inline-flex max-w-full shrink-0 items-center justify-center gap-1.5 rounded-full border border-lavender/40 bg-lavender/15 px-3 py-1.5 text-xs font-semibold sm:text-sm">
+                      <span className="shrink-0">{categoryIcons[lightboxItem.category]}</span>
+                      <span>{categoryLabelFor(lightboxItem.category)}</span>
+                    </span>
                   </div>
-                ) : null}
-
-                <div className="min-w-0 space-y-3 text-left">
-                  <h2
-                    id="portfolio-lightbox-title"
-                    className="font-heading text-xl font-bold leading-snug text-white sm:text-2xl"
-                  >
-                    {lightboxItem.title}
-                  </h2>
-                  {lightboxItem.description ? (
-                    <p className="portfolio-lightbox-description text-sm leading-relaxed text-zinc-200 sm:text-base sm:leading-relaxed">
-                      {lightboxItem.description}
-                    </p>
-                  ) : null}
-                  <span className="portfolio-lightbox-badge inline-flex max-w-full items-center gap-1.5 rounded-full border border-lavender/40 bg-lavender/15 px-3 py-1.5 text-xs font-semibold sm:text-sm">
-                    <span className="shrink-0">{categoryIcons[lightboxItem.category]}</span>
-                    <span className="truncate">{categoryLabelFor(lightboxItem.category)}</span>
-                  </span>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
+            </div>,
+            document.body
+          )
+        : null}
     </section>
   )
 }

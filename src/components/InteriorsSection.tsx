@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { trackEvent } from '../lib/analytics'
+import { usePortfolioItems } from '../hooks/usePortfolioItems'
 import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
 
 interface InteriorsSectionProps {
@@ -7,6 +10,87 @@ interface InteriorsSectionProps {
 }
 
 export default function InteriorsSection({ language }: InteriorsSectionProps) {
+  const { items: allPortfolioItems } = usePortfolioItems(language)
+  const previewItems = allPortfolioItems.filter((item) => item.category === 'interiors').slice(0, 4)
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const lightboxItem =
+    lightboxIndex !== null ? (previewItems[lightboxIndex] ?? null) : null
+  const showPreviewLightboxNav = previewItems.length > 1
+
+  const previewCopy = {
+    title: { hr: 'Primjeri 3D vizualizacija', en: '3D Visualization Examples' },
+    subtitle: {
+      hr: 'Pogledajte kako prostor može biti prikazan prije izvedbe — od rasporeda i materijala do atmosfere.',
+      en: 'See how a space can be visualised before execution — from layout and materials to atmosphere.',
+    },
+    allWork: { hr: 'Svi radovi', en: 'All work' },
+    badge: { hr: 'Interijeri', en: 'Interiors' },
+    placeholder: { hr: 'Uskoro', en: 'Coming soon' },
+  }
+
+  const goPreviewLightboxPrev = () => {
+    if (lightboxIndex === null || previewItems.length < 2) return
+    setLightboxIndex(
+      (i) => (i === null ? null : (i - 1 + previewItems.length) % previewItems.length)
+    )
+  }
+
+  const goPreviewLightboxNext = () => {
+    if (lightboxIndex === null || previewItems.length < 2) return
+    setLightboxIndex((i) => (i === null ? null : (i + 1) % previewItems.length))
+  }
+
+  useEffect(() => {
+    if (lightboxIndex === null) return
+    if (lightboxIndex < 0 || lightboxIndex >= previewItems.length) {
+      setLightboxIndex(null)
+    }
+  }, [lightboxIndex, previewItems.length])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (lightboxIndex === null) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [lightboxIndex])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (lightboxIndex === null) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        setLightboxIndex(null)
+        return
+      }
+      if (previewItems.length < 2) return
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        setLightboxIndex((i) => {
+          if (i === null) return null
+          return (i - 1 + previewItems.length) % previewItems.length
+        })
+        return
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        setLightboxIndex((i) => {
+          if (i === null) return null
+          return (i + 1) % previewItems.length
+        })
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown, true)
+    return () => document.removeEventListener('keydown', handleKeyDown, true)
+  }, [lightboxIndex, previewItems.length])
+
+  const previewNavBtnClass =
+    'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-violet-600 text-white shadow-lg touch-manipulation hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#111018]'
 
   const chooser = {
     sectionTitle: { hr: 'Odaberite vrstu upita', en: 'Choose the type of inquiry' },
@@ -171,6 +255,77 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
           ))}
         </div>
 
+        {/* Portfolio preview — interiors examples before inquiry chooser */}
+        <div className="mx-auto mb-12 w-full max-w-5xl sm:mb-14">
+          <div className="mx-auto mb-6 max-w-3xl text-center sm:mb-8">
+            <h3 className="font-heading text-xl font-bold tracking-tight text-balance text-plum/90 dark:text-pearl sm:text-2xl">
+              {previewCopy.title[language]}
+            </h3>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-plum/78 dark:text-pearl/75 sm:mt-4 sm:text-[0.9375rem] sm:leading-relaxed">
+              {previewCopy.subtitle[language]}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5">
+            {previewItems.map((item, index) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => setLightboxIndex(index)}
+                aria-label={
+                  language === 'hr' ? `Otvori prikaz: ${item.title}` : `Open preview: ${item.title}`
+                }
+                className="flex h-full flex-col overflow-hidden rounded-2xl border border-[rgba(110,68,255,0.15)] bg-[rgba(248,246,255,0.72)] text-left shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-primary] focus-visible:ring-offset-2 dark:border-lavender/15 dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.25)] dark:focus-visible:ring-lavender/60 dark:focus-visible:ring-offset-slate-900"
+              >
+                <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-amethyst/[0.14] dark:border-lavender/10">
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.imageAlt ?? item.title}
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <>
+                      <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 via-amethyst/20 to-lavender/30 dark:from-lavender/15 dark:via-amethyst/10 dark:to-lavender/15" />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-3xl opacity-60 dark:opacity-50" aria-hidden>
+                          🏠
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex min-h-0 flex-1 flex-col gap-2 p-3 sm:p-3.5">
+                  <h4 className="line-clamp-2 text-xs font-semibold leading-snug text-plum/90 dark:text-pearl sm:text-sm">
+                    {item.title}
+                  </h4>
+                  <span className="mt-auto inline-flex w-fit max-w-full items-center gap-1 rounded-full border border-amethyst/20 bg-gradient-to-r from-amethyst/15 to-lavender/15 px-2 py-0.5 text-[10px] font-semibold text-amethyst dark:border-lavender/20 dark:from-amethyst/25 dark:to-lavender/20 dark:text-lavender sm:text-[11px]">
+                    <span className="shrink-0 text-xs" aria-hidden>
+                      🏠
+                    </span>
+                    <span className="truncate">{previewCopy.badge[language]}</span>
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-6 flex justify-center sm:mt-7">
+            <a
+              href="/#portfolio"
+              onClick={() =>
+                trackEvent('interiors_portfolio_preview_click', { destination: '/#portfolio' })
+              }
+              className="inline-flex min-h-[48px] w-full max-w-xs items-center justify-center rounded-xl border border-amethyst/25 bg-white/70 px-8 py-3.5 text-sm font-semibold text-plum/90 shadow-[0_8px_24px_rgba(46,36,71,0.08)] backdrop-blur-sm transition hover:border-[--color-primary]/40 hover:bg-white/90 hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:border-lavender/25 dark:bg-white/10 dark:text-pearl dark:hover:bg-white/[0.14] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.35)] sm:w-auto sm:min-w-[200px]"
+            >
+              {previewCopy.allWork[language]}
+            </a>
+          </div>
+        </div>
+
         {/* Chooser — forms on /interijeri/klijenti and /interijeri/stolari */}
         <div className="mx-auto w-full max-w-5xl">
           <div className="rounded-3xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8 md:p-10">
@@ -255,6 +410,135 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
           </div>
         </div>
       </div>
+
+      {lightboxItem && typeof document !== 'undefined'
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto overscroll-contain bg-black/80 px-4 py-6"
+              role="presentation"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setLightboxIndex(null)
+              }}
+            >
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="interiors-preview-lightbox-title"
+                className="relative z-[9999] flex max-h-[calc(100vh-2rem)] w-full max-w-6xl flex-col overflow-y-auto overflow-x-hidden rounded-3xl border border-white/10 bg-[#111018] shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setLightboxIndex(null)}
+                  className="absolute right-3 top-3 z-30 flex items-center gap-2 rounded-full border border-white/20 bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-lg touch-manipulation hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#111018] sm:right-4 sm:top-4 sm:px-4 sm:py-2.5"
+                  aria-label={language === 'hr' ? 'Zatvori prikaz' : 'Close preview'}
+                >
+                  <span>{language === 'hr' ? 'Zatvori' : 'Close'}</span>
+                  <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <div className="flex min-h-0 flex-col gap-5 px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8">
+                  <div className="relative shrink-0">
+                    {showPreviewLightboxNav ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={goPreviewLightboxPrev}
+                          className={`${previewNavBtnClass} absolute left-1 top-1/2 z-10 hidden -translate-y-1/2 md:flex`}
+                          aria-label={language === 'hr' ? 'Prethodna stavka' : 'Previous item'}
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={goPreviewLightboxNext}
+                          className={`${previewNavBtnClass} absolute right-1 top-1/2 z-10 hidden -translate-y-1/2 md:flex`}
+                          aria-label={language === 'hr' ? 'Sljedeća stavka' : 'Next item'}
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </>
+                    ) : null}
+                    {lightboxItem.imageUrl ? (
+                      <div className="flex w-full min-h-0 min-w-0 shrink-0 justify-center rounded-xl bg-black/25 p-2 sm:p-4">
+                        <img
+                          src={lightboxItem.imageUrl}
+                          alt={lightboxItem.imageAlt ?? ''}
+                          decoding="async"
+                          className="h-auto w-full max-h-[55vh] max-w-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="relative flex aspect-[4/3] w-full max-h-[55vh] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-slate-900/80">
+                        <div className="absolute inset-0 bg-gradient-to-br from-amethyst/25 via-[#111018] to-plum/40" />
+                        <div className="relative flex flex-col items-center">
+                          <span className="mb-2 text-5xl opacity-70" aria-hidden>
+                            🏠
+                          </span>
+                          <p className="text-sm font-medium text-zinc-400">
+                            {previewCopy.placeholder[language]}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {showPreviewLightboxNav ? (
+                    <div className="flex shrink-0 items-center justify-center gap-10 md:hidden">
+                      <button
+                        type="button"
+                        onClick={goPreviewLightboxPrev}
+                        className={previewNavBtnClass}
+                        aria-label={language === 'hr' ? 'Prethodna stavka' : 'Previous item'}
+                      >
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={goPreviewLightboxNext}
+                        className={previewNavBtnClass}
+                        aria-label={language === 'hr' ? 'Sljedeća stavka' : 'Next item'}
+                      >
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : null}
+
+                  <div className="mx-auto flex w-full max-w-3xl min-h-0 flex-col items-center space-y-3 text-center sm:max-w-4xl">
+                    <h2
+                      id="interiors-preview-lightbox-title"
+                      className="w-full text-balance font-heading text-xl font-bold leading-snug text-white sm:text-2xl"
+                    >
+                      {lightboxItem.title}
+                    </h2>
+                    {lightboxItem.description ? (
+                      <p className="w-full text-balance text-sm leading-relaxed text-zinc-200 sm:text-base sm:leading-relaxed">
+                        {lightboxItem.description}
+                      </p>
+                    ) : null}
+                    <span className="inline-flex max-w-full shrink-0 items-center justify-center gap-1.5 rounded-full border border-lavender/40 bg-lavender/15 px-3 py-1.5 text-xs font-semibold sm:text-sm">
+                      <span className="shrink-0" aria-hidden>
+                        🏠
+                      </span>
+                      <span className="text-white">{previewCopy.badge[language]}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </section>
   )
 }
