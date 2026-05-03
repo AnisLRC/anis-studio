@@ -28,17 +28,17 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
       en: 'Where ideas become reality.'
     },
     subtitle: {
-      hr: 'Ručno izrađeni pokloni i dekoracije, 3D vizualizacija interijera i web stranice — sve po mjeri tvoje priče.',
-      en: 'Handcrafted gifts and decorations, 3D interior visualization and websites — all tailored to your story.'
+      hr: '3D vizualizacije interijera i kuhinja — vidite prostor, raspored i materijale prije izvedbe, s fotorealističnim prikazima i jasnom vizualnom pričom.',
+      en: '3D interior and kitchen visualizations — see layout, materials and atmosphere before execution, with photorealistic renders and a clear visual story.',
     },
     bridge: {
       hr: [
-        "Ani's Studio je kreativni studio koji radi projekte po mjeri — od personaliziranih poklona i dekoracija, preko 3D vizualizacije interijera, do web stranica za male obrte i poduzetnike.",
-        'Svaki projekt je prilagođen tvojoj priči, stilu i potrebama. Ne radiš s korporacijom ili agencijom — radiš direktno sa mnom, kroz proces koji je transparentan i osoban.',
+        "Javni fokus Ani's Studija danas je na vizualnoj prezentaciji prostora: priprema prikaza prije gradnje ili montaže, kako biste donijeli odluke uz mir u glavi.",
+        'Svaki projekt gradimo uz direktnu komunikaciju i transparentan tijek — bez agencijskog “telefona”, uz pažnju na stil, funkciju i realne detalje izvedbe.',
       ],
       en: [
-        "Ani's Studio is a creative studio for bespoke projects — from personalized gifts and decorations to 3D interior visualization and websites for small businesses.",
-        "Each project is tailored to your story, style, and needs. You don't work with a corporation or agency — you work directly with me, through a process that's transparent and personal.",
+        "Ani's Studio’s public focus is on visualizing spaces before work begins — so you can decide with confidence, from layout to materials and overall mood.",
+        'We collaborate directly with a transparent process — no agency layers — with attention to style, function, and build-ready detail.',
       ],
     },
     ctaPrimary: {
@@ -50,8 +50,8 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
       en: 'View our work'
     },
     cardsTitle: {
-      hr: 'Što te zanima danas?',
-      en: 'What interests you today?'
+      hr: 'Interijeri — tvoj sljedeći korak',
+      en: 'Interiors — your next step',
     },
     cards: {
       lrc: {
@@ -237,7 +237,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </a>
         </div>
 
-        {/* Bridge — što je Ani's Studio, zašto tri linije */}
+        {/* Bridge — što je Ani's Studio (interiors-first javni fokus) */}
         <div
           className="mx-auto mt-10 max-w-[min(100%,34rem)] space-y-4 border-t border-amethyst/10 px-1 pt-10 text-center dark:border-lavender/15 sm:mt-12 sm:max-w-2xl sm:space-y-5 sm:pt-12"
           aria-labelledby="welcome-bridge-heading"

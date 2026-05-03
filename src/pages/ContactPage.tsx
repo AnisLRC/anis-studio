@@ -9,6 +9,17 @@ interface ContactPageProps {
   language: 'hr' | 'en'
 }
 
+type ContactServiceRoutingKey = 'lrc' | 'interiors' | 'webAtelier'
+
+/**
+ * Interiors-first: hide LRC / Web Atelier shortcuts without removing link definitions.
+ */
+const PUBLIC_CONTACT_SERVICE_ROUTING_VISIBILITY: Record<ContactServiceRoutingKey, boolean> = {
+  lrc: false,
+  interiors: true,
+  webAtelier: false,
+}
+
 export default function ContactPage({ language }: ContactPageProps) {
   const translations = {
     introTitle: {
@@ -35,23 +46,27 @@ export default function ContactPage({ language }: ContactPageProps) {
         en: 'Know what you need?'
       },
       text: {
-        hr: 'Izravni put do upita za konkretnu uslugu. Opća kontakt forma ispod i dalje je na raspolaganju za sve ostalo.',
-        en: 'Go straight to the inquiry for the service you have in mind. The general contact form below is still available for everything else.'
+        hr: 'Za 3D vizualizacije interijera najbrži put je stranica Interijeri ili opća forma u nastavku. Ostalo možemo dogovoriti mailom ili porukom.',
+        en: 'For 3D interior visualizations, the fastest path is the Interiors page (or the general form below). Everything else we can align by email or message.',
       },
       links: {
         hr: [
-          { label: 'LRC upit', to: '/lrc/upit' },
-          { label: 'Interijeri', to: '/interijeri' },
-          { label: 'Web Atelier', to: '/web-atelier/upit' }
+          { key: 'lrc' as const, label: 'LRC upit', to: '/lrc/upit' },
+          { key: 'interiors' as const, label: 'Interijeri', to: '/interijeri' },
+          { key: 'webAtelier' as const, label: 'Web Atelier', to: '/web-atelier/upit' }
         ],
         en: [
-          { label: 'LRC inquiry', to: '/lrc/upit' },
-          { label: 'Interiors', to: '/interijeri' },
-          { label: 'Web Atelier', to: '/web-atelier/upit' }
+          { key: 'lrc' as const, label: 'LRC inquiry', to: '/lrc/upit' },
+          { key: 'interiors' as const, label: 'Interiors', to: '/interijeri' },
+          { key: 'webAtelier' as const, label: 'Web Atelier', to: '/web-atelier/upit' }
         ]
       }
     }
   }
+
+  const visibleServiceLinks = translations.serviceRouting.links[language].filter(
+    (item) => PUBLIC_CONTACT_SERVICE_ROUTING_VISIBILITY[item.key]
+  )
 
   return (
     <AnimatedPage>
@@ -133,7 +148,7 @@ export default function ContactPage({ language }: ContactPageProps) {
               className="mt-5 flex flex-col items-stretch gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3"
               aria-label={language === 'hr' ? 'Izravni upiti po uslugama' : 'Service-specific inquiries'}
             >
-              {translations.serviceRouting.links[language].map((item) => (
+              {visibleServiceLinks.map((item) => (
                 <Link
                   key={item.to}
                   to={item.to}

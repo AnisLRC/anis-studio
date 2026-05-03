@@ -1,8 +1,90 @@
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
-import TestimonialMarquee from '../components/TestimonialMarquee'
+import TestimonialMarquee, {
+  type TestimonialMarqueeRowBlock,
+  type TestimonialRowGroupKey,
+} from '../components/TestimonialMarquee'
+import type { TestimonialCategory } from '../data/testimonials'
+import { TESTIMONIALS } from '../data/testimonials'
 
 interface TestimonialsSectionProps {
   language: 'hr' | 'en'
+}
+
+const byIdAsc = <T extends { id: number }>(a: T, b: T) => a.id - b.id
+
+/**
+ * Public: which testimonial rows render on the live site (per group).
+ * Trust row = general + interiors combined (interiors-first public: only this row when preview is off).
+ * Category intent: general + interiors on via `trust`; `lrc` and `webAtelier` off until set to `true`.
+ */
+export const PUBLIC_TESTIMONIAL_ROW_VISIBILITY: Record<TestimonialRowGroupKey, boolean> = {
+  trust: true,
+  lrc: false,
+  webAtelier: false,
+}
+
+/**
+ * Local preview: when `true`, shows LRC row (and optional Web Atelier placeholder) regardless of public flags.
+ * **Interiors-first public:** keep `false` so only `PUBLIC_TESTIMONIAL_ROW_VISIBILITY` applies (trust row only).
+ */
+export const PREVIEW_ALL_TESTIMONIAL_ROWS = false
+
+/**
+ * Preview-only: show dashed placeholder for Web Atelier when there are no testimonials yet.
+ * No fake cards are created.
+ */
+export const PREVIEW_WEB_ATELIER_EMPTY_ROW = false
+
+function collectByCategories(categories: TestimonialCategory[]) {
+  return TESTIMONIALS.filter((t) => categories.includes(t.category)).sort(byIdAsc)
+}
+
+function buildTestimonialRowBlocks(): TestimonialMarqueeRowBlock[] {
+  const preview = PREVIEW_ALL_TESTIMONIAL_ROWS
+  const pub = PUBLIC_TESTIMONIAL_ROW_VISIBILITY
+
+  const trustItems = collectByCategories(['general', 'interiors'])
+  const lrcItems = collectByCategories(['lrc'])
+  const webItems = collectByCategories(['webAtelier'])
+
+  const blocks: TestimonialMarqueeRowBlock[] = []
+
+  if ((preview || pub.trust) && trustItems.length > 0) {
+    blocks.push({
+      groupKey: 'trust',
+      items: trustItems,
+      rowTone: 'purple',
+      marqueeDirection: 'left',
+    })
+  }
+
+  if ((preview || pub.lrc) && lrcItems.length > 0) {
+    blocks.push({
+      groupKey: 'lrc',
+      items: lrcItems,
+      rowTone: 'softPink',
+      marqueeDirection: 'right',
+    })
+  }
+
+  if (webItems.length > 0 && (preview || pub.webAtelier)) {
+    blocks.push({
+      groupKey: 'webAtelier',
+      items: webItems,
+      rowTone: 'softBlue',
+      marqueeDirection: 'left',
+    })
+  } else if (preview && PREVIEW_WEB_ATELIER_EMPTY_ROW) {
+    blocks.push({
+      groupKey: 'webAtelier',
+      items: [],
+      rowTone: 'softBlue',
+      marqueeDirection: 'left',
+      emptyPreview: true,
+    })
+  }
+
+  return blocks
 }
 
 export default function TestimonialsSection({ language }: TestimonialsSectionProps) {
@@ -21,9 +103,10 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
     },
   }
 
+  const rowBlocks = buildTestimonialRowBlocks()
+
   return (
     <section id="testimonials" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
-      {/* Background wrapper */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <DecorativeSkyBackdrop priority="lazy" />
         <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
@@ -45,7 +128,7 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
           </p>
         </div>
 
-        <TestimonialMarquee language={language} />
+        <TestimonialMarquee language={language} rowBlocks={rowBlocks} />
       </div>
     </section>
   )

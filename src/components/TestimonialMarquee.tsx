@@ -9,11 +9,31 @@ import {
 } from 'react'
 import clsx from 'clsx'
 import type { Testimonial } from '../data/testimonials'
-import { TESTIMONIALS } from '../data/testimonials'
+
+export type TestimonialRowTone = 'purple' | 'softPink' | 'softBlue'
+
+/** Row groups: trust = general + interiors combined; lrc; webAtelier */
+export type TestimonialRowGroupKey = 'trust' | 'lrc' | 'webAtelier'
+
+/** Horizontal scroll: 'left' = default track motion; 'right' = reversed (e.g. LRC row). */
+export type TestimonialMarqueeDirection = 'left' | 'right'
+
+export interface TestimonialMarqueeRowBlock {
+  groupKey: TestimonialRowGroupKey
+  items: Testimonial[]
+  rowTone: TestimonialRowTone
+  /** Marquee travel: trust/webAtelier typically 'left', LRC typically 'right'. */
+  marqueeDirection?: TestimonialMarqueeDirection
+  /** Preview-only placeholder when Web Atelier has no testimonials yet */
+  emptyPreview?: boolean
+}
 
 interface TestimonialMarqueeProps {
   language: 'hr' | 'en'
+  rowBlocks: TestimonialMarqueeRowBlock[]
 }
+
+const MARQUEE_DURATION_SEC = 36
 
 function usePrefersReducedMotion() {
   const [reduce, setReduce] = useState(false)
@@ -56,18 +76,23 @@ function getInitials(name: string) {
     .toUpperCase()
 }
 
-function MarqueeRow({
+/**
+ * One horizontal marquee lane. Items are duplicated once for translateX(-50%) seamless loop.
+ */
+function MarqueeLane({
   items,
   language,
-  reverse,
   verifiedLabel,
   renderStars,
+  rowTone,
+  direction,
 }: {
   items: Testimonial[]
   language: 'hr' | 'en'
-  reverse: boolean
   verifiedLabel: string
   renderStars: (rating: number) => ReactNode
+  rowTone: TestimonialRowTone
+  direction: TestimonialMarqueeDirection
 }) {
   const loop = [...items, ...items]
   const rowRef = useRef<HTMLDivElement>(null)
@@ -108,10 +133,13 @@ function MarqueeRow({
       className={clsx(
         'testimonial-marquee-row group/marquee relative py-2',
         'overflow-x-hidden overflow-y-visible',
-        reverse ? 'row-reverse' : ''
+        direction === 'right' && 'marquee-dir-right'
       )}
     >
-      <div className="testimonial-marquee-track isolate flex w-max gap-3 sm:gap-4">
+      <div
+        className="testimonial-marquee-track isolate flex w-max gap-3 sm:gap-4"
+        style={{ animationDuration: `${MARQUEE_DURATION_SEC}s` }}
+      >
         {loop.map((testimonial, index) => {
           const cardKey = `${testimonial.id}-${index}`
           return (
@@ -123,6 +151,7 @@ function MarqueeRow({
               verifiedLabel={verifiedLabel}
               renderStars={renderStars}
               layout="marquee"
+              rowTone={rowTone}
               isCoarse={isCoarse}
               expandedTap={isCoarse && activeKey === cardKey}
               onCoarseToggle={() =>
@@ -136,6 +165,83 @@ function MarqueeRow({
   )
 }
 
+function toneCardClasses(rowTone: TestimonialRowTone, layout: 'marquee' | 'grid'): string {
+  if (rowTone === 'softPink') {
+    return clsx(
+      'border-rose-200/35 dark:border-rose-300/25',
+      layout === 'marquee' && [
+        '[@media(hover:hover)_and_(pointer:fine)]:hover:border-rose-300/45 dark:[@media(hover:hover)_and_(pointer:fine)]:hover:border-rose-400/35',
+        'focus-within:border-rose-300/45 dark:focus-within:border-rose-400/35',
+        'focus-visible:outline-rose-400/45 dark:focus-visible:outline-rose-300/40',
+      ],
+      layout === 'grid' &&
+        'dark:hover:border-rose-400/25 dark:focus-within:border-rose-400/30 hover:border-rose-200/45'
+    )
+  }
+  if (rowTone === 'softBlue') {
+    return clsx(
+      'border-sky-200/45 dark:border-sky-400/28',
+      layout === 'marquee' && [
+        '[@media(hover:hover)_and_(pointer:fine)]:hover:border-sky-300/55 dark:[@media(hover:hover)_and_(pointer:fine)]:hover:border-sky-400/40',
+        'focus-within:border-sky-300/55 dark:focus-within:border-sky-400/40',
+        'focus-visible:outline-sky-400/45 dark:focus-visible:outline-sky-300/40',
+      ],
+      layout === 'grid' &&
+        'dark:hover:border-sky-400/30 dark:focus-within:border-sky-400/35 hover:border-sky-200/55'
+    )
+  }
+  return clsx(
+    'border-amethyst/18 dark:border-lavender/12',
+    layout === 'marquee' && [
+      '[@media(hover:hover)_and_(pointer:fine)]:hover:border-amethyst/28 dark:[@media(hover:hover)_and_(pointer:fine)]:hover:border-lavender/22',
+      'focus-within:border-amethyst/28 dark:focus-within:border-lavender/22',
+      'focus-visible:outline-amethyst/40 dark:focus-visible:outline-lavender/40',
+    ],
+    layout === 'grid' &&
+      'dark:focus-within:border-lavender/22 dark:hover:border-lavender/18 hover:border-amethyst/25'
+  )
+}
+
+function toneMarqueeHoverShadow(rowTone: TestimonialRowTone): string {
+  if (rowTone === 'softPink') {
+    return '[@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_16px_44px_rgba(190,24,93,0.12)] dark:[@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_48px_rgba(251,113,133,0.12)] focus-within:shadow-[0_16px_44px_rgba(190,24,93,0.12)] dark:focus-within:shadow-[0_18px_48px_rgba(251,113,133,0.1)]'
+  }
+  if (rowTone === 'softBlue') {
+    return '[@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_16px_44px_rgba(14,116,144,0.14)] dark:[@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_48px_rgba(56,189,248,0.12)] focus-within:shadow-[0_16px_44px_rgba(14,116,144,0.14)] dark:focus-within:shadow-[0_18px_48px_rgba(56,189,248,0.1)]'
+  }
+  return '[@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_16px_44px_rgba(110,68,255,0.14)] dark:[@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_48px_rgba(189,166,255,0.1)] focus-within:shadow-[0_16px_44px_rgba(110,68,255,0.14)] dark:focus-within:shadow-[0_18px_48px_rgba(189,166,255,0.1)]'
+}
+
+function toneMarqueeTapOpen(rowTone: TestimonialRowTone): string {
+  if (rowTone === 'softPink') {
+    return 'border-rose-300/45 shadow-[0_16px_44px_rgba(190,24,93,0.12)] dark:border-rose-400/35 dark:shadow-[0_18px_48px_rgba(251,113,133,0.1)]'
+  }
+  if (rowTone === 'softBlue') {
+    return 'border-sky-300/55 shadow-[0_16px_44px_rgba(14,116,144,0.14)] dark:border-sky-400/40 dark:shadow-[0_18px_48px_rgba(56,189,248,0.1)]'
+  }
+  return 'border-amethyst/28 shadow-[0_16px_44px_rgba(110,68,255,0.14)] dark:border-lavender/22 dark:shadow-[0_18px_48px_rgba(189,166,255,0.1)]'
+}
+
+function toneQuoteBoxClasses(rowTone: TestimonialRowTone): string {
+  if (rowTone === 'softPink') {
+    return 'border-rose-200/20 bg-white/55 dark:border-rose-400/15 dark:bg-white/[0.05]'
+  }
+  if (rowTone === 'softBlue') {
+    return 'border-sky-200/25 bg-white/55 dark:border-sky-400/18 dark:bg-white/[0.05]'
+  }
+  return 'border-amethyst/10 bg-white/55 dark:border-lavender/10 dark:bg-white/[0.05]'
+}
+
+function toneVerifiedBadgeClasses(rowTone: TestimonialRowTone): string {
+  if (rowTone === 'softPink') {
+    return 'border-rose-200/25 bg-white/70 text-rose-800/90 dark:border-rose-400/30 dark:bg-white/10 dark:text-rose-100/90'
+  }
+  if (rowTone === 'softBlue') {
+    return 'border-sky-200/35 bg-white/70 text-sky-900/85 dark:border-sky-400/35 dark:bg-white/10 dark:text-sky-100/90'
+  }
+  return 'border-amethyst/15 bg-white/70 text-amethyst/90 dark:border-lavender/25 dark:bg-white/10 dark:text-lavender/90'
+}
+
 function TestimonialCard({
   testimonial,
   language,
@@ -143,6 +249,7 @@ function TestimonialCard({
   verifiedLabel,
   renderStars,
   layout,
+  rowTone,
   isCoarse,
   expandedTap,
   onCoarseToggle,
@@ -153,6 +260,7 @@ function TestimonialCard({
   verifiedLabel: string
   renderStars: (rating: number) => ReactNode
   layout: 'marquee' | 'grid'
+  rowTone: TestimonialRowTone
   isCoarse?: boolean
   expandedTap?: boolean
   onCoarseToggle?: () => void
@@ -190,31 +298,29 @@ function TestimonialCard({
     isMarquee &&
       tapOpen &&
       'line-clamp-none',
-    /* Desktop hover: avoid sticky “hover” on coarse touch devices */
     isMarquee &&
       !coarse &&
       'group-hover/card:line-clamp-none',
-    /* Keyboard / focus always shows full text on the focused card */
     isMarquee && 'group-focus-within/card:line-clamp-none'
   )
 
   const articleClass = clsx(
-    'group/card flex flex-col rounded-xl border border-amethyst/18 bg-white/[0.82] p-4 shadow-[0_8px_28px_rgba(46,36,71,0.06)] backdrop-blur-xl transition-[transform,box-shadow,border-color] duration-300 ease-out sm:rounded-2xl sm:p-[1.125rem] dark:border-lavender/12 dark:bg-white/[0.07] dark:shadow-[0_10px_36px_rgba(0,0,0,0.22)]',
+    'group/card flex flex-col rounded-xl border bg-white/[0.82] p-4 shadow-[0_8px_28px_rgba(46,36,71,0.06)] backdrop-blur-xl transition-[transform,box-shadow,border-color] duration-300 ease-out sm:rounded-2xl sm:p-[1.125rem] dark:bg-white/[0.07] dark:shadow-[0_10px_36px_rgba(0,0,0,0.22)]',
+    toneCardClasses(rowTone, layout),
     'min-h-[218px] sm:min-h-[228px]',
     isMarquee && 'relative touch-manipulation',
-    isMarquee && 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amethyst/40 dark:focus-visible:outline-lavender/40',
+    isMarquee && 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
     widthClass,
     isMarquee && [
       'z-0',
       '[@media(hover:hover)_and_(pointer:fine)]:hover:z-30 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-[1.02]',
-      '[@media(hover:hover)_and_(pointer:fine)]:hover:border-amethyst/28 [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_16px_44px_rgba(110,68,255,0.14)] dark:[@media(hover:hover)_and_(pointer:fine)]:hover:border-lavender/22 dark:[@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_48px_rgba(189,166,255,0.1)]',
-      'focus-within:z-30 focus-within:scale-[1.02] focus-within:border-amethyst/28 focus-within:shadow-[0_16px_44px_rgba(110,68,255,0.14)] dark:focus-within:border-lavender/22 dark:focus-within:shadow-[0_18px_48px_rgba(189,166,255,0.1)]',
+      toneMarqueeHoverShadow(rowTone),
     ],
     isMarquee &&
       tapOpen &&
-      'z-30 scale-[1.02] border-amethyst/28 shadow-[0_16px_44px_rgba(110,68,255,0.14)] dark:border-lavender/22 dark:shadow-[0_18px_48px_rgba(189,166,255,0.1)]',
+      clsx('z-30 scale-[1.02]', toneMarqueeTapOpen(rowTone)),
     layout === 'grid' &&
-      'dark:focus-within:border-lavender/22 dark:focus-within:shadow-[0_12px_40px_rgba(0,0,0,0.28)] dark:hover:border-lavender/18 dark:hover:shadow-[0_12px_40px_rgba(189,166,255,0.08)] hover:border-amethyst/25 hover:shadow-[0_12px_36px_rgba(110,68,255,0.09)]'
+      'dark:focus-within:shadow-[0_12px_40px_rgba(0,0,0,0.28)] dark:hover:shadow-[0_12px_40px_rgba(189,166,255,0.08)] hover:shadow-[0_12px_36px_rgba(110,68,255,0.09)]'
   )
 
   return (
@@ -227,7 +333,6 @@ function TestimonialCard({
       onKeyDown={isMarquee ? handleMarqueeKeyDown : undefined}
       className={articleClass}
     >
-      {/* Header: avatar left | name + verified */}
       <div className="flex items-start gap-3 sm:gap-3.5">
         <div
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[0.6875rem] font-bold tracking-wide text-white shadow-[0_2px_12px_rgba(110,68,255,0.28)] ring-1 ring-white/25 dark:ring-white/10 sm:h-11 sm:w-11 sm:text-sm ${avatarGradients[cardIndex % avatarGradients.length]}`}
@@ -240,7 +345,12 @@ function TestimonialCard({
             {testimonial.name}
           </p>
           {testimonial.rating === 5 ? (
-            <span className="inline-flex w-fit items-center gap-0.5 rounded-full border border-amethyst/15 bg-white/70 px-2 py-0.5 text-[10px] font-medium leading-none text-amethyst/90 dark:border-lavender/25 dark:bg-white/10 dark:text-lavender/90">
+            <span
+              className={clsx(
+                'inline-flex w-fit items-center gap-0.5 rounded-full border px-2 py-0.5 text-[10px] font-medium leading-none',
+                toneVerifiedBadgeClasses(rowTone)
+              )}
+            >
               <span aria-hidden>✓</span>
               {verifiedLabel}
             </span>
@@ -251,22 +361,39 @@ function TestimonialCard({
       <div className="mt-3 flex items-center gap-0.5 sm:mt-3.5">{renderStars(testimonial.rating)}</div>
 
       <div className="mt-3 flex min-h-0 flex-1 flex-col sm:mt-3.5">
-        <div className="rounded-lg border border-amethyst/10 bg-white/55 px-3 py-2.5 dark:border-lavender/10 dark:bg-white/[0.05] sm:px-3.5 sm:py-3">
+        <div
+          className={clsx(
+            'rounded-lg border px-3 py-2.5 sm:px-3.5 sm:py-3',
+            toneQuoteBoxClasses(rowTone)
+          )}
+        >
           <p className={quoteClass}>
             &ldquo;{testimonial.text[language]}&rdquo;
           </p>
         </div>
       </div>
-
     </article>
   )
 }
 
-export default function TestimonialMarquee({ language }: TestimonialMarqueeProps) {
-  const prefersReducedMotion = usePrefersReducedMotion()
-
+function GroupMarqueeBlock({
+  groupKey,
+  items,
+  rowTone,
+  language,
+  prefersReducedMotion,
+  emptyPreview,
+  marqueeDirection = 'left',
+}: {
+  groupKey: TestimonialRowGroupKey
+  items: Testimonial[]
+  rowTone: TestimonialRowTone
+  language: 'hr' | 'en'
+  prefersReducedMotion: boolean
+  emptyPreview?: boolean
+  marqueeDirection?: TestimonialMarqueeDirection
+}) {
   const verifiedLabel = language === 'hr' ? 'Verificirano' : 'Verified'
-
   const renderStars = (rating: number) =>
     Array.from({ length: 5 }).map((_, index) => (
       <span
@@ -285,35 +412,75 @@ export default function TestimonialMarquee({ language }: TestimonialMarqueeProps
       </span>
     ))
 
-  const mid = Math.ceil(TESTIMONIALS.length / 2)
-  const row1Items = TESTIMONIALS.slice(0, mid)
-  const row2Items = TESTIMONIALS.slice(mid)
+  if (emptyPreview && items.length === 0) {
+    return <WebAtelierEmptyPreview language={language} rowTone={rowTone} />
+  }
 
   if (prefersReducedMotion) {
     return (
-      <>
-        <style>{`
-          @keyframes starPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.15); opacity: 0.9; }
-          }
-        `}</style>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {TESTIMONIALS.map((testimonial, index) => (
-            <TestimonialCard
-              key={testimonial.id}
-              testimonial={testimonial}
-              language={language}
-              cardIndex={index}
-              verifiedLabel={verifiedLabel}
-              renderStars={renderStars}
-              layout="grid"
-            />
-          ))}
-        </div>
-      </>
+      <div
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        data-testimonial-group={groupKey}
+      >
+        {items.map((testimonial, index) => (
+          <TestimonialCard
+            key={testimonial.id}
+            testimonial={testimonial}
+            language={language}
+            cardIndex={index}
+            verifiedLabel={verifiedLabel}
+            renderStars={renderStars}
+            layout="grid"
+            rowTone={rowTone}
+          />
+        ))}
+      </div>
     )
   }
+
+  return (
+    <div className="flex flex-col" data-testimonial-group={groupKey}>
+      <MarqueeLane
+        items={items}
+        language={language}
+        verifiedLabel={verifiedLabel}
+        renderStars={renderStars}
+        rowTone={rowTone}
+        direction={marqueeDirection}
+      />
+    </div>
+  )
+}
+
+function WebAtelierEmptyPreview({
+  language,
+  rowTone,
+}: {
+  language: 'hr' | 'en'
+  rowTone: TestimonialRowTone
+}) {
+  const border =
+    rowTone === 'softBlue'
+      ? 'border-sky-200/45 dark:border-sky-400/25'
+      : 'border-amethyst/20 dark:border-lavender/15'
+  return (
+    <div
+      className={clsx(
+        'rounded-2xl border border-dashed px-4 py-6 text-center text-sm leading-relaxed text-plum/65 dark:text-pearl/60 sm:py-7',
+        border
+      )}
+      data-testimonial-group="webAtelier"
+      data-empty-preview="true"
+    >
+      {language === 'hr'
+        ? 'Web Atelier — još nema javnih recenzija za ovu liniju.'
+        : 'Web Atelier — no public reviews for this line yet.'}
+    </div>
+  )
+}
+
+export default function TestimonialMarquee({ language, rowBlocks }: TestimonialMarqueeProps) {
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   return (
     <>
@@ -327,10 +494,12 @@ export default function TestimonialMarquee({ language }: TestimonialMarqueeProps
           100% { transform: translateX(-50%); }
         }
         .testimonial-marquee-track {
-          animation: testimonial-marquee 52s linear infinite;
+          animation-name: testimonial-marquee;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
           will-change: transform;
         }
-        .testimonial-marquee-row.row-reverse .testimonial-marquee-track {
+        .testimonial-marquee-row.marquee-dir-right .testimonial-marquee-track {
           animation-direction: reverse;
         }
         .testimonial-marquee-row:hover .testimonial-marquee-track,
@@ -346,9 +515,23 @@ export default function TestimonialMarquee({ language }: TestimonialMarqueeProps
         }
       `}</style>
 
-      <div className="flex flex-col gap-4 sm:gap-5">
-        <MarqueeRow items={row1Items} language={language} reverse={false} verifiedLabel={verifiedLabel} renderStars={renderStars} />
-        <MarqueeRow items={row2Items} language={language} reverse verifiedLabel={verifiedLabel} renderStars={renderStars} />
+      <div className="flex flex-col gap-8 sm:gap-10">
+        {rowBlocks.map((block) => (
+          <GroupMarqueeBlock
+            key={
+              block.emptyPreview
+                ? `${block.groupKey}-empty-preview`
+                : `${block.groupKey}-${block.items.map((t) => t.id).join('-')}`
+            }
+            groupKey={block.groupKey}
+            items={block.items}
+            rowTone={block.rowTone}
+            language={language}
+            prefersReducedMotion={prefersReducedMotion}
+            emptyPreview={block.emptyPreview}
+            marqueeDirection={block.marqueeDirection}
+          />
+        ))}
       </div>
     </>
   )

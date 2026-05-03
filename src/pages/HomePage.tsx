@@ -10,34 +10,46 @@ interface HomePageProps {
   language: 'hr' | 'en'
 }
 
-const homeJsonLd = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: "Ani's Studio",
-    url: SITE_URL,
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: "Ani's Studio",
-    url: SITE_URL,
-    description:
-      'Kreativni studio za personaliziranu ručnu izradu, lasersko rezanje i graviranje (LRC), 3D vizualizaciju interijera i izradu web stranica.',
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Zagreb',
-      addressCountry: 'HR',
-    },
-  },
-]
+const HR_ORG_DESCRIPTION =
+  "Ani's Studio izrađuje 3D vizualizacije interijera, kuhinja i prostora prije izvedbe — fotorealistični prikazi rasporeda, materijala i atmosfere za privatne klijente, stolare i male interijer projekte."
+
+const EN_ORG_DESCRIPTION =
+  "Ani's Studio creates 3D interior visualizations and photorealistic previews of kitchens and spaces before execution — helping clients, carpenters and small interior projects present layouts, materials and atmosphere clearly."
 
 export default function HomePage({ language }: HomePageProps) {
+  const homeJsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: "Ani's Studio",
+      url: SITE_URL,
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: "Ani's Studio",
+      url: SITE_URL,
+      description: language === 'hr' ? HR_ORG_DESCRIPTION : EN_ORG_DESCRIPTION,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Zagreb',
+        addressCountry: 'HR',
+      },
+    },
+  ]
+
+  const seoTitle =
+    language === 'hr'
+      ? "3D vizualizacija interijera i kuhinja — Ani's Studio"
+      : "3D interior visualizations — Ani's Studio"
+
+  const seoDescription = language === 'hr' ? HR_ORG_DESCRIPTION : EN_ORG_DESCRIPTION
+
   return (
     <AnimatedPage>
       <PageSEO
-        title="Ručna izrada, interijeri i web"
-        description="Kreativni studio za personaliziranu ručnu izradu, lasersko rezanje i graviranje (LRC), 3D vizualizaciju interijera i izradu web stranica."
+        title={seoTitle}
+        description={seoDescription}
         canonical="/"
         jsonLd={homeJsonLd}
       />

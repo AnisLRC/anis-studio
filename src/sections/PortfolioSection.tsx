@@ -3,6 +3,30 @@ import { Link } from 'react-router-dom'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 import { usePortfolioItems, type PortfolioGridItem } from '../hooks/usePortfolioItems'
 
+type PortfolioFilterCategory = 'all' | 'lrc' | 'interiors' | 'web-atelier'
+
+/**
+ * Temporary interiors-first: set `false` to hide a filter chip without removing category logic.
+ * Set LRC / web-atelier to `true` to restore filter buttons.
+ */
+const PUBLIC_PORTFOLIO_FILTER_VISIBILITY: Record<PortfolioFilterCategory, boolean> = {
+  all: true,
+  lrc: false,
+  interiors: true,
+  'web-atelier': false,
+}
+
+const PORTFOLIO_FILTER_ORDER: readonly PortfolioFilterCategory[] = [
+  'all',
+  'lrc',
+  'interiors',
+  'web-atelier',
+]
+
+const VISIBLE_PORTFOLIO_FILTER_CATEGORIES = PORTFOLIO_FILTER_ORDER.filter(
+  (c) => PUBLIC_PORTFOLIO_FILTER_VISIBILITY[c]
+)
+
 interface PortfolioSectionProps {
   language: 'hr' | 'en'
 }
@@ -10,12 +34,12 @@ interface PortfolioSectionProps {
 export default function PortfolioSection({ language }: PortfolioSectionProps) {
   const translations = {
     title: {
-      hr: 'Pregled rada kroz tri kreativna smjera studija.',
-      en: "A look at work across the studio's three creative directions.",
+      hr: 'Odabrani projekti 3D vizualizacije prostora',
+      en: 'Selected 3D interior visualization projects',
     },
     subtitle: {
-      hr: 'Prikaz kroz tri smjera — sadržaj i fotografije dopunjuju se kako radovi postaju dostupni.',
-      en: 'A view across three directions — images and project details are added as work becomes available.',
+      hr: 'Primjeri prikaza rasporeda, materijala i atmosfere prije izvedbe. Portfolio se postupno nadopunjuje stvarnim projektima.',
+      en: 'Examples of layout, materials and mood before execution. The portfolio grows as new real projects are added.',
     },
     categories: {
       hr: ['Svi', 'LRC', 'Interijeri', 'Web Atelier'],
@@ -41,8 +65,14 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     }
   }
 
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'lrc' | 'interiors' | 'web-atelier'>('all')
+  const [selectedCategory, setSelectedCategory] = useState<PortfolioFilterCategory>('all')
   const [lightboxItem, setLightboxItem] = useState<PortfolioGridItem | null>(null)
+
+  useEffect(() => {
+    if (!PUBLIC_PORTFOLIO_FILTER_VISIBILITY[selectedCategory]) {
+      setSelectedCategory('all')
+    }
+  }, [selectedCategory])
 
   const { items: portfolioItems, resolvedKind } = usePortfolioItems(language)
   const portfolioLoading = resolvedKind === 'loading'
@@ -165,7 +195,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
 
         {/* Category Filters - with glow on active */}
         <div className="mb-6 flex flex-wrap justify-center gap-2.5 sm:mb-8 sm:gap-3">
-          {(['all', 'lrc', 'interiors', 'web-atelier'] as const).map((category) => (
+          {VISIBLE_PORTFOLIO_FILTER_CATEGORIES.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}

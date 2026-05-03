@@ -5,6 +5,17 @@ interface AboutSectionProps {
   language: 'hr' | 'en'
 }
 
+type AboutBadgeKey = 'lrc' | 'interiors' | 'webAtelier'
+
+/**
+ * Interiors-first: hide LRC / Web Atelier badge links without removing definitions.
+ */
+const ABOUT_BADGE_PUBLIC_VISIBILITY: Record<AboutBadgeKey, boolean> = {
+  lrc: false,
+  interiors: true,
+  webAtelier: false,
+}
+
 export default function AboutSection({ language }: AboutSectionProps) {
   const translations = {
     title: {
@@ -19,14 +30,14 @@ export default function AboutSection({ language }: AboutSectionProps) {
       hr: [
         "Kreativka iz Županje koja spaja ručni rad, dizajn i suvremenu tehnologiju.",
         "Iza mene je 17 godina iskustva u 3D modeliranju i dizajnu, kao i obrazovanje koje povezuje tehničku preciznost s kreativnim pristupom. Upravo ta kombinacija omogućuje mi da svakom projektu pristupim promišljeno, detaljno i s jasnim osjećajem za estetiku, funkcionalnost i osobnost.",
-        "U svom radu spajam tradiciju ručne izrade — lasersko rezanje i graviranje, epoksidnu smolu i svilu — s modernim dizajnerskim alatima i AI tehnologijama. Bilo da stvaram personalizirani proizvod, vizualno rješenje za interijer ili digitalni sadržaj, svaki projekt nastaje s jednakom pažnjom, predanošću i emocijom.",
-        "Vjerujem da najljepši rezultati nastaju onda kada se spoje znanje, kreativnost i osjećaj za detalj. Zato je moja misija stvarati jedinstvene, personalizirane proizvode i rješenja koja odražavaju vašu priču, stil i potrebe."
+        "Uz širu kreativnu pozadinu u ručnoj izradi i digitalnim alatima, danas je javni fokus na vizualnoj prezentaciji prostora: 3D prikazi interijera i kuhinja prije izvedbe — od rasporeda i materijala do atmosfere u prostoru.",
+        "Vjerujem da najljepši rezultati nastaju kada se spoje znanje, osjećaj za prostor i jasna vizualna priča. Zato radim na tome da prije gradnje ili montaže vidite prostor onako kako ga zamislite — s kontrolom nad detaljima koji donose mir u odlukama."
       ],
       en: [
         "A creator from Županja, Croatia, who combines handcraft with digital design and technology.",
         "With a degree in mechanical engineering and education in teaching physics, technical culture, and informatics, I blend technical expertise with creativity. My 17 years of experience in 3D modeling and design enable me to create precise, innovative solutions for every project.",
-        "I combine traditional handcraft (laser cutting and engraving, epoxy resin, silk) with modern design tools and AI technologies. Every project, physical or digital, receives the same care, passion, and emotion.",
-        "My mission is creating unique products that merge tradition and innovation, providing you with personalized solutions that reflect your personality and needs."
+        "Alongside a broader creative background in handcraft and digital tools, the public focus today is on visualizing spaces: photorealistic interiors and kitchens before execution — from layout and materials to the feeling of the room.",
+        "I believe the best outcomes come from combining technical clarity, spatial intuition, and a visual story you can trust. My goal is for you to see the space as it will live — before building or install — so decisions feel calmer and more confident."
       ]
     },
     skills: {
@@ -88,16 +99,19 @@ export default function AboutSection({ language }: AboutSectionProps) {
     badges: {
       hr: [
         { 
+          key: 'lrc' as const,
           title: "Ručno izrađeno",
           section: "LRC",
           to: "/lrc"
         },
         { 
+          key: 'interiors' as const,
           title: "Personalizirano",
           section: "Interijeri",
           to: "/interijeri"
         },
         { 
+          key: 'webAtelier' as const,
           title: "Sigurna kupnja",
           section: "Web Atelier",
           to: "/web-atelier"
@@ -105,16 +119,19 @@ export default function AboutSection({ language }: AboutSectionProps) {
       ],
       en: [
         { 
+          key: 'lrc' as const,
           title: "Handmade",
           section: "LRC",
           to: "/lrc"
         },
         { 
+          key: 'interiors' as const,
           title: "Personalized",
           section: "Interiors",
           to: "/interijeri"
         },
         { 
+          key: 'webAtelier' as const,
           title: "Secure Purchase",
           section: "Web Atelier",
           to: "/web-atelier"
@@ -122,6 +139,10 @@ export default function AboutSection({ language }: AboutSectionProps) {
       ]
     }
   }
+
+  const visibleBadges = translations.badges[language].filter(
+    (badge) => ABOUT_BADGE_PUBLIC_VISIBILITY[badge.key]
+  )
 
   return (
     <section id="about" className="Section fade-in relative section-with-bg">
@@ -253,9 +274,9 @@ export default function AboutSection({ language }: AboutSectionProps) {
           className="mt-10 flex flex-wrap justify-center gap-4 border-t border-[rgba(110,68,255,0.1)] pt-10 dark:border-lavender/15 sm:mt-12 sm:gap-5 sm:pt-12"
           aria-label={language === 'hr' ? 'Usluge' : 'Services'}
         >
-          {translations.badges[language].map((badge, index) => (
+          {visibleBadges.map((badge) => (
             <Link
-              key={index}
+              key={badge.key}
               to={badge.to}
               className="pill px-6 py-3 text-base font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer text-plum/90 dark:text-pearl"
               style={{
