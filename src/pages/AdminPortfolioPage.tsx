@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { TableSkeleton } from '../components/Skeleton'
 import {
   createPortfolioItem,
+  deletePortfolioImage,
   deletePortfolioItem,
   fetchAdminPortfolioItems,
   updatePortfolioItem,
@@ -93,6 +94,7 @@ export default function AdminPortfolioPage() {
 
   const [formError, setFormError] = useState<string | null>(null)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [storageCleanupWarning, setStorageCleanupWarning] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -136,6 +138,7 @@ export default function AdminPortfolioPage() {
     setPersistedImageUrl(null)
     setFormError(null)
     setUploadError(null)
+    setStorageCleanupWarning(null)
   }, [])
 
   const fillFormFromItem = useCallback((item: PortfolioItem) => {
@@ -145,6 +148,7 @@ export default function AdminPortfolioPage() {
     setPersistedImageUrl(item.image_url)
     setFormError(null)
     setUploadError(null)
+    setStorageCleanupWarning(null)
   }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,6 +194,7 @@ export default function AdminPortfolioPage() {
     e.preventDefault()
     setFormError(null)
     setUploadError(null)
+    setStorageCleanupWarning(null)
 
     const titleTrim = form.title.trim()
     if (!titleTrim) {
@@ -202,6 +207,13 @@ export default function AdminPortfolioPage() {
     try {
       const existing =
         editingId != null ? items.find((x) => x.id === editingId) : undefined
+
+      const previousStoragePathRaw =
+        editingId != null && selectedFile ? existing?.image_path : undefined
+      const previousStoragePath =
+        typeof previousStoragePathRaw === 'string' && previousStoragePathRaw.trim() !== ''
+          ? previousStoragePathRaw.trim()
+          : null
 
       let image_url: string | null = existing?.image_url ?? persistedImageUrl
       let image_path: string | null = existing?.image_path ?? null
@@ -229,6 +241,28 @@ export default function AdminPortfolioPage() {
         })
         setItems((prev) => prev.map((x) => (x.id === updated.id ? updated : x)))
         fillFormFromItem(updated)
+
+        if (
+          previousStoragePath &&
+          image_path &&
+          previousStoragePath !== image_path
+        ) {
+          try {
+            await deletePortfolioImage(previousStoragePath)
+          } catch (cleanErr) {
+            const cm =
+              cleanErr instanceof Error
+                ? cleanErr.message
+                : 'Brisanje stare slike iz spremišta nije uspjelo.'
+            console.warn(
+              '[portfolio admin] Zamjena slike je u bazi spremljena, ali stara Storage datoteka nije uklonjena.',
+              { previousPath: previousStoragePath, newPath: image_path, detail: cm }
+            )
+            setStorageCleanupWarning(
+              `Stavka je spremljena u bazu, ali čišćenje stare slike možda nije uspjelo. Stara putanja (pokušaj brisanja): ${previousStoragePath}. ${cm}`
+            )
+          }
+        }
       } else {
         const created = await createPortfolioItem({
           title: titleTrim,
@@ -256,13 +290,37 @@ export default function AdminPortfolioPage() {
     )
     if (!ok) return
 
+    const storagePathToRemove =
+      typeof item.image_path === 'string' && item.image_path.trim() !== ''
+        ? item.image_path.trim()
+        : null
+
     setDeletingId(item.id)
     setFormError(null)
+    setStorageCleanupWarning(null)
     try {
       await deletePortfolioItem(item.id)
       setItems((prev) => prev.filter((x) => x.id !== item.id))
       if (editingId === item.id) {
         resetFormToNew()
+      }
+      if (storagePathToRemove) {
+        try {
+          await deletePortfolioImage(storagePathToRemove)
+        } catch (cleanErr) {
+          const attemptedPath = storagePathToRemove
+          const cm =
+            cleanErr instanceof Error
+              ? cleanErr.message
+              : 'Brisanje slike iz spremišta nije uspjelo.'
+          console.warn(
+            '[portfolio admin] Stavka obrisana u bazi, ali čišćenje Storage nije uspjelo.',
+            { attemptedPath, detail: cm }
+          )
+          setStorageCleanupWarning(
+            `Stavka je uklonjena iz liste, ali slika možda još je u Storage. Pokušana putanja u bucketu: ${attemptedPath}. ${cm}`
+          )
+        }
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Brisanje nije uspjelo.'
@@ -291,6 +349,12 @@ export default function AdminPortfolioPage() {
         {listError && (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900">
             {listError}
+          </div>
+        )}
+
+        {storageCleanupWarning && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+            {storageCleanupWarning}
           </div>
         )}
 

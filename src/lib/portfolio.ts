@@ -261,32 +261,61 @@ export async function uploadPortfolioImage(
     throw formatSupabaseError('Upload slike u portfolio-images', error.message)
   }
 
-  const path = data?.path ?? objectPath
-  const { data: urlData } = client.storage.from(PORTFOLIO_BUCKET).getPublicUrl(path)
+  const rawPath = data?.path ?? objectPath
+  const normalizedPath = normalizePortfolioImageObjectPath(
+    typeof rawPath === 'string' ? rawPath : objectPath
+  )
+  const { data: urlData } = client.storage.from(PORTFOLIO_BUCKET).getPublicUrl(normalizedPath)
 
   if (!urlData?.publicUrl) {
     throw new Error('Upload je uspio, ali javni URL nije dostupan. Provjeri da je bucket javan.')
   }
 
-  return { publicUrl: urlData.publicUrl, path }
+  return { publicUrl: urlData.publicUrl, path: normalizedPath }
+}
+
+/**
+ * Canonical object key inside the portfolio-images bucket (matches storage.objects.name).
+ * Strips leading slashes and accidental "portfolio-images/" prefix from older clients.
+ */
+export function normalizePortfolioImageObjectPath(storagePath: string): string {
+  let p = storagePath.trim().replace(/^\/+/g, '')
+  const prefixed = `${PORTFOLIO_BUCKET}/`
+  while (p.startsWith(prefixed)) {
+    p = p.slice(prefixed.length).trim().replace(/^\/+/g, '')
+  }
+  return p
 }
 
 /**
  * Remove object from portfolio-images bucket. Requires authenticated session.
+ * Storage RLS must allow authenticated SELECT + DELETE on this bucket row (see portfolio_images_storage.sql).
  */
 export async function deletePortfolioImage(storagePath: string): Promise<void> {
   const client = requireClient()
   await requireAuthUserId(client)
 
-  const normalized = storagePath.replace(/^\/+/, '')
+  const normalized = normalizePortfolioImageObjectPath(storagePath)
   if (!normalized) {
     throw new Error('Nedostaje putanja datoteke u bucketu.')
   }
 
-  const { error } = await client.storage.from(PORTFOLIO_BUCKET).remove([normalized])
+  const { data: removed, error } = await client.storage
+    .from(PORTFOLIO_BUCKET)
+    .remove([normalized])
 
   if (error) {
-    throw formatSupabaseError('Brisanje slike iz portfolio-images', error.message)
+    throw formatSupabaseError(
+      'Brisanje slike iz portfolio-images',
+      `${error.message} (putanja: ${JSON.stringify(normalized)})`
+    )
+  }
+
+  if (!removed?.length) {
+    throw formatSupabaseError(
+      'Brisanje slike iz portfolio-images',
+      `Ništa nije uklonjeno (prazan Storage odgovor). Putanja u bucketu: ${JSON.stringify(normalized)}. Provjeri RLS: treba politika SELECT "portfolio_images_authenticated_select" uz DELETE.`
+    )
   }
 }
 

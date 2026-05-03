@@ -4,7 +4,8 @@
 -- • Bucket: portfolio-images, public = true — slike servira Supabase javnim URL-om (getPublicUrl),
 --   ne treba široka public SELECT pravila koja bi anon korisnicima dopuštala LIST /pregled svih putanja u bucketu.
 -- • Bez policy "portfolio_images_public_select"; postojeća se uklanja dropom ispod ako je još u bazi.
--- • Upload / update / delete: samo authenticated (nema anon upload, niti public update/delete).
+-- • Upload / update / delete / remove: samo authenticated (nema anon upload, niti public update/delete).
+-- • Za uspješno brisanje (Storage API remove) uz DELETE politiku često je potrebna SELECT politika nad istim bucketom za ulogu authenticated (bez anon javnog pregledavanja).
 -- • MIME: image/jpeg, image/png, image/webp
 -- • Limit ~10 MB po datoteci
 --
@@ -28,12 +29,21 @@ on conflict (id) do update set
 
 -- --- B) Policies na storage.objects --------------------------------------
 drop policy if exists "portfolio_images_public_select" on storage.objects;
+drop policy if exists "portfolio_images_authenticated_select" on storage.objects;
 drop policy if exists "portfolio_images_authenticated_insert" on storage.objects;
 drop policy if exists "portfolio_images_authenticated_update" on storage.objects;
 drop policy if exists "portfolio_images_authenticated_delete" on storage.objects;
 
 -- Nema CREATE za portfolio_images_public_select: bucket ostaje public radi javnih URL-ova (getPublicUrl),
 -- ali se ne dodaje policy koja bi `public` roli dopuštala SELECT nad svim objektima (što uključuje listanje).
+
+-- SELECT samo za prijavljene na ovaj bucket — potrebno jer Storage API kod brisanja (remove) koristi SELECT
+-- po objektu uz DELETE; bez ovoga remove često vrati grešku ili ne obriše datoteku iako anon ne smije listati.
+create policy "portfolio_images_authenticated_select"
+on storage.objects
+for select
+to authenticated
+using (bucket_id = 'portfolio-images');
 
 -- Samo prijavljeni korisnici uploadaju
 create policy "portfolio_images_authenticated_insert"
