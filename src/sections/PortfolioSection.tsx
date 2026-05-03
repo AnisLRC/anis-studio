@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
-import { usePortfolioItems } from '../hooks/usePortfolioItems'
+import { usePortfolioItems, type PortfolioGridItem } from '../hooks/usePortfolioItems'
 
 interface PortfolioSectionProps {
   language: 'hr' | 'en'
@@ -42,9 +42,19 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
   }
 
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'lrc' | 'interiors' | 'web-atelier'>('all')
+  const [lightboxItem, setLightboxItem] = useState<PortfolioGridItem | null>(null)
 
   const { items: portfolioItems, resolvedKind } = usePortfolioItems(language)
   const portfolioLoading = resolvedKind === 'loading'
+
+  useEffect(() => {
+    if (!lightboxItem) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [lightboxItem])
 
   // Category icons
   const categoryIcons: Record<string, string> = {
@@ -63,6 +73,45 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     return useFallbackLimits ? list.slice(0, 10) : list
   }, [portfolioItems, selectedCategory])
 
+  const lightboxNavItems = useMemo(
+    () => filteredItems.filter((item) => !item.key.startsWith('fallback-')),
+    [filteredItems]
+  )
+
+  const showLightboxNav = lightboxNavItems.length > 1
+
+  useEffect(() => {
+    if (!lightboxItem) return
+    const stillInFilter = lightboxNavItems.some((item) => item.key === lightboxItem.key)
+    if (!stillInFilter) setLightboxItem(null)
+  }, [lightboxNavItems, lightboxItem])
+
+  useEffect(() => {
+    if (!lightboxItem) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setLightboxItem(null)
+        return
+      }
+      if (lightboxNavItems.length < 2) return
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        const i = lightboxNavItems.findIndex((x) => x.key === lightboxItem.key)
+        const idx = i < 0 ? lightboxNavItems.length - 1 : (i - 1 + lightboxNavItems.length) % lightboxNavItems.length
+        setLightboxItem(lightboxNavItems[idx])
+        return
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        const i = lightboxNavItems.findIndex((x) => x.key === lightboxItem.key)
+        const idx = i < 0 ? 0 : (i + 1) % lightboxNavItems.length
+        setLightboxItem(lightboxNavItems[idx])
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [lightboxItem, lightboxNavItems])
+
   const isFallbackGallery = useMemo(
     () =>
       portfolioItems.length > 0 &&
@@ -73,6 +122,26 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
   const gridClasses = isFallbackGallery
     ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 transition-opacity duration-300'
     : 'mx-auto grid w-full max-w-[68rem] grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2 md:gap-8 transition-opacity duration-300'
+
+  const categoryLabelFor = (cat: PortfolioGridItem['category']) =>
+    translations.categories[language][cat === 'lrc' ? 1 : cat === 'interiors' ? 2 : 3]
+
+  const goLightboxPrev = () => {
+    if (!lightboxItem || lightboxNavItems.length < 2) return
+    const i = lightboxNavItems.findIndex((x) => x.key === lightboxItem.key)
+    const idx = i < 0 ? lightboxNavItems.length - 1 : (i - 1 + lightboxNavItems.length) % lightboxNavItems.length
+    setLightboxItem(lightboxNavItems[idx])
+  }
+
+  const goLightboxNext = () => {
+    if (!lightboxItem || lightboxNavItems.length < 2) return
+    const i = lightboxNavItems.findIndex((x) => x.key === lightboxItem.key)
+    const idx = i < 0 ? 0 : (i + 1) % lightboxNavItems.length
+    setLightboxItem(lightboxNavItems[idx])
+  }
+
+  const navBtnClass =
+    'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-violet-600 text-white shadow-lg touch-manipulation hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#111018]'
 
   return (
     <section id="portfolio" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
@@ -124,19 +193,17 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
           {filteredItems.map((item, index) => {
             const isFallbackItem = item.key.startsWith('fallback-')
 
-            return (
-              <div
-                key={item.key}
-                className={`
-                  group flex h-full flex-col overflow-hidden cursor-pointer rounded-2xl border border-amethyst/18 backdrop-blur-xl
+            const cardClassName = `
+                  group flex h-full flex-col overflow-hidden rounded-2xl border border-amethyst/18 backdrop-blur-xl
                   bg-[rgba(248,246,255,0.76)] shadow-[0_4px_16px_rgba(46,36,71,0.07)]
                   hover:shadow-[0_16px_40px_rgba(110,68,255,0.12)] dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:border-lavender/15
                   dark:hover:shadow-[0_20px_50px_rgba(189,166,255,0.12)]
                   transition-all duration-300
-                  ${isFallbackItem ? 'hover:scale-[1.02] hover:-translate-y-1 sm:hover:scale-105' : 'hover:-translate-y-0.5 sm:hover:-translate-y-1'}`
-                }
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
+                  ${isFallbackItem ? 'cursor-pointer hover:scale-[1.02] hover:-translate-y-1 sm:hover:scale-105' : 'cursor-pointer hover:-translate-y-0.5 sm:hover:-translate-y-1'}`
+            const cardStyle = { animationDelay: `${index * 50}ms` } as const
+
+            const cardInner = (
+              <>
                 {isFallbackItem ? (
                   <>
                     {/* Fallback: thumbnail-style square placeholders (unchanged look) */}
@@ -233,7 +300,32 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
                     </div>
                   </>
                 )}
-              </div>
+              </>
+            )
+
+            if (isFallbackItem) {
+              return (
+                <div key={item.key} className={cardClassName} style={cardStyle}>
+                  {cardInner}
+                </div>
+              )
+            }
+
+            return (
+              <button
+                key={item.key}
+                type="button"
+                className={`${cardClassName} w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amethyst/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(248,246,255,0.76)] dark:focus-visible:ring-lavender/60 dark:focus-visible:ring-offset-slate-900/80`}
+                style={cardStyle}
+                onClick={() => setLightboxItem(item)}
+                aria-label={
+                  language === 'hr'
+                    ? `Otvori povećani prikaz: ${item.title}`
+                    : `Open enlarged preview: ${item.title}`
+                }
+              >
+                {cardInner}
+              </button>
             )
           })}
         </div>
@@ -268,6 +360,133 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
           </div>
         </div>
       </div>
+
+      {lightboxItem ? (
+        <div
+          className="fixed inset-0 z-[1040] overflow-y-auto bg-black/80"
+          role="presentation"
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxItem(null)}
+            className="fixed right-4 top-4 z-[9999] flex items-center gap-2 rounded-full border border-white/20 bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg touch-manipulation hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            aria-label="Zatvori prikaz"
+          >
+            <span>{language === 'hr' ? 'Zatvori' : 'Close'}</span>
+            <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div
+            className="flex min-h-dvh w-full justify-center px-4 pb-8 pt-24"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setLightboxItem(null)
+            }}
+            role="presentation"
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="portfolio-lightbox-title"
+              className="relative flex h-fit w-full max-w-6xl flex-col overflow-x-hidden rounded-3xl border border-white/10 bg-[#111018] shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex flex-col gap-5 px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8">
+                <div className="relative">
+                  {showLightboxNav ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={goLightboxPrev}
+                        className={`${navBtnClass} absolute left-1 top-1/2 z-10 hidden -translate-y-1/2 md:flex`}
+                        aria-label="Prethodna portfolio stavka"
+                      >
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={goLightboxNext}
+                        className={`${navBtnClass} absolute right-1 top-1/2 z-10 hidden -translate-y-1/2 md:flex`}
+                        aria-label="Sljedeća portfolio stavka"
+                      >
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </>
+                  ) : null}
+                  {lightboxItem.imageUrl ? (
+                    <div className="flex w-full min-w-0 shrink-0 justify-center rounded-xl bg-black/25 p-2 sm:p-4">
+                      <img
+                        src={lightboxItem.imageUrl}
+                        alt={lightboxItem.imageAlt ?? ''}
+                        decoding="async"
+                        className="h-auto w-full max-h-[58dvh] max-w-full object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative flex aspect-[4/3] w-full max-h-[58dvh] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-slate-900/80">
+                      <div className="absolute inset-0 bg-gradient-to-br from-amethyst/25 via-[#111018] to-plum/40" />
+                      <div className="relative flex flex-col items-center">
+                        <span className="mb-2 text-5xl opacity-70">{categoryIcons[lightboxItem.category]}</span>
+                        <p className="text-sm font-medium text-zinc-400">
+                          {translations.placeholder[language]}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {showLightboxNav ? (
+                  <div className="flex items-center justify-center gap-10 md:hidden">
+                    <button
+                      type="button"
+                      onClick={goLightboxPrev}
+                      className={navBtnClass}
+                      aria-label="Prethodna portfolio stavka"
+                    >
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={goLightboxNext}
+                      className={navBtnClass}
+                      aria-label="Sljedeća portfolio stavka"
+                    >
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                ) : null}
+
+                <div className="min-w-0 space-y-3 text-left">
+                  <h2
+                    id="portfolio-lightbox-title"
+                    className="font-heading text-xl font-bold leading-snug text-zinc-50 sm:text-2xl"
+                  >
+                    {lightboxItem.title}
+                  </h2>
+                  {lightboxItem.description ? (
+                    <p className="text-sm leading-relaxed text-zinc-300 sm:text-base sm:leading-relaxed">
+                      {lightboxItem.description}
+                    </p>
+                  ) : null}
+                  <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-lavender/40 bg-lavender/15 px-3 py-1.5 text-xs font-semibold text-lavender sm:text-sm">
+                    <span className="shrink-0">{categoryIcons[lightboxItem.category]}</span>
+                    <span className="truncate">{categoryLabelFor(lightboxItem.category)}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }
