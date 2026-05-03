@@ -7,6 +7,18 @@ interface WelcomeSectionProps {
   language?: 'hr' | 'en'
 }
 
+type ServiceCardLine = 'lrc' | 'interiors' | 'webAtelier'
+
+/**
+ * Temporary interiors-first: `false` hides the card on the homepage (placeholders keep md grid balance).
+ * Set LRC / webAtelier to `true` to restore without touching card markup.
+ */
+const SERVICE_CARD_PUBLIC_VISIBILITY: Record<ServiceCardLine, boolean> = {
+  lrc: false,
+  interiors: true,
+  webAtelier: false,
+}
+
 export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps) {
   const USE_IMAGE_BG = true
 
@@ -250,6 +262,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 md:grid-cols-3">
           {/* LRC Shop Card */}
+          {SERVICE_CARD_PUBLIC_VISIBILITY.lrc ? (
           <Link
             to="/lrc"
             onClick={() => trackEvent('homepage_line_click', { line: 'lrc' })}
@@ -279,6 +292,12 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
               </div>
             </div>
           </Link>
+          ) : (
+            <div
+              className="pointer-events-none hidden min-h-0 select-none md:block"
+              aria-hidden="true"
+            />
+          )}
 
           {/* Interijeri Card */}
           <Link
@@ -312,6 +331,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           </Link>
 
           {/* Web Atelier Card */}
+          {SERVICE_CARD_PUBLIC_VISIBILITY.webAtelier ? (
           <Link
             to="/web-atelier"
             onClick={() => trackEvent('homepage_line_click', { line: 'web-atelier' })}
@@ -341,6 +361,12 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
               </div>
             </div>
           </Link>
+          ) : (
+            <div
+              className="pointer-events-none hidden min-h-0 select-none md:block"
+              aria-hidden="true"
+            />
+          )}
         </div>
       </div>
     </section>
