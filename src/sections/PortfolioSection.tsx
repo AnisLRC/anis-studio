@@ -389,7 +389,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
               role="dialog"
               aria-modal="true"
               aria-labelledby="portfolio-lightbox-title"
-              className="relative flex h-fit w-full max-w-6xl flex-col overflow-x-hidden rounded-3xl border border-white/10 bg-[#111018] shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+              className="portfolio-lightbox-panel relative flex h-fit w-full max-w-6xl flex-col overflow-x-hidden rounded-3xl border border-white/10 bg-[#111018] shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex flex-col gap-5 px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8">
@@ -432,7 +432,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
                       <div className="absolute inset-0 bg-gradient-to-br from-amethyst/25 via-[#111018] to-plum/40" />
                       <div className="relative flex flex-col items-center">
                         <span className="mb-2 text-5xl opacity-70">{categoryIcons[lightboxItem.category]}</span>
-                        <p className="text-sm font-medium text-zinc-400">
+                        <p className="portfolio-lightbox-placeholder-caption text-sm font-medium text-zinc-400">
                           {translations.placeholder[language]}
                         </p>
                       </div>
@@ -468,16 +468,16 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
                 <div className="min-w-0 space-y-3 text-left">
                   <h2
                     id="portfolio-lightbox-title"
-                    className="font-heading text-xl font-bold leading-snug text-zinc-50 sm:text-2xl"
+                    className="font-heading text-xl font-bold leading-snug text-white sm:text-2xl"
                   >
                     {lightboxItem.title}
                   </h2>
                   {lightboxItem.description ? (
-                    <p className="text-sm leading-relaxed text-zinc-300 sm:text-base sm:leading-relaxed">
+                    <p className="portfolio-lightbox-description text-sm leading-relaxed text-zinc-200 sm:text-base sm:leading-relaxed">
                       {lightboxItem.description}
                     </p>
                   ) : null}
-                  <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-lavender/40 bg-lavender/15 px-3 py-1.5 text-xs font-semibold text-lavender sm:text-sm">
+                  <span className="portfolio-lightbox-badge inline-flex max-w-full items-center gap-1.5 rounded-full border border-lavender/40 bg-lavender/15 px-3 py-1.5 text-xs font-semibold sm:text-sm">
                     <span className="shrink-0">{categoryIcons[lightboxItem.category]}</span>
                     <span className="truncate">{categoryLabelFor(lightboxItem.category)}</span>
                   </span>

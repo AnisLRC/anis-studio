@@ -99,6 +99,29 @@
   }
 }
 
+/*
+ * Portfolio lightbox panel: global @layer base sets h2/p to plum ink in light mode,
+ * which overrides utilities and hurts contrast on the dark #111018 panel.
+ */
+.portfolio-lightbox-panel h2#portfolio-lightbox-title {
+  color: #fafafa !important;
+  -webkit-text-fill-color: #fafafa !important;
+}
+
+.portfolio-lightbox-panel p.portfolio-lightbox-description {
+  color: #e4e4e7 !important;
+  max-width: none !important;
+}
+
+.portfolio-lightbox-panel p.portfolio-lightbox-placeholder-caption {
+  color: #a1a1aa !important;
+  max-width: none !important;
+}
+
+.portfolio-lightbox-panel .portfolio-lightbox-badge {
+  color: #e9d5ff !important;
+}
+
 /* === COMPONENTS === */
 @layer components {
   .header-glass{
