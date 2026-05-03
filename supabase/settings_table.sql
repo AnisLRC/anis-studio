@@ -23,6 +23,18 @@ insert into settings (id, is_lrc_form_enabled)
 values (1, true)
 on conflict (id) do nothing;
 
+-- Javna vidljivost poslovnih sekcija (Interijeri, LRC, Web Atelier)
+alter table settings add column if not exists interiors_public_visible boolean not null default true;
+alter table settings add column if not exists lrc_public_visible boolean not null default false;
+alter table settings add column if not exists web_atelier_public_visible boolean not null default false;
+
+update settings
+set
+  interiors_public_visible = true,
+  lrc_public_visible = false,
+  web_atelier_public_visible = false
+where id = 1;
+
 -- ============================================
 -- Provjera: provjeri da li je tablica kreirana
 -- ============================================
