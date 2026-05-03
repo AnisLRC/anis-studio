@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import clsx from 'clsx'
-import type { Testimonial } from '../data/testimonials'
+import type { Testimonial, TestimonialCategory } from '../data/testimonials'
 
 export type TestimonialRowTone = 'purple' | 'softPink' | 'softBlue'
 
@@ -242,6 +242,33 @@ function toneVerifiedBadgeClasses(rowTone: TestimonialRowTone): string {
   return 'border-amethyst/15 bg-white/70 text-amethyst/90 dark:border-lavender/25 dark:bg-white/10 dark:text-lavender/90'
 }
 
+function getTestimonialCategoryLabel(category: TestimonialCategory, language: 'hr' | 'en'): string {
+  const hr: Record<TestimonialCategory, string> = {
+    general: 'Općenito',
+    interiors: 'Interijeri',
+    lrc: 'LRC',
+    webAtelier: 'Web Atelier',
+  }
+  const en: Record<TestimonialCategory, string> = {
+    general: 'General',
+    interiors: 'Interiors',
+    lrc: 'LRC',
+    webAtelier: 'Web Atelier',
+  }
+  return language === 'hr' ? hr[category] : en[category]
+}
+
+/** Category badge colors (by review section), not row tone. */
+function testimonialCategoryBadgeClasses(category: TestimonialCategory): string {
+  if (category === 'lrc') {
+    return 'border-rose-200/25 bg-white/70 text-rose-800/90 dark:border-rose-400/30 dark:bg-white/10 dark:text-rose-100/90'
+  }
+  if (category === 'webAtelier') {
+    return 'border-sky-200/35 bg-white/70 text-sky-900/85 dark:border-sky-400/35 dark:bg-white/10 dark:text-sky-100/90'
+  }
+  return 'border-amethyst/15 bg-white/70 text-amethyst/90 dark:border-lavender/25 dark:bg-white/10 dark:text-lavender/90'
+}
+
 function TestimonialCard({
   testimonial,
   language,
@@ -344,17 +371,27 @@ function TestimonialCard({
           <p className="font-heading text-left text-sm font-semibold leading-snug tracking-tight text-plum/95 dark:text-pearl sm:text-[0.9375rem]">
             {testimonial.name}
           </p>
-          {testimonial.rating === 5 ? (
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+            {testimonial.rating === 5 ? (
+              <span
+                className={clsx(
+                  'inline-flex w-fit shrink-0 items-center gap-0.5 rounded-full border px-2 py-0.5 text-[10px] font-medium leading-none',
+                  toneVerifiedBadgeClasses(rowTone)
+                )}
+              >
+                <span aria-hidden>✓</span>
+                {verifiedLabel}
+              </span>
+            ) : null}
             <span
               className={clsx(
-                'inline-flex w-fit items-center gap-0.5 rounded-full border px-2 py-0.5 text-[10px] font-medium leading-none',
-                toneVerifiedBadgeClasses(rowTone)
+                'inline-flex w-fit max-w-full shrink-0 items-center rounded-full border px-2 py-0.5 text-[10px] font-medium leading-none',
+                testimonialCategoryBadgeClasses(testimonial.category)
               )}
             >
-              <span aria-hidden>✓</span>
-              {verifiedLabel}
+              {getTestimonialCategoryLabel(testimonial.category, language)}
             </span>
-          ) : null}
+          </div>
         </div>
       </div>
 

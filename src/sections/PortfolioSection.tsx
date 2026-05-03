@@ -2,20 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 import { usePortfolioItems, type PortfolioGridItem } from '../hooks/usePortfolioItems'
+import { useSettings } from '../hooks/useSettings'
 
 type PortfolioFilterCategory = 'all' | 'lrc' | 'interiors' | 'web-atelier'
 
-/**
- * Temporary interiors-first: set `false` to hide a filter chip without removing category logic.
- * Set LRC / web-atelier to `true` to restore filter buttons.
- */
-const PUBLIC_PORTFOLIO_FILTER_VISIBILITY: Record<PortfolioFilterCategory, boolean> = {
-  all: true,
-  lrc: false,
-  interiors: true,
-  'web-atelier': false,
-}
-
+/** Filter chip order; “Svi” (`all`) always first; category keys match `PortfolioGridItem.category` (e.g. `web-atelier`). */
 const PORTFOLIO_FILTER_ORDER: readonly PortfolioFilterCategory[] = [
   'all',
   'lrc',
@@ -23,15 +14,12 @@ const PORTFOLIO_FILTER_ORDER: readonly PortfolioFilterCategory[] = [
   'web-atelier',
 ]
 
-const VISIBLE_PORTFOLIO_FILTER_CATEGORIES = PORTFOLIO_FILTER_ORDER.filter(
-  (c) => PUBLIC_PORTFOLIO_FILTER_VISIBILITY[c]
-)
-
 interface PortfolioSectionProps {
   language: 'hr' | 'en'
 }
 
 export default function PortfolioSection({ language }: PortfolioSectionProps) {
+  const { settings } = useSettings()
   const translations = {
     title: {
       hr: 'Odabrani projekti 3D vizualizacije prostora',
@@ -68,14 +56,39 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<PortfolioFilterCategory>('all')
   const [lightboxItem, setLightboxItem] = useState<PortfolioGridItem | null>(null)
 
-  useEffect(() => {
-    if (!PUBLIC_PORTFOLIO_FILTER_VISIBILITY[selectedCategory]) {
-      setSelectedCategory('all')
-    }
-  }, [selectedCategory])
-
   const { items: portfolioItems, resolvedKind } = usePortfolioItems(language)
   const portfolioLoading = resolvedKind === 'loading'
+
+  const serviceVisibility = useMemo(
+    () => ({
+      lrc: settings?.lrc_public_visible ?? false,
+      interiors: settings?.interiors_public_visible ?? true,
+      webAtelier: settings?.web_atelier_public_visible ?? false,
+    }),
+    [settings]
+  )
+
+  const visibleFilterCategories = useMemo(() => {
+    const categoriesPresent = new Set(portfolioItems.map((item) => item.category))
+    const out: PortfolioFilterCategory[] = ['all']
+    for (const cat of PORTFOLIO_FILTER_ORDER) {
+      if (cat === 'all') continue
+      const adminOn =
+        cat === 'lrc'
+          ? serviceVisibility.lrc
+          : cat === 'interiors'
+            ? serviceVisibility.interiors
+            : serviceVisibility.webAtelier
+      if (adminOn && categoriesPresent.has(cat)) out.push(cat)
+    }
+    return out
+  }, [portfolioItems, serviceVisibility])
+
+  useEffect(() => {
+    if (!visibleFilterCategories.includes(selectedCategory)) {
+      setSelectedCategory('all')
+    }
+  }, [visibleFilterCategories, selectedCategory])
 
   useEffect(() => {
     if (!lightboxItem) return
@@ -195,7 +208,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
 
         {/* Category Filters - with glow on active */}
         <div className="mb-6 flex flex-wrap justify-center gap-2.5 sm:mb-8 sm:gap-3">
-          {VISIBLE_PORTFOLIO_FILTER_CATEGORIES.map((category) => (
+          {visibleFilterCategories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}

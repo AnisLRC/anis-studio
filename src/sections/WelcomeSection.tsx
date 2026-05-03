@@ -1,26 +1,22 @@
 import { Link } from 'react-router-dom'
-import { trackEvent } from '../lib/analytics'
 import SparklesCanvas from '../components/SparklesCanvas'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
+import { useSettings } from '../hooks/useSettings'
+import { trackEvent } from '../lib/analytics'
 
 interface WelcomeSectionProps {
   language?: 'hr' | 'en'
 }
 
-type ServiceCardLine = 'lrc' | 'interiors' | 'webAtelier'
-
-/**
- * Temporary interiors-first: `false` hides the card on the homepage (placeholders keep md grid balance).
- * Set LRC / webAtelier to `true` to restore without touching card markup.
- */
-const SERVICE_CARD_PUBLIC_VISIBILITY: Record<ServiceCardLine, boolean> = {
-  lrc: false,
-  interiors: true,
-  webAtelier: false,
-}
-
 export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps) {
   const USE_IMAGE_BG = true
+  const { settings } = useSettings()
+
+  const serviceCardVisibility = {
+    lrc: settings?.lrc_public_visible ?? false,
+    interiors: settings?.interiors_public_visible ?? true,
+    webAtelier: settings?.web_atelier_public_visible ?? false,
+  }
 
   const translations = {
     headline: {
@@ -262,7 +258,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 md:grid-cols-3">
           {/* LRC Shop Card */}
-          {SERVICE_CARD_PUBLIC_VISIBILITY.lrc ? (
+          {serviceCardVisibility.lrc ? (
           <Link
             to="/lrc"
             onClick={() => trackEvent('homepage_line_click', { line: 'lrc' })}
@@ -300,6 +296,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           )}
 
           {/* Interijeri Card */}
+          {serviceCardVisibility.interiors ? (
           <Link
             to="/interijeri"
             onClick={() => trackEvent('homepage_line_click', { line: 'interijeri' })}
@@ -329,9 +326,15 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
               </div>
             </div>
           </Link>
+          ) : (
+            <div
+              className="pointer-events-none hidden min-h-0 select-none md:block"
+              aria-hidden="true"
+            />
+          )}
 
           {/* Web Atelier Card */}
-          {SERVICE_CARD_PUBLIC_VISIBILITY.webAtelier ? (
+          {serviceCardVisibility.webAtelier ? (
           <Link
             to="/web-atelier"
             onClick={() => trackEvent('homepage_line_click', { line: 'web-atelier' })}

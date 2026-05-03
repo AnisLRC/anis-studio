@@ -1,22 +1,19 @@
 import { Link } from 'react-router-dom'
+import { useSettings } from '../hooks/useSettings'
 import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
 
 interface AboutSectionProps {
   language: 'hr' | 'en'
 }
 
-type AboutBadgeKey = 'lrc' | 'interiors' | 'webAtelier'
-
-/**
- * Interiors-first: hide LRC / Web Atelier badge links without removing definitions.
- */
-const ABOUT_BADGE_PUBLIC_VISIBILITY: Record<AboutBadgeKey, boolean> = {
-  lrc: false,
-  interiors: true,
-  webAtelier: false,
-}
-
 export default function AboutSection({ language }: AboutSectionProps) {
+  const { settings } = useSettings()
+  const aboutBadgeVisibility = {
+    lrc: settings?.lrc_public_visible ?? false,
+    interiors: settings?.interiors_public_visible ?? true,
+    webAtelier: settings?.web_atelier_public_visible ?? false,
+  }
+
   const translations = {
     title: {
       hr: "✨ O meni",
@@ -141,7 +138,7 @@ export default function AboutSection({ language }: AboutSectionProps) {
   }
 
   const visibleBadges = translations.badges[language].filter(
-    (badge) => ABOUT_BADGE_PUBLIC_VISIBILITY[badge.key]
+    (badge) => aboutBadgeVisibility[badge.key],
   )
 
   return (

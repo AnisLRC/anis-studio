@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useSettings } from '../hooks/useSettings'
 import { useAuth } from '../providers/AuthProvider'
 import { useAdminAuth } from '../providers/AdminAuthProvider'
 import { useUi } from '../providers/UiProvider'
@@ -15,8 +16,9 @@ interface HeaderProps {
 type NavKey = 'lrc' | 'interiors' | 'webAtelier' | 'about' | 'faq' | 'contact'
 
 /**
- * Temporary interiors-first focus: set `visible: false` to hide from the public header
- * without removing labels or routes. Set back to `true` to restore LRC / Web Atelier links.
+ * Order and static links: about / faq / contact use `visible` in the header.
+ * LRC, Interijeri, Web Atelier visibility comes from `useSettings()` (public flags), with safe
+ * fallbacks while settings load: interiors on, LRC and Web Atelier off.
  */
 const PUBLIC_HEADER_NAV_ITEMS: { key: NavKey; visible: boolean }[] = [
   { key: 'lrc', visible: false },
@@ -36,14 +38,32 @@ const NAV_ROUTES: Record<NavKey, string> = {
   faq: '/faq',
 }
 
-const VISIBLE_HEADER_NAV_KEYS = PUBLIC_HEADER_NAV_ITEMS.filter((item) => item.visible).map((item) => item.key)
-
 export default function Header({ language, onLanguageChange, cartItemCount, onCartClick }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { settings } = useSettings()
   const { isAuthenticated, logout } = useAuth()
   const { isAdmin } = useAdminAuth()
   const { openModal } = useUi()
   const navigate = useNavigate()
+
+  const serviceVisibility = {
+    lrc: settings?.lrc_public_visible ?? false,
+    interiors: settings?.interiors_public_visible ?? true,
+    webAtelier: settings?.web_atelier_public_visible ?? false,
+  }
+
+  const visibleHeaderNavKeys = PUBLIC_HEADER_NAV_ITEMS.filter((item) => {
+    switch (item.key) {
+      case 'lrc':
+        return serviceVisibility.lrc
+      case 'interiors':
+        return serviceVisibility.interiors
+      case 'webAtelier':
+        return serviceVisibility.webAtelier
+      default:
+        return item.visible
+    }
+  }).map((item) => item.key)
 
   const navigation = {
     hr: {
@@ -101,7 +121,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex flex-1 min-w-0 items-center justify-center gap-4 lg:gap-6 px-2">
-          {VISIBLE_HEADER_NAV_KEYS.map((key) => {
+          {visibleHeaderNavKeys.map((key) => {
             return (
               <Link
                 key={key}
@@ -326,7 +346,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
       {isMobileMenuOpen && (
         <div className="md:hidden border-t py-3 sm:py-4 backdrop-blur-sm dark:backdrop-blur-none mobile-menu-enter border-[rgba(110,68,255,0.12)] dark:border-lavender/25 bg-pearl/95 dark:bg-[#070812] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
           <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex flex-col gap-2 text-plum dark:text-pearl">
-            {VISIBLE_HEADER_NAV_KEYS.map((key) => {
+            {visibleHeaderNavKeys.map((key) => {
               return (
                 <Link
                   key={key}

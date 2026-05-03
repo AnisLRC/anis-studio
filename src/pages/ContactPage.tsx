@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
-import { ErrorBoundary } from '../ErrorBoundary'
 import ContactSection from '../components/ContactSection'
-import { CONTACT_INFO } from '../config/contact'
 import { AnimatedPage } from '../components/AnimatedPage'
 import { PageSEO } from '../components/PageSEO'
+import { CONTACT_INFO } from '../config/contact'
+import { ErrorBoundary } from '../ErrorBoundary'
+import { useSettings } from '../hooks/useSettings'
 
 interface ContactPageProps {
   language: 'hr' | 'en'
@@ -11,16 +12,85 @@ interface ContactPageProps {
 
 type ContactServiceRoutingKey = 'lrc' | 'interiors' | 'webAtelier'
 
-/**
- * Interiors-first: hide LRC / Web Atelier shortcuts without removing link definitions.
- */
-const PUBLIC_CONTACT_SERVICE_ROUTING_VISIBILITY: Record<ContactServiceRoutingKey, boolean> = {
-  lrc: false,
-  interiors: true,
-  webAtelier: false,
+type ContactServiceVisibility = Record<ContactServiceRoutingKey, boolean>
+
+function getServiceRoutingCopy(
+  language: 'hr' | 'en',
+  vis: ContactServiceVisibility,
+): { title: string; subtitle: string } {
+  const activeCount =
+    Number(vis.lrc) + Number(vis.interiors) + Number(vis.webAtelier)
+
+  const multi =
+    language === 'hr'
+      ? {
+          title: 'Odaberite smjer upita',
+          subtitle:
+            'Odaberite smjer koji vam treba ili nam pošaljite opći upit u nastavku. Ako niste sigurni, javite se porukom i usmjerit ćemo vas.',
+        }
+      : {
+          title: 'Choose your inquiry path',
+          subtitle:
+            'Choose the service direction you need or send a general inquiry below. If you are not sure, message us and we will guide you.',
+        }
+
+  if (activeCount >= 2) {
+    return multi
+  }
+
+  if (activeCount === 1) {
+    if (vis.interiors) {
+      return language === 'hr'
+        ? {
+            title: 'Znate što vam treba?',
+            subtitle:
+              'Za 3D vizualizacije interijera najbrži put je stranica Interijeri ili opća forma u nastavku. Ostalo možemo dogovoriti mailom ili porukom.',
+          }
+        : {
+            title: 'Know what you need?',
+            subtitle:
+              'For 3D interior visualizations, the fastest path is the Interiors page or the general form below. We can clarify the rest by email or message.',
+          }
+    }
+    if (vis.lrc) {
+      return language === 'hr'
+        ? {
+            title: 'Upit za LRC radove',
+            subtitle:
+              'Za personalizirane radove i proizvode odaberite LRC upit ili nam pošaljite opću poruku u nastavku.',
+          }
+        : {
+            title: 'LRC inquiry',
+            subtitle:
+              'For personalized handmade products, choose the LRC inquiry path or send a general message below.',
+          }
+    }
+    if (vis.webAtelier) {
+      return language === 'hr'
+        ? {
+            title: 'Upit za Web Atelier',
+            subtitle:
+              'Za web stranicu, landing page ili vizualnu prezentaciju brenda odaberite Web Atelier ili nam pošaljite opću poruku u nastavku.',
+          }
+        : {
+            title: 'Web Atelier inquiry',
+            subtitle:
+              'For a website, landing page or brand presentation, choose Web Atelier or send a general message below.',
+          }
+    }
+  }
+
+  return multi
 }
 
 export default function ContactPage({ language }: ContactPageProps) {
+  const { settings } = useSettings()
+  const contactServiceVisibility = {
+    lrc: settings?.lrc_public_visible ?? false,
+    interiors: settings?.interiors_public_visible ?? true,
+    webAtelier: settings?.web_atelier_public_visible ?? false,
+  }
+
   const translations = {
     introTitle: {
       hr: "📧 Javite nam se",
@@ -41,14 +111,6 @@ export default function ContactPage({ language }: ContactPageProps) {
       }
     },
     serviceRouting: {
-      title: {
-        hr: 'Znate što vam treba?',
-        en: 'Know what you need?'
-      },
-      text: {
-        hr: 'Za 3D vizualizacije interijera najbrži put je stranica Interijeri ili opća forma u nastavku. Ostalo možemo dogovoriti mailom ili porukom.',
-        en: 'For 3D interior visualizations, the fastest path is the Interiors page (or the general form below). Everything else we can align by email or message.',
-      },
       links: {
         hr: [
           { key: 'lrc' as const, label: 'LRC upit', to: '/lrc/upit' },
@@ -65,8 +127,10 @@ export default function ContactPage({ language }: ContactPageProps) {
   }
 
   const visibleServiceLinks = translations.serviceRouting.links[language].filter(
-    (item) => PUBLIC_CONTACT_SERVICE_ROUTING_VISIBILITY[item.key]
+    (item) => contactServiceVisibility[item.key],
   )
+
+  const serviceRoutingCopy = getServiceRoutingCopy(language, contactServiceVisibility)
 
   return (
     <AnimatedPage>
@@ -139,10 +203,10 @@ export default function ContactPage({ language }: ContactPageProps) {
               id="contact-service-routing-heading"
               className="font-heading text-base font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-lg"
             >
-              {translations.serviceRouting.title[language]}
+              {serviceRoutingCopy.title}
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-plum/78 dark:text-pearl/72 sm:text-[0.9375rem]">
-              {translations.serviceRouting.text[language]}
+              {serviceRoutingCopy.subtitle}
             </p>
             <nav
               className="mt-5 flex flex-col items-stretch gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3"

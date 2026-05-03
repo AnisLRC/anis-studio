@@ -3,6 +3,7 @@ import TestimonialMarquee, {
   type TestimonialMarqueeRowBlock,
   type TestimonialRowGroupKey,
 } from '../components/TestimonialMarquee'
+import { useSettings } from '../hooks/useSettings'
 import type { TestimonialCategory } from '../data/testimonials'
 import { TESTIMONIALS } from '../data/testimonials'
 
@@ -13,19 +14,8 @@ interface TestimonialsSectionProps {
 const byIdAsc = <T extends { id: number }>(a: T, b: T) => a.id - b.id
 
 /**
- * Public: which testimonial rows render on the live site (per group).
- * Trust row = general + interiors combined (interiors-first public: only this row when preview is off).
- * Category intent: general + interiors on via `trust`; `lrc` and `webAtelier` off until set to `true`.
- */
-export const PUBLIC_TESTIMONIAL_ROW_VISIBILITY: Record<TestimonialRowGroupKey, boolean> = {
-  trust: true,
-  lrc: false,
-  webAtelier: false,
-}
-
-/**
- * Local preview: when `true`, shows LRC row (and optional Web Atelier placeholder) regardless of public flags.
- * **Interiors-first public:** keep `false` so only `PUBLIC_TESTIMONIAL_ROW_VISIBILITY` applies (trust row only).
+ * Local preview: when `true`, shows all rows that have items (plus optional empty Web Atelier preview),
+ * ignoring admin public visibility flags.
  */
 export const PREVIEW_ALL_TESTIMONIAL_ROWS = false
 
@@ -39,9 +29,11 @@ function collectByCategories(categories: TestimonialCategory[]) {
   return TESTIMONIALS.filter((t) => categories.includes(t.category)).sort(byIdAsc)
 }
 
-function buildTestimonialRowBlocks(): TestimonialMarqueeRowBlock[] {
+function buildTestimonialRowBlocks(
+  publicRowVisibility: Record<TestimonialRowGroupKey, boolean>,
+): TestimonialMarqueeRowBlock[] {
   const preview = PREVIEW_ALL_TESTIMONIAL_ROWS
-  const pub = PUBLIC_TESTIMONIAL_ROW_VISIBILITY
+  const pub = publicRowVisibility
 
   const trustItems = collectByCategories(['general', 'interiors'])
   const lrcItems = collectByCategories(['lrc'])
@@ -88,6 +80,13 @@ function buildTestimonialRowBlocks(): TestimonialMarqueeRowBlock[] {
 }
 
 export default function TestimonialsSection({ language }: TestimonialsSectionProps) {
+  const { settings } = useSettings()
+  const publicRowVisibility = {
+    trust: settings?.interiors_public_visible ?? true,
+    lrc: settings?.lrc_public_visible ?? false,
+    webAtelier: settings?.web_atelier_public_visible ?? false,
+  }
+
   const translations = {
     title: {
       hr: 'Što kažu naši kupci',
@@ -103,7 +102,7 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
     },
   }
 
-  const rowBlocks = buildTestimonialRowBlocks()
+  const rowBlocks = buildTestimonialRowBlocks(publicRowVisibility)
 
   return (
     <section id="testimonials" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
