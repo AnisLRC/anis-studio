@@ -25,6 +25,13 @@ export interface FAQItem {
   }
 }
 
+function splitFaqAnswerParagraphs(text: string): string[] {
+  return text
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+}
+
 export const FAQ_ITEMS: FAQItem[] = [
   {
     id: 1,
@@ -90,12 +97,112 @@ export const FAQ_ITEMS: FAQItem[] = [
     id: 5,
     category: 'interiors',
     question: {
-      hr: 'Kako funkcionira usluga 3D renderiranja interijera?',
-      en: 'How does the 3D interior rendering service work?'
+      hr: 'Kako funkcionira usluga 3D vizualizacije interijera?',
+      en: 'How does the 3D interior visualization service work?'
     },
     answer: {
-      hr: 'Nakon što nam pošaljete dimenzije prostora i svoje ideje, kreiramo 2D skicu i zatim 3D render koji prikazuje kako će izgledati vaš interijer. Možete vidjeti boje, materijale i raspored prije nego što odlučite.',
-      en: 'After you send us the room dimensions and your ideas, we create a 2D sketch and then a 3D render showing how your interior will look. You can see colors, materials, and layout before you decide.'
+      hr:
+        'Nakon što pošaljete osnovne dimenzije prostora, fotografije postojećeg stanja ako ih imate i svoje ideje ili reference, izrađujemo 3D vizualni prikaz prostora. Cilj je da jasno vidite raspored elemenata, odnos proporcija i osnovnu logiku prostora prije izvedbe ili narudžbe namještaja.\n\nFotorealistični render, u kojem se detaljnije vide boje, materijali, rasvjeta i atmosfera prostora, može se izraditi dodatno ako ga želite uključiti u ponudu.',
+      en:
+        'After you send basic room dimensions, photos of the existing space if you have them, and your ideas or references, we create a 3D visual presentation of the space. The goal is for you to clearly see the arrangement of elements, proportions, and basic spatial logic before execution or ordering furniture.\n\nPhotorealistic rendering, where colours, materials, lighting, and atmosphere are shown in more detail, can be produced additionally if you want it included in the quote.'
+    }
+  },
+  {
+    id: 8,
+    category: 'interiors',
+    question: {
+      hr: 'Što točno dobivam kao isporuku?',
+      en: 'What exactly do I receive as a deliverable?'
+    },
+    answer: {
+      hr:
+        'Osnovna isporuka ovisi o dogovorenom opsegu projekta, ali može uključivati 3D prikaz prostora, prikaz rasporeda elemenata i vizualnu prezentaciju idejnog rješenja. Takav prikaz pomaže vam da bolje razumijete prostor prije nego krenete u izvedbu ili narudžbu.\n\nFotorealistične renderirane slike nisu automatski uključene u svaki projekt, nego se dogovaraju posebno ako želite detaljniji prikaz boja, materijala, rasvjete i završnog izgleda prostora.',
+      en:
+        'The basic deliverable depends on the agreed project scope, but it may include a 3D presentation of the space, a view of how elements are arranged, and a visual presentation of the proposed solution. Such a presentation helps you understand the space better before you move into execution or placing orders.\n\nPhotorealistic rendered images are not automatically included in every project; they are agreed separately if you want a more detailed view of colours, materials, lighting, and the finished look of the space.'
+    }
+  },
+  {
+    id: 9,
+    category: 'interiors',
+    question: {
+      hr: 'Što trebam poslati za početak?',
+      en: 'What do I need to send to get started?'
+    },
+    answer: {
+      hr:
+        'Za početak su potrebne osnovne izmjere prostora, fotografije postojećeg stanja ako postoje, skica tlocrta ili rasporeda te reference stila koji vam se sviđa. To mogu biti slike s Pinteresta, katalozi materijala, primjeri kuhinja, boja, fronti, radnih ploča ili rasvjete.\n\nŠto su informacije jasnije, to će i 3D prikaz biti precizniji.',
+      en:
+        'To get started we need basic room measurements, photos of the existing space if available, a sketch of the floor plan or layout, and style references you like. These can be Pinterest images, material catalogues, examples of kitchens, colours, fronts, worktops, or lighting.\n\nThe clearer the information, the more precise the 3D visualization will be.'
+    }
+  },
+  {
+    id: 10,
+    category: 'interiors',
+    question: {
+      hr: 'Koliko traje izrada 3D vizualizacije?',
+      en: 'How long does 3D visualization take?'
+    },
+    answer: {
+      hr:
+        'Za standardne projekte, poput jedne prostorije, kuhinje ili manjeg prostora, izrada najčešće traje 5 do 10 radnih dana nakon potvrde ponude i dostave svih potrebnih podataka.\n\nSloženiji projekti, veći broj prostorija, fotorealistični renderi ili hitni rokovi dogovaraju se individualno.',
+      en:
+        'For standard projects, such as one room, a kitchen, or a smaller space, work usually takes 5 to 10 business days after the quote is confirmed and all required information has been supplied.\n\nMore complex projects, more rooms, photorealistic renders, or urgent deadlines are agreed individually.'
+    }
+  },
+  {
+    id: 11,
+    category: 'interiors',
+    question: {
+      hr: 'Jesu li korekcije uključene?',
+      en: 'Are corrections included?'
+    },
+    answer: {
+      hr:
+        'Da, u projekt je uključen jedan krug manjih korekcija, poput promjene boje, materijala, detalja ili manjih prilagodbi rasporeda.\n\nVeće promjene koncepta, potpuno novi smjer dizajna, dodatni pogledi ili dodatni fotorealistični renderi dogovaraju se posebno. Zato je najbolje na početku poslati što više jasnih referenci i želja.',
+      en:
+        'Yes — one round of smaller revisions is included in the project, such as changes to colour, materials, details, or small layout adjustments.\n\nMajor concept changes, an entirely new design direction, extra views, or additional photorealistic renders are agreed separately. That is why it is best to send as many clear references and wishes as possible at the start.'
+    }
+  },
+  {
+    id: 12,
+    category: 'interiors',
+    question: {
+      hr: 'Kako se formira cijena?',
+      en: 'How is the price formed?'
+    },
+    answer: {
+      hr:
+        'Cijena se formira prema opsegu projekta: veličini i složenosti prostora, broju prostorija, razini detalja, broju potrebnih prikaza i tome želite li osnovnu 3D vizualizaciju ili dodatne fotorealistične rendere.\n\nZato se cijena ne navodi unaprijed kao fiksna za svaki projekt. Nakon što pošaljete upit i osnovne informacije, dobivate pisanu ponudu bez obveze. Točnu cijenu uvijek potvrđujemo prije početka rada.',
+      en:
+        'The price is formed according to project scope: the size and complexity of the space, the number of rooms, the level of detail, how many views are needed, and whether you want basic 3D visualization or additional photorealistic renders.\n\nThat is why we do not quote a single fixed price upfront for every project. After you submit an inquiry and basic information, you receive a written, no-obligation quote. We always confirm the exact price before work begins.'
+    }
+  },
+  {
+    id: 13,
+    category: 'interiors',
+    question: {
+      hr: 'Je li usluga samo vizualizacija prostora?',
+      en: 'Is the service only for space visualization?'
+    },
+    answer: {
+      hr:
+        'Usluga je prvenstveno usmjerena na 3D vizualizaciju i vizualnu prezentaciju prostora. Za privatne klijente izrađujemo prikaze koji pomažu jasnije vidjeti raspored, proporcije, izgled elemenata i opći dojam prostora prije izvedbe ili narudžbe namještaja.\n\nTehnička dokumentacija za izvedbu nije dio standardne usluge za privatne klijente. Izrađuje se samo u dogovoru i suradnji sa stolarima, salonima ili profesionalcima koji proizvode namještaj, kada je potrebna prilagodba elemenata, kotiranje i tehnička priprema prema njihovim zahtjevima.',
+      en:
+        'The service is primarily focused on 3D visualization and visual presentation of spaces. For private clients, we create visuals that help them clearly understand the layout, proportions, element design, and overall impression of the space before execution or furniture ordering.\n\nTechnical documentation for execution is not part of the standard private-client service. It can be prepared only by agreement and in collaboration with carpenters, showrooms, or professionals who produce furniture, when element adaptation, dimensioning, and technical preparation are needed according to their requirements.'
+    }
+  },
+  {
+    id: 14,
+    category: 'interiors',
+    question: {
+      hr: 'Koja je razlika između upita za privatne klijente i upita za stolare ili salone?',
+      en: 'What is the difference between the inquiry for private clients and the inquiry for carpenters or showrooms?'
+    },
+    answer: {
+      hr:
+        'Upit za privatne klijente namijenjen je osobama koje uređuju vlastiti dom, kuhinju, apartman ili poslovni prostor i žele vidjeti kako će prostor izgledati prije donošenja odluke.\n\nUpit za stolare i salone namijenjen je profesionalcima koji trebaju 3D prikaz ili vizualizaciju za prezentaciju krajnjem kupcu. Ako niste sigurni koji upit odabrati, možete poslati opću poruku u kontaktima pa ćemo vas usmjeriti.',
+      en:
+        'The private client inquiry is for people renovating their own home, kitchen, apartment, or commercial space who want to see how the space will look before making a decision.\n\nThe carpenter and showroom inquiry is for professionals who need a 3D presentation or visualization for presenting to an end customer. If you are not sure which form to choose, you can send a general message through the contact page and we will guide you.'
     }
   },
   {
@@ -246,7 +353,11 @@ export default function FAQSection({
                   }`}
                 >
                   <div className="max-h-[min(65vh,26rem)] overflow-y-auto px-4 pb-4 pt-0 text-sm leading-relaxed text-plum/75 dark:text-pearl/70 sm:px-5">
-                    {item.answer[language]}
+                    <div className="space-y-3">
+                      {splitFaqAnswerParagraphs(item.answer[language]).map((paragraph, pIndex) => (
+                        <p key={pIndex}>{paragraph}</p>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
