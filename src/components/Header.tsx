@@ -4,12 +4,39 @@ import { useAuth } from '../providers/AuthProvider'
 import { useAdminAuth } from '../providers/AdminAuthProvider'
 import { useUi } from '../providers/UiProvider'
 import { ThemeToggle } from './ThemeToggle'
+
 interface HeaderProps {
   language: 'hr' | 'en'
   onLanguageChange: (lang: 'hr' | 'en') => void
   cartItemCount: number
   onCartClick: () => void
 }
+
+type NavKey = 'lrc' | 'interiors' | 'webAtelier' | 'about' | 'faq' | 'contact'
+
+/**
+ * Temporary interiors-first focus: set `visible: false` to hide from the public header
+ * without removing labels or routes. Set back to `true` to restore LRC / Web Atelier links.
+ */
+const PUBLIC_HEADER_NAV_ITEMS: { key: NavKey; visible: boolean }[] = [
+  { key: 'lrc', visible: false },
+  { key: 'interiors', visible: true },
+  { key: 'webAtelier', visible: false },
+  { key: 'about', visible: true },
+  { key: 'faq', visible: true },
+  { key: 'contact', visible: true },
+]
+
+const NAV_ROUTES: Record<NavKey, string> = {
+  lrc: '/lrc',
+  interiors: '/interijeri',
+  webAtelier: '/web-atelier',
+  about: '/o-nama',
+  contact: '/kontakt',
+  faq: '/faq',
+}
+
+const VISIBLE_HEADER_NAV_KEYS = PUBLIC_HEADER_NAV_ITEMS.filter((item) => item.visible).map((item) => item.key)
 
 export default function Header({ language, onLanguageChange, cartItemCount, onCartClick }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -74,20 +101,11 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex flex-1 min-w-0 items-center justify-center gap-4 lg:gap-6 px-2">
-          {(['lrc', 'interiors', 'webAtelier', 'about', 'faq', 'contact'] as const).map((key) => {
-            const routeMap: Record<typeof key, string> = {
-              lrc: '/lrc',
-              interiors: '/interijeri',
-              webAtelier: '/web-atelier',
-              about: '/o-nama',
-              contact: '/kontakt',
-              faq: '/faq'
-            }
-            
+          {VISIBLE_HEADER_NAV_KEYS.map((key) => {
             return (
               <Link
                 key={key}
-                to={routeMap[key]}
+                to={NAV_ROUTES[key]}
                 className="relative text-sm font-medium py-2 transition-colors duration-200 text-plum/90 dark:text-pearl/90 hover:text-amethyst dark:hover:text-lavender"
               >
                 <span className="after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-0 after:bg-[--color-primary] after:transition-[width] after:duration-300 hover:after:w-full">
@@ -308,20 +326,11 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
       {isMobileMenuOpen && (
         <div className="md:hidden border-t py-3 sm:py-4 backdrop-blur-sm dark:backdrop-blur-none mobile-menu-enter border-[rgba(110,68,255,0.12)] dark:border-lavender/25 bg-pearl/95 dark:bg-[#070812] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
           <nav className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 flex flex-col gap-2 text-plum dark:text-pearl">
-            {(['lrc', 'interiors', 'webAtelier', 'about', 'faq', 'contact'] as const).map((key) => {
-              const routeMap: Record<typeof key, string> = {
-                lrc: '/lrc',
-                interiors: '/interijeri',
-                webAtelier: '/web-atelier',
-                about: '/o-nama',
-                contact: '/kontakt',
-                faq: '/faq'
-              }
-              
+            {VISIBLE_HEADER_NAV_KEYS.map((key) => {
               return (
                 <Link
                   key={key}
-                  to={routeMap[key]}
+                  to={NAV_ROUTES[key]}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="mobile-menu-item text-left px-3 py-2.5 active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.2)] transition-all rounded-lg font-medium text-plum/90 dark:text-pearl hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
                   style={{ minHeight: '48px' }}
