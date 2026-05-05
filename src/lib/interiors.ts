@@ -192,7 +192,7 @@ export interface NewVrAppointmentInput {
 const NOT_CONFIGURED_ERROR =
   '[Interiors] Supabase nije konfiguriran. Provjeri .env.local i postavke.'
 
-const PROJECT_FILES_BUCKET = "project-files"; // TODO: kreiraj ovaj bucket u Supabase Storage
+const PROJECT_FILES_BUCKET = "project-files"; // Bucket se kreira putem supabase/project_files_storage.sql
 
 // ============================================
 // Helper Functions
@@ -707,9 +707,11 @@ export async function uploadProjectFileToStorage(
   const path = `${projectId}/${timestamp}-${random}-${safeName}`
 
   // 1) Upload u Storage
-  const { data: uploadData, error: uploadError } = await supabase!.storage
+  const { error: uploadError } = await supabase!.storage
     .from(PROJECT_FILES_BUCKET)
-    .upload(path, file)
+    .upload(path, file, {
+      contentType: file.type || "application/octet-stream",
+    })
 
   if (uploadError) {
     console.error(
@@ -719,7 +721,10 @@ export async function uploadProjectFileToStorage(
     throw uploadError
   }
 
-  const storagePath = uploadData?.path ?? path
+  // uploadData.path može sadržavati prefiks bucketa ("project-files/..."),
+  // što bi slomilo createSignedUrl. Koristimo lokalni `path` koji je uvijek
+  // ispravni object key unutar bucketa.
+  const storagePath = path
 
   // 2) Zapis u project_files tablicu
   const projectFile = await createProjectFile({

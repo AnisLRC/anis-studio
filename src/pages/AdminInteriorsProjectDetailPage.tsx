@@ -16,6 +16,7 @@ import {
   type VrAppointmentStatus,
   type VrAppointmentLocationPreference,
 } from "../lib/interiors";
+import { AdminInteriorsProjectImageGallery } from "../components/AdminInteriorsProjectImageGallery";
 
 type Project = NonNullable<Awaited<ReturnType<typeof fetchProjectById>>>;
 type Client = NonNullable<Awaited<ReturnType<typeof fetchClientById>>>;
@@ -65,6 +66,39 @@ function formatLocationPreference(value: string | null): string {
     default:
       return value;
   }
+}
+
+/** Iz project.notes (javna forma uvijek upisuje DA/NE). Podržan i stariji tekst s „zanima me”. */
+function parsePhotorealisticFromNotes(
+  notes: string | null | undefined
+): boolean {
+  if (!notes?.trim()) return false;
+  const m = notes.match(/Fotorealistični prikaz prostora:\s*(DA|NE)\b/i);
+  if (m) return m[1].toUpperCase() === "DA";
+  return /Fotorealistični prikaz prostora:.*zanima me/i.test(notes);
+}
+
+/** Izvlači kontaktni snapshot iz project.notes koji upisuje klijentski form. */
+function parseContactFromNotes(notes: string | null | undefined): {
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+} {
+  if (!notes?.trim()) return { name: null, email: null, phone: null };
+
+  const extract = (label: string): string | null => {
+    const m = notes.match(new RegExp("^" + label + ":\\s*(.+)$", "im"));
+    if (!m) return null;
+    const val = m[1].trim();
+    return val === "" ? null : val;
+  };
+
+  const phone = extract("Telefon");
+  return {
+    name: extract("Kontakt ime"),
+    email: extract("Email"),
+    phone: phone === "\u2014" ? null : phone,
+  };
 }
 
 const AdminInteriorsProjectDetailPage: React.FC = () => {
@@ -307,6 +341,10 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     navigate("/admin/interiors-projects");
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const handleStatusChange = async (newStatus: Project["status"]) => {
     if (!project || newStatus === project.status) return;
 
@@ -482,10 +520,27 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8">
+    <>
+      <style>{`
+        @media print {
+          .admin-interiors-no-print {
+            display: none !important;
+          }
+          .admin-interiors-print-root {
+            background: #fff !important;
+            padding: 0 !important;
+            min-height: auto !important;
+          }
+          .admin-interiors-print-root * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      `}</style>
+    <div className="admin-interiors-print-root min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-4xl space-y-6">
         {/* Header */}
-        <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-xl font-semibold text-slate-900">
               Detalji projekta
@@ -495,6 +550,14 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
             </p>
           </div>
 
+          <div className="flex flex-wrap items-center gap-2 admin-interiors-no-print">
+          <button
+            type="button"
+              onClick={handlePrint}
+              className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+            >
+              Ispis
+            </button>
           <button
             type="button"
             onClick={handleBack}
@@ -502,6 +565,7 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
           >
             ← Povratak na listu
           </button>
+          </div>
         </header>
 
         {/* Status poruke */}
@@ -538,25 +602,47 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                   </p>
                 )}
 
-                {!isLoadingRelated && !relatedError && client && (
-                  <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
-                    <InfoRow label="Ime" value={client.name || "—"} />
-                    <InfoRow label="Email" value={client.email || "—"} />
-                    <InfoRow label="Telefon" value={client.phone || "—"} />
-                    <InfoRow
-                      label="Jezik"
-                      value={client.language || "—"}
-                    />
-                  </div>
-                )}
+                {!isLoadingRelated && !relatedError && (() => {
+                  const snapshot = parseContactFromNotes(project.notes);
+                  const hasSnapshot = !!(snapshot.name || snapshot.email);
 
-                {!isLoadingRelated && !relatedError && client?.notes && (
-                  <div className="mt-3 text-xs text-slate-700 whitespace-pre-line">
-                    <span className="font-medium">Napomene klijenta:</span>
-                    <br />
-                    {client.notes}
-                  </div>
-                )}
+                  return (
+                    <>
+                      {hasSnapshot && (
+                        <div className="mt-3">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-2">
+                            Podaci iz ovog upita
+                          </p>
+                          <div className="grid gap-3 text-sm sm:grid-cols-2">
+                            <InfoRow label="Ime" value={snapshot.name || "—"} />
+                            <InfoRow label="Email" value={snapshot.email || "—"} />
+                            <InfoRow label="Telefon" value={snapshot.phone || "—"} />
+                          </div>
+                        </div>
+                      )}
+
+                      {client && (
+                        <div className={hasSnapshot ? "mt-4 pt-3 border-t border-slate-100" : "mt-3"}>
+                          {hasSnapshot && (
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400 mb-2">
+                              Profil klijenta (može biti iz ranijih upita)
+                            </p>
+                          )}
+                          <div className="grid gap-3 text-sm sm:grid-cols-2">
+                            <InfoRow label="Ime" value={client.name || "—"} />
+                            <InfoRow label="Email" value={client.email || "—"} />
+                            <InfoRow label="Telefon" value={client.phone || "—"} />
+                            <InfoRow label="Jezik" value={client.language || "—"} />
+                          </div>
+                        </div>
+                      )}
+
+                      {!hasSnapshot && !client && (
+                        <p className="mt-3 text-xs text-slate-500">Nema podataka o klijentu.</p>
+                      )}
+                    </>
+                  );
+                })()}
               </section>
             )}
 
@@ -598,18 +684,52 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                     />
                   </div>
                 )}
-
-                {!isLoadingRelated && !relatedError && carpenter?.notes && (
-                  <div className="mt-3 text-xs text-slate-700 whitespace-pre-line">
-                    <span className="font-medium">Profil / napomene:</span>
-                    <br />
-                    {carpenter.notes}
-                  </div>
-                )}
               </section>
             )}
 
-            {/* Osnovne informacije */}
+            <section className="rounded-lg border border-slate-200 bg-white p-4 print:break-inside-avoid">
+              <h2 className="text-sm font-semibold text-slate-900">
+                Napomene za ovaj upit
+              </h2>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Tekst poslan uz ovaj konkretan upit — primarni sadržaj za pregled ispisa.
+              </p>
+              <div className="mt-3 text-sm text-slate-800 whitespace-pre-line">
+                {project.notes?.trim()
+                  ? project.notes
+                  : "Nema napomena uz ovaj upit."}
+              </div>
+            </section>
+
+            <section className="rounded-lg border border-slate-200 bg-white p-4 print:break-inside-avoid">
+              <h2 className="text-sm font-semibold text-slate-900">
+                Fotorealistični prikaz
+              </h2>
+              <p className="mt-2 text-sm text-slate-800">
+                {parsePhotorealisticFromNotes(project.notes) ? (
+                  <span>Zatražen: Da</span>
+                ) : (
+                  <span>Zatražen: Ne</span>
+                )}
+              </p>
+            </section>
+
+            {project.user_type === "carpenter" &&
+              !isLoadingRelated &&
+              !relatedError &&
+              carpenter?.notes?.trim() && (
+                <section className="rounded-lg border border-dashed border-amber-200 bg-amber-50/70 p-4 print:break-inside-avoid">
+                  <h2 className="text-xs font-semibold text-amber-950">
+                    Profil suradnika (može uključivati ranije zapise)
+                  </h2>
+                  <p className="text-[11px] text-amber-900/85 mt-1 mb-2">
+                    Tekst s profila stolara u bazi; ne mora se odnositi isključivo na ovaj upit.
+                  </p>
+                  <div className="text-xs text-slate-800 whitespace-pre-line">
+                    {carpenter.notes}
+                  </div>
+                </section>
+              )}
             <section className="rounded-lg border border-slate-200 bg-white p-4">
               <h2 className="text-sm font-semibold text-slate-900">
                 Osnovne informacije
@@ -626,25 +746,35 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                 <InfoRow
                   label="Status"
                   value={
-                    <select
-                      value={project.status}
-                      onChange={(e) =>
-                        handleStatusChange(e.target.value as Project["status"])
-                      }
-                      disabled={isUpdatingStatus}
-                      title={isUpdatingStatus ? "Spremam..." : undefined}
-                      className={`rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 ${
-                        isUpdatingStatus
-                          ? "opacity-50 cursor-not-allowed"
-                          : "cursor-pointer"
-                      }`}
-                    >
-                      {STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
+                    <>
+                      <span className="admin-interiors-no-print inline-block">
+                        <select
+                          value={project.status}
+                          onChange={(e) =>
+                            handleStatusChange(
+                              e.target.value as Project["status"]
+                            )
+                          }
+                          disabled={isUpdatingStatus}
+                          title={isUpdatingStatus ? "Spremam..." : undefined}
+                          className={`rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 ${
+                            isUpdatingStatus
+                              ? "opacity-50 cursor-not-allowed"
+                              : "cursor-pointer"
+                          }`}
+                        >
+                          {STATUS_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </span>
+                      <span className="hidden print:inline text-sm text-slate-900">
+                        {STATUS_OPTIONS.find((o) => o.value === project.status)
+                          ?.label ?? project.status}
+                      </span>
+                    </>
                   }
                 />
                 <InfoRow
@@ -744,7 +874,7 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
               )}
 
               {!isLoadingFiles && !filesError && files.length > 0 && (
-                <div className="mt-3 flex items-center gap-2">
+                <div className="mt-3 flex items-center gap-2 admin-interiors-no-print">
                   <label className="text-xs text-gray-500">
                     Filter po tipu:
                   </label>
@@ -798,43 +928,50 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                 }
 
                 return (
-                  <ul className="mt-3 space-y-2 text-xs text-slate-700">
-                    {filteredProjectFiles.map((file) => (
-                    <li
-                      key={file.id}
-                      className="flex flex-col gap-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
-                    >
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">
-                            {file.original_name}
-                          </span>
-                          <span className="inline-flex items-center rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[11px] text-slate-700">
-                            {mapFileTypeLabel(file.file_type)}
-                          </span>
-                        </div>
-                        <span className="text-[11px] text-slate-500">
-                          {file.size_bytes != null
-                            ? `${(file.size_bytes / (1024 * 1024)).toFixed(
-                                2
-                              )} MB`
-                            : ""}
-                        </span>
-                        {file.notes && (
-                          <span className="mt-1 text-[11px] text-slate-600">
-                            {file.notes}
-                          </span>
-                        )}
-                      </div>
+                  <>
+                    <ul className="mt-3 space-y-2 text-xs text-slate-700">
+                      {filteredProjectFiles.map((file) => (
+                        <li
+                          key={file.id}
+                          className="flex flex-col gap-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
+                        >
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">
+                                {file.original_name}
+                              </span>
+                              <span className="inline-flex items-center rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[11px] text-slate-700">
+                                {mapFileTypeLabel(file.file_type)}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-slate-500">
+                              {file.size_bytes != null
+                                ? `${(file.size_bytes / (1024 * 1024)).toFixed(
+                                    2
+                                  )} MB`
+                                : ""}
+                            </span>
+                            {file.notes && (
+                              <span className="mt-1 text-[11px] text-slate-600">
+                                {file.notes}
+                              </span>
+                            )}
+                          </div>
 
-                      <div className="mt-1 text-[11px] text-slate-500 sm:mt-0 sm:text-right">
-                        {file.created_at
-                          ? new Date(file.created_at).toLocaleString("hr-HR")
-                          : ""}
-                      </div>
-                    </li>
-                    ))}
-                  </ul>
+                          <div className="mt-1 text-[11px] text-slate-500 sm:mt-0 sm:text-right">
+                            {file.created_at
+                              ? new Date(file.created_at).toLocaleString(
+                                  "hr-HR"
+                                )
+                              : ""}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    <AdminInteriorsProjectImageGallery
+                      files={filteredProjectFiles}
+                    />
+                  </>
                 );
               })()}
             </section>
@@ -903,7 +1040,7 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                             type="button"
                             onClick={() => loadAppointmentsForScene(scene.id)}
                             disabled={appointmentsLoadingByScene[scene.id]}
-                            className="inline-flex items-center rounded-md border border-slate-300 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="admin-interiors-no-print inline-flex items-center rounded-md border border-slate-300 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Osvježi
                           </button>
@@ -992,7 +1129,7 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                         {/* Forma za novi termin */}
                         <form
                           onSubmit={(e) => handleCreateAppointment(scene.id, e)}
-                          className="mt-4 space-y-2 border-t border-slate-200 pt-3"
+                          className="admin-interiors-no-print mt-4 space-y-2 border-t border-slate-200 pt-3"
                         >
                           <div className="grid gap-2 sm:grid-cols-3">
                             <div>
@@ -1136,7 +1273,7 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
               )}
 
               {/* Forma za dodavanje nove VR scene */}
-              <div className="mt-4 border-t border-slate-200 pt-4">
+              <div className="admin-interiors-no-print mt-4 border-t border-slate-200 pt-4">
                 <form onSubmit={handleCreateVrScene} className="space-y-3">
                   <div className="grid gap-3 sm:grid-cols-3">
                     <div>
@@ -1215,22 +1352,11 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                 </form>
               </div>
             </section>
-
-            {/* Napomene */}
-            <section className="rounded-lg border border-slate-200 bg-white p-4">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Napomene
-              </h2>
-              <div className="mt-3 text-sm text-slate-700 whitespace-pre-line">
-                {project.notes?.trim()
-                  ? project.notes
-                  : "Nema dodatnih napomena."}
-              </div>
-            </section>
           </div>
         )}
       </div>
     </div>
+    </>
   );
 };
 

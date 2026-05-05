@@ -1,5 +1,5 @@
 // src/components/InteriorsClientForm.tsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { FormEvent } from 'react'
 import toast from 'react-hot-toast'
 import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
@@ -23,7 +23,7 @@ export interface ClientProjectFormValues {
 
   hasPlan: 'plan' | 'photos' | 'none' | ''
   planFiles: File[]
-  photoFiles: FileList | null
+  photoFiles: File[]
 
   approxWidth: string
   approxLength: string
@@ -54,6 +54,9 @@ export interface ClientProjectFormValues {
   wantsVr: boolean
   vrLocationPreference: VrLocationPreference | null
   vrPackagePreference: VrPackagePreference | null
+
+  /** Optional add-on; stored in project notes until DB field exists */
+  wantsPhotorealisticRender: boolean
 }
 
 interface InteriorsClientFormProps {
@@ -73,7 +76,7 @@ const INITIAL_VALUES: ClientProjectFormValues = {
 
   hasPlan: '',
   planFiles: [],
-  photoFiles: null,
+  photoFiles: [],
 
   approxWidth: '',
   approxLength: '',
@@ -104,44 +107,20 @@ const INITIAL_VALUES: ClientProjectFormValues = {
   wantsVr: false,
   vrLocationPreference: null,
   vrPackagePreference: null,
+
+  wantsPhotorealisticRender: false,
 }
 
-const STYLE_OPTIONS = [
-  'Moderno',
-  'Minimalistički',
-  'Skandinavski',
-  'Rustikalno',
-  'Klasično',
-  'Industrijski',
-  'Ne znam, treba mi pomoć',
-]
+const BUDGET_RANGE_LABELS_HR: Record<string, string> = {
+  '0-1000': 'do 1.000 €',
+  '1000-3000': '1.000 – 3.000 €',
+  '3000-7000': '3.000 – 7.000 €',
+  '7000+': 'iznad 7.000 €',
+  unknown: 'Ne znam, trebam okvirnu procjenu',
+}
 
-const MOOD_OPTIONS = [
-  'Toplo i udobno',
-  'Čisto i jednostavno',
-  'Luksuzno',
-  'Razigrano / obiteljsko',
-  'Profesionalno / poslovno',
-]
-
-const COLOR_OPTIONS = [
-  'Svijetli tonovi',
-  'Tamni tonovi',
-  'Pastelne boje',
-  'Jarke boje kao akcent',
-  'Otvorena sam prijedlozima',
-]
-
-const PRIORITY_OPTIONS = [
-  'Puno spremišta',
-  'Lako čišćenje / održavanje',
-  'Maksimalno svjetla',
-  'Mjesto za druženje',
-  'Prilagođeno djeci',
-  'Prilagođeno kućnim ljubimcima',
-]
-
-export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: InteriorsClientFormProps) {
+export function InteriorsClientForm({ stolars: _stolarsUnused, onSubmit, language = 'hr' }: InteriorsClientFormProps) {
+  void _stolarsUnused
   const inputClass =
     "w-full rounded-xl border border-slate-200 dark:border-lavender/20 bg-white/80 dark:bg-white/10 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/30 focus:border-violet-400 dark:focus:border-violet-500 text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50";
 
@@ -154,13 +133,17 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedPlanFileNames, setSelectedPlanFileNames] = useState<string[]>([])
-  const [selectedPhotoFileName, setSelectedPhotoFileName] = useState<string | null>(null)
+  const [selectedPhotoFileNames, setSelectedPhotoFileNames] = useState<string[]>([])
   const [selectedInspirationFileNames, setSelectedInspirationFileNames] = useState<string[]>([])
   const [inspirationFiles, setInspirationFiles] = useState<File[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [currentFile, setCurrentFile] = useState<string>()
   const [currentFileIndex, setCurrentFileIndex] = useState(1)
+
+  useEffect(() => {
+    setSelectedPhotoFileNames(values.photoFiles.map((f) => f.name))
+  }, [values.photoFiles])
 
   const addInteriorsRequest = useAdminStore((state: AdminStoreState) => state.addInteriorsRequest)
 
@@ -190,42 +173,10 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         hr: 'Molimo unesite grad ili lokaciju',
         en: 'Please enter city or location'
       },
-      spaceStatusRequired: {
-        hr: 'Molimo odaberite stanje prostora',
-        en: 'Please select space status'
-      },
-      hasPlanRequired: {
-        hr: 'Molimo odaberite imate li tlocrt ili skicu',
-        en: 'Please select if you have a plan or sketch'
-      },
-      mainUsersRequired: {
-        hr: 'Molimo odaberite tko najviše koristi prostor',
-        en: 'Please select main users'
-      },
       projectDescriptionRequired: {
         hr: 'Molimo unesite opis projekta (najmanje 10 znakova)',
         en: 'Please enter project description (at least 10 characters)'
       },
-      budgetRequired: {
-        hr: 'Molimo odaberite okvirni budžet',
-        en: 'Please select budget range'
-      },
-      desiredStartDateRequired: {
-        hr: 'Molimo odaberite okvirni datum početka',
-        en: 'Please select desired start date'
-      },
-      flexibilityRequired: {
-        hr: 'Molimo odaberite fleksibilnost roka',
-        en: 'Please select deadline flexibility'
-      },
-      hasOwnStolarRequired: {
-        hr: 'Molimo odaberite imate li svog stolara',
-        en: 'Please select if you have your own carpenter'
-      },
-      contactRequired: {
-        hr: 'Molimo odaberite način kontaktiranja',
-        en: 'Please select contact preference'
-      }
     },
     success: {
       hr: 'Hvala ti na povjerenju! Tvoj upit za interijerski projekt je zaprimljen. Javit ću ti se povratno s informacijama i prijedlozima u najkraćem mogućem roku.',
@@ -312,24 +263,28 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
     }
   }
 
-  function handleToggleMulti(field: keyof ClientProjectFormValues, option: string) {
-    setValues(prev => {
-      const current = (prev[field] as string[]) || []
-      const exists = current.includes(option)
-      const next = exists ? current.filter(o => o !== option) : [...current, option]
-      return { ...prev, [field]: next }
-    })
-    // Clear error for this field when user makes a selection
-    if (errors[field]) {
-      setErrors(prev => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { [field]: _, ...rest } = prev
-        return rest
-      })
-    }
+  type FileField = 'planFile' | 'photoFiles' | 'inspirationFiles'
+
+  function removePhotoFile(index: number) {
+    setValues((prev) => ({
+      ...prev,
+      photoFiles: prev.photoFiles.filter((_, i) => i !== index),
+    }))
   }
 
-  type FileField = 'planFile' | 'photoFiles' | 'inspirationFiles'
+  function removeInspirationFile(index: number) {
+    const updated = inspirationFiles.filter((_, i) => i !== index)
+    setInspirationFiles(updated)
+    setSelectedInspirationFileNames(updated.map((f) => f.name))
+  }
+
+  function removePlanFile(index: number) {
+    setValues((prev) => ({
+      ...prev,
+      planFiles: prev.planFiles.filter((_, i) => i !== index),
+    }))
+    setSelectedPlanFileNames((prev) => prev.filter((_, i) => i !== index))
+  }
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -339,36 +294,86 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
     if (!files) return
 
     if (field === 'planFile') {
-      const fileArray = Array.from(files)
+      const incoming = Array.from(files)
 
-      // imena za prikaz
-      setSelectedPlanFileNames(fileArray.map((file) => file.name))
+      setValues((prev) => {
+        const merged = [...prev.planFiles]
+        for (const f of incoming) {
+          const alreadyExists = merged.some(
+            (p) =>
+              p.name === f.name &&
+              p.size === f.size &&
+              p.lastModified === f.lastModified
+          )
+          if (!alreadyExists) merged.push(f)
+        }
+        return { ...prev, planFiles: merged }
+      })
 
-      // sve datoteke u values.planFiles (File[])
-      setValues((prev) => ({
-        ...prev,
-        planFiles: fileArray,
-      }))
+      setSelectedPlanFileNames((prev) => {
+        const merged = [...prev]
+        for (const f of incoming) {
+          if (!merged.includes(f.name)) merged.push(f.name)
+        }
+        return merged
+      })
 
+      event.target.value = ''
       return
     } else if (field === 'inspirationFiles') {
-      const fileArray = Array.from(files)
-      const fileNames = fileArray.map((file) => file.name)
+      const incoming = Array.from(files)
 
-      // imena za prikaz
-      setSelectedInspirationFileNames(fileNames)
+      setInspirationFiles((prev) => {
+        const merged = [...prev]
+        for (const f of incoming) {
+          const alreadyExists = merged.some(
+            (p) =>
+              p.name === f.name &&
+              p.size === f.size &&
+              p.lastModified === f.lastModified
+          )
+          if (!alreadyExists) merged.push(f)
+        }
+        return merged
+      })
 
-      // stvarne datoteke držimo u posebnom stateu, NE u values
-      setInspirationFiles(fileArray)
+      setSelectedInspirationFileNames((prev) => {
+        const merged = [...prev]
+        for (const f of incoming) {
+          if (!merged.includes(f.name)) merged.push(f.name)
+        }
+        return merged
+      })
 
       // ne diramo values.inspirationFiles – to polje ni ne postoji u tipu
+      event.target.value = ''
       return
     } else {
-      // trenutno je ovo samo za photoFiles, pa ako to koristiš neka ostane ovako
-      setValues((prev) => ({
-        ...prev,
-        [field]: files,
-      }))
+      const incoming = Array.from(files)
+
+      setValues((prev) => {
+        const merged = [...prev.photoFiles]
+
+        for (const f of incoming) {
+          const alreadyExists = merged.some(
+            (p) =>
+              p.name === f.name &&
+              p.size === f.size &&
+              p.lastModified === f.lastModified
+          )
+
+          if (!alreadyExists) {
+            merged.push(f)
+          }
+        }
+
+        return {
+          ...prev,
+          photoFiles: merged,
+        }
+      })
+
+      event.target.value = ''
     }
   }
 
@@ -406,49 +411,9 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       newErrors.location = translations.errors.locationRequired[language]
     }
 
-    // Validate space status
-    if (!values.spaceStatus) {
-      newErrors.spaceStatus = translations.errors.spaceStatusRequired[language]
-    }
-
-    // Validate has plan
-    if (!values.hasPlan) {
-      newErrors.hasPlan = translations.errors.hasPlanRequired[language]
-    }
-
-    // Validate main users
-    if (!values.mainUsers) {
-      newErrors.mainUsers = translations.errors.mainUsersRequired[language]
-    }
-
     // Validate project description (projectNote)
     if (!values.projectNote.trim() || values.projectNote.trim().length < 10) {
       newErrors.projectNote = translations.errors.projectDescriptionRequired[language]
-    }
-
-    // Validate budget
-    if (!values.budgetRange) {
-      newErrors.budgetRange = translations.errors.budgetRequired[language]
-    }
-
-    // Validate desired start date
-    if (!values.desiredStartDate) {
-      newErrors.desiredStartDate = translations.errors.desiredStartDateRequired[language]
-    }
-
-    // Validate flexibility
-    if (!values.flexibility) {
-      newErrors.flexibility = translations.errors.flexibilityRequired[language]
-    }
-
-    // Validate has own stolar
-    if (!values.hasOwnStolar) {
-      newErrors.hasOwnStolar = translations.errors.hasOwnStolarRequired[language]
-    }
-
-    // Validate contact preference
-    if (!values.contactPreference) {
-      newErrors.contactPreference = translations.errors.contactRequired[language]
     }
 
     const firstErrorField = Object.keys(newErrors)[0] || null
@@ -458,6 +423,83 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       errors: newErrors,
       firstErrorField
     }
+  }
+
+  function parseBudgetLowerBoundEur(budgetRange: string): number | null {
+    if (!budgetRange || budgetRange === 'unknown') return null
+    const m = budgetRange.match(/(\d+)/)
+    if (!m) return null
+    return parseFloat(m[0])
+  }
+
+  function buildClientInquiryNotes(
+    v: ClientProjectFormValues,
+    inspirationCount: number
+  ): string | null {
+    const main = v.projectNote.trim()
+    const extras: string[] = []
+
+    // Snapshot kontaktnih podataka ovog upita (uvijek prisutan)
+    extras.push(`Kontakt ime: ${v.clientName.trim()}`)
+    extras.push(`Email: ${v.email.trim()}`)
+    extras.push(`Telefon: ${v.phone.trim() || '—'}`)
+
+    if (v.contactPreference.trim()) {
+      extras.push(`Način kontakta: ${v.contactPreference}`)
+    }
+    if (v.contactTime.trim()) {
+      extras.push(`Najbolje vrijeme za kontakt: ${v.contactTime.trim()}`)
+    }
+    if (v.spaceStatus) {
+      const label =
+        v.spaceStatus === 'existing'
+          ? 'Postojeći – renovacija'
+          : v.spaceStatus === 'new'
+            ? 'Potpuno novi (novogradnja)'
+            : v.spaceStatus
+      extras.push(`Stanje prostora: ${label}`)
+    }
+    if (v.stolarNotRegistered.trim()) {
+      extras.push(`Stolar: ${v.stolarNotRegistered.trim()}`)
+    }
+    const dimParts: string[] = []
+    if (v.approxWidth.trim()) dimParts.push(`širina ${v.approxWidth.trim()} cm`)
+    if (v.approxLength.trim()) dimParts.push(`dužina ${v.approxLength.trim()} cm`)
+    if (v.approxHeight.trim()) dimParts.push(`visina ${v.approxHeight.trim()} cm`)
+    if (dimParts.length) {
+      extras.push(`Dimenzije prostora (cca): ${dimParts.join(', ')}`)
+    }
+    if (v.budgetRange) {
+      const label = BUDGET_RANGE_LABELS_HR[v.budgetRange] ?? v.budgetRange
+      extras.push(`Okvirni budžet [${v.budgetRange}]: ${label}`)
+    }
+    if (v.hasPlan) {
+      const hasPlanLabel =
+        v.hasPlan === 'plan'
+          ? 'Imam tlocrt / plan'
+          : v.hasPlan === 'photos'
+            ? 'Imam samo fotografije ili skice'
+            : v.hasPlan === 'none'
+              ? 'Nemam tlocrt ni fotografije'
+              : v.hasPlan
+      extras.push(`Dokumentacija: ${hasPlanLabel}`)
+    }
+    if (inspirationCount > 0) {
+      extras.push(`Broj priloženih slika inspiracije: ${inspirationCount}`)
+    }
+    if (v.photoFiles.length > 0) {
+      extras.push(
+        `Broj priloženih fotografija prostora: ${v.photoFiles.length}`
+      )
+    }
+    extras.push(
+      `Fotorealistični prikaz prostora: ${v.wantsPhotorealisticRender ? 'DA' : 'NE'}`
+    )
+
+    if (!main && extras.length === 0) return null
+    if (!main) return extras.join('\n')
+    if (extras.length === 0) return main
+    return `${main}\n\n--- Upit (dodatno) ---\n${extras.join('\n')}`
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -487,43 +529,41 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
     setIsSubmitting(true)
 
     try {
-      // Calculate area_m2 from approxWidth and approxLength if available
+      // Dimenzije su u cm: površina u m² = (cm/100) * (cm/100)
       let areaM2: number | null = null
       if (values.approxWidth && values.approxLength) {
-        const width = parseFloat(values.approxWidth.replace(/[^\d.,]/g, '').replace(',', '.'))
-        const length = parseFloat(values.approxLength.replace(/[^\d.,]/g, '').replace(',', '.'))
-        if (!isNaN(width) && !isNaN(length) && width > 0 && length > 0) {
-          areaM2 = width * length
+        const widthCm = parseFloat(values.approxWidth.replace(/[^\d.,]/g, '').replace(',', '.'))
+        const lengthCm = parseFloat(values.approxLength.replace(/[^\d.,]/g, '').replace(',', '.'))
+        if (
+          !isNaN(widthCm) &&
+          !isNaN(lengthCm) &&
+          widthCm > 0 &&
+          lengthCm > 0
+        ) {
+          areaM2 = (widthCm / 100) * (lengthCm / 100)
         }
       }
 
-      // Parse budget from budgetRange
-      let budget: number | null = null
-      if (values.budgetRange) {
-        const budgetMatch = values.budgetRange.match(/(\d+)/g)
-        if (budgetMatch && budgetMatch.length > 0) {
-          budget = parseFloat(budgetMatch[0]) * 1000 // Convert to euros if needed
-        }
-      }
+      let budget: number | null = parseBudgetLowerBoundEur(values.budgetRange)
 
-      // Include inspiration files info in notes
       const inspirationCount = inspirationFiles.length
-      const notesWithFilesInfo = inspirationCount > 0
-        ? `${values.projectNote.trim() || ''}\n\nInspiration files attached: ${inspirationCount}`
-        : values.projectNote.trim() || null
+      const photoFilesArray = [...values.photoFiles]
 
-      // TODO: kasnije stvarni upload inspirationFiles u Supabase Storage + zapis u project_files
+      const combinedNotes = buildClientInquiryNotes(
+        { ...values, photoFiles: photoFilesArray },
+        inspirationCount
+      )
 
-      // Create client
+      // Create client — bez duplikata napomena na profilu; puni tekst je na projektu
       const client = await createClient({
         name: values.clientName.trim(),
         email: values.email.trim(),
         phone: values.phone.trim() || null,
         language: language,
-        notes: notesWithFilesInfo,
+        notes: null,
       })
 
-      // Create project
+      // Create project — VR polja ostaju u šemi, ali javni klijentski upit trenutno ne nudi VR u UI-u
       const project = await createProject({
         title: `Projekt za ${values.clientName.trim()} – ${values.projectType || 'Nepoznato'}`,
         user_type: 'client',
@@ -531,18 +571,20 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         carpenter_id: null,
         drawn_by: 'ani',
         uses_corpus: true,
-        wants_vr: values.wantsVr,
-        vr_location_preference: values.wantsVr ? values.vrLocationPreference : null,
-        vr_package_preference: values.wantsVr ? values.vrPackagePreference : null,
+        wants_vr: false,
+        vr_location_preference: null,
+        vr_package_preference: null,
         status: 'inquiry',
         space_type: values.projectType || null,
         area_m2: areaM2,
         budget: budget,
-        notes: notesWithFilesInfo,
+        notes: combinedNotes,
       })
 
-      // Upload povezanih datoteka (tlocrt + inspiracije) u Storage + project_files
-      const totalFiles = (values.planFiles?.length || 0) + (inspirationFiles?.length || 0)
+      const totalFiles =
+        (values.planFiles?.length || 0) +
+        inspirationFiles.length +
+        photoFilesArray.length
       
       if (totalFiles > 0) {
         setIsUploading(true)
@@ -550,42 +592,62 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         setCurrentFileIndex(1)
         
         try {
-          const allFiles: Array<{ file: File; type: "plan" | "inspiration" }> = []
-          
-          // Collect all files
+          const allFiles: Array<{ file: File; type: "plan" | "inspiration" | "space_photo" }> = []
+
           if (values.planFiles && values.planFiles.length > 0) {
             for (const file of values.planFiles) {
               allFiles.push({ file, type: "plan" })
             }
           }
-          
-          if (inspirationFiles && inspirationFiles.length > 0) {
+
+          if (inspirationFiles.length > 0) {
             for (const file of inspirationFiles) {
               allFiles.push({ file, type: "inspiration" })
             }
           }
+
+          for (const file of photoFilesArray) {
+            allFiles.push({ file, type: "space_photo" })
+          }
           
-          // Upload files sequentially to track progress
+          // Upload files sequentially; track per-file failures without aborting
+          let uploadFailCount = 0
           for (let i = 0; i < allFiles.length; i++) {
             const { file, type } = allFiles[i]
             setCurrentFile(file.name)
             setCurrentFileIndex(i + 1)
-            
-            await uploadProjectFileToStorage(project.id, file, type)
-            
-            // Update progress
+
+            try {
+              await uploadProjectFileToStorage(project.id, file, type)
+            } catch (uploadError) {
+              uploadFailCount++
+              console.error(
+                "[InteriorsClientForm] File upload failed:",
+                { fileName: file.name, fileType: type },
+                uploadError instanceof Error ? uploadError.message : uploadError
+              )
+            }
+
+            // Update progress regardless of individual file success/failure
             const progress = ((i + 1) / totalFiles) * 100
             setUploadProgress(progress)
           }
-          
+
           setUploadProgress(100)
+
+          if (uploadFailCount > 0) {
+            toast(
+              language === 'hr'
+                ? `Upit je poslan, ali ${uploadFailCount === 1 ? 'jedna datoteka nije učitana' : `${uploadFailCount} datoteke nisu učitane`}. Molimo pošaljite ih naknadno ili nas kontaktirajte.`
+                : `Request sent, but ${uploadFailCount} file(s) could not be uploaded. Please resend them or contact us.`,
+              { icon: '⚠️', duration: 8000 }
+            )
+          }
         } catch (uploadError) {
           console.error(
-            "[InteriorsClientForm] Error uploading project files:",
+            "[InteriorsClientForm] Unexpected error in upload block:",
             uploadError
           )
-          // ne rušimo cijeli submit – projekt je svejedno kreiran
-          // kasnije možemo dodati user-facing upozorenje
         } finally {
           setIsUploading(false)
           setCurrentFile(undefined)
@@ -604,7 +666,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         email: values.email || '',
         spaceType: values.projectType || 'Nije odabrano',
         city: values.location || '',
-        stolarId: values.stolarId || null,
+        stolarId: null,
       })
 
       if (onSubmit) {
@@ -627,7 +689,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
       // Reset form immediately
       setValues(INITIAL_VALUES)
       setSelectedPlanFileNames([])
-      setSelectedPhotoFileName(null)
+      setSelectedPhotoFileNames([])
       setSelectedInspirationFileNames([])
       setInspirationFiles([])
     } catch (error) {
@@ -671,7 +733,7 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
           Naručite svoj 3D prikaz interijera po mjeri
         </h2>
         <p className="text-sm text-slate-600 dark:text-slate-400 dark:text-slate-400">
-          Ispunite formu s vašim dimenzijama, potrebama i opisom. Javit ćemo vam se u najkraćem mogućem roku.
+          Ispunite formu s približnim dimenzijama u centimetrima, potrebama i opisom. Javit ćemo vam se u najkraćem mogućem roku.
         </p>
       </div>
 
@@ -739,6 +801,41 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
             <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
           )}
         </div>
+
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
+            <span>Kako želiš da te kontaktiram?</span>
+            <select
+              id="contactPreference"
+              name="contactPreference"
+              value={values.contactPreference}
+              onChange={e => handleChange('contactPreference', e.target.value)}
+              className={selectClass}
+            >
+              <option value="">Odaberi (opcionalno)...</option>
+              <option value="email">Email</option>
+              <option value="phone">Telefon</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="viber">Viber</option>
+            </select>
+          </label>
+        </div>
+
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
+            <span>Kada ti najviše odgovara da te kontaktiram?</span>
+            <input
+              type="text"
+              id="contactTime"
+              name="contactTime"
+              placeholder="npr. radnim danom od 17 do 20h"
+              className={inputClass}
+              value={values.contactTime}
+              onChange={e => handleChange('contactTime', e.target.value)}
+            />
+            <span className="text-xs text-slate-500">Navedite preferirano vrijeme za kontakt (opcionalno)</span>
+          </label>
+        </div>
       </fieldset>
 
       {/* KORAK 1 – Osnovne informacije */}
@@ -794,22 +891,19 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
 
           <div>
             <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-              <span>Prostor je *</span>
+              <span>Prostor je</span>
               <select
                 id="spaceStatus"
                 name="spaceStatus"
                 value={values.spaceStatus}
                 onChange={e => handleChange('spaceStatus', e.target.value)}
-                className={`${selectClass} ${errors.spaceStatus ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
+                className={selectClass}
               >
-                <option value="">Odaberi...</option>
+                <option value="">Odaberi (opcionalno)...</option>
                 <option value="existing">Postojeći – renovacija</option>
                 <option value="new">Potpuno novi (novogradnja)</option>
               </select>
             </label>
-            {errors.spaceStatus && (
-              <p className="text-xs text-red-500 mt-1">{errors.spaceStatus}</p>
-            )}
           </div>
         </div>
       </fieldset>
@@ -822,8 +916,8 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         </div>
 
         <div id="hasPlan">
-          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Imaš li tlocrt ili skicu? *</p>
-          <div className={`flex flex-col gap-1 sm:flex-row sm:flex-wrap ${errors.hasPlan ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Imaš li tlocrt ili skicu?</p>
+          <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap">
             <label className="inline-flex items-center gap-2 text-sm text-slate-700">
               <input
                 type="radio"
@@ -832,7 +926,6 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
                 className="accent-violet-500"
                 checked={values.hasPlan === 'plan'}
                 onChange={() => handleChange('hasPlan', 'plan')}
-                required
               />
               <span>Imam tlocrt</span>
             </label>
@@ -860,9 +953,6 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
             </label>
           </div>
         </div>
-        {errors.hasPlan && (
-          <p className="text-xs text-red-500 mt-1">{errors.hasPlan}</p>
-        )}
 
         {values.hasPlan === 'plan' && (
           <div className="space-y-2">
@@ -890,10 +980,20 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
 
             {selectedPlanFileNames.length > 0 && (
               <ul className="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-400">
-                {selectedPlanFileNames.map((name) => (
-                  <li key={name} className="flex items-center gap-2">
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
-                    <span className="font-medium">{name}</span>
+                {selectedPlanFileNames.map((name, i) => (
+                  <li key={`${name}-${i}`} className="flex items-center justify-between gap-2">
+                    <span className="flex items-center gap-2">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
+                      <span className="font-medium">{name}</span>
+                    </span>
+                    <button
+                      type="button"
+                      aria-label={`Ukloni ${name}`}
+                      onClick={() => removePlanFile(i)}
+                      className="ml-2 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -902,221 +1002,111 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
         )}
 
         {(values.hasPlan === 'photos' || values.hasPlan === 'none') && (
-          <div>
-            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-              <span>Učitaj fotografije prostora</span>
-              <div className="flex items-center gap-3">
-                <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
-                  Odaberi datoteke
-                  <input
-                    type="file"
-                    accept=".jpg,.jpeg,.png"
-                    className="hidden"
-                    multiple
-                    onChange={e => handleFileChange(e, 'photoFiles')}
-                  />
-                </label>
-                <span className="text-xs text-slate-500">
-                  Možeš učitati više datoteka (preporučeno 3–5).
-                </span>
-              </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-                {selectedPhotoFileName 
-                  ? `${translations.fileUpload.selectedFile[language]} ${selectedPhotoFileName}`
-                  : translations.fileUpload.noFileSelected[language]}
-              </p>
-            </label>
+          <div className="space-y-2">
+            <p className="block text-sm sm:text-base font-medium text-plum/90 dark:text-pearl">
+              Učitaj fotografije prostora
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <label
+                htmlFor="interiors-space-photo-input"
+                className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600"
+              >
+                Odaberi datoteke
+              </label>
+              <input
+                id="interiors-space-photo-input"
+                type="file"
+                accept="image/jpeg,image/png,image/jpg,.jpg,.jpeg,.png"
+                className="hidden"
+                multiple
+                onChange={(e) => handleFileChange(e, 'photoFiles')}
+              />
+              <span className="text-xs text-slate-500">
+                Možeš u jednom koraku odabrati više slika ili više puta pritisnuti gumb — sve se zbraja na listu ispod.
+              </span>
+            </div>
+            <div className="text-xs text-slate-600 dark:text-slate-400">
+              {selectedPhotoFileNames.length === 0 ? (
+                translations.fileUpload.noFilesSelected[language]
+              ) : (
+                <ul className="mt-1 space-y-1">
+                  {selectedPhotoFileNames.map((name, i) => (
+                    <li key={`${name}-${i}`} className="flex items-center justify-between gap-2">
+                      <span>{name}</span>
+                      <button
+                        type="button"
+                        aria-label={`Ukloni ${name}`}
+                        onClick={() => removePhotoFile(i)}
+                        className="ml-2 text-slate-400 hover:text-red-500 transition-colors"
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Dimenzije prostora */}
+        {/* Dimenzije prostora (cm) */}
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Širina prostora (cca)</span>
+            <span>Širina prostora (cca, cm)</span>
             <input
               type="text"
               className={inputClass}
               value={values.approxWidth}
               onChange={e => handleChange('approxWidth', e.target.value)}
-              placeholder="npr. 3.5 m"
+              placeholder="npr. 350"
             />
-            <span className="text-xs text-slate-500">Unesite približnu širinu prostora u metrima</span>
+            <span className="text-xs text-slate-500">Približna širina u centimetrima</span>
           </label>
 
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Dužina prostora (cca)</span>
+            <span>Dužina prostora (cca, cm)</span>
             <input
               type="text"
               className={inputClass}
               value={values.approxLength}
               onChange={e => handleChange('approxLength', e.target.value)}
-              placeholder="npr. 4.2 m"
+              placeholder="npr. 420"
             />
-            <span className="text-xs text-slate-500">Unesite približnu dužinu prostora u metrima</span>
+            <span className="text-xs text-slate-500">Približna dužina u centimetrima</span>
           </label>
 
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Visina prostora (cca)</span>
+            <span>Visina prostora (cca, cm)</span>
             <input
               type="text"
               className={inputClass}
               value={values.approxHeight}
               onChange={e => handleChange('approxHeight', e.target.value)}
-              placeholder="npr. 2.7 m"
+              placeholder="npr. 270"
             />
-            <span className="text-xs text-slate-500">Unesite približnu visinu prostora u metrima</span>
+            <span className="text-xs text-slate-500">Približna visina u centimetrima (opcionalno)</span>
           </label>
         </div>
-
-        {/* Posebne karakteristike prostora */}
-        <div>
-          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
-            Posebne karakteristike prostora
-          </p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {['Greda', 'Kosina', 'Stup', 'Niša u zidu', 'Sniženi strop', 'Drugo (opis u napomeni)'].map(option => (
-              <label
-                key={option}
-                className="flex items-start gap-2 text-sm text-slate-700"
-              >
-                <input
-                  type="checkbox"
-                  className="mt-1 accent-violet-500"
-                  checked={values.specialFeatures.includes(option)}
-                  onChange={() => handleToggleMulti('specialFeatures', option)}
-                />
-                <span>{option}</span>
-              </label>
-            ))}
-          </div>
-        </div>
       </fieldset>
 
-      {/* KORAK 3 – Stil, osjećaj, boje */}
+      {/* Budžet (opcionalno) */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Stil i osjećaj prostora</legend>
+        <legend className="sr-only">Budžet</legend>
         <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Stil i osjećaj prostora
-        </div>
-
-        <div>
-          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Željeni stil</p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {STYLE_OPTIONS.map(option => (
-              <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  className="mt-1 accent-violet-500"
-                  checked={values.style.includes(option)}
-                  onChange={() => handleToggleMulti('style', option)}
-                />
-                <span>{option}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Kakav osjećaj želiš u prostoru?</p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {MOOD_OPTIONS.map(option => (
-              <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  className="mt-1 accent-violet-500"
-                  checked={values.mood.includes(option)}
-                  onChange={() => handleToggleMulti('mood', option)}
-                />
-                <span>{option}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Preferirane boje</p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {COLOR_OPTIONS.map(option => (
-              <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  className="mt-1 accent-violet-500"
-                  checked={values.colorPreference.includes(option)}
-                  onChange={() => handleToggleMulti('colorPreference', option)}
-                />
-                <span>{option}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </fieldset>
-
-      {/* KORAK 4 – Funkcija i navike */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Funkcija i navike</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Funkcija i navike
+          Budžet
         </div>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Tko najviše koristi prostor? *</span>
-            <select
-              id="mainUsers"
-              name="mainUsers"
-              value={values.mainUsers}
-              onChange={e => handleChange('mainUsers', e.target.value)}
-              className={`${selectClass} ${errors.mainUsers ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-            >
-              <option value="">Odaberi...</option>
-              <option value="single">1 osoba</option>
-              <option value="couple">Par</option>
-              <option value="familySmall">Obitelj s malom djecom</option>
-              <option value="familyOlder">Obitelj sa starijom djecom</option>
-              <option value="office">Ured / poslovni prostor</option>
-            </select>
-          </label>
-          {errors.mainUsers && (
-            <p className="text-xs text-red-500 mt-1">{errors.mainUsers}</p>
-          )}
-        </div>
-
-        <div>
-          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Što ti je najvažnije?</p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {PRIORITY_OPTIONS.map(option => (
-              <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  className="mt-1 accent-violet-500"
-                  checked={values.priority.includes(option)}
-                  onChange={() => handleToggleMulti('priority', option)}
-                />
-                <span>{option}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </fieldset>
-
-      {/* KORAK 5 – Budžet i rok */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Budžet i rok</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Budžet i rok
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Okvirni budžet za namještaj *</span>
+            <span>Okvirni budžet za namještaj</span>
             <select
               id="budgetRange"
               name="budgetRange"
               value={values.budgetRange}
               onChange={e => handleChange('budgetRange', e.target.value)}
-              className={`${selectClass} ${errors.budgetRange ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
+              className={selectClass}
             >
-              <option value="">Odaberi...</option>
+              <option value="">Odaberi (opcionalno)...</option>
               <option value="0-1000">do 1.000 €</option>
               <option value="1000-3000">1.000 – 3.000 €</option>
               <option value="3000-7000">3.000 – 7.000 €</option>
@@ -1125,146 +1115,33 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
             </select>
             <span className="text-xs text-slate-500 mt-1 block">Okvirni budžet za namještaj i izradu</span>
           </label>
-          {errors.budgetRange && (
-            <p className="text-xs text-red-500 mt-1">{errors.budgetRange}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Kada bi ti okvirno odgovaralo da krenemo? *</span>
-            <input
-              type="date"
-              id="desiredStartDate"
-              name="desiredStartDate"
-              className={`${inputClass} ${errors.desiredStartDate ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-              value={values.desiredStartDate}
-              onChange={e => handleChange('desiredStartDate', e.target.value)}
-            />
-          </label>
-          {errors.desiredStartDate && (
-            <p className="text-xs text-red-500 mt-1">{errors.desiredStartDate}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Koliko si fleksibilna s rokom? *</span>
-            <select
-              id="flexibility"
-              name="flexibility"
-              value={values.flexibility}
-              onChange={e => handleChange('flexibility', e.target.value)}
-              className={`${selectClass} ${errors.flexibility ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-            >
-              <option value="">Odaberi...</option>
-              <option value="fixed">Datum je fiksan</option>
-              <option value="2weeks">Može kasniti do 2 tjedna</option>
-              <option value="1month">Može kasniti do mjesec dana</option>
-              <option value="flex">Vrlo fleksibilno</option>
-            </select>
-          </label>
-          {errors.flexibility && (
-            <p className="text-xs text-red-500 mt-1">{errors.flexibility}</p>
-          )}
         </div>
       </fieldset>
 
-      {/* KORAK 6 – Stolar / suradnja */}
+      {/* Stolar — jedno polje */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
         <legend className="sr-only">Stolar</legend>
         <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
           Stolar
         </div>
 
-        <div id="hasOwnStolar">
-          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">Imaš li već svog stolara? *</p>
-          <div className={`flex flex-col gap-1 sm:flex-row sm:flex-wrap ${errors.hasOwnStolar ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
-            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-              <input
-                type="radio"
-                name="hasOwnStolar"
-                value="yes"
-                className="accent-violet-500"
-                checked={values.hasOwnStolar === 'yes'}
-                onChange={() => handleChange('hasOwnStolar', 'yes')}
-                required
-              />
-              <span>Da, imam svog stolara</span>
-            </label>
-            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-              <input
-                type="radio"
-                name="hasOwnStolar"
-                value="no"
-                className="accent-violet-500"
-                checked={values.hasOwnStolar === 'no'}
-                onChange={() => handleChange('hasOwnStolar', 'no')}
-              />
-              <span>Nemam stolara / treba mi preporuka</span>
-            </label>
-          </div>
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
+            <span>Imaš li stolara? (ako da, navedi naziv ili ime – neobavezno)</span>
+            <input
+              type="text"
+              id="stolarNotRegistered"
+              name="stolarNotRegistered"
+              className={inputClass}
+              value={values.stolarNotRegistered}
+              onChange={e => handleChange('stolarNotRegistered', e.target.value)}
+              placeholder="npr. ime i prezime ili naziv tvrtke, 091 234 5678"
+            />
+          </label>
         </div>
-        {errors.hasOwnStolar && (
-          <p className="text-xs text-red-500 mt-1">{errors.hasOwnStolar}</p>
-        )}
-
-        {values.hasOwnStolar === 'yes' && (
-          <>
-            <div>
-              <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-                <span>Odaberi svog stolara (ako je registriran)</span>
-                <select
-                  value={values.stolarId}
-                  onChange={e => handleChange('stolarId', e.target.value)}
-                  className={selectClass}
-                >
-                  <option value="">Odaberi...</option>
-                  {stolars.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <div>
-              <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-                <span>Moj stolar još nije registriran (ime + kontakt)</span>
-                <input
-                  type="text"
-                  className={inputClass}
-                  value={values.stolarNotRegistered}
-                  onChange={e =>
-                    handleChange('stolarNotRegistered', e.target.value)
-                  }
-                  placeholder="npr. ime i prezime ili naziv tvrtke, 091 234 5678"
-                />
-                <span className="text-xs text-slate-500">Unesite naziv stolarije i broj telefona</span>
-              </label>
-            </div>
-          </>
-        )}
-
-        {values.hasOwnStolar === 'no' && (
-          <div>
-            <label className="flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                className="mt-1 accent-violet-500"
-                checked={values.needStolarRecommendation}
-                onChange={e =>
-                  handleChange('needStolarRecommendation', e.target.checked)
-                }
-              />
-              <span>Želim preporuku stolara</span>
-            </label>
-          </div>
-        )}
       </fieldset>
 
-      {/* KORAK 7 – Inspiracija i opis */}
+      {/* Inspiracija i opis */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
         <legend className="sr-only">Inspiracija i opis</legend>
         <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
@@ -1301,8 +1178,18 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
                     : translations.fileUpload.multipleFilesSelectedLabel[language]}
                 </p>
                 <ul className="list-disc list-inside">
-                  {selectedInspirationFileNames.map((name) => (
-                    <li key={name}>{name}</li>
+                  {selectedInspirationFileNames.map((name, i) => (
+                    <li key={`${name}-${i}`} className="flex items-center justify-between gap-2">
+                      <span>{name}</span>
+                      <button
+                        type="button"
+                        aria-label={`Ukloni ${name}`}
+                        onClick={() => removeInspirationFile(i)}
+                        className="ml-2 text-slate-400 hover:text-red-500 transition-colors"
+                      >
+                        ×
+                      </button>
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -1328,156 +1215,28 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
             <p className="text-xs text-red-500 mt-1">{errors.projectNote}</p>
           )}
         </div>
+
       </fieldset>
 
-      {/* KORAK 8 – Kontakt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Kontakt</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Kontakt
+      <fieldset className="space-y-3 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Fotorealistični prikaz</legend>
+        <div className="text-lg font-semibold leading-snug text-plum/90 dark:text-pearl">
+          Dodatna opcija: fotorealistični prikaz prostora
         </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Kako želiš da te kontaktiram? *</span>
-            <select
-              id="contactPreference"
-              name="contactPreference"
-              value={values.contactPreference}
-              onChange={e => handleChange('contactPreference', e.target.value)}
-              className={`${selectClass} ${errors.contactPreference ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-            >
-              <option value="">Odaberi...</option>
-              <option value="email">Email</option>
-              <option value="phone">Telefon</option>
-              <option value="whatsapp">WhatsApp</option>
-              <option value="viber">Viber</option>
-            </select>
-          </label>
-          {errors.contactPreference && (
-            <p className="text-xs text-red-500 mt-1">{errors.contactPreference}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Kada ti najviše odgovara da te kontaktiram?</span>
-            <input
-              type="text"
-              placeholder="npr. radnim danom od 17 do 20h"
-              className={inputClass}
-              value={values.contactTime}
-              onChange={e => handleChange('contactTime', e.target.value)}
-            />
-            <span className="text-xs text-slate-500">Navedite preferirano vrijeme za kontakt (opcionalno)</span>
-          </label>
-        </div>
-      </fieldset>
-
-      {/* VR Block */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">VR opcije</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          VR opcije
-        </div>
-
-        <div>
-          <label className="flex items-start gap-2 text-sm text-slate-700">
-            <input
-              type="checkbox"
-              className="mt-1 accent-violet-500"
-              checked={values.wantsVr}
-              onChange={e => handleChange('wantsVr', e.target.checked)}
-            />
-            <span>{translations.vr.wantsVr[language]}</span>
-          </label>
-        </div>
-
-        {values.wantsVr && (
-          <>
-            <div>
-              <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
-                {translations.vr.locationTitle[language]}
-              </p>
-              <div className="flex flex-col gap-2">
-                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                  <input
-                    type="radio"
-                    name="vrLocationPreference"
-                    value="studio"
-                    className="accent-violet-500"
-                    checked={values.vrLocationPreference === 'studio'}
-                    onChange={() => handleChange('vrLocationPreference', 'studio')}
-                  />
-                  <span>{translations.vr.locationStudio[language]}</span>
-                </label>
-                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                  <input
-                    type="radio"
-                    name="vrLocationPreference"
-                    value="client_home"
-                    className="accent-violet-500"
-                    checked={values.vrLocationPreference === 'client_home'}
-                    onChange={() => handleChange('vrLocationPreference', 'client_home')}
-                  />
-                  <span>{translations.vr.locationClientHome[language]}</span>
-                </label>
-                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                  <input
-                    type="radio"
-                    name="vrLocationPreference"
-                    value="unsure"
-                    className="accent-violet-500"
-                    checked={values.vrLocationPreference === 'unsure'}
-                    onChange={() => handleChange('vrLocationPreference', 'unsure')}
-                  />
-                  <span>{translations.vr.locationUnsure[language]}</span>
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
-                {translations.vr.packageTitle[language]}
-              </p>
-              <div className="flex flex-col gap-2">
-                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                  <input
-                    type="radio"
-                    name="vrPackagePreference"
-                    value="3d_vr"
-                    className="accent-violet-500"
-                    checked={values.vrPackagePreference === '3d_vr'}
-                    onChange={() => handleChange('vrPackagePreference', '3d_vr')}
-                  />
-                  <span>{translations.vr.package3dVr[language]}</span>
-                </label>
-                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                  <input
-                    type="radio"
-                    name="vrPackagePreference"
-                    value="3d_vr_online"
-                    className="accent-violet-500"
-                    checked={values.vrPackagePreference === '3d_vr_online'}
-                    onChange={() => handleChange('vrPackagePreference', '3d_vr_online')}
-                  />
-                  <span>{translations.vr.package3dVrOnline[language]}</span>
-                </label>
-                <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                  <input
-                    type="radio"
-                    name="vrPackagePreference"
-                    value="unsure"
-                    className="accent-violet-500"
-                    checked={values.vrPackagePreference === 'unsure'}
-                    onChange={() => handleChange('vrPackagePreference', 'unsure')}
-                  />
-                  <span>{translations.vr.packageUnsure[language]}</span>
-                </label>
-              </div>
-            </div>
-          </>
-        )}
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          Ako želiš realističniji prikaz materijala, boja, rasvjete, dekoracija i općeg dojma prostora, možeš označiti ovu opciju. Fotorealistični prikaz nije dio osnovne 3D vizualizacije i posebno se uračunava u ponudu.
+        </p>
+        <label className="flex items-start gap-2 text-sm text-slate-700 dark:text-pearl/90">
+          <input
+            type="checkbox"
+            className="mt-1 accent-violet-500"
+            checked={values.wantsPhotorealisticRender}
+            onChange={(e) =>
+              handleChange('wantsPhotorealisticRender', e.target.checked)
+            }
+          />
+          <span>Zanima me i fotorealistični prikaz prostora</span>
+        </label>
       </fieldset>
 
       {isUploading && (
@@ -1485,7 +1244,11 @@ export function InteriorsClientForm({ stolars, onSubmit, language = 'hr' }: Inte
           <UploadProgress
             progress={uploadProgress}
             currentFile={currentFile}
-            totalFiles={(values.planFiles?.length || 0) + (inspirationFiles?.length || 0)}
+            totalFiles={
+              (values.planFiles?.length || 0) +
+              inspirationFiles.length +
+              values.photoFiles.length
+            }
             currentFileIndex={currentFileIndex}
           />
         </div>
