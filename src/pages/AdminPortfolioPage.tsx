@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { TableSkeleton } from '../components/Skeleton'
 import {
+  applyAdminPortfolioAdjacentOrder,
   createPortfolioItem,
   deletePortfolioImage,
   deletePortfolioItem,
@@ -97,6 +99,16 @@ export default function AdminPortfolioPage() {
   const [storageCleanupWarning, setStorageCleanupWarning] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [reorderingId, setReorderingId] = useState<string | null>(null)
+
+  const sortedItems = useMemo(() => {
+    return [...items].sort((a, b) => {
+      if (b.display_order !== a.display_order) {
+        return b.display_order - a.display_order
+      }
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+  }, [items])
 
   useEffect(() => {
     if (!selectedFile) {
@@ -284,6 +296,35 @@ export default function AdminPortfolioPage() {
     }
   }
 
+  const handleReorder = async (row: PortfolioItem, direction: 'up' | 'down') => {
+    const index = sortedItems.findIndex((x) => x.id === row.id)
+    if (index < 0) return
+    if (direction === 'up' && index === 0) return
+    if (direction === 'down' && index === sortedItems.length - 1) return
+
+    setReorderingId(row.id)
+    try {
+      await applyAdminPortfolioAdjacentOrder(sortedItems, index, direction)
+      await loadItems()
+      toast.success(
+        direction === 'up'
+          ? 'Portfolio stavka je pomaknuta gore.'
+          : 'Portfolio stavka je pomaknuta dolje.'
+      )
+    } catch (e) {
+      const msg =
+        e instanceof Error ? e.message : 'Promjena redoslijeda nije uspjela.'
+      toast.error(msg)
+      try {
+        await loadItems()
+      } catch {
+        /* keep existing list if refresh fails */
+      }
+    } finally {
+      setReorderingId(null)
+    }
+  }
+
   const handleDelete = async (item: PortfolioItem) => {
     const ok = window.confirm(
       `Obrisati stavku "${item.title}"? Ovo se ne može poništiti.`
@@ -399,15 +440,50 @@ export default function AdminPortfolioPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {items.map((row) => {
+                    {sortedItems.map((row, rowIndex) => {
                       const isActive = editingId === row.id
+                      const isFirst = rowIndex === 0
+                      const isLast = rowIndex === sortedItems.length - 1
+                      const reorderBusy = reorderingId === row.id
                       return (
                         <tr
                           key={row.id}
                           className={isActive ? 'bg-violet-50/70' : 'hover:bg-slate-50'}
                         >
                           <td className="whitespace-nowrap px-3 py-2 text-slate-700">
-                            {row.display_order}
+                            <div className="flex items-center gap-1.5">
+                              <span className="tabular-nums">{row.display_order}</span>
+                              <span className="inline-flex shrink-0 flex-col gap-0.5">
+                                <button
+                                  type="button"
+                                  className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-30"
+                                  title="Gore"
+                                  aria-label="Pomakni gore"
+                                  disabled={
+                                    isFirst || isSaving || reorderBusy || deletingId != null
+                                  }
+                                  onClick={() => void handleReorder(row, 'up')}
+                                >
+                                  <span className="text-xs leading-none" aria-hidden>
+                                    ↑
+                                  </span>
+                                </button>
+                                <button
+                                  type="button"
+                                  className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-30"
+                                  title="Dolje"
+                                  aria-label="Pomakni dolje"
+                                  disabled={
+                                    isLast || isSaving || reorderBusy || deletingId != null
+                                  }
+                                  onClick={() => void handleReorder(row, 'down')}
+                                >
+                                  <span className="text-xs leading-none" aria-hidden>
+                                    ↓
+                                  </span>
+                                </button>
+                              </span>
+                            </div>
                           </td>
                           <td className="max-w-xs px-3 py-2 font-medium text-slate-900">
                             {row.title}
@@ -423,7 +499,7 @@ export default function AdminPortfolioPage() {
                               type="button"
                               className="mr-2 text-violet-700 hover:underline disabled:opacity-50"
                               onClick={() => fillFormFromItem(row)}
-                              disabled={isSaving}
+                              disabled={isSaving || reorderBusy}
                             >
                               Uredi
                             </button>
@@ -431,7 +507,9 @@ export default function AdminPortfolioPage() {
                               type="button"
                               className="text-red-700 hover:underline disabled:opacity-50"
                               onClick={() => void handleDelete(row)}
-                              disabled={deletingId === row.id || isSaving}
+                              disabled={
+                                deletingId === row.id || isSaving || reorderBusy
+                              }
                             >
                               {deletingId === row.id ? 'Brišem…' : 'Obriši'}
                             </button>
@@ -475,6 +553,10 @@ export default function AdminPortfolioPage() {
                   disabled={isSaving}
                   required
                 />
+                <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
+                  <strong className="font-medium text-slate-600">Naslov:</strong> neka jasno kaže što je
+                  na prikazu (prostor, namjena ili varijanta).
+                </p>
               </div>
 
               <div>
@@ -489,6 +571,10 @@ export default function AdminPortfolioPage() {
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   disabled={isSaving}
                 />
+                <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
+                  <strong className="font-medium text-slate-600">Opis:</strong> u jednoj ili dvije
+                  rečenice — što je cilj prikaza, koji dio prostora ili što se uspoređuje.
+                </p>
               </div>
 
               <div>
@@ -528,6 +614,10 @@ export default function AdminPortfolioPage() {
                   placeholder="vizualni identitet, web"
                   disabled={isSaving}
                 />
+                <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
+                  <strong className="font-medium text-slate-600">Oznake:</strong> npr. kuhinja, dnevni
+                  boravak, hodnik, fotorealistični prikaz, varijante, raspored — odvojene zarezom.
+                </p>
               </div>
 
               <div>

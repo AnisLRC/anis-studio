@@ -20,8 +20,8 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
   const previewCopy = {
     title: { hr: 'Primjeri 3D vizualizacija', en: '3D Visualization Examples' },
     subtitle: {
-      hr: 'Pogledajte kako prostor može biti prikazan prije izvedbe — od rasporeda i materijala do atmosfere.',
-      en: 'See how a space can be visualised before execution — from layout and materials to atmosphere.',
+      hr: 'Primjeri 3D vizualizacija koje pomažu vidjeti raspored, stil i dojam prostora prije izvedbe. Svaki prikaz služi kao jasnija priprema za odluku, usklađivanje s obitelji ili prezentaciju stolaru.',
+      en: 'Examples of 3D visualizations that help you see layout, materials, and the overall feel of a space before build-out. Each view supports clearer decisions, alignment at home, or presentations to a carpenter.',
     },
     allWork: { hr: 'Svi radovi', en: 'All work' },
     badge: { hr: 'Interijeri', en: 'Interiors' },
@@ -302,6 +302,23 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                   <h4 className="line-clamp-2 text-xs font-semibold leading-snug text-plum/90 dark:text-pearl sm:text-sm">
                     {item.title}
                   </h4>
+                  {item.description ? (
+                    <p className="line-clamp-3 text-[11px] leading-relaxed text-plum/72 dark:text-pearl/68 sm:text-xs">
+                      {item.description}
+                    </p>
+                  ) : null}
+                  {item.tags.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {item.tags.slice(0, 5).map((tag, ti) => (
+                        <span
+                          key={`${tag}-${ti}`}
+                          className="inline-flex max-w-full truncate rounded-md border border-amethyst/18 bg-white/55 px-1.5 py-px text-[10px] font-medium text-plum/85 dark:border-lavender/22 dark:bg-white/10 dark:text-pearl/85 sm:text-[11px]"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                   <span className="mt-auto inline-flex w-fit max-w-full items-center gap-1 rounded-full border border-amethyst/20 bg-gradient-to-r from-amethyst/15 to-lavender/15 px-2 py-0.5 text-[10px] font-semibold text-amethyst dark:border-lavender/20 dark:from-amethyst/25 dark:to-lavender/20 dark:text-lavender sm:text-[11px]">
                     <span className="shrink-0 text-xs" aria-hidden>
                       🏠
@@ -527,6 +544,18 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                       <p className="w-full text-balance text-sm leading-relaxed text-zinc-200 sm:text-base sm:leading-relaxed">
                         {lightboxItem.description}
                       </p>
+                    ) : null}
+                    {lightboxItem.tags.length > 0 ? (
+                      <div className="flex w-full flex-wrap justify-center gap-1.5">
+                        {lightboxItem.tags.map((tag, ti) => (
+                          <span
+                            key={`${tag}-${ti}`}
+                            className="inline-flex max-w-full truncate rounded-md border border-lavender/35 bg-white/10 px-2 py-1 text-xs font-medium text-zinc-100"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     ) : null}
                     <span className="inline-flex max-w-full shrink-0 items-center justify-center gap-1.5 rounded-full border border-lavender/40 bg-lavender/15 px-3 py-1.5 text-xs font-semibold sm:text-sm">
                       <span className="shrink-0" aria-hidden>

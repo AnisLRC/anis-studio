@@ -215,6 +215,56 @@ export async function deletePortfolioItem(id: string): Promise<void> {
   }
 }
 
+export type PortfolioAdjacentReorderDirection = 'up' | 'down'
+
+/**
+ * Admin: change display order relative to the neighbour in the **same sorted list** as
+ * `fetchAdminPortfolioItems` (display_order desc, then created_at desc).
+ * Swaps `display_order` when values differ; if both equal, nudges the moved row so the visual order changes.
+ */
+export async function applyAdminPortfolioAdjacentOrder(
+  sortedItems: PortfolioItem[],
+  index: number,
+  direction: PortfolioAdjacentReorderDirection
+): Promise<void> {
+  const patch = computeAdjacentDisplayOrderPatch(sortedItems, index, direction)
+  if (!patch) return
+
+  for (const { id, display_order } of patch) {
+    await updatePortfolioItem(id, { display_order })
+  }
+}
+
+function computeAdjacentDisplayOrderPatch(
+  sorted: PortfolioItem[],
+  index: number,
+  direction: PortfolioAdjacentReorderDirection
+): { id: string; display_order: number }[] | null {
+  if (direction === 'up') {
+    if (index <= 0) return null
+    const cur = sorted[index]
+    const other = sorted[index - 1]
+    if (cur.display_order !== other.display_order) {
+      return [
+        { id: cur.id, display_order: other.display_order },
+        { id: other.id, display_order: cur.display_order },
+      ]
+    }
+    return [{ id: cur.id, display_order: other.display_order + 1 }]
+  }
+
+  if (index >= sorted.length - 1) return null
+  const cur = sorted[index]
+  const other = sorted[index + 1]
+  if (cur.display_order !== other.display_order) {
+    return [
+      { id: cur.id, display_order: other.display_order },
+      { id: other.id, display_order: cur.display_order },
+    ]
+  }
+  return [{ id: cur.id, display_order: other.display_order - 1 }]
+}
+
 export interface PortfolioImageUploadResult {
   publicUrl: string
   path: string

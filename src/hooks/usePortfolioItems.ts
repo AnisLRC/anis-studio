@@ -11,6 +11,8 @@ export interface PortfolioGridItem {
   title: string
   /** Mapped from description / description_en; null when empty or fallback item */
   description: string | null
+  /** From DB tags; empty for fallback items */
+  tags: string[]
   imageUrl: string | null
   imageAlt: string | null
 }
@@ -42,6 +44,7 @@ function buildFallbackGridItems(language: 'hr' | 'en'): PortfolioGridItem[] {
     category: row.category,
     title: language === 'hr' ? row.titleHr : row.titleEn,
     description: null,
+    tags: [],
     imageUrl: null,
     imageAlt: null,
   }))
@@ -86,6 +89,7 @@ function mapRemoteToGrid(rows: PortfolioItem[], language: 'hr' | 'en'): Portfoli
     category: item.category,
     title: titleForLanguage(item, language),
     description: descriptionForLanguage(item, language),
+    tags: item.tags.map((t) => t.trim()).filter(Boolean),
     imageUrl: item.image_url?.trim() || null,
     imageAlt: item.image_url ? imageAltForLanguage(item, language) : null,
   }))
