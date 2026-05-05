@@ -905,3 +905,105 @@ export async function fetchVrAppointmentsForScene(
   return (data ?? []) as VrAppointment[]
 }
 
+// ============================================
+// Delete helpers
+// ============================================
+
+/**
+ * Attempts to delete a list of project files from Supabase Storage.
+ * Never throws — failures are collected and returned as strings so the caller
+ * can warn the admin without blocking the DB deletion.
+ *
+ * Requires an authenticated session with the "project_files_authenticated_delete"
+ * and "project_files_authenticated_select" storage policies in place.
+ *
+ * @param files - Array of ProjectFile records whose storage objects should be removed
+ * @returns Array of human-readable failure strings (empty if all succeeded)
+ */
+export async function deleteProjectFilesFromStorage(
+  files: ProjectFile[]
+): Promise<string[]> {
+  if (!isSupabaseConfigured || !supabase) {
+    console.log("[Interiors] deleteProjectFilesFromStorage (fallback) – Supabase nije konfiguriran")
+    return []
+  }
+
+  if (files.length === 0) {
+    return []
+  }
+
+  const failures: string[] = []
+
+  for (const file of files) {
+    try {
+      const { data: removed, error } = await supabase.storage
+        .from(file.storage_bucket)
+        .remove([file.storage_path])
+
+      if (error) {
+        const msg = `${file.storage_bucket}/${file.storage_path}: ${error.message}`
+        console.warn("[Interiors] deleteProjectFilesFromStorage – greška pri brisanju:", msg)
+        failures.push(msg)
+        continue
+      }
+
+      if (!removed?.length) {
+        const msg = `${file.storage_bucket}/${file.storage_path}: objekt nije pronađen u bucketu (možda već obrisan)`
+        console.warn("[Interiors] deleteProjectFilesFromStorage –", msg)
+        // Not treated as a hard failure – the file is gone either way
+      }
+    } catch (err) {
+      const msg = `${file.storage_bucket}/${file.storage_path}: ${err instanceof Error ? err.message : String(err)}`
+      console.warn("[Interiors] deleteProjectFilesFromStorage – neočekivana greška:", msg)
+      failures.push(msg)
+    }
+  }
+
+  return failures
+}
+
+/**
+ * Permanently deletes a project and all related data.
+ *
+ * Order of operations:
+ * 1. Fetch project_files rows (to obtain storage paths before cascade removes them)
+ * 2. Delete Storage objects from project-files bucket (failures are non-fatal)
+ * 3. Delete the project row — DB cascade handles:
+ *    - project_files rows
+ *    - vr_scenes rows
+ *    - vr_appointments rows (via vr_scenes cascade)
+ *
+ * clients and carpenters are NOT deleted.
+ *
+ * @param projectId - The ID of the project to permanently delete
+ * @returns { storageErrors } – non-empty if some Storage objects could not be removed
+ * @throws Error if the DB deletion fails
+ */
+export async function deleteProject(
+  projectId: string
+): Promise<{ storageErrors: string[] }> {
+  if (!isSupabaseConfigured || !supabase) {
+    console.log("[Interiors] deleteProject (fallback) – Supabase nije konfiguriran", projectId)
+    return { storageErrors: [] }
+  }
+
+  // 1) Fetch project files before any deletion so storage paths are available
+  const files = await fetchProjectFilesForProject(projectId)
+
+  // 2) Remove Storage objects (non-fatal failures collected)
+  const storageErrors = await deleteProjectFilesFromStorage(files)
+
+  // 3) Delete project row — cascade handles child table rows
+  const { error: dbError } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", projectId)
+
+  if (dbError) {
+    console.error("[Interiors] deleteProject – DB greška pri brisanju projekta:", dbError)
+    throw dbError
+  }
+
+  return { storageErrors }
+}
+

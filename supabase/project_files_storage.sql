@@ -7,6 +7,9 @@
 -- • Anon INSERT: potrebno jer klijentski form šalje datoteke bez prijave.
 -- • Anon SELECT: potrebno da admin frontend može generirati signed URL-ove
 --   pozivom createSignedUrl() s anonimnim ključem.
+-- • Authenticated SELECT: potrebno uz authenticated DELETE jer Supabase Storage
+--   API koristi SELECT po objektu pri brisanju (bez ovoga remove() često pukne).
+-- • Authenticated DELETE: admin može brisati datoteke testnih i neželjenih projekata.
 -- • Tipovi datoteka: slike, PDF planovi, ZIP/arhive za 3D exportove.
 -- • Limit: 20 MiB po datoteci.
 --
@@ -44,6 +47,8 @@ drop policy if exists "Allow anon uploads to project-files"       on storage.obj
 drop policy if exists "Allow anon read from project-files"        on storage.objects;
 drop policy if exists "project_files_anon_insert"                 on storage.objects;
 drop policy if exists "project_files_anon_select"                 on storage.objects;
+drop policy if exists "project_files_authenticated_select"        on storage.objects;
+drop policy if exists "project_files_authenticated_delete"        on storage.objects;
 
 -- Anon upload: klijentski form može uploadati bez prijave
 create policy "project_files_anon_insert"
@@ -59,6 +64,22 @@ for select
 to anon
 using (bucket_id = 'project-files');
 
+-- Authenticated select: potrebno uz authenticated DELETE jer Storage API koristi
+-- SELECT po objektu pri brisanju; bez ove politike remove() često vrati grešku
+-- ili tiho ne obriše datoteku.
+create policy "project_files_authenticated_select"
+on storage.objects
+for select
+to authenticated
+using (bucket_id = 'project-files');
+
+-- Authenticated delete: admin može trajno obrisati datoteke testnih projekata
+create policy "project_files_authenticated_delete"
+on storage.objects
+for delete
+to authenticated
+using (bucket_id = 'project-files');
+
 -- ============================================
 -- Provjera: provjeri da li su politike i bucket kreirani
 -- ============================================
@@ -71,3 +92,9 @@ using (bucket_id = 'project-files');
 -- where schemaname = 'storage'
 --   and tablename = 'objects'
 --   and policyname like 'project_files%';
+--
+-- Očekivani rezultat: 4 retka
+--   project_files_anon_insert           INSERT  {anon}
+--   project_files_anon_select           SELECT  {anon}
+--   project_files_authenticated_select  SELECT  {authenticated}
+--   project_files_authenticated_delete  DELETE  {authenticated}

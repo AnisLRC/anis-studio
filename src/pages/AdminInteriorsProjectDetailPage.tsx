@@ -10,6 +10,7 @@ import {
   createVrScene,
   fetchVrAppointmentsForScene,
   createVrAppointment,
+  deleteProject,
   type VrScene,
   type VrSceneType,
   type VrAppointment,
@@ -128,6 +129,12 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
   const [newSceneType, setNewSceneType] = useState<VrSceneType | "">("");
   const [newSceneTitle, setNewSceneTitle] = useState("");
   const [newSceneUrl, setNewSceneUrl] = useState("");
+
+  // Delete state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteStorageWarning, setDeleteStorageWarning] = useState<string[] | null>(null);
 
   // State for VR appointments
   const [appointmentsByScene, setAppointmentsByScene] = useState<Record<string, VrAppointment[]>>({});
@@ -517,6 +524,35 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     if (scene.simlab_project_url) return scene.simlab_project_url;
     if (scene.video_url) return scene.video_url;
     return "Nema URL-a";
+  };
+
+  const handleDeleteProject = async () => {
+    if (!project) return;
+
+    setIsDeleting(true);
+    setDeleteError(null);
+    setDeleteStorageWarning(null);
+
+    try {
+      const { storageErrors } = await deleteProject(project.id);
+
+      if (storageErrors.length > 0) {
+        setDeleteStorageWarning(storageErrors);
+      }
+
+      // Navigate back after a short delay so the warning is visible if needed
+      setTimeout(() => {
+        navigate("/admin/interiors-projects");
+      }, storageErrors.length > 0 ? 3000 : 500);
+    } catch (err) {
+      console.error("[AdminInteriorsProjectDetailPage] handleDeleteProject error:", err);
+      setDeleteError(
+        err instanceof Error
+          ? err.message
+          : "Došlo je do greške pri brisanju projekta."
+      );
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -1351,6 +1387,87 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                   </button>
                 </form>
               </div>
+            </section>
+
+            {/* Opasna zona */}
+            <section className="admin-interiors-no-print rounded-lg border border-red-200 bg-red-50/40 p-4">
+              <h2 className="text-sm font-semibold text-red-900">
+                Opasna zona
+              </h2>
+              <p className="mt-1 text-xs text-red-800/80">
+                Trajno brisanje koristi se samo za testne projekte, duplikate ili pogrešne upite.
+                Brisanjem se uklanja projekt i povezane datoteke.{" "}
+                <span className="font-medium">Ova radnja se ne može poništiti.</span>
+              </p>
+
+              {/* Storage warning (post-delete, shown before navigation) */}
+              {deleteStorageWarning && deleteStorageWarning.length > 0 && (
+                <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                  <p className="font-medium">
+                    Projekt je obrisan, ali neke datoteke nisu uklonjene iz pohrane i možda zahtijevaju ručno čišćenje:
+                  </p>
+                  <ul className="mt-1 list-disc pl-4 space-y-0.5">
+                    {deleteStorageWarning.map((msg, i) => (
+                      <li key={i} className="break-all">{msg}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* DB error */}
+              {deleteError && (
+                <div className="mt-3 rounded-md border border-red-300 bg-red-100 px-3 py-2 text-xs text-red-900">
+                  <span className="font-medium">Greška pri brisanju: </span>
+                  {deleteError}
+                </div>
+              )}
+
+              {!showDeleteConfirm && !isDeleting && !deleteStorageWarning && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteError(null);
+                    setShowDeleteConfirm(true);
+                  }}
+                  className="mt-3 inline-flex items-center rounded-md border border-red-300 bg-white px-3 py-1.5 text-xs font-medium text-red-700 shadow-sm hover:bg-red-50"
+                >
+                  Trajno obriši projekt
+                </button>
+              )}
+
+              {showDeleteConfirm && !isDeleting && !deleteStorageWarning && (
+                <div className="mt-3 rounded-md border border-red-300 bg-white px-4 py-3 space-y-3">
+                  <p className="text-xs text-slate-800">
+                    Jeste li sigurni da želite trajno obrisati ovaj projekt i sve povezane datoteke?{" "}
+                    <span className="font-semibold text-red-700">Ova radnja se ne može poništiti.</span>
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleDeleteProject}
+                      className="inline-flex items-center rounded-md border border-red-400 bg-red-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-red-700"
+                    >
+                      Da, obriši trajno
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeleteError(null);
+                      }}
+                      className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+                    >
+                      Odustani
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {isDeleting && (
+                <p className="mt-3 text-xs text-slate-600">
+                  Brisanje projekta i datoteka...
+                </p>
+              )}
             </section>
           </div>
         )}
