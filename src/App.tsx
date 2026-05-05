@@ -54,6 +54,22 @@ function AnimatedRoutes({
   // Public URLs still key by pathname so AnimatePresence + page exits behave as before.
   const routeKey = location.pathname.startsWith('/admin') ? '/admin' : location.pathname
 
+  // Scroll restoration on route change.
+  // - No hash → instant scroll to top so form pages open at the beginning.
+  // - Hash present → let the hash target scroll into view (e.g. /#portfolio).
+  useEffect(() => {
+    const { hash } = location
+    if (!hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    } else {
+      const id = hash.replace('#', '')
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: 'auto', block: 'start' })
+      }
+    }
+  }, [location.pathname, location.hash])
+
   return (
     <AnimatePresence mode="wait">
       <Suspense fallback={<RouteFallback />}>
