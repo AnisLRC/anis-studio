@@ -5,6 +5,7 @@ type VisibilityKey =
   | 'interiors_public_visible'
   | 'lrc_public_visible'
   | 'web_atelier_public_visible'
+  | 'interiors_vr_enabled'
 
 export default function AdminSettingsPage() {
   const { settings, isLoading, error, updateSettings } = useSettings()
@@ -24,6 +25,7 @@ export default function AdminSettingsPage() {
   const [localInteriorsVisible, setLocalInteriorsVisible] = useState(true)
   const [localLrcPublicVisible, setLocalLrcPublicVisible] = useState(false)
   const [localWebAtelierVisible, setLocalWebAtelierVisible] = useState(false)
+  const [localVrEnabled, setLocalVrEnabled] = useState(false)
 
   // Sync localEnabled with settings when settings change
   useEffect(() => {
@@ -43,10 +45,14 @@ export default function AdminSettingsPage() {
     if (settings.web_atelier_public_visible !== undefined) {
       setLocalWebAtelierVisible(settings.web_atelier_public_visible)
     }
+    if (settings.interiors_vr_enabled !== undefined) {
+      setLocalVrEnabled(settings.interiors_vr_enabled)
+    }
   }, [
     settings?.interiors_public_visible,
     settings?.lrc_public_visible,
     settings?.web_atelier_public_visible,
+    settings?.interiors_vr_enabled,
   ])
 
   const handleToggle = async () => {
@@ -84,12 +90,14 @@ export default function AdminSettingsPage() {
     interiors_public_visible: localInteriorsVisible,
     lrc_public_visible: localLrcPublicVisible,
     web_atelier_public_visible: localWebAtelierVisible,
+    interiors_vr_enabled: localVrEnabled,
   } as const
 
   const setVisibilityState = {
     interiors_public_visible: setLocalInteriorsVisible,
     lrc_public_visible: setLocalLrcPublicVisible,
     web_atelier_public_visible: setLocalWebAtelierVisible,
+    interiors_vr_enabled: setLocalVrEnabled,
   } as const
 
   const handleVisibilityToggle = async (key: VisibilityKey) => {
@@ -122,6 +130,10 @@ export default function AdminSettingsPage() {
           web_atelier_public_visible: {
             on: 'Web Atelier je sada javno vidljiv.',
             off: 'Web Atelier je sada skriven s javnog puta.',
+          },
+          interiors_vr_enabled: {
+            on: 'VR opcija je omogućena.',
+            off: 'VR opcija je onemogućena.',
           },
         }
         setVisibilitySuccessMessage(
@@ -346,6 +358,56 @@ export default function AdminSettingsPage() {
                       'web_atelier_public_visible',
                       localWebAtelierVisible,
                       'Javna vidljivost Web Atelier-a'
+                    )}
+                  </div>
+
+                  {visibilityToggleError && (
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                      <p className="text-xs font-semibold text-red-950">
+                        {visibilityToggleError}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* VR opcija – Interijeri */}
+          <div className="mt-6 rounded-xl bg-white shadow-sm">
+            <div className="border-b px-6 py-4">
+              <h2 className="text-lg font-semibold text-slate-900">
+                VR opcija – Interijeri
+              </h2>
+              <p className="mt-1 text-sm text-slate-700">
+                Kada je uključeno, VR opcije su vidljive u formi za stolare i u admin pregledu projekata.
+              </p>
+            </div>
+
+            <div className="px-6 py-6">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <p className="font-medium text-slate-700">
+                    Učitavanje postavki...
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-base font-medium text-slate-900">
+                        Omogući VR opciju
+                      </p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {localVrEnabled
+                          ? 'VR opcije su trenutno vidljive u formi za stolare i u admin pregledu.'
+                          : 'VR opcije su trenutno skrivene. Forma za stolare ne prikazuje VR polje.'}
+                      </p>
+                    </div>
+                    {visibilityToggleButton(
+                      'interiors_vr_enabled',
+                      localVrEnabled,
+                      'Omogući VR opciju za Interijere'
                     )}
                   </div>
 

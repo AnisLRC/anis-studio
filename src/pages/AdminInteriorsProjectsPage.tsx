@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProjects, updateProjectStatus, type ProjectListFilters } from "../lib/interiors";
 import { TableSkeleton } from "../components/Skeleton";
+import { useSettings } from "../hooks/useSettings";
+
+function parsePhotorealisticFromNotes(notes: string | null | undefined): boolean {
+  if (!notes?.trim()) return false;
+  const m = notes.match(/Fotorealistični prikaz prostora:\s*(DA|NE)\b/i);
+  if (m) return m[1].toUpperCase() === "DA";
+  return false;
+}
 
 type Project = Awaited<ReturnType<typeof fetchProjects>>[number];
 
@@ -39,6 +47,9 @@ const WANTS_VR_OPTIONS = [
 
 export const AdminInteriorsProjectsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const vrEnabled = settings?.interiors_vr_enabled ?? false;
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -244,24 +255,26 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
               </select>
             </label>
 
-            {/* VR filter */}
-            <label className="flex items-center gap-1">
-              <span className="text-slate-600">VR opcija:</span>
-              <select
-                className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm"
-                value={wantsVrFilter}
-                onChange={(e) =>
-                  setWantsVrFilter(e.target.value as "all" | "yes" | "no")
-                }
-                title="Filtriraj projekte prema tome žele li VR opciju"
-              >
-                {WANTS_VR_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {/* VR filter — samo kad je VR enabled */}
+            {vrEnabled && (
+              <label className="flex items-center gap-1">
+                <span className="text-slate-600">VR opcija:</span>
+                <select
+                  className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 shadow-sm"
+                  value={wantsVrFilter}
+                  onChange={(e) =>
+                    setWantsVrFilter(e.target.value as "all" | "yes" | "no")
+                  }
+                  title="Filtriraj projekte prema tome žele li VR opciju"
+                >
+                  {WANTS_VR_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
 
             {/* Sortiranje */}
             <label className="flex items-center gap-1">
@@ -321,8 +334,13 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                     Tip
                   </th>
                   <th className="whitespace-nowrap px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    VR
+                    Foto
                   </th>
+                  {vrEnabled && (
+                    <th className="whitespace-nowrap px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      VR
+                    </th>
+                  )}
                   <th className="whitespace-nowrap px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Status
                   </th>
@@ -378,8 +396,17 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                         {userTypeLabel}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-700">
-                        {vrLabel}
+                        {parsePhotorealisticFromNotes(project.notes) ? (
+                          <span className="font-medium text-violet-700">✓</span>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
                       </td>
+                      {vrEnabled && (
+                        <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-700">
+                          {vrLabel}
+                        </td>
+                      )}
                       <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-700">
                         {project.status === "archived" ? (
                           <span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
@@ -406,7 +433,11 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                                 : "cursor-pointer"
                             }`}
                           >
-                            {STATUS_OPTIONS_ROW.map((opt) => (
+                            {STATUS_OPTIONS_ROW.filter(
+                              (opt) =>
+                                vrEnabled ||
+                                (opt.value !== "vr_in_progress" && opt.value !== "vr_done")
+                            ).map((opt) => (
                               <option key={opt.value} value={opt.value}>
                                 {opt.label}
                               </option>

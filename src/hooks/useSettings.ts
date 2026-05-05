@@ -7,6 +7,7 @@ export interface Settings {
   interiors_public_visible: boolean
   lrc_public_visible: boolean
   web_atelier_public_visible: boolean
+  interiors_vr_enabled: boolean
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -15,6 +16,7 @@ const DEFAULT_SETTINGS: Settings = {
   interiors_public_visible: true,
   lrc_public_visible: false,
   web_atelier_public_visible: false,
+  interiors_vr_enabled: false,
 }
 
 const SETTINGS_KEYS: (keyof Settings)[] = [
@@ -23,6 +25,7 @@ const SETTINGS_KEYS: (keyof Settings)[] = [
   'interiors_public_visible',
   'lrc_public_visible',
   'web_atelier_public_visible',
+  'interiors_vr_enabled',
 ]
 
 /** Merge a server row without wiping fields that are missing from the response (PostgREST/RLS/cache). */

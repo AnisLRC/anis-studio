@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import toast from 'react-hot-toast'
 import { trackEvent } from '../lib/analytics'
-import { createCarpenter, createProject, uploadProjectFileToStorage, type DrawnBy, type VrPackagePreference } from '../lib/interiors'
+import { createCarpenter, createProject, uploadProjectFileToStorage, type VrPackagePreference } from '../lib/interiors'
 import { UploadProgress } from './UploadProgress'
 
 export interface CarpenterProjectFormValues {
@@ -17,10 +17,12 @@ export interface CarpenterProjectFormValues {
 
   projectType: string
   projectTypes: string[]
+  servicesNeeded: string[]
   spaceType: string
   areaM2: string
   budget: string
   notes: string
+  hasPlan: 'plan' | 'photos' | 'none' | ''
 
   boards: string
   worktops: string
@@ -40,9 +42,11 @@ export interface CarpenterProjectFormValues {
   contactPreference: string
   bestContactTime: string
 
-  drawnByOption: DrawnBy | ''
+  drawnByOption: 'ani' | 'carpenter' | ''
   usesCorpus: boolean
   corpusExportFile: File | null
+
+  wantsPhotorealisticRender: boolean
 
   wantsVr: boolean
   vrForClientsPerYear: string
@@ -51,6 +55,7 @@ export interface CarpenterProjectFormValues {
 
 interface InteriorsCarpenterFormProps {
   language?: 'hr' | 'en'
+  vrEnabled?: boolean
 }
 
 const INITIAL_VALUES: CarpenterProjectFormValues = {
@@ -64,10 +69,12 @@ const INITIAL_VALUES: CarpenterProjectFormValues = {
 
   projectType: '',
   projectTypes: [],
+  servicesNeeded: [],
   spaceType: '',
   areaM2: '',
   budget: '',
   notes: '',
+  hasPlan: '',
 
   boards: '',
   worktops: '',
@@ -91,6 +98,8 @@ const INITIAL_VALUES: CarpenterProjectFormValues = {
   usesCorpus: false,
   corpusExportFile: null,
 
+  wantsPhotorealisticRender: false,
+
   wantsVr: false,
   vrForClientsPerYear: '',
   vrNeeds: [],
@@ -102,19 +111,14 @@ const VR_NEEDS_OPTIONS = [
   'Online 3D/VR link za tvog klijenta',
 ]
 
-const PROJECT_TYPES = [
-  'Kuhinje',
-  'Dnevni boravci',
-  'Spavaće sobe',
-  'Dječje sobe',
-  'Uredski namještaj',
-  'Ugradbeni ormari',
-  'Ostalo (drugi namještaj)',
+const SERVICES_NEEDED_OPTIONS: { value: string; label: string }[] = [
+  { value: '3d_vizualizacija', label: '3D vizualizacija za klijenta' },
+  { value: 'fotorealisticki_prikaz', label: 'Fotorealistični prikaz prostora' },
+  { value: 'krojne_liste', label: 'Tehnička dokumentacija / krojne liste' },
+  { value: 'ostalo', label: 'Ostalo' },
 ]
 
-const HARDWARE_BRANDS = ['Hettich', 'Blum', 'Grass']
-
-export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFormProps) {
+export function InteriorsCarpenterForm({ language = 'hr', vrEnabled = false }: InteriorsCarpenterFormProps) {
   const inputClass =
     "w-full rounded-xl border border-slate-200 dark:border-lavender/20 bg-white/80 dark:bg-white/10 px-3 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/30 focus:border-violet-400 dark:focus:border-violet-500 text-plum/90 dark:text-pearl placeholder:text-plum/60 dark:placeholder:text-pearl/50";
 
@@ -133,161 +137,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
   const [currentFile, setCurrentFile] = useState<string>()
   const [currentFileIndex, setCurrentFileIndex] = useState(1)
 
-  const translations = {
-    title: {
-      hr: 'Upit za projekt / suradnju – stolari i studiji',
-      en: 'Project / collaboration inquiry – carpenters and studios'
-    },
-    description: {
-      hr: 'Istim obrascem šaljete i svoje podatke i konkretan upit za projekt',
-      en: 'With the same form you send both your details and a specific project inquiry'
-    },
-    sections: {
-      carpenterDetails: {
-        hr: '1. Podaci o stolaru / studiju',
-        en: '1. Carpenter / Studio details'
-      },
-      projectInquiry: {
-        hr: '2. Upit za projekt',
-        en: '2. Project inquiry'
-      }
-    },
-    fields: {
-      location: {
-        hr: 'Grad / lokacija',
-        en: 'City / location'
-      },
-      website: {
-        hr: 'Website',
-        en: 'Website'
-      },
-      phone: {
-        hr: 'Telefon *',
-        en: 'Phone *'
-      }
-    },
-    errors: {
-      companyNameRequired: {
-        hr: 'Naziv firme je obavezan',
-        en: 'Company name is required'
-      },
-      contactNameRequired: {
-        hr: 'Ime kontakt osobe je obavezno',
-        en: 'Contact person name is required'
-      },
-      emailRequired: {
-        hr: 'Email je obavezan',
-        en: 'Email is required'
-      },
-      emailInvalid: {
-        hr: 'Molimo unesite valjanu email adresu',
-        en: 'Please enter a valid email address'
-      },
-      phoneRequired: {
-        hr: 'Telefon je obavezan',
-        en: 'Phone number is required'
-      },
-      projectTypeRequired: {
-        hr: 'Molimo odaberite tip projekta',
-        en: 'Please select project type'
-      },
-      drawnByRequired: {
-        hr: 'Molimo odaberite tko crta projekt',
-        en: 'Please select who draws the project'
-      },
-      boardsRequired: {
-        hr: 'Molim te upiši informacije o pločama.',
-        en: 'Please enter information about boards.'
-      },
-      worktopsRequired: {
-        hr: 'Molim te upiši informacije o radnim pločama.',
-        en: 'Please enter information about worktops.'
-      },
-      frontsRequired: {
-        hr: 'Molim te upiši informacije o frontovima.',
-        en: 'Please enter information about fronts.'
-      },
-      monthlyCapacityRequired: {
-        hr: 'Molim te upiši koliko projekata mjesečno možeš preuzeti.',
-        en: 'Please enter how many projects per month you can take on.'
-      },
-      averageProductionTimeRequired: {
-        hr: 'Molim te upiši prosječan rok izrade.',
-        en: 'Please enter average production time.'
-      },
-      contactPreferenceRequired: {
-        hr: 'Molim te odaberi način kontaktiranja.',
-        en: 'Please select contact preference.'
-      }
-    },
-    success: {
-      hr: 'Hvala ti! Tvoj upit za projekt je zaprimljen. Javit ću ti se povratno s informacijama u najkraćem mogućem roku.',
-      en: 'Thank you! Your project inquiry has been received. I will get back to you with information as soon as possible.'
-    },
-    error: {
-      hr: 'Greška pri spremanju, pokušaj ponovno.',
-      en: 'Error saving, please try again.'
-    },
-    drawnBy: {
-      title: {
-        hr: 'Tko izrađuje 3D projekt?',
-        en: 'Who creates the 3D project?'
-      },
-      ani: {
-        hr: "Treba mi Ani's Interijeri 3D projekt",
-        en: "I need Ani's Interijeri to create the 3D project"
-      },
-      aniDescription: {
-        hr: 'Ti radiš kompletan 3D projekt u RC Corpusu.',
-        en: 'You create the full 3D project in RC Corpus.'
-      },
-      carpenter: {
-        hr: 'Već imam gotov 3D projekt',
-        en: 'I already have a finished 3D project'
-      },
-      carpenterDescription: {
-        hr: 'Koristim RC Corpus ili drugi 3D alat i mogu poslati eksport.',
-        en: 'I use RC Corpus or another 3D tool and can send an export.'
-      },
-      usesCorpus: {
-        hr: 'Ovaj projekt je rađen u RC Corpusu',
-        en: 'This project was created in RC Corpus'
-      },
-      uploadFile: {
-        hr: 'Upload 3D datoteke (OBJ, FBX, SKP...)',
-        en: 'Upload 3D file (OBJ, FBX, SKP...)'
-      },
-      uploadFileFormats: {
-        hr: 'Podržani formati: OBJ, FBX, SKP ili slični 3D formati iz RC Corpusa.',
-        en: 'Supported formats: OBJ, FBX, SKP or similar 3D exports from RC Corpus.'
-      },
-      uploadFileNote: {
-        hr: 'TODO: Datoteka će se kasnije spremiti u project_files storage',
-        en: 'TODO: File will be saved to project_files storage later'
-      }
-    },
-    vr: {
-      wantsVr: {
-        hr: 'Želim VR obilazak prostora za svog klijenta',
-        en: 'I want VR walkthrough for my client'
-      },
-      clientsPerYear: {
-        hr: 'Za koliko klijenata godišnje bi ti otprilike trebao VR?',
-        en: 'For how many clients per year would you approximately need VR?'
-      },
-      needsTitle: {
-        hr: 'Što trebaš od mene?',
-        en: 'What do you need from me?'
-      }
-    }
-  }
-
   function handleChange(
     field: keyof CarpenterProjectFormValues,
     value: CarpenterProjectFormValues[typeof field]
   ) {
     setValues(prev => ({ ...prev, [field]: value }))
-    // Clear error for this field when user changes it
     if (errors[field]) {
       setErrors(prev => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -304,7 +158,6 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       const next = exists ? current.filter(o => o !== option) : [...current, option]
       return { ...prev, [field]: next }
     })
-    // Clear error for this field when user makes a selection
     if (errors[field]) {
       setErrors(prev => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -318,91 +171,80 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = event.target.files
-    if (!files) {
-      setExportFiles([])
-      return
-    }
-
-    const fileArray = Array.from(files)
-    setExportFiles(fileArray)
+    if (!files) return
+    const incoming = Array.from(files)
+    setExportFiles((prev) => {
+      const merged = [...prev]
+      for (const f of incoming) {
+        const alreadyExists = merged.some(
+          (p) => p.name === f.name && p.size === f.size && p.lastModified === f.lastModified
+        )
+        if (!alreadyExists) merged.push(f)
+      }
+      return merged
+    })
+    event.target.value = ''
   }
 
   const handleKitchenSketchFilesChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = event.target.files
-    if (!files) {
-      setKitchenSketchFiles([])
-      return
-    }
-
-    const fileArray = Array.from(files)
-    setKitchenSketchFiles(fileArray)
+    if (!files) return
+    const incoming = Array.from(files)
+    setKitchenSketchFiles((prev) => {
+      const merged = [...prev]
+      for (const f of incoming) {
+        const alreadyExists = merged.some(
+          (p) => p.name === f.name && p.size === f.size && p.lastModified === f.lastModified
+        )
+        if (!alreadyExists) merged.push(f)
+      }
+      return merged
+    })
+    event.target.value = ''
   }
 
-  function validate(values: CarpenterProjectFormValues): { isValid: boolean; errors: Record<string, string>; firstErrorField: string | null } {
+  function removeKitchenSketchFile(index: number) {
+    setKitchenSketchFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function removeExportFile(index: number) {
+    setExportFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function validate(v: CarpenterProjectFormValues): { isValid: boolean; errors: Record<string, string>; firstErrorField: string | null } {
     const newErrors: Record<string, string> = {}
 
-    if (!values.companyName.trim()) {
-      newErrors.companyName = translations.errors.companyNameRequired[language]
+    if (!v.companyName.trim()) {
+      newErrors.companyName = language === 'hr' ? 'Naziv firme je obavezan' : 'Company name is required'
     }
-
-    if (!values.contactName.trim()) {
-      newErrors.contactName = translations.errors.contactNameRequired[language]
+    if (!v.contactName.trim()) {
+      newErrors.contactName = language === 'hr' ? 'Ime kontakt osobe je obavezno' : 'Contact person name is required'
     }
-
-    if (!values.email.trim()) {
-      newErrors.email = translations.errors.emailRequired[language]
+    if (!v.email.trim()) {
+      newErrors.email = language === 'hr' ? 'Email je obavezan' : 'Email is required'
     } else {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailRegex.test(values.email.trim())) {
-        newErrors.email = translations.errors.emailInvalid[language]
+      if (!emailRegex.test(v.email.trim())) {
+        newErrors.email = language === 'hr' ? 'Molimo unesite valjanu email adresu' : 'Please enter a valid email address'
       }
     }
-
-    if (!values.phone.trim()) {
-      newErrors.phone = translations.errors.phoneRequired[language]
+    if (!v.phone.trim()) {
+      newErrors.phone = language === 'hr' ? 'Telefon je obavezan' : 'Phone number is required'
     }
-
-    if (!values.projectType) {
-      newErrors.projectType = translations.errors.projectTypeRequired[language]
+    if (!v.location.trim()) {
+      newErrors.location = language === 'hr' ? 'Grad / lokacija je obavezna' : 'City / location is required'
     }
-
-    if (!values.drawnByOption) {
-      newErrors.drawnByOption = translations.errors.drawnByRequired[language]
+    if (!v.projectType) {
+      newErrors.projectType = language === 'hr' ? 'Molimo odaberite tip projekta' : 'Please select project type'
     }
-
-    if (!values.boards.trim()) {
-      newErrors.boards = translations.errors.boardsRequired[language]
-    }
-
-    if (!values.worktops.trim()) {
-      newErrors.worktops = translations.errors.worktopsRequired[language]
-    }
-
-    if (!values.fronts.trim()) {
-      newErrors.fronts = translations.errors.frontsRequired[language]
-    }
-
-    if (!values.monthlyCapacity.trim()) {
-      newErrors.monthlyCapacity = translations.errors.monthlyCapacityRequired[language]
-    }
-
-    if (!values.averageProductionTime.trim()) {
-      newErrors.averageProductionTime = translations.errors.averageProductionTimeRequired[language]
-    }
-
-    if (!values.contactPreference) {
-      newErrors.contactPreference = translations.errors.contactPreferenceRequired[language]
+    if (!v.contactPreference) {
+      newErrors.contactPreference = language === 'hr' ? 'Molim te odaberi način kontaktiranja.' : 'Please select contact preference.'
     }
 
     const firstErrorField = Object.keys(newErrors)[0] || null
-
-    return {
-      isValid: Object.keys(newErrors).length === 0,
-      errors: newErrors,
-      firstErrorField
-    }
+    return { isValid: Object.keys(newErrors).length === 0, errors: newErrors, firstErrorField }
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -412,14 +254,16 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
     setErrors(validation.errors)
 
     if (!validation.isValid) {
-      // Focus first error field
       if (validation.firstErrorField) {
         setTimeout(() => {
-          const field = document.getElementById(validation.firstErrorField!) || 
-                       document.querySelector(`[name="${validation.firstErrorField}"]`) ||
-                       document.querySelector(`input[name="${validation.firstErrorField}"], select[name="${validation.firstErrorField}"], textarea[name="${validation.firstErrorField}"]`)
+          const field =
+            document.getElementById(validation.firstErrorField!) ||
+            document.querySelector(`[name="${validation.firstErrorField}"]`) ||
+            document.querySelector(
+              `input[name="${validation.firstErrorField}"], select[name="${validation.firstErrorField}"], textarea[name="${validation.firstErrorField}"]`
+            )
           if (field) {
-            field.focus()
+            (field as HTMLElement).focus()
             field.scrollIntoView({ behavior: 'smooth', block: 'center' })
           }
         }, 100)
@@ -427,39 +271,28 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       return
     }
 
-    // Clear all errors
     setErrors({})
     setIsSubmitting(true)
 
     try {
-      // Parse area_m2
       let areaM2: number | null = null
       if (values.areaM2) {
         const parsed = parseFloat(values.areaM2.replace(/[^\d.,]/g, '').replace(',', '.'))
-        if (!isNaN(parsed) && parsed > 0) {
-          areaM2 = parsed
-        }
+        if (!isNaN(parsed) && parsed > 0) areaM2 = parsed
       }
 
-      // Parse budget
       let budget: number | null = null
       if (values.budget) {
         const parsed = parseFloat(values.budget.replace(/[^\d.,]/g, '').replace(',', '.'))
-        if (!isNaN(parsed) && parsed > 0) {
-          budget = parsed
-        }
+        if (!isNaN(parsed) && parsed > 0) budget = parsed
       }
 
-      // Parse vrForClientsPerYear
       let vrForClientsPerYear: number | null = null
       if (values.wantsVr && values.vrForClientsPerYear) {
         const parsed = parseInt(values.vrForClientsPerYear, 10)
-        if (!isNaN(parsed) && parsed > 0) {
-          vrForClientsPerYear = parsed
-        }
+        if (!isNaN(parsed) && parsed > 0) vrForClientsPerYear = parsed
       }
 
-      // Determine VR package preference from vrNeeds
       let vrPackagePreference: VrPackagePreference = null
       if (values.wantsVr && values.vrNeeds.length > 0) {
         if (values.vrNeeds.includes('Online 3D/VR link za tvog klijenta')) {
@@ -469,80 +302,38 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         }
       }
 
-      // Build notes string including all profile information
-      let notesParts: string[] = []
-      if (values.location.trim()) {
-        notesParts.push(`Lokacija: ${values.location.trim()}`)
+      const notesParts: string[] = []
+
+      if (values.location.trim()) notesParts.push(`Lokacija: ${values.location.trim()}`)
+      if (values.website.trim()) notesParts.push(`Website: ${values.website.trim()}`)
+
+      if (values.servicesNeeded.length > 0) {
+        const serviceLabels = values.servicesNeeded
+          .map(v => SERVICES_NEEDED_OPTIONS.find(o => o.value === v)?.label ?? v)
+          .join(', ')
+        notesParts.push(`Traži usluge: ${serviceLabels}`)
       }
-      if (values.website.trim()) {
-        notesParts.push(`Website: ${values.website.trim()}`)
+
+      if (values.hasPlan) {
+        const hasPlanLabel =
+          values.hasPlan === 'plan'
+            ? 'Ima tlocrt / plan'
+            : values.hasPlan === 'photos'
+            ? 'Ima fotografije ili skice'
+            : 'Nema tlocrta ni fotografija'
+        notesParts.push(`Dokumentacija: ${hasPlanLabel}`)
       }
-      if (values.oib.trim()) {
-        notesParts.push(`OIB: ${values.oib.trim()}`)
-      }
-      
-      // Project types
-      if (values.projectTypes.length > 0) {
-        notesParts.push(`Tipovi projekata: ${values.projectTypes.join(', ')}`)
-      }
-      
-      // Materials
-      if (values.boards.trim()) {
-        notesParts.push(`Ploče: ${values.boards.trim()}`)
-      }
-      if (values.worktops.trim()) {
-        notesParts.push(`Radne ploče: ${values.worktops.trim()}`)
-      }
-      if (values.fronts.trim()) {
-        notesParts.push(`Frontovi: ${values.fronts.trim()}`)
-      }
-      
-      // Hardware
-      if (values.hardwareBrands.length > 0) {
-        notesParts.push(`Okovi/brendovi: ${values.hardwareBrands.join(', ')}`)
-      }
-      if (values.hardwareOther.trim()) {
-        notesParts.push(`Ostali okovi: ${values.hardwareOther.trim()}`)
-      }
-      
-      // Capacity and deadlines
-      if (values.monthlyCapacity.trim()) {
-        notesParts.push(`Mjesečni kapacitet: ${values.monthlyCapacity.trim()}`)
-      }
-      if (values.averageProductionTime.trim()) {
-        notesParts.push(`Prosječan rok izrade: ${values.averageProductionTime.trim()}`)
-      }
-      if (values.deadlineNotes.trim()) {
-        notesParts.push(`Napomene o rokovima: ${values.deadlineNotes.trim()}`)
-      }
-      
-      // Collaboration preferences
-      if (values.wantsCompleteDrawings) {
-        notesParts.push('Želi kompletne nacrte i krojne liste')
-      }
-      if (values.usesPartialSolutions) {
-        notesParts.push('Koristi dijelove rješenja (djelomična izrada)')
-      }
-      if (values.collaborationNotes.trim()) {
-        notesParts.push(`Napomene za suradnju: ${values.collaborationNotes.trim()}`)
-      }
-      
-      // Contact preferences
-      if (values.contactPreference) {
-        notesParts.push(`Način kontaktiranja: ${values.contactPreference}`)
-      }
-      if (values.bestContactTime.trim()) {
-        notesParts.push(`Najbolje vrijeme za kontakt: ${values.bestContactTime.trim()}`)
-      }
-      
-      // Project notes
-      if (values.notes.trim()) {
-        notesParts.push(`Napomene o projektu: ${values.notes.trim()}`)
-      }
-      
+
+      notesParts.push(
+        `Fotorealistični prikaz: ${values.wantsPhotorealisticRender ? 'DA' : 'NE'}`
+      )
+
+      if (values.contactPreference) notesParts.push(`Način kontaktiranja: ${values.contactPreference}`)
+      if (values.bestContactTime.trim()) notesParts.push(`Najbolje vrijeme za kontakt: ${values.bestContactTime.trim()}`)
+      if (values.notes.trim()) notesParts.push(`Napomene o projektu: ${values.notes.trim()}`)
+
       const combinedNotes = notesParts.length > 0 ? notesParts.join('\n\n') : null
 
-      // Create carpenter
       const carpenter = await createCarpenter({
         company_name: values.companyName.trim(),
         contact_name: values.contactName.trim(),
@@ -553,16 +344,15 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         notes: combinedNotes,
       })
 
-      // Create project
       const project = await createProject({
         title: `Projekt za ${values.companyName.trim()} – ${values.projectType || 'Nepoznato'}`,
         user_type: 'carpenter',
         client_id: null,
         carpenter_id: carpenter.id,
-        drawn_by: values.drawnByOption as DrawnBy,
+        drawn_by: 'ani',
         uses_corpus: values.usesCorpus,
         wants_vr: values.wantsVr,
-        vr_location_preference: values.wantsVr ? 'studio' : null, // Default to studio for carpenters
+        vr_location_preference: values.wantsVr ? 'studio' : null,
         vr_package_preference: vrPackagePreference,
         status: 'inquiry',
         space_type: values.spaceType || values.projectType || null,
@@ -571,50 +361,34 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         notes: values.notes.trim() || null,
       })
 
-      // Upload 3D eksport fajlova stolara (OBJ/FBX...) u Storage + project_files
       const totalFiles = exportFiles.length + kitchenSketchFiles.length
-      
+
       if (totalFiles > 0) {
         setIsUploading(true)
         setUploadProgress(0)
         setCurrentFileIndex(1)
-        
+
         try {
-          const allFiles: Array<{ file: File; type: "carpenter_3d_export" | "kitchen_sketch" }> = []
-          
-          // Collect all files
-          if (exportFiles.length > 0) {
-            for (const file of exportFiles) {
-              allFiles.push({ file, type: "carpenter_3d_export" })
-            }
+          const allFiles: Array<{ file: File; type: 'carpenter_3d_export' | 'kitchen_sketch' }> = []
+
+          for (const file of exportFiles) {
+            allFiles.push({ file, type: 'carpenter_3d_export' })
           }
-          
-          if (kitchenSketchFiles.length > 0) {
-            for (const file of kitchenSketchFiles) {
-              allFiles.push({ file, type: "kitchen_sketch" })
-            }
+          for (const file of kitchenSketchFiles) {
+            allFiles.push({ file, type: 'kitchen_sketch' })
           }
-          
-          // Upload files sequentially to track progress
+
           for (let i = 0; i < allFiles.length; i++) {
             const { file, type } = allFiles[i]
             setCurrentFile(file.name)
             setCurrentFileIndex(i + 1)
-            
             await uploadProjectFileToStorage(project.id, file, type)
-            
-            // Update progress
-            const progress = ((i + 1) / totalFiles) * 100
-            setUploadProgress(progress)
+            setUploadProgress(((i + 1) / totalFiles) * 100)
           }
-          
+
           setUploadProgress(100)
         } catch (error) {
-          console.error(
-            "[InteriorsCarpenterForm] Error uploading project files:",
-            error
-          )
-          // ne rušimo submit – projekt je već kreiran
+          console.error('[InteriorsCarpenterForm] Error uploading project files:', error)
         } finally {
           setIsUploading(false)
           setCurrentFile(undefined)
@@ -623,7 +397,6 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         }
       }
 
-      // Show success toast
       toast.success(
         language === 'hr'
           ? '✨ Uspješno! Vaš zahtjev je poslan. Javit ćemo Vam se uskoro.'
@@ -632,14 +405,11 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
       )
       trackEvent('form_submit_success', { form: 'interiors-carpenter' })
 
-      // Reset form immediately
       setValues(INITIAL_VALUES)
       setExportFiles([])
       setKitchenSketchFiles([])
     } catch (error) {
       console.error('Error submitting carpenter form:', error)
-      
-      // Show error toast
       toast.error(
         language === 'hr'
           ? 'Greška pri slanju zahtjeva. Molimo pokušajte ponovno ili nas kontaktirajte direktno.'
@@ -653,21 +423,23 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
 
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-8 pb-1">
-      {/* Naslov i podnaslov */}
+      {/* Naslov */}
       <div className="space-y-2 text-center mb-6">
         <h2 className="text-xl font-semibold text-slate-900">
-          {translations.title[language]}
+          {language === 'hr' ? 'Upit za projekt / suradnju – stolari i studiji' : 'Project / collaboration inquiry – carpenters and studios'}
         </h2>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          {translations.description[language]}
+          {language === 'hr'
+            ? 'Ispunite kratku formu i javit ćemo vam se s informacijama u najkraćem mogućem roku.'
+            : 'Fill in the short form and we will get back to you with information as soon as possible.'}
         </p>
       </div>
 
-      {/* Sekcija 1: Podaci o stolaru / studiju */}
+      {/* 1. Podaci o firmi */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">{translations.sections.carpenterDetails[language]}</legend>
+        <legend className="sr-only">Podaci o firmi</legend>
         <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          {translations.sections.carpenterDetails[language]}
+          1. Podaci o firmi
         </div>
 
         <div>
@@ -682,9 +454,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               onChange={e => handleChange('companyName', e.target.value)}
             />
           </label>
-          {errors.companyName && (
-            <p className="text-xs text-red-500 mt-1">{errors.companyName}</p>
-          )}
+          {errors.companyName && <p className="text-xs text-red-500 mt-1">{errors.companyName}</p>}
         </div>
 
         <div>
@@ -699,9 +469,7 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               onChange={e => handleChange('contactName', e.target.value)}
             />
           </label>
-          {errors.contactName && (
-            <p className="text-xs text-red-500 mt-1">{errors.contactName}</p>
-          )}
+          {errors.contactName && <p className="text-xs text-red-500 mt-1">{errors.contactName}</p>}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -717,14 +485,12 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
                 onChange={e => handleChange('email', e.target.value)}
               />
             </label>
-            {errors.email && (
-              <p className="text-xs text-red-500 mt-1">{errors.email}</p>
-            )}
+            {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
           </div>
 
           <div>
             <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-              <span>{translations.fields.phone[language]}</span>
+              <span>{language === 'hr' ? 'Telefon *' : 'Phone *'}</span>
               <input
                 type="tel"
                 id="phone"
@@ -734,31 +500,30 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
                 onChange={e => handleChange('phone', e.target.value)}
               />
             </label>
-            {errors.phone && (
-              <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
-            )}
+            {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-              <span>{translations.fields.location[language]}</span>
+              <span>{language === 'hr' ? 'Grad / lokacija *' : 'City / location *'}</span>
               <input
                 type="text"
                 id="location"
                 name="location"
-                className={inputClass}
+                className={`${inputClass} ${errors.location ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
                 value={values.location}
                 onChange={e => handleChange('location', e.target.value)}
                 placeholder={language === 'hr' ? 'npr. Rijeka' : 'e.g. Rijeka'}
               />
             </label>
+            {errors.location && <p className="text-xs text-red-500 mt-1">{errors.location}</p>}
           </div>
 
           <div>
             <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-              <span>{translations.fields.website[language]}</span>
+              <span>{language === 'hr' ? 'Website (opcionalno)' : 'Website (optional)'}</span>
               <input
                 type="url"
                 id="website"
@@ -771,27 +536,13 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
             </label>
           </div>
         </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>OIB</span>
-            <input
-              type="text"
-              id="oib"
-              name="oib"
-              className={inputClass}
-              value={values.oib}
-              onChange={e => handleChange('oib', e.target.value)}
-            />
-          </label>
-        </div>
       </fieldset>
 
-      {/* Sekcija 2: Upit za projekt */}
+      {/* 2. Upit za projekt */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">{translations.sections.projectInquiry[language]}</legend>
+        <legend className="sr-only">Upit za projekt</legend>
         <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          {translations.sections.projectInquiry[language]}
+          2. Upit za projekt
         </div>
 
         <div>
@@ -815,465 +566,119 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
               <option value="drugo">Drugo</option>
             </select>
           </label>
-          {errors.projectType && (
-            <p className="text-xs text-red-500 mt-1">{errors.projectType}</p>
-          )}
+          {errors.projectType && <p className="text-xs text-red-500 mt-1">{errors.projectType}</p>}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-              <span>Površina (m²)</span>
-              <input
-                type="text"
-                className={inputClass}
-                value={values.areaM2}
-                onChange={e => handleChange('areaM2', e.target.value)}
-                placeholder="npr. 15.5"
-              />
-              <span className="text-xs text-slate-500">Približna površina prostora za projekt</span>
-            </label>
+        <div>
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
+            Što trebate od Ani's Studija?
+          </p>
+          <p className="text-xs text-slate-500 mb-3">
+            Odaberite jednu ili više usluga koje vas zanimaju.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {SERVICES_NEEDED_OPTIONS.map(option => (
+              <label key={option.value} className="flex items-start gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-1 accent-violet-500"
+                  checked={values.servicesNeeded.includes(option.value)}
+                  onChange={() => handleToggleMulti('servicesNeeded', option.value)}
+                />
+                <span>{option.label}</span>
+              </label>
+            ))}
           </div>
+        </div>
 
-          <div>
-            <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-              <span>Budžet (€)</span>
+        <div id="hasPlan">
+          <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
+            Ima li već tlocrt, skicu ili mjere?
+          </p>
+          <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap">
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
               <input
-                type="text"
-                className={inputClass}
-                value={values.budget}
-                onChange={e => handleChange('budget', e.target.value)}
-                placeholder="npr. 5000"
+                type="radio"
+                name="hasPlan"
+                value="plan"
+                className="accent-violet-500"
+                checked={values.hasPlan === 'plan'}
+                onChange={() => handleChange('hasPlan', 'plan')}
               />
-              <span className="text-xs text-slate-500">Okvirni budžet za projekt</span>
+              <span>Da – imam tlocrt / mjere</span>
+            </label>
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                name="hasPlan"
+                value="photos"
+                className="accent-violet-500"
+                checked={values.hasPlan === 'photos'}
+                onChange={() => handleChange('hasPlan', 'photos')}
+              />
+              <span>Da – imam fotografije ili skicu</span>
+            </label>
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                name="hasPlan"
+                value="none"
+                className="accent-violet-500"
+                checked={values.hasPlan === 'none'}
+                onChange={() => handleChange('hasPlan', 'none')}
+              />
+              <span>Ne, nemam ništa od navedenog</span>
             </label>
           </div>
         </div>
 
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Napomene</span>
+            <span>Kratka napomena (opcionalno)</span>
             <textarea
               className={textareaClass}
               value={values.notes}
               onChange={e => handleChange('notes', e.target.value)}
               rows={4}
-              placeholder="Dodatne napomene o projektu..."
+              placeholder="Opisite kratko projekt, posebne zahtjeve ili što god mislite da je važno..."
             />
           </label>
         </div>
       </fieldset>
 
-      {/* Tipovi projekata koje rade */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Tipovi projekata koje rade</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Tipovi projekata koje rade
+      {/* 3. Fotorealistični prikaz */}
+      <fieldset className="space-y-3 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Fotorealistični prikaz</legend>
+        <div className="text-lg font-semibold leading-snug text-plum/90 dark:text-pearl">
+          3. Fotorealistični prikaz
         </div>
-
-        <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
-          Tipovi projekata koje radite
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          Fotorealistični prikaz daje klijentu realnu sliku materijala, boja, rasvjete i dekoracija. Nije dio osnovne 3D vizualizacije i posebno se uračunava u ponudu.
         </p>
-        <p className="text-xs text-slate-500 mb-3">
-          Odaberite sve tipove projekata koje standardno izrađujete. Ovo nam pomaže razumjeti vašu specijalizaciju.
-        </p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {PROJECT_TYPES.map(option => (
-            <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                className="mt-1 accent-violet-500"
-                checked={values.projectTypes.includes(option)}
-                onChange={() => handleToggleMulti('projectTypes', option)}
-              />
-              <span>{option}</span>
-            </label>
-          ))}
-        </div>
+        <label className="flex items-start gap-2 text-sm text-slate-700 dark:text-pearl/90">
+          <input
+            type="checkbox"
+            className="mt-1 accent-violet-500"
+            checked={values.wantsPhotorealisticRender}
+            onChange={e => handleChange('wantsPhotorealisticRender', e.target.checked)}
+          />
+          <span>Zanima me i fotorealistični prikaz prostora za klijenta</span>
+        </label>
       </fieldset>
 
-      {/* Materijali i debljine */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Materijali i debljine koje standardno koriste</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Materijali i debljine koje standardno koriste
-        </div>
-        <p className="text-xs text-slate-500 mb-3">
-          Navedite materijale i debljine koje standardno koristite u svojoj proizvodnji. Ovo nam pomaže prilagoditi projekt vašim mogućnostima.
-        </p>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Ploče (npr. 18mm, 19mm, 36mm...) *</span>
-            <input
-              type="text"
-              className={`${inputClass} ${errors.boards ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-              value={values.boards}
-              onChange={e => handleChange('boards', e.target.value)}
-              placeholder="npr. 18mm, 19mm, 36mm..."
-            />
-            <span className="text-xs text-slate-500">Navedite debljine ploča koje standardno koristite</span>
-          </label>
-          {errors.boards && (
-            <p className="text-xs text-red-500 mt-1">{errors.boards}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Radne ploče (materijali, debljine...) *</span>
-            <input
-              type="text"
-              className={`${inputClass} ${errors.worktops ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-              value={values.worktops}
-              onChange={e => handleChange('worktops', e.target.value)}
-              placeholder="npr. kvarc, granit, laminat..."
-            />
-            <span className="text-xs text-slate-500">Navedite materijale radnih ploča koje standardno koristite</span>
-          </label>
-          {errors.worktops && (
-            <p className="text-xs text-red-500 mt-1">{errors.worktops}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Frontovi (materijali, finiši...) *</span>
-            <input
-              type="text"
-              className={`${inputClass} ${errors.fronts ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-              value={values.fronts}
-              onChange={e => handleChange('fronts', e.target.value)}
-              placeholder="npr. MDF, HPL, melamin..."
-            />
-            <span className="text-xs text-slate-500">Navedite materijale i finiše frontova koje standardno koristite</span>
-          </label>
-          {errors.fronts && (
-            <p className="text-xs text-red-500 mt-1">{errors.fronts}</p>
-          )}
-        </div>
-      </fieldset>
-
-      {/* Okovi / brendovi */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Okovi / brendovi</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Okovi / brendovi
-        </div>
-
-        <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
-          Okovi / brendovi koje koristite
-        </p>
-        <p className="text-xs text-slate-500 mb-3">
-          Odaberite brendove okova koje standardno koristite. Ako koristite druge brendove, navedite ih u polju ispod.
-        </p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {HARDWARE_BRANDS.map(brand => (
-            <label key={brand} className="flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                className="mt-1 accent-violet-500"
-                checked={values.hardwareBrands.includes(brand)}
-                onChange={() => handleToggleMulti('hardwareBrands', brand)}
-              />
-              <span>{brand}</span>
-            </label>
-          ))}
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Ostali okovi / napomena</span>
-            <input
-              type="text"
-              className={inputClass}
-              value={values.hardwareOther}
-              onChange={e => handleChange('hardwareOther', e.target.value)}
-              placeholder="npr. Mepla, Hafele..."
-            />
-          </label>
-        </div>
-      </fieldset>
-
-      {/* Kapacitet i rokovi */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Kapacitet i rokovi</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Kapacitet i rokovi
-        </div>
-        <p className="text-xs text-slate-500 mb-3">
-          Ove informacije nam pomažu planirati suradnju i razumjeti vaše mogućnosti izrade.
-        </p>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Koliko projekata mjesečno mogu realno preuzeti? *</span>
-            <input
-              type="text"
-              className={`${inputClass} ${errors.monthlyCapacity ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-              value={values.monthlyCapacity}
-              onChange={e => handleChange('monthlyCapacity', e.target.value)}
-              placeholder="npr. 3-5 projekata"
-            />
-            <span className="text-xs text-slate-500">Realna procjena vašeg mjesečnog kapaciteta</span>
-          </label>
-          {errors.monthlyCapacity && (
-            <p className="text-xs text-red-500 mt-1">{errors.monthlyCapacity}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Prosječan rok izrade u tjednima *</span>
-            <input
-              type="text"
-              className={`${inputClass} ${errors.averageProductionTime ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-              value={values.averageProductionTime}
-              onChange={e => handleChange('averageProductionTime', e.target.value)}
-              placeholder="npr. 4-6 tjedana"
-            />
-            <span className="text-xs text-slate-500">Prosječno vrijeme potrebno za izradu jednog projekta</span>
-          </label>
-          {errors.averageProductionTime && (
-            <p className="text-xs text-red-500 mt-1">{errors.averageProductionTime}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Napomena o rokovima</span>
-            <textarea
-              className={textareaClass}
-              value={values.deadlineNotes}
-              onChange={e => handleChange('deadlineNotes', e.target.value)}
-              rows={4}
-              placeholder="Dodatne napomene o rokovima izrade..."
-            />
-          </label>
-        </div>
-      </fieldset>
-
-      {/* Suradnja s Ani's Studiom */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Suradnja s Ani's Studiom / Corpus</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Suradnja s Ani's Studiom / Corpus
-        </div>
-        <p className="text-xs text-slate-500 mb-3">
-          Odaberite način suradnje koji vam najviše odgovara. Možete kombinirati različite opcije ovisno o projektu.
-        </p>
-
-        <div>
-          <label className="flex items-start gap-2 text-sm text-slate-700">
-            <input
-              type="checkbox"
-              className="mt-1 accent-violet-500"
-              checked={values.wantsCompleteDrawings}
-              onChange={e => handleChange('wantsCompleteDrawings', e.target.checked)}
-            />
-            <span>Želim da mi Ani priprema kompletne nacrte i krojne liste</span>
-          </label>
-          <p className="text-xs text-slate-500 ml-6 mt-1">Ani će pripremiti sve potrebne nacrte i krojne liste za izradu</p>
-        </div>
-
-        <div>
-          <label className="flex items-start gap-2 text-sm text-slate-700">
-            <input
-              type="checkbox"
-              className="mt-1 accent-violet-500"
-              checked={values.usesPartialSolutions}
-              onChange={e => handleChange('usesPartialSolutions', e.target.checked)}
-            />
-            <span>Koristit ću dijelove rješenja (djelomična izrada po crtežu)</span>
-          </label>
-          <p className="text-xs text-slate-500 ml-6 mt-1">Izrađujete samo određene dijelove prema nacrtu, ne cijeli projekt</p>
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Posebne napomene za suradnju</span>
-            <textarea
-              className={textareaClass}
-              value={values.collaborationNotes}
-              onChange={e => handleChange('collaborationNotes', e.target.value)}
-              rows={4}
-              placeholder="Dodatne napomene o suradnji..."
-            />
-          </label>
-        </div>
-      </fieldset>
-
-      {/* Kontakt preferencije */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">Kontakt preferencije</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Kontakt preferencije
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Način kontaktiranja *</span>
-            <select
-              className={`${selectClass} ${errors.contactPreference ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
-              value={values.contactPreference}
-              onChange={e => handleChange('contactPreference', e.target.value)}
-            >
-              <option value="">Odaberi...</option>
-              <option value="email">Email</option>
-              <option value="phone">Telefon</option>
-              <option value="whatsapp">WhatsApp</option>
-              <option value="viber">Viber</option>
-            </select>
-          </label>
-          {errors.contactPreference && (
-            <p className="text-xs text-red-500 mt-1">{errors.contactPreference}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Najbolje vrijeme za kontakt</span>
-            <input
-              type="text"
-              className={inputClass}
-              value={values.bestContactTime}
-              onChange={e => handleChange('bestContactTime', e.target.value)}
-              placeholder="npr. radnim danom od 8 do 16h"
-            />
-          </label>
-        </div>
-      </fieldset>
-
-      {/* Tko crta projekt */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">{translations.drawnBy.title[language]}</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          {translations.drawnBy.title[language]}
-        </div>
-
-        <div id="drawnByOption">
-          <div className={`flex flex-col gap-2 ${errors.drawnByOption ? 'border border-red-300 rounded-xl bg-red-50/40 px-3 py-2' : ''}`}>
-            <label className="inline-flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="radio"
-                name="drawnByOption"
-                value="ani"
-                className="accent-violet-500 mt-1"
-                checked={values.drawnByOption === 'ani'}
-                onChange={() => handleChange('drawnByOption', 'ani')}
-              />
-              <div>
-                <div>{translations.drawnBy.ani[language]}</div>
-                <p className="text-xs text-slate-500 mt-1">
-                  {translations.drawnBy.aniDescription[language]}
-                </p>
-              </div>
-            </label>
-            <label className="inline-flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="radio"
-                name="drawnByOption"
-                value="carpenter"
-                className="accent-violet-500 mt-1"
-                checked={values.drawnByOption === 'carpenter'}
-                onChange={() => handleChange('drawnByOption', 'carpenter')}
-              />
-              <div>
-                <div>{translations.drawnBy.carpenter[language]}</div>
-                <p className="text-xs text-slate-500 mt-1">
-                  {translations.drawnBy.carpenterDescription[language]}
-                </p>
-              </div>
-            </label>
-          </div>
-        </div>
-        {errors.drawnByOption && (
-          <p className="text-xs text-red-500 mt-1">{errors.drawnByOption}</p>
-        )}
-
-        {values.drawnByOption === 'carpenter' && (
-          <div>
-            <label className="flex items-start gap-2 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                className="mt-1 accent-violet-500"
-                checked={values.usesCorpus}
-                onChange={e => handleChange('usesCorpus', e.target.checked)}
-              />
-              <span>{translations.drawnBy.usesCorpus[language]}</span>
-            </label>
-          </div>
-        )}
-      </fieldset>
-
-      {/* VR Block */}
-      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
-        <legend className="sr-only">VR opcije</legend>
-        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          VR opcije
-        </div>
-
-        <div>
-          <label className="flex items-start gap-2 text-sm text-slate-700">
-            <input
-              type="checkbox"
-              className="mt-1 accent-violet-500"
-              checked={values.wantsVr}
-              onChange={e => handleChange('wantsVr', e.target.checked)}
-            />
-            <span>{translations.vr.wantsVr[language]}</span>
-          </label>
-        </div>
-
-        {values.wantsVr && (
-          <>
-            <div>
-              <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-                <span>{translations.vr.clientsPerYear[language]}</span>
-                <input
-                  type="number"
-                  className={inputClass}
-                  value={values.vrForClientsPerYear}
-                  onChange={e => handleChange('vrForClientsPerYear', e.target.value)}
-                  placeholder="npr. 10"
-                  min="1"
-                />
-              </label>
-            </div>
-
-            <div>
-              <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
-                {translations.vr.needsTitle[language]}
-              </p>
-              <div className="grid gap-2 sm:grid-cols-1">
-                {VR_NEEDS_OPTIONS.map(option => (
-                  <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
-                    <input
-                      type="checkbox"
-                      className="mt-1 accent-violet-500"
-                      checked={values.vrNeeds.includes(option)}
-                      onChange={() => handleToggleMulti('vrNeeds', option)}
-                    />
-                    <span>{option}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-      </fieldset>
-
-      {/* Datoteke za projekt */}
+      {/* 4. Datoteke za projekt */}
       <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
         <legend className="sr-only">Datoteke za projekt</legend>
         <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
-          Datoteke za projekt
+          4. Datoteke za projekt (opcionalno)
         </div>
+        <p className="text-xs text-slate-500 mb-3">
+          Ako imate skice, tlocrte, fotografije ili 3D eksport, možete ih priložiti ovdje.
+        </p>
 
-        {/* Skice kuhinje */}
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
-            <span>Skice kuhinje (PDF, slika...)</span>
+            <span>Skice / tlocrti / fotografije (PDF, slika...)</span>
             <div className="flex items-center gap-3 mt-2">
               <label className="inline-flex cursor-pointer items-center rounded-full bg-violet-500 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-violet-600">
                 Odaberi datoteke
@@ -1294,9 +699,19 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
             {kitchenSketchFiles.length > 0 && (
               <ul className="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-400">
                 {kitchenSketchFiles.map((file, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
-                    <span className="font-medium">{file.name}</span>
+                  <li key={`${file.name}-${file.size}-${index}`} className="flex items-center justify-between gap-2">
+                    <span className="flex items-center gap-2">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
+                      <span className="font-medium">{file.name}</span>
+                    </span>
+                    <button
+                      type="button"
+                      aria-label={`Ukloni ${file.name}`}
+                      onClick={() => removeKitchenSketchFile(index)}
+                      className="ml-2 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -1304,7 +719,6 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
           </label>
         </div>
 
-        {/* 3D export stolara */}
         <div>
           <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
             <span>3D export (npr. .fbx, .obj, .zip)</span>
@@ -1328,9 +742,19 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
             {exportFiles.length > 0 && (
               <ul className="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-400">
                 {exportFiles.map((file, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
-                    <span className="font-medium">{file.name}</span>
+                  <li key={`${file.name}-${file.size}-${index}`} className="flex items-center justify-between gap-2">
+                    <span className="flex items-center gap-2">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
+                      <span className="font-medium">{file.name}</span>
+                    </span>
+                    <button
+                      type="button"
+                      aria-label={`Ukloni ${file.name}`}
+                      onClick={() => removeExportFile(index)}
+                      className="ml-2 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -1338,6 +762,106 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
           </label>
         </div>
       </fieldset>
+
+      {/* 5. Kontakt preferencije */}
+      <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+        <legend className="sr-only">Kontakt preferencije</legend>
+        <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+          5. Kontakt preferencije
+        </div>
+
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
+            <span>Način kontaktiranja *</span>
+            <select
+              id="contactPreference"
+              name="contactPreference"
+              className={`${selectClass} ${errors.contactPreference ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}
+              value={values.contactPreference}
+              onChange={e => handleChange('contactPreference', e.target.value)}
+            >
+              <option value="">Odaberi...</option>
+              <option value="email">Email</option>
+              <option value="phone">Telefon</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="viber">Viber</option>
+            </select>
+          </label>
+          {errors.contactPreference && <p className="text-xs text-red-500 mt-1">{errors.contactPreference}</p>}
+        </div>
+
+        <div>
+          <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
+            <span>Najbolje vrijeme za kontakt (opcionalno)</span>
+            <input
+              type="text"
+              className={inputClass}
+              value={values.bestContactTime}
+              onChange={e => handleChange('bestContactTime', e.target.value)}
+              placeholder="npr. radnim danom od 8 do 16h"
+            />
+          </label>
+        </div>
+      </fieldset>
+
+      {/* VR opcije — samo kad je vrEnabled */}
+      {vrEnabled && (
+        <fieldset className="space-y-4 rounded-2xl bg-white/70 dark:bg-white/8 p-5 sm:p-6 md:p-7 shadow-sm ring-1 ring-slate-100 dark:ring-slate-700/50">
+          <legend className="sr-only">VR opcije</legend>
+          <div className="mb-3 text-lg font-semibold leading-snug text-plum/90 dark:text-pearl" aria-hidden="true">
+            VR opcije
+          </div>
+
+          <div>
+            <label className="flex items-start gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                className="mt-1 accent-violet-500"
+                checked={values.wantsVr}
+                onChange={e => handleChange('wantsVr', e.target.checked)}
+              />
+              <span>{language === 'hr' ? 'Želim VR obilazak prostora za svog klijenta' : 'I want VR walkthrough for my client'}</span>
+            </label>
+          </div>
+
+          {values.wantsVr && (
+            <>
+              <div>
+                <label className="block space-y-1 text-sm sm:text-base text-plum/90 dark:text-pearl">
+                  <span>{language === 'hr' ? 'Za koliko klijenata godišnje bi ti otprilike trebao VR?' : 'For how many clients per year would you approximately need VR?'}</span>
+                  <input
+                    type="number"
+                    className={inputClass}
+                    value={values.vrForClientsPerYear}
+                    onChange={e => handleChange('vrForClientsPerYear', e.target.value)}
+                    placeholder="npr. 10"
+                    min="1"
+                  />
+                </label>
+              </div>
+
+              <div>
+                <p className="text-sm sm:text-base font-medium text-plum/90 dark:text-pearl mb-2">
+                  {language === 'hr' ? 'Što trebaš od mene?' : 'What do you need from me?'}
+                </p>
+                <div className="grid gap-2 sm:grid-cols-1">
+                  {VR_NEEDS_OPTIONS.map(option => (
+                    <label key={option} className="flex items-start gap-2 text-sm text-slate-700">
+                      <input
+                        type="checkbox"
+                        className="mt-1 accent-violet-500"
+                        checked={values.vrNeeds.includes(option)}
+                        onChange={() => handleToggleMulti('vrNeeds', option)}
+                      />
+                      <span>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </fieldset>
+      )}
 
       {isUploading && (
         <div className="mt-4 rounded-xl bg-white/90 px-4 py-4 shadow-sm border border-violet-200">
@@ -1350,17 +874,17 @@ export function InteriorsCarpenterForm({ language = 'hr' }: InteriorsCarpenterFo
         </div>
       )}
 
-
       <div className="mt-6 flex justify-center">
         <button
           type="submit"
           disabled={isSubmitting}
           className="inline-flex items-center justify-center rounded-full bg-violet-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-violet-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? (language === 'hr' ? 'Šaljem...' : 'Sending...') : (language === 'hr' ? 'Pošalji upit za projekt' : 'Send project inquiry')}
+          {isSubmitting
+            ? (language === 'hr' ? 'Šaljem...' : 'Sending...')
+            : (language === 'hr' ? 'Pošalji upit za projekt' : 'Send project inquiry')}
         </button>
       </div>
     </form>
   )
 }
-

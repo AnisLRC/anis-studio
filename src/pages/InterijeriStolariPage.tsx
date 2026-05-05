@@ -3,12 +3,16 @@ import { AnimatedPage } from '../components/AnimatedPage'
 import { InteriorsFormPageLayout } from '../components/InteriorsFormPageLayout'
 import { InteriorsCarpenterForm } from '../components/InteriorsCarpenterForm'
 import { PageSEO } from '../components/PageSEO'
+import { useSettings } from '../hooks/useSettings'
 
 interface InterijeriStolariPageProps {
   language: 'hr' | 'en'
 }
 
 export default function InterijeriStolariPage({ language }: InterijeriStolariPageProps) {
+  const { settings } = useSettings()
+  const vrEnabled = settings?.interiors_vr_enabled ?? false
+
   const title =
     language === 'hr' ? 'Upit za stolare i studije' : 'Inquiry for carpenters & furniture studios'
 
@@ -22,7 +26,7 @@ export default function InterijeriStolariPage({ language }: InterijeriStolariPag
       <main className="min-w-0">
         <ErrorBoundary name="InterijeriStolari">
           <InteriorsFormPageLayout language={language} title={title}>
-            <InteriorsCarpenterForm language={language} />
+            <InteriorsCarpenterForm language={language} vrEnabled={vrEnabled} />
           </InteriorsFormPageLayout>
         </ErrorBoundary>
       </main>

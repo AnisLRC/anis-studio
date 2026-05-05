@@ -18,6 +18,7 @@ import {
   type VrAppointmentLocationPreference,
 } from "../lib/interiors";
 import { AdminInteriorsProjectImageGallery } from "../components/AdminInteriorsProjectImageGallery";
+import { useSettings } from "../hooks/useSettings";
 
 type Project = NonNullable<Awaited<ReturnType<typeof fetchProjectById>>>;
 type Client = NonNullable<Awaited<ReturnType<typeof fetchClientById>>>;
@@ -105,6 +106,9 @@ function parseContactFromNotes(notes: string | null | undefined): {
 const AdminInteriorsProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  const { settings } = useSettings();
+  const vrEnabled = settings?.interiors_vr_enabled ?? false;
 
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -962,7 +966,11 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                                 : "cursor-pointer"
                             }`}
                           >
-                            {STATUS_OPTIONS.map((opt) => (
+                            {STATUS_OPTIONS.filter(
+                              (opt) =>
+                                vrEnabled ||
+                                (opt.value !== "vr_in_progress" && opt.value !== "vr_done")
+                            ).map((opt) => (
                               <option key={opt.value} value={opt.value}>
                                 {opt.label}
                               </option>
@@ -1026,33 +1034,41 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
             </section>
 
             {/* VR detalji */}
-            <section className="rounded-lg border border-slate-200 bg-white p-4">
-              <h2 className="text-sm font-semibold text-slate-900">
-                VR detalji
-              </h2>
-              <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
-                <InfoRow
-                  label="Želi VR"
-                  value={project.wants_vr ? "Da" : "Ne"}
-                />
-                <InfoRow
-                  label="VR lokacija"
-                  value={
-                    project.vr_location_preference
-                      ? mapVrLocation(project.vr_location_preference)
-                      : "—"
-                  }
-                />
-                <InfoRow
-                  label="VR paket"
-                  value={
-                    project.vr_package_preference
-                      ? mapVrPackage(project.vr_package_preference)
-                      : "—"
-                  }
-                />
-              </div>
-            </section>
+            {(project.wants_vr || vrEnabled) ? (
+              <section className="rounded-lg border border-slate-200 bg-white p-4">
+                <h2 className="text-sm font-semibold text-slate-900">
+                  VR detalji
+                </h2>
+                <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+                  <InfoRow
+                    label="Želi VR"
+                    value={project.wants_vr ? "Da" : "Ne"}
+                  />
+                  <InfoRow
+                    label="VR lokacija"
+                    value={
+                      project.vr_location_preference
+                        ? mapVrLocation(project.vr_location_preference)
+                        : "—"
+                    }
+                  />
+                  <InfoRow
+                    label="VR paket"
+                    value={
+                      project.vr_package_preference
+                        ? mapVrPackage(project.vr_package_preference)
+                        : "—"
+                    }
+                  />
+                </div>
+              </section>
+            ) : (
+              <section className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                <p className="text-xs text-slate-500">
+                  VR: Ne — VR opcija trenutno isključena u postavkama.
+                </p>
+              </section>
+            )}
 
             {/* Datoteke projekta */}
             <section className="rounded-lg border border-slate-200 bg-white p-4">
@@ -1177,6 +1193,14 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
             </section>
 
             {/* VR scene */}
+            {!(project.wants_vr || vrEnabled) && (
+              <section className="rounded-lg border border-slate-100 bg-slate-50 p-4 admin-interiors-no-print">
+                <p className="text-xs text-slate-500">
+                  VR scene nisu dostupne dok je VR opcija isključena u postavkama.
+                </p>
+              </section>
+            )}
+            {(project.wants_vr || vrEnabled) && (
             <section className="rounded-lg border border-slate-200 bg-white p-4">
               <h2 className="text-sm font-semibold text-slate-900">
                 VR scene
@@ -1552,6 +1576,7 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                 </form>
               </div>
             </section>
+            )}
 
             {/* Opasna zona */}
             <section className="admin-interiors-no-print rounded-lg border border-red-200 bg-red-50/40 p-4">
