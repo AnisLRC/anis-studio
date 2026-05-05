@@ -14,7 +14,7 @@ const DEFAULT_OG_IMAGE_WIDTH = 1200
 const DEFAULT_OG_IMAGE_HEIGHT = 630
 
 const DEFAULT_OG_IMAGE_ALT =
-  "Ani's Studio — ručni rad, interijeri i web projekti na elegantnoj staklenoj kartici uz ljubičastu i zlatnu pozadinu."
+  "Ani's Studio — 3D vizualizacija interijera i kuhinja. Studio za vizualizaciju prostora prije izvedbe."
 
 interface PageSEOProps {
   title: string
@@ -57,6 +57,7 @@ export function PageSEO({
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
       <meta property="og:type" content="website" />
+      <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:title" content={resolvedOgTitle} />
       <meta property="og:description" content={resolvedOgDescription} />
       {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}

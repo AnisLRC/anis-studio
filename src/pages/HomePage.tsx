@@ -40,8 +40,8 @@ export default function HomePage({ language }: HomePageProps) {
 
   const seoTitle =
     language === 'hr'
-      ? "3D vizualizacija interijera i kuhinja — Ani's Studio"
-      : "3D interior visualizations — Ani's Studio"
+      ? '3D vizualizacija interijera i kuhinja'
+      : '3D interior visualizations'
 
   const seoDescription = language === 'hr' ? HR_ORG_DESCRIPTION : EN_ORG_DESCRIPTION
 

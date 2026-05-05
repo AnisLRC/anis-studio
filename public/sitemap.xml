@@ -8,37 +8,25 @@
   </url>
 
   <url>
-    <loc>https://anistudio.hr/lrc</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
     <loc>https://anistudio.hr/interijeri</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://anistudio.hr/web-atelier</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://anistudio.hr/o-nama</loc>
+    <loc>https://anistudio.hr/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://anistudio.hr/kontakt</loc>
+    <loc>https://anistudio.hr/o-nama</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://anistudio.hr/faq</loc>
+    <loc>https://anistudio.hr/kontakt</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
