@@ -88,7 +88,7 @@ create table if not exists projects (
     vr_package_preference in ('3d_vr', '3d_vr_online', 'unsure')
   ),
   constraint project_status_check check (
-    status in ('inquiry', '3d_in_progress', '3d_done', 'vr_in_progress', 'vr_done', 'presented')
+    status in ('inquiry', '3d_in_progress', '3d_done', 'vr_in_progress', 'vr_done', 'presented', 'archived')
   )
 );
 

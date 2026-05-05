@@ -130,6 +130,16 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
   const [newSceneTitle, setNewSceneTitle] = useState("");
   const [newSceneUrl, setNewSceneUrl] = useState("");
 
+  // Archive state
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [archiveError, setArchiveError] = useState<string | null>(null);
+
+  // Restore from archive state
+  const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [restoreError, setRestoreError] = useState<string | null>(null);
+
   // Delete state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -526,6 +536,49 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     return "Nema URL-a";
   };
 
+  const handleArchiveProject = async () => {
+    if (!project) return;
+
+    setIsArchiving(true);
+    setArchiveError(null);
+
+    try {
+      await updateProjectStatus(project.id, "archived");
+      navigate("/admin/interiors-projects");
+    } catch (err) {
+      console.error("[AdminInteriorsProjectDetailPage] handleArchiveProject error:", err);
+      setArchiveError(
+        err instanceof Error
+          ? err.message
+          : "Došlo je do greške pri arhiviranju projekta."
+      );
+      setIsArchiving(false);
+    }
+  };
+
+  const handleRestoreProject = async () => {
+    if (!project) return;
+
+    setIsRestoring(true);
+    setRestoreError(null);
+
+    try {
+      // Restore sets status back to "inquiry" — previous status is not stored yet
+      await updateProjectStatus(project.id, "inquiry");
+      setProject({ ...project, status: "inquiry" });
+      setShowRestoreConfirm(false);
+    } catch (err) {
+      console.error("[AdminInteriorsProjectDetailPage] handleRestoreProject error:", err);
+      setRestoreError(
+        err instanceof Error
+          ? err.message
+          : "Došlo je do greške pri vraćanju projekta iz arhive."
+      );
+    } finally {
+      setIsRestoring(false);
+    }
+  };
+
   const handleDeleteProject = async () => {
     if (!project) return;
 
@@ -587,6 +640,37 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 admin-interiors-no-print">
+            {project && project.status === "archived" && (
+              <>
+                <span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
+                  Arhivirano
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRestoreError(null);
+                    setShowRestoreConfirm(true);
+                  }}
+                  disabled={isRestoring}
+                  className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Vrati iz arhive
+                </button>
+              </>
+            )}
+            {project && project.status !== "archived" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setArchiveError(null);
+                  setShowArchiveConfirm(true);
+                }}
+                disabled={isArchiving}
+                className="inline-flex items-center rounded-md border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-700 shadow-sm hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Arhiviraj
+              </button>
+            )}
           <button
             type="button"
               onClick={handlePrint}
@@ -603,6 +687,80 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
           </button>
           </div>
         </header>
+
+        {/* Archive inline confirmation */}
+        {showArchiveConfirm && !isArchiving && (
+          <div className="admin-interiors-no-print rounded-md border border-amber-300 bg-amber-50 px-4 py-3 space-y-3">
+            <p className="text-xs text-slate-800">
+              Arhivirati ovaj projekt? Projekt neće biti obrisan i datoteke ostaju spremljene.
+            </p>
+            {archiveError && (
+              <p className="text-xs text-red-700 font-medium">{archiveError}</p>
+            )}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleArchiveProject}
+                className="inline-flex items-center rounded-md border border-amber-400 bg-amber-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-amber-700"
+              >
+                Da, arhiviraj
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowArchiveConfirm(false);
+                  setArchiveError(null);
+                }}
+                className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+              >
+                Odustani
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isArchiving && (
+          <div className="admin-interiors-no-print rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
+            Arhiviranje projekta...
+          </div>
+        )}
+
+        {/* Restore from archive inline confirmation */}
+        {showRestoreConfirm && !isRestoring && (
+          <div className="admin-interiors-no-print rounded-md border border-slate-300 bg-slate-50 px-4 py-3 space-y-3">
+            <p className="text-xs text-slate-800">
+              Vratiti projekt iz arhive? Status će biti postavljen na Upit.
+            </p>
+            {restoreError && (
+              <p className="text-xs text-red-700 font-medium">{restoreError}</p>
+            )}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleRestoreProject}
+                className="inline-flex items-center rounded-md border border-slate-400 bg-slate-700 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-slate-800"
+              >
+                Da, vrati iz arhive
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowRestoreConfirm(false);
+                  setRestoreError(null);
+                }}
+                className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+              >
+                Odustani
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isRestoring && (
+          <div className="admin-interiors-no-print rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-700">
+            Vraćanje projekta iz arhive...
+          </div>
+        )}
 
         {/* Status poruke */}
         {isLoading && (
@@ -782,35 +940,41 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                 <InfoRow
                   label="Status"
                   value={
-                    <>
-                      <span className="admin-interiors-no-print inline-block">
-                        <select
-                          value={project.status}
-                          onChange={(e) =>
-                            handleStatusChange(
-                              e.target.value as Project["status"]
-                            )
-                          }
-                          disabled={isUpdatingStatus}
-                          title={isUpdatingStatus ? "Spremam..." : undefined}
-                          className={`rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 ${
-                            isUpdatingStatus
-                              ? "opacity-50 cursor-not-allowed"
-                              : "cursor-pointer"
-                          }`}
-                        >
-                          {STATUS_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
+                    project.status === "archived" ? (
+                      <span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
+                        Arhivirano
                       </span>
-                      <span className="hidden print:inline text-sm text-slate-900">
-                        {STATUS_OPTIONS.find((o) => o.value === project.status)
-                          ?.label ?? project.status}
-                      </span>
-                    </>
+                    ) : (
+                      <>
+                        <span className="admin-interiors-no-print inline-block">
+                          <select
+                            value={project.status}
+                            onChange={(e) =>
+                              handleStatusChange(
+                                e.target.value as Project["status"]
+                              )
+                            }
+                            disabled={isUpdatingStatus}
+                            title={isUpdatingStatus ? "Spremam..." : undefined}
+                            className={`rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 ${
+                              isUpdatingStatus
+                                ? "opacity-50 cursor-not-allowed"
+                                : "cursor-pointer"
+                            }`}
+                          >
+                            {STATUS_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </span>
+                        <span className="hidden print:inline text-sm text-slate-900">
+                          {STATUS_OPTIONS.find((o) => o.value === project.status)
+                            ?.label ?? project.status}
+                        </span>
+                      </>
+                    )
                   }
                 />
                 <InfoRow

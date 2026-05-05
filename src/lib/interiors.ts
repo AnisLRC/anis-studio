@@ -27,6 +27,7 @@ export type ProjectStatus =
   | 'vr_in_progress'
   | 'vr_done'
   | 'presented'
+  | 'archived'
 
 // ============================================
 // Interfaces

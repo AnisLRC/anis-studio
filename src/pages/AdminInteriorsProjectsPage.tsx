@@ -19,6 +19,16 @@ const STATUS_OPTIONS: { value: "" | Project["status"]; label: string }[] = [
   { value: "vr_in_progress", label: "VR u izradi" },
   { value: "vr_done", label: "VR gotovo" },
   { value: "presented", label: "Prezentirano" },
+  { value: "archived", label: "Arhivirano" },
+];
+
+const STATUS_OPTIONS_ROW: { value: Project["status"]; label: string }[] = [
+  { value: "inquiry", label: "Upit" },
+  { value: "3d_in_progress", label: "3D u izradi" },
+  { value: "3d_done", label: "3D gotovo" },
+  { value: "vr_in_progress", label: "VR u izradi" },
+  { value: "vr_done", label: "VR gotovo" },
+  { value: "presented", label: "Prezentirano" },
 ];
 
 const WANTS_VR_OPTIONS = [
@@ -41,6 +51,11 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   // Sort order state for client-side sorting by date
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  // Show archived projects toggle (hidden by default)
+  const [showArchived, setShowArchived] = useState(false);
+  // Row-level archive/restore confirmation state
+  const [confirmActionId, setConfirmActionId] = useState<string | null>(null);
+  const [confirmActionType, setConfirmActionType] = useState<"archive" | "restore" | null>(null);
 
   useEffect(() => {
     let isCancelled = false;
@@ -121,12 +136,35 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
     }
   };
 
+  const handleConfirmRowAction = async () => {
+    if (!confirmActionId || !confirmActionType) return;
+
+    const projectId = confirmActionId;
+    const project = projects.find((p) => p.id === projectId);
+    if (!project) return;
+
+    // "archived" for archive, "inquiry" for restore (previous status not stored yet)
+    const newStatus: Project["status"] =
+      confirmActionType === "archive" ? "archived" : "inquiry";
+
+    setConfirmActionId(null);
+    setConfirmActionType(null);
+
+    await handleStatusChange(projectId, project.status, newStatus);
+  };
+
+  // Hide archived projects unless showArchived is true or admin explicitly filters by "archived"
+  const visibleProjects =
+    !showArchived && statusFilter !== "archived"
+      ? projects.filter((p) => p.status !== "archived")
+      : projects;
+
   // Client-side filtering by title (case-insensitive)
   const filteredProjects = searchQuery.trim()
-    ? projects.filter((project) =>
+    ? visibleProjects.filter((project) =>
         (project.title || "").toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : projects;
+    : visibleProjects;
 
   // Client-side sorting by created_at date
   const sortedAndFilteredProjects = [...filteredProjects].sort((a, b) => {
@@ -239,6 +277,17 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                 <option value="oldest">Najstariji prvo</option>
               </select>
             </label>
+
+            {/* Prikaži arhivirane toggle */}
+            <label className="flex items-center gap-1 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={showArchived}
+                onChange={(e) => setShowArchived(e.target.checked)}
+                className="rounded border-slate-300 text-slate-700"
+              />
+              <span className="text-slate-600">Prikaži arhivirane</span>
+            </label>
           </div>
         </header>
 
@@ -282,6 +331,9 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                   </th>
                   <th className="whitespace-nowrap px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Budžet
+                  </th>
+                  <th className="whitespace-nowrap px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Akcije
                   </th>
                 </tr>
               </thead>
@@ -329,43 +381,102 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                         {vrLabel}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-700">
-                        <select
-                          value={project.status}
-                          onChange={(e) =>
-                            handleStatusChange(
-                              project.id,
-                              project.status,
-                              e.target.value as Project["status"]
-                            )
-                          }
-                          onClick={(e) => e.stopPropagation()}
-                          disabled={updatingId === project.id}
-                          title={
-                            updatingId === project.id ? "Spremam..." : undefined
-                          }
-                          className={`rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 ${
-                            updatingId === project.id
-                              ? "opacity-50 cursor-not-allowed"
-                              : "cursor-pointer"
-                          }`}
-                        >
-                          {STATUS_OPTIONS.filter((opt) => opt.value !== "").map(
-                            (opt) => (
-                              <option
-                                key={opt.value}
-                                value={opt.value as Project["status"]}
-                              >
+                        {project.status === "archived" ? (
+                          <span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
+                            Arhivirano
+                          </span>
+                        ) : (
+                          <select
+                            value={project.status}
+                            onChange={(e) =>
+                              handleStatusChange(
+                                project.id,
+                                project.status,
+                                e.target.value as Project["status"]
+                              )
+                            }
+                            onClick={(e) => e.stopPropagation()}
+                            disabled={updatingId === project.id}
+                            title={
+                              updatingId === project.id ? "Spremam..." : undefined
+                            }
+                            className={`rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 ${
+                              updatingId === project.id
+                                ? "opacity-50 cursor-not-allowed"
+                                : "cursor-pointer"
+                            }`}
+                          >
+                            {STATUS_OPTIONS_ROW.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
                                 {opt.label}
                               </option>
-                            )
-                          )}
-                        </select>
+                            ))}
+                          </select>
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-700">
                         {area}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-700">
                         {budget}
+                      </td>
+                      <td
+                        className="px-3 py-2 text-xs"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {confirmActionId === project.id ? (
+                          <div className="flex flex-col gap-1.5">
+                            <p className="text-slate-700 whitespace-normal max-w-[180px]">
+                              {confirmActionType === "archive"
+                                ? "Arhivirati ovaj projekt? Projekt neće biti obrisan."
+                                : "Vratiti projekt iz arhive? Status će biti postavljen na Upit."}
+                            </p>
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={handleConfirmRowAction}
+                                disabled={updatingId === project.id}
+                                className="inline-flex items-center rounded border border-slate-400 bg-slate-700 px-2 py-0.5 text-[11px] font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+                              >
+                                Da
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setConfirmActionId(null);
+                                  setConfirmActionType(null);
+                                }}
+                                className="inline-flex items-center rounded border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
+                              >
+                                Odustani
+                              </button>
+                            </div>
+                          </div>
+                        ) : project.status === "archived" ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setConfirmActionId(project.id);
+                              setConfirmActionType("restore");
+                            }}
+                            disabled={updatingId === project.id}
+                            className="inline-flex items-center rounded border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                          >
+                            Vrati iz arhive
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setConfirmActionId(project.id);
+                              setConfirmActionType("archive");
+                            }}
+                            disabled={updatingId === project.id}
+                            className="inline-flex items-center rounded border border-amber-300 bg-white px-2 py-0.5 text-[11px] font-medium text-amber-700 hover:bg-amber-50 disabled:opacity-50"
+                          >
+                            Arhiviraj
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
