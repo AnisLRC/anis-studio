@@ -325,7 +325,7 @@ export function InteriorsCarpenterForm({ language = 'hr', vrEnabled = false }: I
       }
 
       notesParts.push(
-        `Fotorealistični prikaz: ${values.wantsPhotorealisticRender ? 'DA' : 'NE'}`
+        `Fotorealistični prikaz prostora: ${values.wantsPhotorealisticRender ? 'DA' : 'NE'}`
       )
 
       if (values.contactPreference) notesParts.push(`Način kontaktiranja: ${values.contactPreference}`)
@@ -362,6 +362,7 @@ export function InteriorsCarpenterForm({ language = 'hr', vrEnabled = false }: I
       })
 
       const totalFiles = exportFiles.length + kitchenSketchFiles.length
+      let uploadFailCount = 0
 
       if (totalFiles > 0) {
         setIsUploading(true)
@@ -382,13 +383,22 @@ export function InteriorsCarpenterForm({ language = 'hr', vrEnabled = false }: I
             const { file, type } = allFiles[i]
             setCurrentFile(file.name)
             setCurrentFileIndex(i + 1)
-            await uploadProjectFileToStorage(project.id, file, type)
+            try {
+              await uploadProjectFileToStorage(project.id, file, type)
+            } catch (uploadError) {
+              uploadFailCount++
+              console.error(
+                '[InteriorsCarpenterForm] File upload failed:',
+                { fileName: file.name, fileType: type },
+                uploadError instanceof Error ? uploadError.message : uploadError
+              )
+            }
             setUploadProgress(((i + 1) / totalFiles) * 100)
           }
 
           setUploadProgress(100)
         } catch (error) {
-          console.error('[InteriorsCarpenterForm] Error uploading project files:', error)
+          console.error('[InteriorsCarpenterForm] Unexpected error in upload block:', error)
         } finally {
           setIsUploading(false)
           setCurrentFile(undefined)
@@ -397,12 +407,21 @@ export function InteriorsCarpenterForm({ language = 'hr', vrEnabled = false }: I
         }
       }
 
-      toast.success(
-        language === 'hr'
-          ? '✨ Uspješno! Vaš zahtjev je poslan. Javit ćemo Vam se uskoro.'
-          : '✨ Success! Your request has been sent. We will contact you soon.',
-        { duration: 5000 }
-      )
+      if (uploadFailCount > 0) {
+        toast(
+          language === 'hr'
+            ? `Upit je poslan, ali ${uploadFailCount === 1 ? 'jedna datoteka nije učitana' : `${uploadFailCount} datoteke nisu učitane`}. Molimo pošaljite ih naknadno ili nas kontaktirajte.`
+            : `Request sent, but ${uploadFailCount} file(s) could not be uploaded. Please resend them or contact us.`,
+          { icon: '⚠️', duration: 8000 }
+        )
+      } else {
+        toast.success(
+          language === 'hr'
+            ? '✨ Uspješno! Vaš zahtjev je poslan. Javit ćemo Vam se uskoro.'
+            : '✨ Success! Your request has been sent. We will contact you soon.',
+          { duration: 5000 }
+        )
+      }
       trackEvent('form_submit_success', { form: 'interiors-carpenter' })
 
       setValues(INITIAL_VALUES)

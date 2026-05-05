@@ -416,6 +416,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
             <div
               className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto overscroll-contain bg-black/80 px-4 py-6"
               role="presentation"
+              style={{ WebkitOverflowScrolling: 'touch' }}
               onClick={(e) => {
                 if (e.target === e.currentTarget) setLightboxIndex(null)
               }}
@@ -425,6 +426,7 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                 aria-modal="true"
                 aria-labelledby="interiors-preview-lightbox-title"
                 className="relative z-[9999] flex max-h-[calc(100vh-2rem)] w-full max-w-6xl flex-col overflow-y-auto overflow-x-hidden rounded-3xl border border-white/10 bg-[#111018] shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+                style={{ touchAction: 'pan-y' }}
                 onClick={(e) => e.stopPropagation()}
               >
                 <button

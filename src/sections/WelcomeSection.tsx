@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useReducedMotion } from 'framer-motion'
 import SparklesCanvas from '../components/SparklesCanvas'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 import { useSettings } from '../hooks/useSettings'
@@ -11,6 +12,7 @@ interface WelcomeSectionProps {
 export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps) {
   const USE_IMAGE_BG = true
   const { settings } = useSettings()
+  const prefersReduced = useReducedMotion()
 
   const serviceCardVisibility = {
     lrc: settings?.lrc_public_visible ?? false,
@@ -78,7 +80,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
   }
 
   return (
-    <section className="relative min-h-[min(72svh,720px)] sm:min-h-[78vh] overflow-x-clip [isolation:isolate] section-with-bg">
+    <section id="welcome" className="relative min-h-[min(72svh,720px)] sm:min-h-[78vh] overflow-x-clip [isolation:isolate] section-with-bg">
       {/* CTA pulse + scroll cue arrow */}
       <style>{`
         @keyframes ctaPulse {
@@ -128,8 +130,10 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           style={{ backgroundImage: "url(/noise.svg)", backgroundSize: "260px 260px" }}
         />
 
-        {/* Canvas sparkles */}
-        <SparklesCanvas className="pointer-events-none absolute inset-0 z-[4] h-full w-full opacity-60" />
+        {/* Canvas sparkles — suppressed when user prefers reduced motion */}
+        {!prefersReduced && (
+          <SparklesCanvas className="pointer-events-none absolute inset-0 z-[4] h-full w-full opacity-60" />
+        )}
 
         {/* Bottom fade to page background (light & dark) */}
         <div

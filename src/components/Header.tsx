@@ -173,7 +173,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
           {/* Cart Button - Elegant Design */}
           <button 
             onClick={onCartClick} 
-            className="relative group p-2 sm:p-2.5 transition-all duration-300 rounded-xl hover:bg-gradient-to-br hover:from-[rgba(110,68,255,0.08)] hover:to-[rgba(189,166,255,0.08)] dark:hover:from-[rgba(110,68,255,0.15)] dark:hover:to-[rgba(189,166,255,0.15)] hover:shadow-md hover:scale-105 active:scale-95 hover:-translate-y-0.5 text-plum/90 dark:text-pearl/90" 
+            className="relative group p-2 sm:p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center transition-all duration-300 rounded-xl hover:bg-gradient-to-br hover:from-[rgba(110,68,255,0.08)] hover:to-[rgba(189,166,255,0.08)] dark:hover:from-[rgba(110,68,255,0.15)] dark:hover:to-[rgba(189,166,255,0.15)] hover:shadow-md hover:scale-105 active:scale-95 hover:-translate-y-0.5 text-plum/90 dark:text-pearl/90" 
             aria-label={language === 'hr' ? 'Košarica' : 'Shopping cart'}
             style={{
               background: cartItemCount > 0 ? 'linear-gradient(135deg, rgba(110,68,255,0.06) 0%, rgba(189,166,255,0.06) 100%)' : 'transparent'

@@ -467,7 +467,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                                 type="button"
                                 onClick={handleConfirmRowAction}
                                 disabled={updatingId === project.id}
-                                className="inline-flex items-center rounded border border-slate-400 bg-slate-700 px-2 py-0.5 text-[11px] font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+                                className="inline-flex items-center rounded border border-slate-400 bg-slate-700 px-2 py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50 min-h-[36px]"
                               >
                                 Da
                               </button>
@@ -477,7 +477,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                                   setConfirmActionId(null);
                                   setConfirmActionType(null);
                                 }}
-                                className="inline-flex items-center rounded border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
+                                className="inline-flex items-center rounded border border-slate-300 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 min-h-[36px]"
                               >
                                 Odustani
                               </button>
@@ -491,7 +491,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                               setConfirmActionType("restore");
                             }}
                             disabled={updatingId === project.id}
-                            className="inline-flex items-center rounded border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                            className="inline-flex items-center rounded border border-slate-300 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 min-h-[36px]"
                           >
                             Vrati iz arhive
                           </button>
@@ -503,7 +503,7 @@ export const AdminInteriorsProjectsPage: React.FC = () => {
                               setConfirmActionType("archive");
                             }}
                             disabled={updatingId === project.id}
-                            className="inline-flex items-center rounded border border-amber-300 bg-white px-2 py-0.5 text-[11px] font-medium text-amber-700 hover:bg-amber-50 disabled:opacity-50"
+                            className="inline-flex items-center rounded border border-amber-300 bg-white px-2 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50 disabled:opacity-50 min-h-[36px]"
                           >
                             Arhiviraj
                           </button>
