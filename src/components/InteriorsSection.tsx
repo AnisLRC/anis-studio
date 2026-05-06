@@ -330,6 +330,32 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
             ))}
           </div>
 
+          {/* Informative block — what the client gets and how to use it */}
+          <div className="mt-8 rounded-2xl border border-[rgba(110,68,255,0.12)] bg-white/50 px-5 py-6 backdrop-blur-sm dark:border-lavender/12 dark:bg-white/[0.04] sm:mt-10 sm:px-7 sm:py-7">
+            <h4 className="mb-3 font-heading text-base font-bold tracking-tight text-plum/90 dark:text-pearl sm:text-lg">
+              {language === 'hr'
+                ? 'Što dobivate i kako se koristi'
+                : 'What you get and how to use it'}
+            </h4>
+            <div className="space-y-3 text-sm leading-relaxed text-plum/75 dark:text-pearl/70 sm:text-[0.9375rem]">
+              <p>
+                {language === 'hr'
+                  ? '3D prikaz pomaže vam jasnije vidjeti raspored, proporcije, boje, materijale i atmosferu prostora prije daljnjeg uređenja ili izvedbe.'
+                  : 'A 3D visualization helps you clearly see the layout, proportions, colors, materials, and atmosphere of a space before further planning or execution.'}
+              </p>
+              <p>
+                {language === 'hr'
+                  ? 'Možete ga koristiti za dogovor s ukućanima, razgovor sa stolarom ili kao vizualnu referencu pri odabiru namještaja, dekora i materijala.'
+                  : 'You can use it for discussions at home, communication with a carpenter, or as a visual reference when choosing furniture, decor, and materials.'}
+              </p>
+              <p className="text-plum/60 dark:text-pearl/55">
+                {language === 'hr'
+                  ? 'Vizualizacija nije zamjena za arhitektonski projekt ili tehničku dokumentaciju — ona je jasna slika mogućeg izgleda prostora, izrađena na temelju vaših mjera, ideja i dostupnih informacija.'
+                  : 'A visualization is not a replacement for an architectural project or technical documentation — it is a clear picture of a possible look for the space, created from your measurements, ideas, and available information.'}
+              </p>
+            </div>
+          </div>
+
           <div className="mt-6 flex justify-center sm:mt-7">
             <a
               href="/#portfolio"
