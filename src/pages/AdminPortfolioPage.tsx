@@ -25,10 +25,13 @@ const ACCEPT_IMAGES = 'image/jpeg,image/png,image/webp'
 function emptyForm(category: PortfolioCategory = 'interiors'): PortfolioFormDraft {
   return {
     title: '',
+    title_en: '',
     description: '',
+    description_en: '',
     category,
     tagsCsv: '',
     image_alt: '',
+    image_alt_en: '',
     display_order: 0,
     is_visible: true,
     project_link: '',
@@ -39,10 +42,13 @@ function emptyForm(category: PortfolioCategory = 'interiors'): PortfolioFormDraf
 
 interface PortfolioFormDraft {
   title: string
+  title_en: string
   description: string
+  description_en: string
   category: PortfolioCategory
   tagsCsv: string
   image_alt: string
+  image_alt_en: string
   display_order: number
   is_visible: boolean
   project_link: string
@@ -53,10 +59,13 @@ interface PortfolioFormDraft {
 function itemToForm(item: PortfolioItem): PortfolioFormDraft {
   return {
     title: item.title,
+    title_en: item.title_en ?? '',
     description: item.description ?? '',
+    description_en: item.description_en ?? '',
     category: item.category,
     tagsCsv: item.tags.join(', '),
     image_alt: item.image_alt ?? '',
+    image_alt_en: item.image_alt_en ?? '',
     display_order: item.display_order,
     is_visible: item.is_visible,
     project_link: item.project_link ?? '',
@@ -191,9 +200,11 @@ export default function AdminPortfolioPage() {
 
     return {
       description: form.description.trim() || null,
+      description_en: form.description_en.trim() || null,
       category: form.category,
       tags,
       image_alt: form.image_alt.trim() || null,
+      image_alt_en: form.image_alt_en.trim() || null,
       display_order: Number.isFinite(form.display_order) ? form.display_order : 0,
       is_visible: form.is_visible,
       project_link: project_link_trim || null,
@@ -247,6 +258,7 @@ export default function AdminPortfolioPage() {
       if (editingId != null) {
         const updated = await updatePortfolioItem(editingId, {
           title: titleTrim,
+          title_en: form.title_en.trim() || null,
           ...base,
           image_url,
           image_path,
@@ -278,6 +290,7 @@ export default function AdminPortfolioPage() {
       } else {
         const created = await createPortfolioItem({
           title: titleTrim,
+          title_en: form.title_en.trim() || null,
           category: form.category,
           ...base,
           image_url,
@@ -382,8 +395,7 @@ export default function AdminPortfolioPage() {
         <header className="border-b border-slate-200 pb-4">
           <h1 className="text-2xl font-semibold text-slate-900">Portfolio</h1>
           <p className="mt-1 max-w-2xl text-sm text-slate-600">
-            Upravljanje portfolio stavkama i slikama za javni prikaz (sadržaj unosiš na hrvatskom / glavnom jeziku za sada — prijevodi javnog prikaza mogu dodati naknadno). Stvori novu stavku,
-            uređuj postojeće ili obriši unos; promjene se odnose samo na admin i bazu podataka prema pravima pristupa.
+            Upravljanje portfolio stavkama i slikama za javni prikaz. Unesi hrvatski sadržaj kao glavni tekst. Engleska polja su opcionalna — ako nisu popunjena, javni EN prikaz koristi hrvatski tekst kao fallback. Stvori novu stavku, uređuj postojeće ili obriši unos; promjene se odnose samo na admin i bazu podataka prema pravima pristupa.
           </p>
         </header>
 
@@ -543,7 +555,7 @@ export default function AdminPortfolioPage() {
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label className={labelClass} htmlFor="pf-title">
-                  Naslov <span className="text-red-600">*</span>
+                  Naslov (HR) <span className="text-red-600">*</span>
                 </label>
                 <input
                   id="pf-title"
@@ -560,8 +572,22 @@ export default function AdminPortfolioPage() {
               </div>
 
               <div>
+                <label className={labelClass} htmlFor="pf-title-en">
+                  Naslov (EN) <span className="text-slate-400 font-normal text-xs">— opcionalno</span>
+                </label>
+                <input
+                  id="pf-title-en"
+                  className={inputClass}
+                  value={form.title_en}
+                  onChange={(e) => setForm((f) => ({ ...f, title_en: e.target.value }))}
+                  disabled={isSaving}
+                  placeholder="English title"
+                />
+              </div>
+
+              <div>
                 <label className={labelClass} htmlFor="pf-desc">
-                  Opis
+                  Opis (HR)
                 </label>
                 <textarea
                   id="pf-desc"
@@ -575,6 +601,21 @@ export default function AdminPortfolioPage() {
                   <strong className="font-medium text-slate-600">Opis:</strong> u jednoj ili dvije
                   rečenice — što je cilj prikaza, koji dio prostora ili što se uspoređuje.
                 </p>
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="pf-desc-en">
+                  Opis (EN) <span className="text-slate-400 font-normal text-xs">— opcionalno</span>
+                </label>
+                <textarea
+                  id="pf-desc-en"
+                  rows={3}
+                  className={`${inputClass} resize-y min-h-[4.5rem]`}
+                  value={form.description_en}
+                  onChange={(e) => setForm((f) => ({ ...f, description_en: e.target.value }))}
+                  disabled={isSaving}
+                  placeholder="English description"
+                />
               </div>
 
               <div>
@@ -649,7 +690,7 @@ export default function AdminPortfolioPage() {
 
               <div>
                 <label className={labelClass} htmlFor="pf-alt">
-                  Alt tekst slike
+                  Alt tekst slike (HR)
                 </label>
                 <input
                   id="pf-alt"
@@ -659,8 +700,22 @@ export default function AdminPortfolioPage() {
                   disabled={isSaving}
                 />
                 <p className="mt-1 text-xs text-slate-500">
-                  Kratki opis za pristupačnost (čitači zaslona). Unosi se na glavnom jeziku sadržaja.
+                  Kratki opis za pristupačnost (čitači zaslona).
                 </p>
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="pf-alt-en">
+                  Alt tekst slike (EN) <span className="text-slate-400 font-normal text-xs">— opcionalno</span>
+                </label>
+                <input
+                  id="pf-alt-en"
+                  className={inputClass}
+                  value={form.image_alt_en}
+                  onChange={(e) => setForm((f) => ({ ...f, image_alt_en: e.target.value }))}
+                  disabled={isSaving}
+                  placeholder="English image alt text"
+                />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
