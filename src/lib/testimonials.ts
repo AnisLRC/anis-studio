@@ -164,7 +164,7 @@ function normalizeSubmissionRow(row: Record<string, unknown>): TestimonialSubmis
  */
 export async function createTestimonialSubmission(
   input: CreateTestimonialSubmissionInput
-): Promise<TestimonialSubmission> {
+): Promise<void> {
   const client = requireClient()
 
   const originalTrim = input.original_text.trim()
@@ -198,17 +198,13 @@ export async function createTestimonialSubmission(
     rating: input.rating ?? null,
   }
 
-  const { data, error } = await client
+  const { error } = await client
     .from(TABLE)
     .insert(payload)
-    .select('*')
-    .single()
 
   if (error) {
     throw formatSupabaseError('Slanje recenzije', error.message)
   }
-
-  return normalizeSubmissionRow(data as Record<string, unknown>)
 }
 
 /**

@@ -36,6 +36,7 @@ const AdminInteriorsProjectDetailPage = lazy(
   () => import('./pages/AdminInteriorsProjectDetailPage')
 )
 const AdminPortfolioPage = lazy(() => import('./pages/AdminPortfolioPage'))
+const OstaviRecenzijuPage = lazy(() => import('./pages/OstaviRecenzijuPage'))
 
 // Routes component with AnimatePresence
 function AnimatedRoutes({
@@ -105,6 +106,10 @@ function AnimatedRoutes({
             <Route path="/kontakt" element={<ContactPage language={language} />} />
             <Route path="/faq" element={<FAQPage language={language} />} />
             <Route path="/vr/:projectId" element={<PublicProjectVrPage />} />
+            <Route
+              path="/ostavi-recenziju"
+              element={<OstaviRecenzijuPage language={language} />}
+            />
           </Route>
 
           {/* Admin routes - no public header/footer; login outside persistent shell */}

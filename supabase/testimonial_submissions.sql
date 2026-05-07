@@ -122,15 +122,17 @@ alter table public.testimonial_submissions enable row level security;
 
 -- Idempotent re-run: brišemo politike ako već postoje
 drop policy if exists "testimonial_submissions_anon_insert" on public.testimonial_submissions;
+drop policy if exists "testimonial_submissions_public_insert" on public.testimonial_submissions;
 drop policy if exists "testimonial_submissions_authenticated_select" on public.testimonial_submissions;
 drop policy if exists "testimonial_submissions_authenticated_update" on public.testimonial_submissions;
 
--- Anon: smije INSERT isključivo ako su zadovoljeni svi uvjeti
--- (DB constrainti provjeravaju format; RLS provjerava business pravila submita)
-create policy "testimonial_submissions_anon_insert"
+-- Javni submit: dopušteno za anon i authenticated pod istim strogim uvjetima.
+-- authenticated je uključen jer prijavljeni admin može testirati formu u browseru.
+-- Uvjeti su identični — nema olakšica za authenticated rolu.
+create policy "testimonial_submissions_public_insert"
 on public.testimonial_submissions
 for insert
-to anon
+to anon, authenticated
 with check (
   status = 'pending'
   and consent_public = true
@@ -140,7 +142,7 @@ with check (
   and category in ('general', 'interiors', 'lrc', 'webAtelier')
 );
 
--- Anon: nema SELECT, UPDATE ni DELETE
+-- anon: nema SELECT, UPDATE ni DELETE
 -- (izostavljanje politika = zabrana po defaultu kada je RLS uključen)
 
 -- Authenticated (admin): čitanje svih redova
