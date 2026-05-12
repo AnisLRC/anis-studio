@@ -48,8 +48,8 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
       en: 'View our work'
     },
     cardsTitle: {
-      hr: 'Interijeri — tvoj sljedeći korak',
-      en: 'Interiors — your next step',
+      hr: serviceCardVisibility.interiors ? 'Interijeri — tvoj sljedeći korak' : 'Izaberite smjer',
+      en: serviceCardVisibility.interiors ? 'Interiors — your next step' : 'Choose a direction',
     },
     cards: {
       lrc: {
@@ -184,12 +184,12 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
         {/* CTA buttons */}
         <div className="mt-7 sm:mt-8 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:gap-4 mx-auto">
           <Link
-            to="/interijeri"
+            to={serviceCardVisibility.interiors ? '/interijeri' : '/kontakt'}
             onClick={() =>
               trackEvent('homepage_line_click', {
                 line: 'welcome_primary_cta',
-                destination: '/interijeri',
-                intent: 'interiors_service_page',
+                destination: serviceCardVisibility.interiors ? '/interijeri' : '/kontakt',
+                intent: serviceCardVisibility.interiors ? 'interiors_service_page' : 'contact_page',
               })
             }
             className="inline-flex min-h-[48px] w-full sm:w-auto items-center justify-center rounded-2xl px-6 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-semibold text-white
@@ -262,7 +262,9 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           ))}
         </div>
 
-        {/* Cards Section */}
+        {/* Cards Section — only rendered when at least one service is publicly visible */}
+        {(serviceCardVisibility.lrc || serviceCardVisibility.interiors || serviceCardVisibility.webAtelier) && (
+        <>
         <h2 className="mt-10 font-heading text-2xl font-bold text-balance text-plum/90 dark:text-pearl sm:mt-14 sm:text-3xl">
           {translations.cardsTitle[language]}
         </h2>
@@ -382,6 +384,8 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
             />
           )}
         </div>
+        </>
+        )}
       </div>
     </section>
   )

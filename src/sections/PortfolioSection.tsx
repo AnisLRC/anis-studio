@@ -108,15 +108,20 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
     'web-atelier': '💻'
   }
 
+  const enabledCategorySet = useMemo(
+    () => new Set(visibleFilterCategories.filter((c) => c !== 'all')),
+    [visibleFilterCategories],
+  )
+
   const filteredItems = useMemo(() => {
     const list =
       selectedCategory === 'all'
-        ? portfolioItems
+        ? portfolioItems.filter((item) => enabledCategorySet.has(item.category))
         : portfolioItems.filter((item) => item.category === selectedCategory)
     const useFallbackLimits =
       list.length === 0 || portfolioItems.every((item) => item.key.startsWith('fallback-'))
     return useFallbackLimits ? list.slice(0, 10) : list
-  }, [portfolioItems, selectedCategory])
+  }, [portfolioItems, selectedCategory, enabledCategorySet])
 
   const lightboxNavItems = useMemo(
     () => filteredItems.filter((item) => !item.key.startsWith('fallback-')),
@@ -184,6 +189,9 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
 
   const navBtnClass =
     'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-violet-600 text-white shadow-lg touch-manipulation hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#111018]'
+
+  // If no service category is publicly visible, skip the entire section.
+  if (enabledCategorySet.size === 0) return null
 
   return (
     <section id="portfolio" className="section-with-bg relative overflow-x-clip px-4 py-10 sm:px-6 sm:py-12 md:px-8 md:py-14">

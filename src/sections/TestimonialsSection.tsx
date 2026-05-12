@@ -104,6 +104,8 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
 
   const rowBlocks = buildTestimonialRowBlocks(publicRowVisibility)
 
+  if (rowBlocks.length === 0) return null
+
   return (
     <section id="testimonials" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
       <div className="absolute inset-0 -z-10 overflow-hidden">
