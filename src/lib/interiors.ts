@@ -422,13 +422,14 @@ export async function updateProjectStatus(
 }
 
 /**
- * Creates a new client in Supabase.
+ * Creates a new client in Supabase (or returns existing if email already exists).
+ * Uses a SECURITY DEFINER RPC function so anon users never get direct SELECT/INSERT
+ * on the clients table — only a UUID is returned.
  * If Supabase is not configured, returns a mock client with fake ID for development.
- * If a client with the same email already exists, returns the existing client.
  *
  * @param input - The client data to create (without id, created_at)
- * @returns The created or existing client
- * @throws Error if Supabase is configured but the operation fails
+ * @returns Minimal Client object containing id and the submitted data
+ * @throws Error if Supabase is configured but the RPC call fails
  */
 export async function createClient(input: {
   name: string
@@ -453,56 +454,40 @@ export async function createClient(input: {
     }
   }
 
-  // 1) prvo provjeri postoji li već klijent s ovim emailom
-  const {
-    data: existing,
-    error: selectError,
-  } = await supabase!
-    .from('clients')
-    .select('*')
-    .eq('email', input.email)
-    .maybeSingle()
-
-  if (selectError) {
-    console.error('[Interiors] createClient select error:', selectError)
-    throw selectError
-  }
-
-  if (existing) {
-    console.log(
-      '[Interiors] createClient: reusing existing client with same email'
-    )
-    return existing as Client
-  }
-
-  // 2) ako ne postoji → normalan insert
-  const { data, error } = await supabase!
-    .from('clients')
-    .insert({
-      name: input.name,
-      email: input.email,
-      phone: input.phone,
-      language: input.language,
-      notes: input.notes,
+  const { data: clientId, error } = await supabase!
+    .rpc('find_or_create_client', {
+      p_name:     input.name,
+      p_email:    input.email,
+      p_phone:    input.phone,
+      p_language: input.language,
+      p_notes:    input.notes,
     })
-    .select('*')
-    .single()
 
   if (error) {
-    console.error('[Interiors] createClient insert error:', error)
+    console.error('[Interiors] createClient rpc error:', error)
     throw error
   }
 
-  return data as Client
+  return {
+    id: clientId as string,
+    created_at: new Date().toISOString(),
+    name: input.name,
+    email: input.email,
+    phone: input.phone,
+    language: input.language as Client['language'],
+    notes: input.notes,
+  }
 }
 
 /**
- * Creates a new carpenter in Supabase.
+ * Creates a new carpenter in Supabase (or returns existing if email already exists).
+ * Uses a SECURITY DEFINER RPC function so anon users never get direct SELECT/INSERT
+ * on the carpenters table — only a UUID is returned.
  * If Supabase is not configured, returns a mock carpenter with fake ID for development.
  *
  * @param payload - The carpenter data to create (without id, created_at)
- * @returns The created carpenter
- * @throws Error if Supabase is configured but the creation fails
+ * @returns Minimal Carpenter object containing id and the submitted data
+ * @throws Error if Supabase is configured but the RPC call fails
  */
 export async function createCarpenter(payload: NewCarpenterInput): Promise<Carpenter> {
   if (!isSupabaseConfigured || !supabase) {
@@ -515,55 +500,33 @@ export async function createCarpenter(payload: NewCarpenterInput): Promise<Carpe
     }
   }
 
-  const { data, error } = await supabase!
-    .from('carpenters')
-    .insert(payload)
-    .select('*')
-    .single()
+  const { data: carpenterId, error } = await supabase!
+    .rpc('find_or_create_carpenter', {
+      p_company_name:                   payload.company_name,
+      p_contact_name:                   payload.contact_name,
+      p_email:                          payload.email,
+      p_phone:                          payload.phone,
+      p_uses_corpus:                    payload.uses_corpus,
+      p_estimated_vr_projects_per_year: payload.estimated_vr_projects_per_year,
+      p_notes:                          payload.notes,
+    })
 
   if (error) {
-    console.error('[Interiors] createCarpenter error:', error)
-
-    // 1) Je li ovo greška zbog duplikata emaila? (unique constraint)
-    const code = (error as any).code
-    const details = (error as any).details as string | undefined
-
-    const isDuplicateEmail =
-      code === '23505' ||
-      (details && details.includes('carpenters_email_unique'))
-
-    if (isDuplicateEmail) {
-      // 2) Umjesto da padnemo, pokušaj dohvatiti postojećeg stolara s tim emailom
-      const { data: existing, error: fetchError } = await supabase!
-        .from('carpenters')
-        .select('*')
-        .eq('email', payload.email)
-        .maybeSingle()
-
-      if (fetchError) {
-        console.error(
-          '[Interiors] createCarpenter fetch existing by email error:',
-          fetchError
-        )
-        throw error // vratimo originalnu grešku ako i fetch pukne
-      }
-
-      if (existing) {
-        console.info(
-          '[Interiors] createCarpenter: reusing existing carpenter with same email'
-        )
-        return existing as Carpenter
-      }
-
-      // ako je baš sve čudno i nema existinga, ipak bacimo originalnu grešku
-      throw error
-    }
-
-    // 3) Sve ostale greške i dalje bacamo normalno
+    console.error('[Interiors] createCarpenter rpc error:', error)
     throw error
   }
 
-  return data as Carpenter
+  return {
+    id: carpenterId as string,
+    created_at: new Date().toISOString(),
+    company_name: payload.company_name,
+    contact_name: payload.contact_name,
+    email: payload.email,
+    phone: payload.phone,
+    uses_corpus: payload.uses_corpus,
+    estimated_vr_projects_per_year: payload.estimated_vr_projects_per_year,
+    notes: payload.notes,
+  }
 }
 
 /**
