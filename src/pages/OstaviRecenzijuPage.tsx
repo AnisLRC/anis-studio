@@ -86,8 +86,8 @@ const copy = {
   errRequired: { hr: 'Ovo polje je obavezno.', en: 'This field is required.' },
   errEmail: { hr: 'Unesite ispravnu email adresu.', en: 'Enter a valid email address.' },
   errTextMin: {
-    hr: 'Recenzija mora imati najmanje 10 znakova.',
-    en: 'Review must be at least 10 characters.',
+    hr: 'Recenzija mora imati najmanje 10 znakova. Napišite još nekoliko riječi.',
+    en: 'Your review must be at least 10 characters long. Please add a few more words.',
   },
   errConsent: {
     hr: 'Potrebna je vaša privola za objavu.',
@@ -316,15 +316,40 @@ export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPagePro
                         <textarea
                           id="review-text"
                           rows={5}
-                          className={`${inputClass} resize-y min-h-[7rem]`}
-                          value={form.original_text}
-                          onChange={(e) =>
-                            setForm((f) => ({ ...f, original_text: e.target.value }))
+                          aria-invalid={Boolean(fieldErrors.original_text)}
+                          aria-describedby={
+                            fieldErrors.original_text ? 'review-text-error' : undefined
                           }
+                          className={`${inputClass} resize-y min-h-[7rem] ${
+                            fieldErrors.original_text
+                              ? 'border-red-400 focus:border-red-500 focus:ring-red-500/25 dark:border-red-500/55 dark:focus:border-red-400'
+                              : ''
+                          }`}
+                          value={form.original_text}
+                          onChange={(e) => {
+                            const v = e.target.value
+                            setForm((f) => ({ ...f, original_text: v }))
+                            setFieldErrors((prev) => {
+                              if (!prev.original_text) return prev
+                              const t = v.trim()
+                              if (t.length >= 10 || t.length === 0) {
+                                const next = { ...prev }
+                                delete next.original_text
+                                return next
+                              }
+                              return prev
+                            })
+                          }}
                           disabled={isSubmitting}
                         />
                         {fieldErrors.original_text && (
-                          <p className={errorClass}>{fieldErrors.original_text}</p>
+                          <p
+                            id="review-text-error"
+                            role="alert"
+                            className={errorClass}
+                          >
+                            {fieldErrors.original_text}
+                          </p>
                         )}
                       </div>
 

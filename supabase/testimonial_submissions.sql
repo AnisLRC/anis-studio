@@ -125,6 +125,7 @@ drop policy if exists "testimonial_submissions_anon_insert" on public.testimonia
 drop policy if exists "testimonial_submissions_public_insert" on public.testimonial_submissions;
 drop policy if exists "testimonial_submissions_authenticated_select" on public.testimonial_submissions;
 drop policy if exists "testimonial_submissions_authenticated_update" on public.testimonial_submissions;
+drop policy if exists "testimonial_submissions_authenticated_delete_rejected" on public.testimonial_submissions;
 
 -- Javni submit: dopušteno za anon i authenticated pod istim strogim uvjetima.
 -- authenticated je uključen jer prijavljeni admin može testirati formu u browseru.
@@ -153,13 +154,19 @@ to authenticated
 using (true);
 
 -- Authenticated (admin): ažuriranje (approve/reject/edit)
--- Brisanje nije ponuđeno — koristiti status = 'rejected' umjesto DELETE
 create policy "testimonial_submissions_authenticated_update"
 on public.testimonial_submissions
 for update
 to authenticated
 using (true)
 with check (true);
+
+-- Authenticated (admin): trajno brisanje samo odbijenih redova (ne anon)
+create policy "testimonial_submissions_authenticated_delete_rejected"
+on public.testimonial_submissions
+for delete
+to authenticated
+using (status = 'rejected');
 
 -- ============================================
 -- Provjera (opcionalno — otkomentiraj u SQL Editoru):

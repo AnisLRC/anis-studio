@@ -74,6 +74,18 @@ const AdminNav: React.FC = () => {
               >
                 Portfolio
               </NavLink>
+              <NavLink
+                to="/admin/reviews"
+                className={({ isActive }) =>
+                  `text-sm font-medium transition-colors duration-200 px-3 py-1.5 rounded-lg ${
+                    isActive
+                      ? 'text-violet-700 bg-violet-50 font-semibold'
+                      : 'text-slate-700 hover:text-violet-700 hover:bg-slate-100'
+                  }`
+                }
+              >
+                Recenzije
+              </NavLink>
             </nav>
           </div>
 

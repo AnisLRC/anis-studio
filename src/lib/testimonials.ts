@@ -60,6 +60,45 @@ export interface UpdateTestimonialSubmissionInput {
   admin_note?: string | null
 }
 
+/**
+ * Javno ime za prikaz iz klijentovog imena i preference (bez AI).
+ * Za prazno ime: `anonymous` → "Anonimno"; ostale opcije → "" (nema smislenog prikaza).
+ */
+export function derivePublicDisplayName(
+  submittedName: string,
+  preference: NameDisplayPreference
+): string {
+  const t = submittedName.trim()
+
+  if (preference === 'anonymous') {
+    return 'Anonimno'
+  }
+
+  if (!t) {
+    return ''
+  }
+
+  switch (preference) {
+    case 'full_name':
+      return t
+    case 'first_name_only': {
+      const parts = t.split(/\s+/).filter(Boolean)
+      return parts[0] ?? ''
+    }
+    case 'initials': {
+      const parts = t.split(/\s+/).filter(Boolean)
+      if (parts.length === 0) return ''
+      return parts
+        .map((p) => p[0]?.toUpperCase())
+        .filter(Boolean)
+        .map((c) => `${c}.`)
+        .join(' ')
+    }
+    default:
+      return t
+  }
+}
+
 // ============================================
 // Internal helpers (mirrors pattern from portfolio.ts)
 // ============================================
@@ -186,21 +225,51 @@ export async function createTestimonialSubmission(
     throw new Error('Nevažeća kategorija.')
   }
 
-  const payload = {
-    status: 'pending' as const,
+  const rawPref = input.name_display_preference ?? 'first_name_only'
+  const namePreference: NameDisplayPreference = isValidNameDisplayPreference(rawPref)
+    ? rawPref
+    : 'first_name_only'
+
+  const derivedDisplay = derivePublicDisplayName(nameTrim, namePreference).trim()
+
+  const ratingSafe: number | null =
+    input.rating != null &&
+    Number.isFinite(input.rating) &&
+    input.rating >= 1 &&
+    input.rating <= 5
+      ? input.rating
+      : null
+
+  type PublicInsert = {
+    status: 'pending'
+    category: TestimonialSubmissionCategory
+    original_text: string
+    submitted_name: string
+    name_display_preference: NameDisplayPreference
+    email: string
+    location_display: string | null
+    consent_public: true
+    rating: number | null
+    public_display_name?: string
+  }
+
+  const row: PublicInsert = {
+    status: 'pending',
     category: input.category,
     original_text: originalTrim,
     submitted_name: nameTrim,
-    name_display_preference: input.name_display_preference ?? 'first_name_only',
+    name_display_preference: namePreference,
     email: emailTrim,
     location_display: input.location_display?.trim() || null,
     consent_public: true,
-    rating: input.rating ?? null,
+    rating: ratingSafe,
   }
 
-  const { error } = await client
-    .from(TABLE)
-    .insert(payload)
+  if (derivedDisplay !== '') {
+    row.public_display_name = derivedDisplay
+  }
+
+  const { error } = await client.from(TABLE).insert([row])
 
   if (error) {
     throw formatSupabaseError('Slanje recenzije', error.message)
@@ -295,4 +364,29 @@ export async function updateTestimonialSubmission(
   }
 
   return normalizeSubmissionRow(data as Record<string, unknown>)
+}
+
+/**
+ * Permanently delete a rejected submission row. Requires authenticated session (admin).
+ *
+ * Only rows with `status = 'rejected'` are deleted (enforced in the query and by RLS).
+ */
+export async function deleteTestimonialSubmission(id: string): Promise<void> {
+  const client = requireClient()
+  await requireAuthUserId(client)
+
+  const { data, error } = await client
+    .from(TABLE)
+    .delete()
+    .eq('id', id)
+    .eq('status', 'rejected')
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    throw formatSupabaseError('Brisanje recenzije', error.message)
+  }
+  if (!data) {
+    throw new Error('Brisanje nije moguće: recenzija nije odbijena ili ne postoji.')
+  }
 }
