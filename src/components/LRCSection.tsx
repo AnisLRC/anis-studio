@@ -121,7 +121,19 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
     formDisabledAdditional: {
       hr: "Ako želite da vam javimo kad otvorimo nove termine, javite nam se na info.anilrc@gmail.com ili nas pratite na društvenim mrežama.",
       en: "If you would like us to notify you when we open new dates, contact us at info.anilrc@gmail.com or follow us on social media."
-    }
+    },
+    reviewCtaTitle: {
+      hr: 'Imate naš LRC proizvod?',
+      en: 'Do you have an Ani’s LRC piece?',
+    },
+    reviewCtaText: {
+      hr: 'Ostavite kratku recenziju i podijelite dojmove o narudžbi, izradi ili poklonu.',
+      en: 'Leave a short review and share your experience with the order, product, or gift.',
+    },
+    reviewCtaButton: {
+      hr: 'Ostavi recenziju',
+      en: 'Leave a review',
+    },
   }
 
   const customizationSteps = [
@@ -418,6 +430,30 @@ export default function LRCSection({ language = 'hr', isFormEnabled = true }: LR
             </div>
           </>
         )}
+
+        {/* Discrete review CTA — secondary to inquiry */}
+        <div className="fade-in mx-auto mt-8 w-full max-w-xl px-4 pb-10 sm:mt-10 sm:px-5 sm:pb-14">
+          <div className="rounded-2xl border border-[rgba(110,68,255,0.14)] bg-white/[0.48] px-5 py-4 text-center shadow-sm backdrop-blur-sm dark:border-lavender/14 dark:bg-white/[0.05] sm:px-6 sm:py-5">
+            <p className="font-heading text-sm font-bold tracking-tight text-plum/88 dark:text-pearl/92 sm:text-base">
+              {translations.reviewCtaTitle[language]}
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-plum/72 dark:text-pearl/68 sm:text-[0.8125rem] sm:leading-relaxed">
+              {translations.reviewCtaText[language]}
+            </p>
+            <Link
+              to="/ostavi-recenziju?category=lrc"
+              onClick={() =>
+                trackEvent('review_cta_click', {
+                  category: 'lrc',
+                  source: 'lrc-section',
+                })
+              }
+              className="mt-4 inline-flex min-h-[42px] w-full max-w-[14rem] items-center justify-center rounded-xl border border-amethyst/30 bg-white/65 px-4 py-2 text-xs font-semibold text-plum/88 shadow-[0_4px_16px_rgba(46,36,71,0.06)] backdrop-blur-sm transition hover:border-[--color-primary]/45 hover:bg-white/85 dark:border-lavender/28 dark:bg-white/[0.08] dark:text-pearl dark:hover:bg-white/[0.12] sm:inline-flex sm:w-auto sm:text-sm"
+            >
+              {translations.reviewCtaButton[language]}
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   )

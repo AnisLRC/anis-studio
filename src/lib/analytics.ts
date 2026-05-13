@@ -50,6 +50,7 @@ export type AnalyticsEventName =
   | 'inquiry_cta_click'
   | 'interiors_chooser_click'
   | 'interiors_portfolio_preview_click'
+  | 'review_cta_click'
   | 'form_submit_success'
 
 export function trackEvent(

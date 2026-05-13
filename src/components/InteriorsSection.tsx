@@ -111,6 +111,18 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
     ctaAction: { hr: 'Zatraži ponudu', en: 'Request quote' },
   }
 
+  const reviewCta = {
+    title: {
+      hr: 'Već ste surađivali s nama?',
+      en: 'Have we worked together?',
+    },
+    text: {
+      hr: 'Ostavite kratku recenziju i pomozite drugima da lakše odluče.',
+      en: 'Leave a short review and help others make their decision more easily.',
+    },
+    button: { hr: 'Ostavi recenziju', en: 'Leave a review' },
+  }
+
   const translations = {
     title: {
       hr: "🏠 Ani's Interijeri — 3D vizualizacija prostora",
@@ -450,6 +462,30 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                 </span>
               </Link>
             </nav>
+          </div>
+        </div>
+
+        {/* Discrete review CTA — secondary to inquiry chooser */}
+        <div className="mx-auto mt-8 w-full max-w-xl px-4 sm:mt-10 sm:px-5">
+          <div className="rounded-2xl border border-[rgba(110,68,255,0.14)] bg-white/[0.48] px-5 py-4 text-center shadow-sm backdrop-blur-sm dark:border-lavender/14 dark:bg-white/[0.05] sm:px-6 sm:py-5">
+            <p className="font-heading text-sm font-bold tracking-tight text-plum/88 dark:text-pearl/92 sm:text-base">
+              {reviewCta.title[language]}
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-plum/72 dark:text-pearl/68 sm:text-[0.8125rem] sm:leading-relaxed">
+              {reviewCta.text[language]}
+            </p>
+            <Link
+              to="/ostavi-recenziju?category=interiors"
+              onClick={() =>
+                trackEvent('review_cta_click', {
+                  category: 'interiors',
+                  source: 'interiors-section',
+                })
+              }
+              className="mt-4 inline-flex min-h-[42px] w-full max-w-[14rem] items-center justify-center rounded-xl border border-amethyst/30 bg-white/65 px-4 py-2 text-xs font-semibold text-plum/88 shadow-[0_4px_16px_rgba(46,36,71,0.06)] backdrop-blur-sm transition hover:border-[--color-primary]/45 hover:bg-white/85 dark:border-lavender/28 dark:bg-white/[0.08] dark:text-pearl dark:hover:bg-white/[0.12] sm:inline-flex sm:w-auto sm:text-sm"
+            >
+              {reviewCta.button[language]}
+            </Link>
           </div>
         </div>
       </div>

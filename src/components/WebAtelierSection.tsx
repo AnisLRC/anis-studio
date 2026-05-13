@@ -158,6 +158,18 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
         paymentNote: "Card payments via Stripe.",
       },
     },
+    reviewCtaTitle: {
+      hr: 'Surađivali smo na web projektu?',
+      en: 'Have we worked on a web project together?',
+    },
+    reviewCtaText: {
+      hr: 'Ostavite kratku recenziju i pomozite drugima steći dojam o suradnji.',
+      en: 'Leave a short review and help others understand what working together is like.',
+    },
+    reviewCtaButton: {
+      hr: 'Ostavi recenziju',
+      en: 'Leave a review',
+    },
   }
 
   const landingPageSteps = [
@@ -357,6 +369,30 @@ export default function WebAtelierSection({ language }: WebAtelierSectionProps) 
             <p className="mx-auto max-w-md text-xs text-plum/65 dark:text-pearl/60">
               {translations.cta[language].paymentNote}
             </p>
+          </div>
+        </div>
+
+        {/* Discrete review CTA — secondary to main inquiry block */}
+        <div className="fade-in mx-auto mt-8 w-full max-w-xl px-4 sm:mt-9 sm:px-5">
+          <div className="rounded-2xl border border-[rgba(110,68,255,0.14)] bg-white/[0.48] px-5 py-4 text-center shadow-sm backdrop-blur-sm dark:border-lavender/14 dark:bg-white/[0.05] sm:px-6 sm:py-5">
+            <p className="font-heading text-sm font-bold tracking-tight text-plum/88 dark:text-pearl/92 sm:text-base">
+              {translations.reviewCtaTitle[language]}
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-plum/72 dark:text-pearl/68 sm:text-[0.8125rem] sm:leading-relaxed">
+              {translations.reviewCtaText[language]}
+            </p>
+            <Link
+              to="/ostavi-recenziju?category=webAtelier"
+              onClick={() =>
+                trackEvent('review_cta_click', {
+                  category: 'webAtelier',
+                  source: 'web-atelier-section',
+                })
+              }
+              className="mt-4 inline-flex min-h-[42px] w-full max-w-[14rem] items-center justify-center rounded-xl border border-amethyst/30 bg-white/65 px-4 py-2 text-xs font-semibold text-plum/88 shadow-[0_4px_16px_rgba(46,36,71,0.06)] backdrop-blur-sm transition hover:border-[--color-primary]/45 hover:bg-white/85 dark:border-lavender/28 dark:bg-white/[0.08] dark:text-pearl dark:hover:bg-white/[0.12] sm:inline-flex sm:w-auto sm:text-sm"
+            >
+              {translations.reviewCtaButton[language]}
+            </Link>
           </div>
         </div>
       </div>
