@@ -185,6 +185,37 @@ export interface PublicVrProject {
   wants_vr: boolean
 }
 
+/**
+ * Javno sigurna VR scena — vraćena iz get_public_vr_scenes RPC-a.
+ * Ne sadrži interna polja (storage_bucket, storage_path, notes).
+ * Koristi ga PublicProjectVrPage umjesto punog VrScene objekta.
+ */
+export interface PublicVrScene {
+  id: string
+  project_id: string
+  scene_type: VrSceneType
+  title: string
+  description: string | null
+  simlab_project_url: string | null
+  webxr_url: string | null
+  video_url: string | null
+  cover_image_url: string | null
+}
+
+/**
+ * Javno sigurni VR termin — vraćen iz get_public_vr_appointments RPC-a.
+ * Ne sadrži PII (client_name, client_email, client_phone) ni notes.
+ * Koristi ga PublicProjectVrPage umjesto punog VrAppointment objekta.
+ */
+export interface PublicVrAppointment {
+  id: string
+  vr_scene_id: string
+  scheduled_at: string
+  location_preference: VrAppointmentLocationPreference | null
+  status: VrAppointmentStatus
+  vr_link: string | null
+}
+
 export interface NewVrAppointmentInput {
   vr_scene_id: string
   scheduled_at: string
@@ -917,6 +948,62 @@ export async function fetchPublicVrProject(
 
   const row = Array.isArray(data) ? data[0] : data
   return row as PublicVrProject
+}
+
+/**
+ * Dohvaća javno sigurne VR scene za projekt putem SECURITY DEFINER RPC-a.
+ * Vraća samo javna polja — bez storage_bucket, storage_path, notes.
+ * Koristi se na PublicProjectVrPage umjesto fetchVrScenesForProject.
+ *
+ * @param projectId - UUID projekta iz URL-a
+ * @returns Array PublicVrScene objekata (prazan array ako projekt nije VR ili nema scena)
+ * @throws Error ako je Supabase konfiguriran ali RPC poziv ne uspije
+ */
+export async function fetchPublicVrScenesForProject(
+  projectId: string
+): Promise<PublicVrScene[]> {
+  if (!isSupabaseConfigured) {
+    console.log('[Interiors] fetchPublicVrScenesForProject (fallback)', projectId)
+    return []
+  }
+
+  const { data, error } = await supabase!
+    .rpc('get_public_vr_scenes', { p_project_id: projectId })
+
+  if (error) {
+    console.error('[Interiors] fetchPublicVrScenesForProject error:', error)
+    throw error
+  }
+
+  return (data ?? []) as PublicVrScene[]
+}
+
+/**
+ * Dohvaća javno sigurne VR termine za scenu putem SECURITY DEFINER RPC-a.
+ * Vraća samo scheduled termine bez PII (client_name, client_email, client_phone, notes).
+ * Koristi se na PublicProjectVrPage umjesto fetchVrAppointmentsForScene.
+ *
+ * @param sceneId - UUID VR scene
+ * @returns Array PublicVrAppointment objekata (samo status = 'scheduled')
+ * @throws Error ako je Supabase konfiguriran ali RPC poziv ne uspije
+ */
+export async function fetchPublicVrAppointmentsForScene(
+  sceneId: string
+): Promise<PublicVrAppointment[]> {
+  if (!isSupabaseConfigured) {
+    console.log('[Interiors] fetchPublicVrAppointmentsForScene (fallback)', sceneId)
+    return []
+  }
+
+  const { data, error } = await supabase!
+    .rpc('get_public_vr_appointments', { p_scene_id: sceneId })
+
+  if (error) {
+    console.error('[Interiors] fetchPublicVrAppointmentsForScene error:', error)
+    throw error
+  }
+
+  return (data ?? []) as PublicVrAppointment[]
 }
 
 // ============================================

@@ -3,14 +3,14 @@ import { useParams } from "react-router-dom";
 import { PageSEO } from "../components/PageSEO";
 import {
   fetchPublicVrProject,
-  fetchVrScenesForProject,
-  fetchVrAppointmentsForScene,
+  fetchPublicVrScenesForProject,
+  fetchPublicVrAppointmentsForScene,
   type PublicVrProject,
-  type VrScene,
-  type VrAppointment,
+  type PublicVrScene,
+  type PublicVrAppointment,
 } from "../lib/interiors";
 
-const getMainUrl = (scene: VrScene): string => {
+const getMainUrl = (scene: PublicVrScene): string => {
   if (scene.webxr_url) return scene.webxr_url;
   if (scene.simlab_project_url) return scene.simlab_project_url;
   if (scene.video_url) return scene.video_url;
@@ -36,9 +36,9 @@ function formatLocationPreference(value: string | null): string {
 const PublicProjectVrPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [project, setProject] = useState<PublicVrProject | null>(null);
-  const [vrScenes, setVrScenes] = useState<VrScene[]>([]);
+  const [vrScenes, setVrScenes] = useState<PublicVrScene[]>([]);
   const [appointmentsByScene, setAppointmentsByScene] = useState<
-    Record<string, VrAppointment[]>
+    Record<string, PublicVrAppointment[]>
   >({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +60,7 @@ const PublicProjectVrPage: React.FC = () => {
         // Paralelno dohvaćanje projekta (sigurni RPC bez PII) i VR scena
         const [projectData, scenesData] = await Promise.all([
           fetchPublicVrProject(projectId),
-          fetchVrScenesForProject(projectId),
+          fetchPublicVrScenesForProject(projectId),
         ]);
 
         if (!isCancelled) {
@@ -73,15 +73,12 @@ const PublicProjectVrPage: React.FC = () => {
           setProject(projectData);
           setVrScenes(scenesData);
 
-          // Za svaku scenu dohvatiti termine i filtrirati samo scheduled
-          const appointmentsMap: Record<string, VrAppointment[]> = {};
+          // Za svaku scenu dohvatiti termine (RPC već filtrira samo scheduled)
+          const appointmentsMap: Record<string, PublicVrAppointment[]> = {};
           const appointmentPromises = scenesData.map(async (scene) => {
             try {
-              const appointments = await fetchVrAppointmentsForScene(scene.id);
-              const scheduledAppointments = appointments.filter(
-                (app) => app.status === "scheduled"
-              );
-              appointmentsMap[scene.id] = scheduledAppointments;
+              const appointments = await fetchPublicVrAppointmentsForScene(scene.id);
+              appointmentsMap[scene.id] = appointments;
             } catch (err) {
               console.error(
                 `[PublicProjectVrPage] Failed to load appointments for scene ${scene.id}:`,
@@ -152,7 +149,7 @@ const PublicProjectVrPage: React.FC = () => {
     );
   }
 
-  const sceneUrl = (scene: VrScene) => getMainUrl(scene);
+  const sceneUrl = (scene: PublicVrScene) => getMainUrl(scene);
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
@@ -261,13 +258,6 @@ const PublicProjectVrPage: React.FC = () => {
                                 >
                                   VR link za klijenta
                                 </a>
-                              </div>
-                            )}
-
-                            {/* Notes */}
-                            {app.notes && (
-                              <div className="mt-2 whitespace-pre-line text-sm text-slate-600">
-                                {app.notes}
                               </div>
                             )}
                           </div>
