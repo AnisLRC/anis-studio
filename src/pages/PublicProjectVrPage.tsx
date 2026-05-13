@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { PageSEO } from "../components/PageSEO";
 import {
-  fetchProjectById,
+  fetchPublicVrProject,
   fetchVrScenesForProject,
   fetchVrAppointmentsForScene,
-  type Project,
+  type PublicVrProject,
   type VrScene,
   type VrAppointment,
 } from "../lib/interiors";
@@ -35,7 +35,7 @@ function formatLocationPreference(value: string | null): string {
 
 const PublicProjectVrPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<PublicVrProject | null>(null);
   const [vrScenes, setVrScenes] = useState<VrScene[]>([]);
   const [appointmentsByScene, setAppointmentsByScene] = useState<
     Record<string, VrAppointment[]>
@@ -57,9 +57,9 @@ const PublicProjectVrPage: React.FC = () => {
         setIsLoading(true);
         setError(null);
 
-        // Paralelno dohvaćanje projekta i VR scena
+        // Paralelno dohvaćanje projekta (sigurni RPC bez PII) i VR scena
         const [projectData, scenesData] = await Promise.all([
-          fetchProjectById(projectId),
+          fetchPublicVrProject(projectId),
           fetchVrScenesForProject(projectId),
         ]);
 

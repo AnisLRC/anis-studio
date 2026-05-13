@@ -174,6 +174,17 @@ export interface NewVrSceneInput {
   notes?: string | null
 }
 
+/**
+ * Minimalni javni podaci o VR projektu — vraćeni iz get_public_vr_project RPC-a.
+ * Ne sadrži PII (notes, budget, client_id, carpenter_id).
+ * Koristi ga PublicProjectVrPage umjesto punog Project objekta.
+ */
+export interface PublicVrProject {
+  id: string
+  title: string
+  wants_vr: boolean
+}
+
 export interface NewVrAppointmentInput {
   vr_scene_id: string
   scheduled_at: string
@@ -867,6 +878,45 @@ export async function fetchVrAppointmentsForScene(
   }
 
   return (data ?? []) as VrAppointment[]
+}
+
+// ============================================
+// Public VR helpers (anon-safe, SECURITY DEFINER RPC)
+// ============================================
+
+/**
+ * Dohvaća minimalne javne podatke o VR projektu putem SECURITY DEFINER RPC-a.
+ * Vraća samo { id, title, wants_vr } — bez PII (notes, budget, client_id itd.).
+ * Koristi se na PublicProjectVrPage umjesto fetchProjectById kako bi se izbjegao
+ * direktni anon SELECT na projects tablicu.
+ *
+ * Uvjet u RPC-u: wants_vr = true — ako projekt nije VR, vraća null.
+ *
+ * @param id - UUID projekta iz URL-a (/vr/:projectId)
+ * @returns PublicVrProject objekt ili null (projekt ne postoji ili nije VR)
+ * @throws Error ako je Supabase konfiguriran ali RPC poziv ne uspije
+ */
+export async function fetchPublicVrProject(
+  id: string
+): Promise<PublicVrProject | null> {
+  if (!isSupabaseConfigured) {
+    console.log('[Interiors] fetchPublicVrProject (fallback)', id)
+    return null
+  }
+
+  const { data, error } = await supabase!
+    .rpc('get_public_vr_project', { p_project_id: id })
+
+  if (error) {
+    console.error('[Interiors] fetchPublicVrProject error:', error)
+    throw error
+  }
+
+  // RPC vraća array (RETURNS TABLE) — uzimamo prvi red ili null
+  if (!data || (Array.isArray(data) && data.length === 0)) return null
+
+  const row = Array.isArray(data) ? data[0] : data
+  return row as PublicVrProject
 }
 
 // ============================================
