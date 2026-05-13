@@ -69,6 +69,8 @@ const copy = {
   labelEmail: { hr: 'Email', en: 'Email' },
   labelText: { hr: 'Vaša recenzija', en: 'Your review' },
   labelRating: { hr: 'Ocjena', en: 'Rating' },
+  /** Ispis ispod zvjezdica, npr. „Odabrana ocjena: 5/5” */
+  ratingSelectedLinePrefix: { hr: 'Odabrana ocjena:', en: 'Selected rating:' },
   labelNamePref: {
     hr: 'Kako želite da se ime prikaže javno?',
     en: 'How would you like your name to appear publicly?',
@@ -383,14 +385,14 @@ export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPagePro
                       </div>
 
                       {/* rating 1–5 */}
-                      <div>
+                      <div className="rounded-xl border border-[rgba(110,68,255,0.12)] bg-white/45 px-3 py-3.5 dark:border-lavender/12 dark:bg-white/[0.04] sm:px-4 sm:py-4">
                         <p className={labelClass} id="review-rating-label">
                           {t('labelRating')}
                         </p>
                         <div
                           role="group"
                           aria-labelledby="review-rating-label"
-                          className="mt-2 flex flex-wrap items-center gap-0.5 sm:gap-1"
+                          className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5 sm:justify-start sm:gap-2"
                         >
                           {([1, 2, 3, 4, 5] as const).map((value) => {
                             const active = value <= form.rating
@@ -403,19 +405,45 @@ export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPagePro
                                   setForm((f) => ({ ...f, rating: value }))
                                 }
                                 className={clsx(
-                                  'flex h-11 min-w-[2.75rem] items-center justify-center rounded-lg border text-lg transition sm:h-10 sm:min-w-10',
+                                  'flex h-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border-2 text-xl transition will-change-transform sm:h-12 sm:min-h-[48px] sm:min-w-[48px] sm:text-[1.375rem]',
+                                  'hover:enabled:-translate-y-0.5 hover:enabled:shadow-md',
+                                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-primary]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(248,246,255,0.95)] dark:focus-visible:ring-lavender/50 dark:focus-visible:ring-offset-[rgba(12,10,24,0.92)]',
+                                  'disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0',
                                   active
-                                    ? 'border-amber-400/55 bg-amber-400/12 text-amber-500 shadow-sm dark:border-amber-400/40 dark:bg-amber-400/10 dark:text-amber-300'
-                                    : 'border-[rgba(110,68,255,0.14)] bg-white/50 text-plum/28 hover:border-[--color-primary]/35 hover:bg-white/70 hover:text-plum/45 dark:border-lavender/15 dark:bg-white/[0.06] dark:text-pearl/28 dark:hover:border-lavender/30 dark:hover:bg-white/[0.1] dark:hover:text-pearl/50'
+                                    ? [
+                                        'border-amber-500/90 bg-gradient-to-b from-amber-300/35 via-amber-400/25 to-amber-600/20',
+                                        'text-amber-700 shadow-[0_0_22px_rgba(245,158,11,0.35),0_2px_8px_rgba(180,83,9,0.12)]',
+                                        'ring-2 ring-amber-400/55 dark:border-amber-400/85 dark:from-amber-400/30 dark:via-amber-500/18 dark:to-amber-900/25',
+                                        'dark:text-amber-200 dark:shadow-[0_0_26px_rgba(251,191,36,0.28),0_2px_10px_rgba(0,0,0,0.2)] dark:ring-amber-400/40',
+                                      ]
+                                    : [
+                                        'border-[rgba(110,68,255,0.22)] bg-white/70 text-plum/50 shadow-sm',
+                                        'hover:enabled:border-amber-400/40 hover:enabled:bg-amber-50/80 hover:enabled:text-amber-700/90',
+                                        'dark:border-lavender/22 dark:bg-white/[0.08] dark:text-pearl/45',
+                                        'dark:hover:enabled:border-amber-400/35 dark:hover:enabled:bg-amber-950/30 dark:hover:enabled:text-amber-200/95',
+                                      ]
                                 )}
                                 aria-label={`${value}/5`}
                                 aria-pressed={active}
                               >
-                                <span aria-hidden>★</span>
+                                <span aria-hidden className="drop-shadow-sm">
+                                  ★
+                                </span>
                               </button>
                             )
                           })}
                         </div>
+                        <p
+                          className="mt-3 text-center text-sm font-semibold tracking-tight text-plum/88 dark:text-pearl/88 sm:text-left"
+                          aria-live="polite"
+                        >
+                          <span className="text-plum/55 dark:text-pearl/55">
+                            {copy.ratingSelectedLinePrefix[language]}
+                          </span>{' '}
+                          <span className="tabular-nums text-amber-700 dark:text-amber-200">
+                            {form.rating}/5
+                          </span>
+                        </p>
                       </div>
 
                       {/* name_display_preference */}
