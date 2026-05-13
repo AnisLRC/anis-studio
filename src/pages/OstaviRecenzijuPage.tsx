@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { AnimatedPage } from '../components/AnimatedPage'
 import { PageSEO } from '../components/PageSEO'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
@@ -27,6 +28,16 @@ const INITIAL_FORM: ReviewFormState = {
   name_display_preference: 'first_name_only',
   location_display: '',
   consent_public: false,
+}
+
+type UrlReviewCategory = 'interiors' | 'lrc' | 'webAtelier'
+
+function categoryFromSearchParams(searchParams: URLSearchParams): UrlReviewCategory {
+  const raw = searchParams.get('category')?.trim() ?? ''
+  if (raw === 'interiors' || raw === 'lrc' || raw === 'webAtelier') {
+    return raw
+  }
+  return 'interiors'
 }
 
 function isValidEmail(v: string): boolean {
@@ -93,6 +104,11 @@ const copy = {
     hr: 'Potrebna je vaša privola za objavu.',
     en: 'Your consent for publication is required.',
   },
+  reviewForLine: {
+    interiors: { hr: 'Recenzija za: Interijeri', en: 'Review for: Interiors' },
+    lrc: { hr: 'Recenzija za: LRC', en: 'Review for: LRC' },
+    webAtelier: { hr: 'Recenzija za: Web Atelier', en: 'Review for: Web Atelier' },
+  },
 }
 
 const NAME_PREF_ORDER: NameDisplayPreference[] = [
@@ -103,6 +119,9 @@ const NAME_PREF_ORDER: NameDisplayPreference[] = [
 ]
 
 export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPageProps) {
+  const [searchParams] = useSearchParams()
+  const reviewCategory = categoryFromSearchParams(searchParams)
+
   const [form, setForm] = useState<ReviewFormState>(INITIAL_FORM)
   const [honeypot, setHoneypot] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof ReviewFormState, string>>>({})
@@ -157,7 +176,7 @@ export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPagePro
     setIsSubmitting(true)
     try {
       await createTestimonialSubmission({
-        category: 'interiors',
+        category: reviewCategory,
         submitted_name: form.submitted_name.trim(),
         email: form.email.trim(),
         original_text: form.original_text.trim(),
@@ -247,7 +266,11 @@ export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPagePro
                       onSubmit={handleSubmit}
                       noValidate
                       className="space-y-5"
-                    >
+                      >
+                      <p className="text-center text-xs font-medium text-plum/55 dark:text-pearl/50">
+                        {copy.reviewForLine[reviewCategory][language]}
+                      </p>
+
                       {/* Honeypot — visually hidden from real users, ignored by screen readers */}
                       <div
                         aria-hidden="true"
