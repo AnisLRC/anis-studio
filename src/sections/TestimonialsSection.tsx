@@ -1,17 +1,28 @@
+import { useEffect, useMemo, useState } from 'react'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 import TestimonialMarquee, {
   type TestimonialMarqueeRowBlock,
-  type TestimonialRowGroupKey,
 } from '../components/TestimonialMarquee'
 import { useSettings } from '../hooks/useSettings'
-import type { TestimonialCategory } from '../data/testimonials'
+import type { Testimonial, TestimonialCategory } from '../data/testimonials'
 import { TESTIMONIALS } from '../data/testimonials'
+import {
+  fetchApprovedTestimonialSubmissionsPublic,
+  mapApprovedSubmissionToTestimonial,
+} from '../lib/testimonials'
+import { isSupabaseConfigured } from '../lib/supabase'
 
 interface TestimonialsSectionProps {
   language: 'hr' | 'en'
 }
 
 const byIdAsc = <T extends { id: number }>(a: T, b: T) => a.id - b.id
+
+type PublicSectionFlags = {
+  interiors: boolean
+  lrc: boolean
+  webAtelier: boolean
+}
 
 /**
  * Local preview: when `true`, shows all rows that have items (plus optional empty Web Atelier preview),
@@ -25,23 +36,48 @@ export const PREVIEW_ALL_TESTIMONIAL_ROWS = false
  */
 export const PREVIEW_WEB_ATELIER_EMPTY_ROW = false
 
-function collectByCategories(categories: TestimonialCategory[]) {
-  return TESTIMONIALS.filter((t) => categories.includes(t.category)).sort(byIdAsc)
+function collectTrustRowItems(
+  all: Testimonial[],
+  preview: boolean,
+  pub: PublicSectionFlags,
+): Testimonial[] {
+  if (preview) {
+    return all
+      .filter((t) => t.category === 'general' || t.category === 'interiors')
+      .sort(byIdAsc)
+  }
+  const anySectionActive = pub.interiors || pub.lrc || pub.webAtelier
+  const general = all.filter((t) => t.category === 'general' && anySectionActive)
+  const interiors = all.filter((t) => t.category === 'interiors' && pub.interiors)
+  return [...general, ...interiors].sort(byIdAsc)
+}
+
+function collectCategoryRowItems(
+  all: Testimonial[],
+  category: Extract<TestimonialCategory, 'lrc' | 'webAtelier'>,
+  preview: boolean,
+  pub: PublicSectionFlags,
+): Testimonial[] {
+  if (preview) {
+    return all.filter((t) => t.category === category).sort(byIdAsc)
+  }
+  const flag = category === 'lrc' ? pub.lrc : pub.webAtelier
+  return all.filter((t) => t.category === category && flag).sort(byIdAsc)
 }
 
 function buildTestimonialRowBlocks(
-  publicRowVisibility: Record<TestimonialRowGroupKey, boolean>,
+  allTestimonials: Testimonial[],
+  pub: PublicSectionFlags,
 ): TestimonialMarqueeRowBlock[] {
   const preview = PREVIEW_ALL_TESTIMONIAL_ROWS
-  const pub = publicRowVisibility
 
-  const trustItems = collectByCategories(['general', 'interiors'])
-  const lrcItems = collectByCategories(['lrc'])
-  const webItems = collectByCategories(['webAtelier'])
+  const trustItems = collectTrustRowItems(allTestimonials, preview, pub)
+  const lrcItems = collectCategoryRowItems(allTestimonials, 'lrc', preview, pub)
+  const webItems = collectCategoryRowItems(allTestimonials, 'webAtelier', preview, pub)
 
   const blocks: TestimonialMarqueeRowBlock[] = []
 
-  if ((preview || pub.trust) && trustItems.length > 0) {
+  if (trustItems.length > 0) {
     blocks.push({
       groupKey: 'trust',
       items: trustItems,
@@ -50,7 +86,7 @@ function buildTestimonialRowBlocks(
     })
   }
 
-  if ((preview || pub.lrc) && lrcItems.length > 0) {
+  if (lrcItems.length > 0) {
     blocks.push({
       groupKey: 'lrc',
       items: lrcItems,
@@ -59,7 +95,7 @@ function buildTestimonialRowBlocks(
     })
   }
 
-  if (webItems.length > 0 && (preview || pub.webAtelier)) {
+  if (webItems.length > 0) {
     blocks.push({
       groupKey: 'webAtelier',
       items: webItems,
@@ -81,11 +117,39 @@ function buildTestimonialRowBlocks(
 
 export default function TestimonialsSection({ language }: TestimonialsSectionProps) {
   const { settings } = useSettings()
-  const publicRowVisibility = {
-    trust: settings?.interiors_public_visible ?? true,
+  const [dbTestimonials, setDbTestimonials] = useState<Testimonial[]>([])
+
+  useEffect(() => {
+    let cancelled = false
+    if (!isSupabaseConfigured) return
+
+    ;(async () => {
+      try {
+        const rows = await fetchApprovedTestimonialSubmissionsPublic()
+        if (cancelled) return
+        setDbTestimonials(rows.map((row, i) => mapApprovedSubmissionToTestimonial(row, i)))
+      } catch {
+        if (!cancelled) setDbTestimonials([])
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const allTestimonials = useMemo(
+    () => [...TESTIMONIALS, ...dbTestimonials],
+    [dbTestimonials],
+  )
+
+  const publicSectionFlags: PublicSectionFlags = {
+    interiors: settings?.interiors_public_visible ?? true,
     lrc: settings?.lrc_public_visible ?? false,
     webAtelier: settings?.web_atelier_public_visible ?? false,
   }
+
+  const rowBlocks = buildTestimonialRowBlocks(allTestimonials, publicSectionFlags)
 
   const translations = {
     title: {
@@ -101,8 +165,6 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
       en: 'To read, keep your pointer over a review.',
     },
   }
-
-  const rowBlocks = buildTestimonialRowBlocks(publicRowVisibility)
 
   if (rowBlocks.length === 0) return null
 

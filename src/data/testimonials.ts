@@ -4,7 +4,8 @@ export interface Testimonial {
   id: number
   name: string
   location: { hr: string; en: string }
-  rating: number
+  /** Ako nije postavljeno, zvjezdice se ne prikazuju (npr. recenzije iz baze bez ocjene). */
+  rating?: number
   text: {
     hr: string
     en: string

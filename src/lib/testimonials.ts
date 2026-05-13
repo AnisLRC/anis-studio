@@ -1,3 +1,4 @@
+import type { Testimonial } from '../data/testimonials'
 import { supabase, isSupabaseConfigured } from './supabase'
 
 const TABLE = 'testimonial_submissions'
@@ -274,6 +275,118 @@ export async function createTestimonialSubmission(
   if (error) {
     throw formatSupabaseError('Slanje recenzije', error.message)
   }
+}
+
+/**
+ * RPC response tip za javno sigurne approved recenzije.
+ * Ne sadrži PII polja (email, submitted_name, admin_note, approved_by).
+ */
+export interface PublicApprovedTestimonialRPC {
+  id: string
+  created_at: string
+  category: TestimonialSubmissionCategory
+  text_to_display: string
+  public_display_name: string
+  location_display: string | null
+  rating: number | null
+}
+
+/**
+ * Dohvat samo odobrenih recenzija za javni prikaz (anon ključ).
+ * Koristi SECURITY DEFINER RPC koji zaobilazi RLS i vraća samo javno sigurna polja.
+ * Pending i rejected recenzije se nikad ne vraćaju (filtrirano u RPC-u).
+ *
+ * PII polja (email, submitted_name, admin_note, approved_by) se ne vraćaju iz RPC-a.
+ */
+export async function fetchApprovedTestimonialSubmissionsPublic(): Promise<TestimonialSubmission[]> {
+  const client = requireClient()
+
+  const { data, error } = await client
+    .rpc('get_public_approved_testimonials')
+
+  if (error) {
+    throw formatSupabaseError('Dohvat odobrenih recenzija', error.message)
+  }
+
+  // Mapiramo RPC response u TestimonialSubmission shape.
+  // RPC već resolvea edited_text vs original_text u text_to_display.
+  // RPC već resolvea public_display_name s 'Anonimno' fallbackom.
+  const out: TestimonialSubmission[] = []
+  for (const row of (data ?? []) as PublicApprovedTestimonialRPC[]) {
+    try {
+      if (!isValidCategory(row.category)) {
+        continue
+      }
+
+      const ratingNum =
+        row.rating != null && typeof row.rating === 'number' && Number.isFinite(row.rating)
+          ? row.rating
+          : null
+      const ratingSafe =
+        ratingNum !== null && ratingNum >= 1 && ratingNum <= 5 ? Math.round(ratingNum) : null
+
+      const submission: TestimonialSubmission = {
+        id: String(row.id),
+        created_at: String(row.created_at),
+        updated_at: String(row.created_at), // RPC ne vraća updated_at; koristi created_at
+        status: 'approved', // Hardkodirano jer RPC vraća samo approved
+        category: row.category,
+        original_text: String(row.text_to_display), // RPC već resolvea edited vs original
+        edited_text: null, // RPC već resolvea u text_to_display; frontend ne treba logiku
+        submitted_name: '', // Ne vraća se iz RPC-a (PII)
+        name_display_preference: 'full_name', // Placeholder; nije relevantan za approved prikaz
+        public_display_name: row.public_display_name || null,
+        email: '', // Ne vraća se iz RPC-a (PII)
+        location_display: row.location_display || null,
+        admin_note: null, // Ne vraća se iz RPC-a (interno)
+        consent_public: true, // Uvijek true za approved
+        approved_at: null, // RPC ne vraća; nije potreban za display
+        approved_by: null, // Ne vraća se iz RPC-a (interno)
+        rating: ratingSafe,
+      }
+
+      out.push(submission)
+    } catch {
+      /* preskoči neispravan red */
+    }
+  }
+  return out
+}
+
+const PUBLIC_DB_TESTIMONIAL_ID_BASE = 10_000
+
+/** Mapira odobrenu recenziju iz baze na oblik koji koristi TestimonialsSection / marquee. */
+export function mapApprovedSubmissionToTestimonial(
+  row: TestimonialSubmission,
+  ordinal: number
+): Testimonial {
+  const textBody = (row.edited_text?.trim() || row.original_text.trim()) || ''
+  const nameRaw = row.public_display_name?.trim()
+  const name = nameRaw && nameRaw.length > 0 ? nameRaw : 'Anonimno'
+
+  const locRaw = row.location_display?.trim()
+  const location = locRaw
+    ? { hr: locRaw, en: locRaw }
+    : { hr: '', en: '' }
+
+  const testimonial: Testimonial = {
+    id: PUBLIC_DB_TESTIMONIAL_ID_BASE + ordinal,
+    name,
+    location,
+    category: row.category,
+    text: { hr: textBody, en: textBody },
+  }
+
+  if (
+    row.rating != null &&
+    Number.isFinite(row.rating) &&
+    row.rating >= 1 &&
+    row.rating <= 5
+  ) {
+    testimonial.rating = row.rating
+  }
+
+  return testimonial
 }
 
 /**

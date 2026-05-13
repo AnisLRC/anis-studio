@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { AnimatedPage } from '../components/AnimatedPage'
@@ -18,6 +19,8 @@ interface ReviewFormState {
   original_text: string
   name_display_preference: NameDisplayPreference
   location_display: string
+  /** 1–5, default 5 pri otvaranju forme */
+  rating: number
   consent_public: boolean
 }
 
@@ -27,6 +30,7 @@ const INITIAL_FORM: ReviewFormState = {
   original_text: '',
   name_display_preference: 'first_name_only',
   location_display: '',
+  rating: 5,
   consent_public: false,
 }
 
@@ -64,6 +68,7 @@ const copy = {
   labelName: { hr: 'Ime i prezime', en: 'Full name' },
   labelEmail: { hr: 'Email', en: 'Email' },
   labelText: { hr: 'Vaša recenzija', en: 'Your review' },
+  labelRating: { hr: 'Ocjena', en: 'Rating' },
   labelNamePref: {
     hr: 'Kako želite da se ime prikaže javno?',
     en: 'How would you like your name to appear publicly?',
@@ -182,6 +187,7 @@ export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPagePro
         original_text: form.original_text.trim(),
         name_display_preference: form.name_display_preference,
         location_display: form.location_display.trim() || null,
+        rating: form.rating,
         consent_public: true,
       })
       setSuccess(true)
@@ -374,6 +380,42 @@ export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPagePro
                             {fieldErrors.original_text}
                           </p>
                         )}
+                      </div>
+
+                      {/* rating 1–5 */}
+                      <div>
+                        <p className={labelClass} id="review-rating-label">
+                          {t('labelRating')}
+                        </p>
+                        <div
+                          role="group"
+                          aria-labelledby="review-rating-label"
+                          className="mt-2 flex flex-wrap items-center gap-0.5 sm:gap-1"
+                        >
+                          {([1, 2, 3, 4, 5] as const).map((value) => {
+                            const active = value <= form.rating
+                            return (
+                              <button
+                                key={value}
+                                type="button"
+                                disabled={isSubmitting}
+                                onClick={() =>
+                                  setForm((f) => ({ ...f, rating: value }))
+                                }
+                                className={clsx(
+                                  'flex h-11 min-w-[2.75rem] items-center justify-center rounded-lg border text-lg transition sm:h-10 sm:min-w-10',
+                                  active
+                                    ? 'border-amber-400/55 bg-amber-400/12 text-amber-500 shadow-sm dark:border-amber-400/40 dark:bg-amber-400/10 dark:text-amber-300'
+                                    : 'border-[rgba(110,68,255,0.14)] bg-white/50 text-plum/28 hover:border-[--color-primary]/35 hover:bg-white/70 hover:text-plum/45 dark:border-lavender/15 dark:bg-white/[0.06] dark:text-pearl/28 dark:hover:border-lavender/30 dark:hover:bg-white/[0.1] dark:hover:text-pearl/50'
+                                )}
+                                aria-label={`${value}/5`}
+                                aria-pressed={active}
+                              >
+                                <span aria-hidden>★</span>
+                              </button>
+                            )
+                          })}
+                        </div>
                       </div>
 
                       {/* name_display_preference */}

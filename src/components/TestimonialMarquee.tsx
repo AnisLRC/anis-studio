@@ -232,6 +232,25 @@ function toneQuoteBoxClasses(rowTone: TestimonialRowTone): string {
   return 'border-amethyst/10 bg-white/55 dark:border-lavender/10 dark:bg-white/[0.05]'
 }
 
+/** Lijevi naglasak (blockquote) — tekst bez ručnih navodnika u sadržaju */
+function toneQuoteLeftAccentClass(rowTone: TestimonialRowTone): string {
+  if (rowTone === 'softPink') {
+    return 'border-l-[3px] border-l-rose-400/45 dark:border-l-rose-400/35'
+  }
+  if (rowTone === 'softBlue') {
+    return 'border-l-[3px] border-l-sky-400/50 dark:border-l-sky-400/40'
+  }
+  return 'border-l-[3px] border-l-amethyst/40 dark:border-l-lavender/35'
+}
+
+function testimonialDisplayRating(testimonial: Testimonial): number | null {
+  const r = testimonial.rating
+  if (typeof r !== 'number' || !Number.isFinite(r)) return null
+  const n = Math.round(r)
+  if (n < 1 || n > 5) return null
+  return n
+}
+
 function toneVerifiedBadgeClasses(rowTone: TestimonialRowTone): string {
   if (rowTone === 'softPink') {
     return 'border-rose-200/25 bg-white/70 text-rose-800/90 dark:border-rose-400/30 dark:bg-white/10 dark:text-rose-100/90'
@@ -331,6 +350,8 @@ function TestimonialCard({
     isMarquee && 'group-focus-within/card:line-clamp-none'
   )
 
+  const displayRating = testimonialDisplayRating(testimonial)
+
   const articleClass = clsx(
     'group/card flex flex-col rounded-xl border bg-white/[0.82] p-4 shadow-[0_8px_28px_rgba(46,36,71,0.06)] backdrop-blur-xl transition-[transform,box-shadow,border-color] duration-300 ease-out sm:rounded-2xl sm:p-[1.125rem] dark:bg-white/[0.07] dark:shadow-[0_10px_36px_rgba(0,0,0,0.22)]',
     toneCardClasses(rowTone, layout),
@@ -372,7 +393,7 @@ function TestimonialCard({
             {testimonial.name}
           </p>
           <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-            {testimonial.rating === 5 ? (
+            {displayRating === 5 ? (
               <span
                 className={clsx(
                   'inline-flex w-fit shrink-0 items-center gap-0.5 rounded-full border px-2 py-0.5 text-[10px] font-medium leading-none',
@@ -395,18 +416,19 @@ function TestimonialCard({
         </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-0.5 sm:mt-3.5">{renderStars(testimonial.rating)}</div>
+      <div className="mt-3 flex min-h-[1.3125rem] items-center gap-0.5 sm:mt-3.5 sm:min-h-[1.375rem]">
+        {displayRating != null ? renderStars(displayRating) : null}
+      </div>
 
       <div className="mt-3 flex min-h-0 flex-1 flex-col sm:mt-3.5">
         <div
           className={clsx(
-            'rounded-lg border px-3 py-2.5 sm:px-3.5 sm:py-3',
-            toneQuoteBoxClasses(rowTone)
+            'rounded-lg border py-2.5 pl-3 pr-3 sm:py-3 sm:pl-4 sm:pr-3.5',
+            toneQuoteBoxClasses(rowTone),
+            toneQuoteLeftAccentClass(rowTone)
           )}
         >
-          <p className={quoteClass}>
-            &ldquo;{testimonial.text[language]}&rdquo;
-          </p>
+          <p className={quoteClass}>{testimonial.text[language]}</p>
         </div>
       </div>
     </article>
