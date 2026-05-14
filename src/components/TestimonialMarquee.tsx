@@ -78,7 +78,9 @@ function getInitials(name: string) {
 }
 
 /**
- * One horizontal marquee lane. Items are duplicated once for translateX(-50%) seamless loop.
+ * One horizontal marquee lane.
+ * On coarse (touch) devices: static horizontal scroll with snap.
+ * On fine (desktop) pointers: animated marquee with hover pause.
  */
 function MarqueeLane({
   items,
@@ -95,10 +97,12 @@ function MarqueeLane({
   rowTone: TestimonialRowTone
   direction: TestimonialMarqueeDirection
 }) {
-  const loop = [...items, ...items]
+  const isCoarse = useCoarsePointer()
   const rowRef = useRef<HTMLDivElement>(null)
   const [activeKey, setActiveKey] = useState<string | null>(null)
-  const isCoarse = useCoarsePointer()
+
+  // On touch devices, render single set; on desktop, duplicate for seamless loop
+  const displayItems = isCoarse ? items : [...items, ...items]
 
   useEffect(() => {
     if (activeKey === null) return
@@ -135,15 +139,20 @@ function MarqueeLane({
       onBlur={handleRowFocusOut}
       className={clsx(
         'testimonial-marquee-row group/marquee relative py-2',
-        'overflow-x-hidden overflow-y-visible',
+        isCoarse
+          ? 'overflow-x-auto overflow-y-visible scrollbar-thin scrollbar-thumb-amethyst/20 scrollbar-track-transparent snap-x snap-mandatory'
+          : 'overflow-x-hidden overflow-y-visible',
         direction === 'right' && 'marquee-dir-right'
       )}
     >
       <div
-        className="testimonial-marquee-track isolate flex w-max gap-3 sm:gap-4"
-        style={{ animationDuration: `${MARQUEE_DURATION_SEC}s` }}
+        className={clsx(
+          'isolate flex gap-3 sm:gap-4',
+          isCoarse ? 'w-full' : 'testimonial-marquee-track w-max'
+        )}
+        style={!isCoarse ? { animationDuration: `${MARQUEE_DURATION_SEC}s` } : undefined}
       >
-        {loop.map((testimonial, index) => {
+        {displayItems.map((testimonial, index) => {
           const cardKey = `${testimonial.id}-${index}`
           return (
             <TestimonialCard
@@ -312,7 +321,9 @@ function TestimonialCard({
 }) {
   const widthClass =
     layout === 'marquee'
-      ? 'w-[min(100vw-2rem,304px)] shrink-0 sm:w-[328px]'
+      ? isCoarse
+        ? 'w-[min(100vw-2rem,304px)] shrink-0 snap-start sm:w-[328px]'
+        : 'w-[min(100vw-2rem,304px)] shrink-0 sm:w-[328px]'
       : 'w-full min-w-0'
 
   const isMarquee = layout === 'marquee'
