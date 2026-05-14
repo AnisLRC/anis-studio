@@ -392,7 +392,7 @@ export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPagePro
                         <div
                           role="group"
                           aria-labelledby="review-rating-label"
-                          className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5 sm:justify-start sm:gap-2"
+                          className="mt-2.5 grid grid-cols-5 gap-1.5 sm:flex sm:flex-nowrap sm:items-center sm:justify-start sm:gap-2"
                         >
                           {([1, 2, 3, 4, 5] as const).map((value) => {
                             const active = value <= form.rating
@@ -405,7 +405,7 @@ export default function OstaviRecenzijuPage({ language }: OstaviRecenzijuPagePro
                                   setForm((f) => ({ ...f, rating: value }))
                                 }
                                 className={clsx(
-                                  'flex h-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border-2 text-xl transition will-change-transform sm:h-12 sm:min-h-[48px] sm:min-w-[48px] sm:text-[1.375rem]',
+                                  'flex w-full min-h-[44px] min-w-0 items-center justify-center justify-self-center rounded-xl border-2 text-base transition will-change-transform sm:h-12 sm:min-h-[48px] sm:min-w-[48px] sm:w-12 sm:justify-self-auto sm:text-[1.375rem]',
                                   'hover:enabled:-translate-y-0.5 hover:enabled:shadow-md',
                                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-primary]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(248,246,255,0.95)] dark:focus-visible:ring-lavender/50 dark:focus-visible:ring-offset-[rgba(12,10,24,0.92)]',
                                   'disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0',

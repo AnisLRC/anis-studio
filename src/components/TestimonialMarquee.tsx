@@ -124,11 +124,13 @@ function MarqueeLane({
     setActiveKey(null)
   }
 
-  const paused = activeKey !== null
+  /** Touch / coarse pointers: do not pause the track on tap-expand (avoids half-card “stuck” state). */
+  const paused = activeKey !== null && !isCoarse
 
   return (
     <div
       ref={rowRef}
+      data-coarse-pointer={isCoarse ? 'true' : 'false'}
       data-paused={paused ? 'true' : 'false'}
       onBlur={handleRowFocusOut}
       className={clsx(
@@ -562,8 +564,14 @@ export default function TestimonialMarquee({ language, rowBlocks }: TestimonialM
         .testimonial-marquee-row.marquee-dir-right .testimonial-marquee-track {
           animation-direction: reverse;
         }
-        .testimonial-marquee-row:hover .testimonial-marquee-track,
-        .testimonial-marquee-row:focus-within .testimonial-marquee-track,
+        @media (hover: hover) and (pointer: fine) {
+          .testimonial-marquee-row:hover .testimonial-marquee-track {
+            animation-play-state: paused;
+          }
+        }
+        .testimonial-marquee-row:not([data-coarse-pointer="true"]):focus-within .testimonial-marquee-track {
+          animation-play-state: paused;
+        }
         .testimonial-marquee-row[data-paused="true"] .testimonial-marquee-track {
           animation-play-state: paused;
         }
