@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useSettings } from '../hooks/useSettings'
 import { useAuth } from '../providers/AuthProvider'
-import { useAdminAuth } from '../providers/AdminAuthProvider'
-import { useUi } from '../providers/UiProvider'
 import { ThemeToggle } from './ThemeToggle'
 
 interface HeaderProps {
@@ -42,9 +40,6 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { settings } = useSettings()
   const { isAuthenticated, logout } = useAuth()
-  const { isAdmin } = useAdminAuth()
-  const { openModal } = useUi()
-  const navigate = useNavigate()
 
   const serviceVisibility = {
     lrc: settings?.lrc_public_visible ?? false,
@@ -85,16 +80,8 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   }
 
   const authLabels = {
-    hr: {
-      login: 'Prijava',
-      register: 'Registracija',
-      logout: 'Odjava'
-    },
-    en: {
-      login: 'Login',
-      register: 'Register',
-      logout: 'Logout'
-    }
+    hr: { logout: 'Odjava' },
+    en: { logout: 'Logout' },
   }
 
   return (
@@ -138,29 +125,8 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
 
         {/* Right side - Auth, Cart, Language */}
         <div className="flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:gap-2.5 md:gap-3">
-          {/* Auth Buttons - Desktop */}
-          {!isAuthenticated ? (
-            <div className="hidden sm:flex items-center gap-2">
-              <button
-                onClick={() => navigate(isAdmin ? '/admin/settings' : '/admin/login')}
-                className="px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(110,68,255,0.15)] text-plum/90 dark:text-pearl/90 hover:text-amethyst dark:hover:text-lavender"
-                aria-label={authLabels[language].login}
-              >
-                {authLabels[language].login}
-              </button>
-              <button
-                onClick={() => openModal('register')}
-                className="px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg"
-                style={{
-                  background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
-                  boxShadow: '0 2px 8px rgba(110, 68, 255, 0.3)'
-                }}
-                aria-label={authLabels[language].register}
-              >
-                {authLabels[language].register}
-              </button>
-            </div>
-          ) : (
+          {/* Logout — desktop; Prijava/Registracija nisu na javnom headeru */}
+          {isAuthenticated ? (
             <button
               onClick={logout}
               className="hidden sm:block px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg hover:bg-[rgba(110,68,255,0.05)] dark:hover:bg-[rgba(110,68,255,0.15)] text-plum/90 dark:text-pearl/90 hover:text-amethyst dark:hover:text-lavender"
@@ -168,7 +134,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
             >
               {authLabels[language].logout}
             </button>
-          )}
+          ) : null}
 
           {/* Cart Button - Elegant Design */}
           <button 
@@ -359,46 +325,18 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
                 </Link>
               )
             })}
-            {/* Mobile Auth Buttons - Touch-friendly */}
-            {!isAuthenticated ? (
-              <div className="flex flex-col gap-2 pt-3 sm:pt-4 border-t mt-1 border-[rgba(110,68,255,0.12)] dark:border-lavender/25">
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false)
-                  navigate(isAdmin ? '/admin/settings' : '/admin/login')
-                }}
-                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.2)] transition-all rounded-lg text-plum/90 dark:text-pearl hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
-                style={{ minHeight: '48px' }}
-              >
-                  {authLabels[language].login}
-                </button>
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false)
-                    openModal('register')
-                  }}
-                  className="mobile-menu-item text-left px-4 py-3 text-sm font-semibold text-white rounded-lg transition-all duration-200 active:scale-95"
-                  style={{
-                    background: 'linear-gradient(135deg, #BDA6FF 0%, #6E44FF 100%)',
-                    boxShadow: '0 2px 8px rgba(110, 68, 255, 0.3)',
-                    minHeight: '48px'
-                  }}
-                >
-                  {authLabels[language].register}
-                </button>
-              </div>
-            ) : (
+            {isAuthenticated ? (
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false)
                   logout()
                 }}
-                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.2)] transition-all rounded-lg text-plum/90 dark:text-pearl hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
+                className="mobile-menu-item text-left px-3 py-2.5 sm:px-4 sm:py-3 text-sm font-medium pt-3 sm:pt-4 border-t mt-1 border-[rgba(110,68,255,0.12)] dark:border-lavender/25 active:bg-[rgba(110,68,255,0.05)] dark:active:bg-[rgba(110,68,255,0.2)] transition-all rounded-lg text-plum/90 dark:text-pearl hover:text-amethyst dark:hover:text-lavender active:text-amethyst dark:active:text-lavender"
                 style={{ minHeight: '48px' }}
               >
                 {authLabels[language].logout}
               </button>
-            )}
+            ) : null}
           </nav>
         </div>
       )}
