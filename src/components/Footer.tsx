@@ -1,7 +1,12 @@
+import { Link } from 'react-router-dom'
 import { CONTACT_INFO } from '../config/contact'
 import { BrandDescriptor } from './BrandDescriptor'
 
-export default function Footer() {
+interface FooterProps {
+  language?: 'hr' | 'en'
+}
+
+export default function Footer({ language = 'hr' }: FooterProps) {
   return (
     <footer className="border-t border-[rgba(110,68,255,0.12)] dark:border-lavender/20 bg-gradient-to-b from-white to-[rgba(247,246,255,0.6)] dark:from-[#070812] dark:to-[#12101c]/95">
       <section className="Section py-10 sm:py-12">
@@ -24,9 +29,17 @@ export default function Footer() {
             <BrandDescriptor className="w-full max-w-[22rem] border-t border-amethyst/12 pt-2.5 text-center sm:max-w-none sm:border-t-0 sm:pt-0 sm:text-left" />
           </div>
           
-          <p className="text-sm text-plum/80 dark:text-pearl/70 text-center max-w-md">
-            &copy; 2026 Ani&apos;s Studio &mdash; ru&#269;no izra&#273;eno i dizajnirano u Hrvatskoj
-          </p>
+          <div className="flex flex-col items-center gap-1.5 text-center">
+            <p className="text-sm text-plum/80 dark:text-pearl/70">
+              &copy; 2026 Ani&apos;s Studio &mdash; ru&#269;no izra&#273;eno i dizajnirano u Hrvatskoj
+            </p>
+            <Link
+              to="/politika-privatnosti"
+              className="text-xs text-plum/55 underline-offset-2 hover:text-[--color-primary] hover:underline dark:text-pearl/45 dark:hover:text-lavender transition-colors"
+            >
+              {language === 'hr' ? 'Politika privatnosti' : 'Privacy Policy'}
+            </Link>
+          </div>
           
           <div className="flex flex-wrap items-center justify-center gap-3 min-w-0">
             {/* Email */}

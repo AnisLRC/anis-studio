@@ -38,6 +38,7 @@ const AdminInteriorsProjectDetailPage = lazy(
 const AdminPortfolioPage = lazy(() => import('./pages/AdminPortfolioPage'))
 const AdminReviewsPage = lazy(() => import('./pages/AdminReviewsPage'))
 const OstaviRecenzijuPage = lazy(() => import('./pages/OstaviRecenzijuPage'))
+const PolitikaPrivatnostiPage = lazy(() => import('./pages/PolitikaPrivatnostiPage'))
 
 // Routes component with AnimatePresence
 function AnimatedRoutes({
@@ -110,6 +111,10 @@ function AnimatedRoutes({
             <Route
               path="/ostavi-recenziju"
               element={<OstaviRecenzijuPage language={language} />}
+            />
+            <Route
+              path="/politika-privatnosti"
+              element={<PolitikaPrivatnostiPage language={language} />}
             />
           </Route>
 

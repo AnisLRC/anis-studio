@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useState, type FormEvent } from 'react'
 import toast from 'react-hot-toast'
 import { submitContactInquiry } from '../lib/contactInquiries'
@@ -329,6 +330,17 @@ export default function ContactSection({ language }: ContactSectionProps) {
                   ? (language === 'hr' ? 'Šaljem...' : 'Sending...') 
                   : translations.send[language]}
               </button>
+              <p className="mx-auto mt-4 max-w-sm text-xs leading-relaxed text-plum/52 dark:text-pearl/45">
+                {language === 'hr'
+                  ? 'Vaši podaci koriste se isključivo za odgovor na vaš upit i komunikaciju vezanu uz traženu uslugu. '
+                  : 'Your data is used only to respond to your inquiry and communicate about the requested service. '}
+                <Link
+                  to="/politika-privatnosti"
+                  className="underline underline-offset-2 hover:text-[--color-primary] dark:hover:text-lavender transition-colors"
+                >
+                  {language === 'hr' ? 'Saznajte više u Politici privatnosti.' : 'Learn more in the Privacy Policy.'}
+                </Link>
+              </p>
             </div>
           </form>
         </div>

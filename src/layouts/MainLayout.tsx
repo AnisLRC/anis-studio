@@ -30,7 +30,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       <Outlet />
 
       <ErrorBoundary name="Footer">
-        <Footer />
+        <Footer language={language} />
       </ErrorBoundary>
     </>
   )

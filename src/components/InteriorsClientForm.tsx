@@ -1,6 +1,7 @@
 // src/components/InteriorsClientForm.tsx
 import { useState, useEffect } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAdminStore, type AdminStoreState } from '../lib/admin.store'
 import { trackEvent } from '../lib/analytics'
@@ -1255,7 +1256,7 @@ export function InteriorsClientForm({ stolars: _stolarsUnused, onSubmit, languag
       )}
 
 
-      <div className="mt-6 flex justify-center">
+      <div className="mt-6 flex flex-col items-center gap-3">
         <button
           type="submit"
           disabled={isSubmitting}
@@ -1263,6 +1264,17 @@ export function InteriorsClientForm({ stolars: _stolarsUnused, onSubmit, languag
         >
           {isSubmitting ? (language === 'hr' ? 'Šaljem...' : 'Sending...') : (language === 'hr' ? 'Pošalji upit za projekt' : 'Send project inquiry')}
         </button>
+        <p className="max-w-md text-center text-xs leading-relaxed text-slate-400 dark:text-slate-500">
+          {language === 'hr'
+            ? 'Kontakt podaci i priložene datoteke koriste se isključivo za pregled upita, pripremu ponude i komunikaciju vezanu uz vaš projekt. '
+            : 'Contact details and uploaded files are used only to review your inquiry, prepare an offer, and communicate about your project. '}
+          <Link
+            to="/politika-privatnosti"
+            className="underline underline-offset-2 hover:text-violet-500 transition-colors"
+          >
+            {language === 'hr' ? 'Saznajte više u Politici privatnosti.' : 'Learn more in the Privacy Policy.'}
+          </Link>
+        </p>
       </div>
     </form>
   )
