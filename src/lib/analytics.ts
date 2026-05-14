@@ -1,9 +1,16 @@
 /**
- * Minimal GA4 event helper. Loads gtag only when VITE_GA_MEASUREMENT_ID is set.
- * No-ops safely when ID is missing or gtag is unavailable — never throws to the app.
+ * Minimal GA4 event helper. Loads gtag only when VITE_GA_MEASUREMENT_ID is set and
+ * the user has accepted analytics cookies.
+ * No-ops safely when ID is missing, consent is not granted, or gtag is unavailable.
  */
 
-export const GA_MEASUREMENT_ID = (import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined)?.trim()
+export const GA_MEASUREMENT_ID = (
+  import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined
+)?.trim()
+
+export const ANALYTICS_CONSENT_STORAGE_KEY = 'analytics_consent'
+
+export type AnalyticsConsentDecision = 'accepted' | 'declined'
 
 let initStarted = false
 
@@ -14,8 +21,28 @@ declare global {
   }
 }
 
-/** Call once from main.tsx. Idempotent. */
-export function initGoogleAnalytics(): void {
+/** Read stored analytics cookie choice (null if not chosen yet). */
+export function getAnalyticsConsent(): AnalyticsConsentDecision | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const v = localStorage.getItem(ANALYTICS_CONSENT_STORAGE_KEY)
+    if (v === 'accepted' || v === 'declined') return v
+    return null
+  } catch {
+    return null
+  }
+}
+
+export function setAnalyticsConsent(decision: AnalyticsConsentDecision): void {
+  try {
+    localStorage.setItem(ANALYTICS_CONSENT_STORAGE_KEY, decision)
+  } catch {
+    /* ignore quota / privacy mode */
+  }
+}
+
+/** Idempotent GA4 bootstrap — only loads when Measurement ID exists and consent is accepted. */
+function loadGoogleAnalytics(): void {
   if (typeof window === 'undefined') return
   const id = GA_MEASUREMENT_ID
   if (!id || initStarted) return
@@ -24,8 +51,6 @@ export function initGoogleAnalytics(): void {
   // Standard GA4 stub: push `arguments`, not a rest-array — gtag.js expects this shape.
   window.dataLayer = window.dataLayer || []
   function gtag(...args: unknown[]) {
-    // Create an Arguments-like object so gtag.js receives the same shape
-    // (using an IIFE `.apply` produces an actual Arguments object).
     const argsLike = (function () {
       return arguments
     }).apply(null, args as unknown as any)
@@ -43,6 +68,13 @@ export function initGoogleAnalytics(): void {
     /* silent — tracking optional */
   }
   document.head.appendChild(script)
+}
+
+/** Call after mount / when consent changes. Safe to call repeatedly. */
+export function maybeInitGoogleAnalytics(): void {
+  if (!GA_MEASUREMENT_ID) return
+  if (getAnalyticsConsent() !== 'accepted') return
+  loadGoogleAnalytics()
 }
 
 export type AnalyticsEventName =

@@ -15,6 +15,7 @@ import AdminLayout from './layouts/AdminLayout'
 import HomePage from './pages/HomePage'
 import AdminRoute from './components/AdminRoute'
 import { AdminAuthProvider } from './providers/AdminAuthProvider'
+import CookieBanner from './components/CookieBanner'
 
 const LRCPage = lazy(() => import('./pages/LRCPage'))
 const LrcInquiryPage = lazy(() => import('./pages/LrcInquiryPage'))
@@ -207,6 +208,7 @@ export default function App() {
       )} */}
 
       <BrowserRouter>
+        <CookieBanner language={language} />
         <AdminAuthProvider>
           <AnimatedRoutes
             language={language}

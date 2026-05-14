@@ -72,6 +72,15 @@ const copy = {
         en: 'Your data is not sold. It is not shared with third parties unless necessary for providing the service, technical maintenance of the website, fulfilling a legal obligation, or with your consent.',
       },
     },
+    cookiesAnalytics: {
+      title: { hr: 'Kolačići i analitika', en: 'Cookies and analytics' },
+      body: {
+        hr:
+          'Stranica može koristiti funkcionalnu lokalnu pohranu za postavke kao što su jezik, tema ili košarica. Ako prihvatite analitičke kolačiće, možemo koristiti Google Analytics za razumijevanje posjećenosti i poboljšanje sadržaja. Analitički kolačići nisu nužni za rad stranice i možete ih odbiti.',
+        en:
+          'The website may use functional local storage for preferences such as language, theme, or cart. If you accept analytics cookies, we may use Google Analytics to understand website usage and improve the content. Analytics cookies are not required for the website to work and you can decline them.',
+      },
+    },
     rights: {
       title: { hr: 'Vaša prava', en: 'Your Rights' },
       body: {
