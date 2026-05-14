@@ -4,6 +4,7 @@ import InteriorsSection from '../components/InteriorsSection'
 import FAQSection, { FAQ_ITEMS } from '../sections/FAQSection'
 import { AnimatedPage } from '../components/AnimatedPage'
 import { PageSEO } from '../components/PageSEO'
+import { InteriorsSettingsLoading } from '../components/InteriorsSettingsLoading'
 import { useSettings } from '../hooks/useSettings'
 
 interface InterijeriPageProps {
@@ -44,7 +45,9 @@ export default function InterijeriPage({ language }: InterijeriPageProps) {
   const { settings, isLoading } = useSettings()
   const interiorsVisible = settings?.interiors_public_visible ?? true
 
-  if (isLoading) return null
+  if (isLoading) {
+    return <InteriorsSettingsLoading language={language} seoTitle="Interijeri" />
+  }
 
   if (!interiorsVisible) {
     return (

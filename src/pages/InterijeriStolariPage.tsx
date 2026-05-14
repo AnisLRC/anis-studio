@@ -4,6 +4,7 @@ import { AnimatedPage } from '../components/AnimatedPage'
 import { InteriorsFormPageLayout } from '../components/InteriorsFormPageLayout'
 import { InteriorsCarpenterForm } from '../components/InteriorsCarpenterForm'
 import { PageSEO } from '../components/PageSEO'
+import { InteriorsSettingsLoading } from '../components/InteriorsSettingsLoading'
 import { useSettings } from '../hooks/useSettings'
 
 interface InterijeriStolariPageProps {
@@ -33,7 +34,9 @@ export default function InterijeriStolariPage({ language }: InterijeriStolariPag
   const title =
     language === 'hr' ? 'Upit za stolare i studije' : 'Inquiry for carpenters & furniture studios'
 
-  if (isLoading) return null
+  if (isLoading) {
+    return <InteriorsSettingsLoading language={language} seoTitle="Upit za stolare i studije — Interijeri" />
+  }
 
   if (!interiorsVisible) {
     return (

@@ -5,6 +5,7 @@ import { InteriorsFormPageLayout } from '../components/InteriorsFormPageLayout'
 import { InteriorsClientForm } from '../components/InteriorsClientForm'
 import { INTERIORS_STOLAR_OPTIONS } from '../data/interiorsPublic'
 import { PageSEO } from '../components/PageSEO'
+import { InteriorsSettingsLoading } from '../components/InteriorsSettingsLoading'
 import { useSettings } from '../hooks/useSettings'
 
 interface InterijeriClientsPageProps {
@@ -31,7 +32,9 @@ export default function InterijeriClientsPage({ language }: InterijeriClientsPag
   const interiorsVisible = settings?.interiors_public_visible ?? true
   const title = language === 'hr' ? 'Upit za klijente' : 'Client inquiry'
 
-  if (isLoading) return null
+  if (isLoading) {
+    return <InteriorsSettingsLoading language={language} seoTitle="Upit za klijente — Interijeri" />
+  }
 
   if (!interiorsVisible) {
     return (
