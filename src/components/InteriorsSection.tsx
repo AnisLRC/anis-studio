@@ -350,6 +350,11 @@ export default function InteriorsSection({ language }: InteriorsSectionProps) {
                 : 'What you get and how to use it'}
             </h4>
             <div className="space-y-3 text-sm leading-relaxed text-plum/75 dark:text-pearl/70 sm:text-[0.9375rem]">
+              <p className="font-medium text-plum/85 dark:text-pearl/80">
+                {language === 'hr'
+                  ? 'Naručuješ namještaj, planiraš renovaciju ili razgovaraš s klijentom — ali nisi siguran hoće li sve zajedno izgledati onako kako zamišljaš. 3D vizualizacija to razjašnjava prije nego počneš.'
+                  : "You're ordering furniture, planning a renovation, or presenting to a client — but you're not sure how everything will actually look together. A 3D visualization makes that clear before you start."}
+              </p>
               <p>
                 {language === 'hr'
                   ? '3D prikaz pomaže vam jasnije vidjeti raspored, proporcije, boje, materijale i atmosferu prostora prije daljnjeg uređenja ili izvedbe.'
