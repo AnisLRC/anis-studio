@@ -9,6 +9,7 @@ import {
 } from 'react'
 import clsx from 'clsx'
 import type { Testimonial, TestimonialCategory } from '../data/testimonials'
+import { parseRating1to5 } from '../lib/testimonials'
 
 export type TestimonialRowTone = 'purple' | 'softPink' | 'softBlue'
 
@@ -244,11 +245,7 @@ function toneQuoteLeftAccentClass(rowTone: TestimonialRowTone): string {
 }
 
 function testimonialDisplayRating(testimonial: Testimonial): number | null {
-  const r = testimonial.rating
-  if (typeof r !== 'number' || !Number.isFinite(r)) return null
-  const n = Math.round(r)
-  if (n < 1 || n > 5) return null
-  return n
+  return parseRating1to5(testimonial.rating)
 }
 
 function toneVerifiedBadgeClasses(rowTone: TestimonialRowTone): string {
@@ -454,22 +451,26 @@ function GroupMarqueeBlock({
 }) {
   const verifiedLabel = language === 'hr' ? 'Verificirano' : 'Verified'
   const renderStars = (rating: number) =>
-    Array.from({ length: 5 }).map((_, index) => (
-      <span
-        key={index}
-        className={`inline-block transition-all duration-300 ${
-          index < rating
-            ? 'text-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.5)]'
-            : 'text-gray-300 dark:text-gray-600'
-        }`}
-        style={{
-          fontSize: '0.875rem',
-          animation: index < rating ? `starPulse 2s ease-in-out ${index * 0.1}s infinite` : 'none',
-        }}
-      >
-        ★
-      </span>
-    ))
+    Array.from({ length: 5 }).map((_, index) => {
+      const filled = index < rating
+      return (
+        <span
+          key={index}
+          aria-hidden
+          className={`inline-block transition-all duration-300 ${
+            filled
+              ? 'text-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.5)]'
+              : 'text-plum/22 dark:text-pearl/18 opacity-[0.45]'
+          }`}
+          style={{
+            fontSize: '0.875rem',
+            animation: filled ? `starPulse 2s ease-in-out ${index * 0.1}s infinite` : 'none',
+          }}
+        >
+          ★
+        </span>
+      )
+    })
 
   if (emptyPreview && items.length === 0) {
     return <WebAtelierEmptyPreview language={language} rowTone={rowTone} />

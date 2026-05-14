@@ -146,6 +146,29 @@ function isValidNameDisplayPreference(v: string): v is NameDisplayPreference {
   )
 }
 
+/**
+ * Parsira javnu ocjenu 1–5 iz vrijednosti API-ja (broj, string, bigint).
+ * Vraća null ako nema vrijednosti ili je izvan [1, 5].
+ */
+export function parseRating1to5(raw: unknown): number | null {
+  if (raw == null || raw === '') return null
+  if (typeof raw === 'boolean') return null
+  let n: number
+  if (typeof raw === 'number') {
+    n = raw
+  } else if (typeof raw === 'string') {
+    n = Number(raw.trim())
+  } else if (typeof raw === 'bigint') {
+    n = Number(raw)
+  } else {
+    return null
+  }
+  if (!Number.isFinite(n)) return null
+  const rounded = Math.round(n)
+  if (rounded < 1 || rounded > 5) return null
+  return rounded
+}
+
 function normalizeSubmissionRow(row: Record<string, unknown>): TestimonialSubmission {
   const status = String(row.status ?? '')
   if (!isValidStatus(status)) {
@@ -160,14 +183,7 @@ function normalizeSubmissionRow(row: Record<string, unknown>): TestimonialSubmis
   const pref = String(row.name_display_preference ?? 'first_name_only')
   const name_display_preference = isValidNameDisplayPreference(pref) ? pref : 'first_name_only'
 
-  const ratingRaw = row.rating
-  const rating =
-    ratingRaw == null || ratingRaw === ''
-      ? null
-      : (() => {
-          const n = Number(ratingRaw)
-          return Number.isFinite(n) ? n : null
-        })()
+  const rating = parseRating1to5(row.rating)
 
   return {
     id: String(row.id),
@@ -233,13 +249,7 @@ export async function createTestimonialSubmission(
 
   const derivedDisplay = derivePublicDisplayName(nameTrim, namePreference).trim()
 
-  const ratingSafe: number | null =
-    input.rating != null &&
-    Number.isFinite(input.rating) &&
-    input.rating >= 1 &&
-    input.rating <= 5
-      ? input.rating
-      : null
+  const ratingSafe = parseRating1to5(input.rating)
 
   type PublicInsert = {
     status: 'pending'
@@ -288,7 +298,8 @@ export interface PublicApprovedTestimonialRPC {
   text_to_display: string
   public_display_name: string
   location_display: string | null
-  rating: number | null
+  /** PostgREST / driver može vratiti broj ili string */
+  rating: number | string | null
 }
 
 /**
@@ -318,12 +329,7 @@ export async function fetchApprovedTestimonialSubmissionsPublic(): Promise<Testi
         continue
       }
 
-      const ratingNum =
-        row.rating != null && typeof row.rating === 'number' && Number.isFinite(row.rating)
-          ? row.rating
-          : null
-      const ratingSafe =
-        ratingNum !== null && ratingNum >= 1 && ratingNum <= 5 ? Math.round(ratingNum) : null
+      const ratingSafe = parseRating1to5(row.rating)
 
       const submission: TestimonialSubmission = {
         id: String(row.id),
@@ -377,13 +383,9 @@ export function mapApprovedSubmissionToTestimonial(
     text: { hr: textBody, en: textBody },
   }
 
-  if (
-    row.rating != null &&
-    Number.isFinite(row.rating) &&
-    row.rating >= 1 &&
-    row.rating <= 5
-  ) {
-    testimonial.rating = row.rating
+  const r = parseRating1to5(row.rating)
+  if (r != null) {
+    testimonial.rating = r
   }
 
   return testimonial

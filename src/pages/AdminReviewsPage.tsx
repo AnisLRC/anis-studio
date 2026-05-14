@@ -6,6 +6,7 @@ import {
   deleteTestimonialSubmission,
   derivePublicDisplayName,
   fetchTestimonialSubmissions,
+  parseRating1to5,
   updateTestimonialSubmission,
   type NameDisplayPreference,
   type TestimonialSubmission,
@@ -122,6 +123,8 @@ function ReviewDetailPanel({
   onReject,
   onDeletePermanent,
 }: ReviewDetailPanelProps) {
+  const submissionRating = parseRating1to5(s.rating)
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 bg-slate-50 px-4 py-3">
@@ -152,6 +155,16 @@ function ReviewDetailPanel({
                 <dd className="inline">{s.location_display}</dd>
               </div>
             ) : null}
+            <div>
+              <dt className="inline text-slate-500">Ocjena: </dt>
+              <dd className="inline">
+                {submissionRating != null ? (
+                  <span className="font-semibold text-slate-900">{submissionRating}/5</span>
+                ) : (
+                  <span className="text-slate-400">nije unesena</span>
+                )}
+              </dd>
+            </div>
           </dl>
         </div>
         <div className="text-sm">
@@ -560,6 +573,7 @@ export default function AdminReviewsPage() {
               <ul className="max-h-[min(70vh,28rem)] space-y-2 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50/80 p-2 lg:max-h-[min(80vh,36rem)]">
                 {sortedSubmissions.map((s) => {
                   const isSel = s.id === selectedReviewId
+                  const listRating = parseRating1to5(s.rating)
                   return (
                     <li key={s.id}>
                       <button
@@ -590,6 +604,11 @@ export default function AdminReviewsPage() {
                         <p className="mt-1 line-clamp-2 text-xs leading-snug text-slate-600">
                           {previewSnippet(s)}
                         </p>
+                        {listRating != null ? (
+                          <p className="mt-1 text-xs font-semibold text-amber-900/90">
+                            Ocjena: {listRating}/5
+                          </p>
+                        ) : null}
                         <span className="mt-2 inline-block text-xs font-medium text-violet-600">
                           {isSel ? 'Odabrano' : 'Otvori'}
                         </span>
