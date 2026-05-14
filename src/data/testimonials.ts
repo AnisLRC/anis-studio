@@ -18,7 +18,7 @@ export interface Testimonial {
 export const TESTIMONIALS: Testimonial[] = [
   {
     id: 1,
-    name: 'Danijel Kordić',
+    name: 'D. K.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'general',
@@ -29,7 +29,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 2,
-    name: 'Ivica Biškup',
+    name: 'I. B.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'lrc',
@@ -40,7 +40,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 3,
-    name: 'Martina Damjanović',
+    name: 'M. D.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'general',
@@ -51,7 +51,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 4,
-    name: 'Sanja Mlinek Vučković',
+    name: 'S. M. V.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'general',
@@ -62,7 +62,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 5,
-    name: 'Danijel Drmić',
+    name: 'D. D.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'general',
@@ -73,7 +73,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 6,
-    name: 'Katarina Ronto',
+    name: 'K. R.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'lrc',
@@ -84,7 +84,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 7,
-    name: 'Đanela Novljaković',
+    name: 'Đ. N.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'lrc',
@@ -95,7 +95,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 8,
-    name: 'Branka Brana',
+    name: 'B. B.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'lrc',
@@ -106,7 +106,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 9,
-    name: 'Damir Pejić',
+    name: 'D. P.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'lrc',
@@ -117,7 +117,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 10,
-    name: 'Mirela Galić',
+    name: 'M. G.',
     location: { hr: 'Hrvatska', en: 'Croatia' },
     rating: 5,
     category: 'lrc',
