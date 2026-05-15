@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useSettings } from '../hooks/useSettings'
 import { DecorativeSkyBackdrop } from './DecorativeSkyBackdrop'
+import aboutStudioImage from '../assets/about/anamarija-about.png'
 
 interface AboutSectionProps {
   language: 'hr' | 'en'
@@ -22,6 +23,10 @@ export default function AboutSection({ language }: AboutSectionProps) {
     authorName: {
       hr: 'Anamarija Vincetić',
       en: 'Anamarija Vincetić'
+    },
+    imageAlt: {
+      hr: "Vizualni prikaz Ani's Studia i glavnih kreativnih usluga",
+      en: "Visual overview of Ani's Studio and its main creative services",
     },
     bio: {
       hr: [
@@ -160,8 +165,8 @@ export default function AboutSection({ language }: AboutSectionProps) {
 
         {/* Main Content: Bio + Photo */}
         <div className="mb-14 flex flex-col items-stretch gap-10 sm:mb-16 sm:gap-12 lg:flex-row lg:items-start lg:gap-14">
-          {/* Bio Text - Left Side (60%) */}
-          <div className="order-2 flex-1 lg:order-1 lg:w-[58%]">
+          {/* Bio Text - Left Side */}
+          <div className="order-2 min-w-0 flex-1 lg:order-1 lg:w-[48%]">
             <div className="mx-auto max-w-[42rem] space-y-5 text-base leading-[1.7] text-plum/85 dark:text-pearl/80 sm:space-y-6 lg:mx-0 lg:max-w-[40rem]">
               <p
                 className="fade-in mb-5 text-center text-[2.05rem] leading-[1.05] tracking-[0.01em] text-[--color-primary] antialiased dark:text-lavender sm:mb-6 sm:text-[2.35rem] lg:text-left lg:text-[2.5rem]"
@@ -219,16 +224,19 @@ export default function AboutSection({ language }: AboutSectionProps) {
             </div>
           </div>
 
-          {/* Photo - Right Side (40%) */}
-          <div className="order-1 flex justify-center lg:order-2 lg:w-[42%] lg:justify-end lg:sticky lg:top-28">
-            <div 
-              className="relative w-56 h-56 rounded-full bg-gradient-to-br from-[rgba(189,166,255,0.3)] to-[rgba(110,68,255,0.2)] p-1.5 shadow-2xl hover:shadow-[0_0_40px_rgba(110,68,255,0.4)] transition-all duration-500 animate-float"
-              style={{ animationDuration: '3s' }}
-            >
-              <div className="w-full h-full rounded-full bg-gradient-to-br from-[#BDA6FF] to-[#6E44FF] flex items-center justify-center relative overflow-hidden group hover:scale-105 transition-transform duration-500">
-                <span className="text-6xl font-bold text-white relative z-10">AV</span>
-                {/* Subtle glow effect */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          {/* Studio overview image — full artwork visible (4:3), not cropped */}
+          <div className="order-1 flex w-full min-w-0 justify-center lg:order-2 lg:w-[52%] lg:justify-end lg:self-start lg:sticky lg:top-28">
+            <div className="relative w-full max-w-lg xl:max-w-xl rounded-3xl border border-[rgba(110,68,255,0.14)] bg-white/45 p-2 shadow-[0_12px_48px_rgba(46,36,71,0.1),0_0_0_1px_rgba(110,68,255,0.06)] backdrop-blur-md transition-shadow duration-300 hover:shadow-[0_18px_56px_rgba(110,68,255,0.2),0_0_0_1px_rgba(110,68,255,0.1)] dark:border-lavender/18 dark:bg-white/[0.06] dark:shadow-[0_16px_56px_rgba(0,0,0,0.32),0_0_0_1px_rgba(189,166,255,0.08)] dark:hover:shadow-[0_22px_64px_rgba(189,166,255,0.16),0_0_0_1px_rgba(189,166,255,0.12)] sm:p-2.5">
+              <div className="relative overflow-hidden rounded-2xl bg-[rgba(248,246,255,0.55)] ring-1 ring-inset ring-[rgba(110,68,255,0.1)] dark:bg-white/[0.04] dark:ring-lavender/12">
+                <img
+                  src={aboutStudioImage}
+                  alt={translations.imageAlt[language]}
+                  width={1448}
+                  height={1086}
+                  className="block h-auto w-full object-contain"
+                  decoding="async"
+                  loading="lazy"
+                />
               </div>
             </div>
           </div>
