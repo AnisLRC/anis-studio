@@ -160,7 +160,7 @@ export default function ContactPage({ language }: ContactPageProps) {
                   {translations.contactInfo[language].email}
                 </div>
                 <a
-                  href={`mailto:${CONTACT_INFO.email}`}
+                  href="#kontakt-forma"
                   className="break-all text-sm font-semibold text-[--color-primary] transition-colors hover:underline dark:text-lavender"
                 >
                   {CONTACT_INFO.email}
@@ -177,8 +177,14 @@ export default function ContactPage({ language }: ContactPageProps) {
                   {translations.contactInfo[language].phone}
                 </div>
                 <a
-                  href={`tel:${CONTACT_INFO.phone}`}
-                  className="text-sm font-semibold text-[--color-primary] transition-colors hover:underline dark:text-lavender"
+                  href={`tel:${CONTACT_INFO.phone.replace(/\s/g, '')}`}
+                  className="text-sm font-semibold text-[--color-primary] transition-colors hover:underline dark:text-lavender md:hidden"
+                >
+                  {CONTACT_INFO.phone}
+                </a>
+                <a
+                  href="#kontakt-forma"
+                  className="hidden text-sm font-semibold text-[--color-primary] transition-colors hover:underline dark:text-lavender md:inline"
                 >
                   {CONTACT_INFO.phone}
                 </a>

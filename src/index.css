@@ -16,6 +16,42 @@
   --color-ink-muted: #5c4d70;
   --pearl-0: 245 243 250;
   --pearl-1: 240 238 248;
+  /* Global atmospheric mist (I8E-2): tuned per theme below */
+  --atm-base-light: rgb(var(--pearl-0));
+  --atm-base-dark: rgb(7 8 18);
+}
+
+/* === GLOBAL ATMOSPHERIC BACKDROP (I8E-2) — fixed, behind #root === */
+body {
+  position: relative;
+}
+
+/* I8E-2b: jedno kontinuirano platno — širi, mekši radijali; maglica kroz cijeli viewport */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 160% 100% at 50% -25%, rgba(110, 68, 255, 0.085), transparent 58%),
+    radial-gradient(ellipse 90% 75% at 100% 35%, rgba(189, 166, 255, 0.11), transparent 62%),
+    radial-gradient(ellipse 85% 70% at 0% 65%, rgba(110, 68, 255, 0.055), transparent 60%),
+    radial-gradient(ellipse 130% 90% at 50% 115%, rgba(189, 166, 255, 0.065), transparent 62%);
+}
+
+html.dark body::before {
+  /* Mekši, ravnomjerniji mist — manje „blobova“ koji izgledaju kao odvojeni blokovi */
+  background:
+    radial-gradient(ellipse 160% 110% at 50% -18%, rgba(110, 68, 255, 0.11), transparent 62%),
+    radial-gradient(ellipse 110% 85% at 96% 38%, rgba(189, 166, 255, 0.065), transparent 65%),
+    radial-gradient(ellipse 100% 75% at 4% 68%, rgba(83, 45, 198, 0.075), transparent 64%),
+    radial-gradient(ellipse 150% 95% at 50% 112%, rgba(110, 68, 255, 0.055), transparent 65%);
+}
+
+#root {
+  position: relative;
+  z-index: 1;
 }
 
 /* === BASE (text must be visible by default) === */
@@ -28,13 +64,14 @@
   html, body, #root { min-height: 100%; }
   body {
     color: var(--color-ink);
-    background: rgb(var(--pearl-0));
+    background: var(--atm-base-light);
     font-feature-settings: "cv02","cv03","cv04","cv11";
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
   
   html.dark body {
-    background: rgb(7 8 18);
+    /* I8E-2d: ravna cosmic baza — dubinu daje samo body::before (bez vertikalnog „rezanja“) */
+    background: var(--atm-base-dark);
     color: #F9F7FB;
   }
   a:hover { color: var(--color-primary); }
@@ -125,18 +162,18 @@
 /* === COMPONENTS === */
 @layer components {
   .header-glass{
-    background: color-mix(in oklab, #F5F3FA 86%, transparent);
-    -webkit-backdrop-filter: saturate(140%) blur(14px);
-            backdrop-filter: saturate(140%) blur(14px);
-    border-bottom: 1px solid rgba(110, 68, 255, 0.09);
-    box-shadow: 0 1px 0 0 rgba(46, 36, 71, 0.04), 0 4px 16px rgba(110, 68, 255, 0.06);
+    background: color-mix(in oklab, #F5F3FA 72%, transparent);
+    -webkit-backdrop-filter: saturate(135%) blur(16px);
+            backdrop-filter: saturate(135%) blur(16px);
+    border-bottom: 1px solid rgba(110, 68, 255, 0.055);
+    box-shadow: none;
   }
 
-  /* Dark mode: header glass must not stay on the light “white 88%” mix (hurts mobile menu contrast). */
+  /* Dark: stopi se s cosmic bazom — bez tamnog „ploča“ obruba */
   html.dark .header-glass {
-    background: color-mix(in oklab, rgb(7 8 18) 94%, transparent);
-    border-bottom-color: rgba(189, 166, 255, 0.12);
-    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.04), 0 4px 16px rgba(0, 0, 0, 0.35);
+    background: color-mix(in oklab, rgb(7 8 18) 68%, transparent);
+    border-bottom-color: rgba(110, 68, 255, 0.055);
+    box-shadow: none;
   }
 
   .btn{ 
@@ -535,27 +572,31 @@
    * Soft aurora / nebula mist atop hero-sky PNGs (DecorativeSkyBackdrop).
    * CSS-only; slow transform drift; disabled on reduced motion & small screens.
    */
+  /* I8E-2b: PNG tekstura suptilna; kontinuitet daje body::before */
   .sky-backdrop-stack {
     isolation: isolate;
+  }
+
+  .sky-backdrop-stack > div.absolute.inset-0.z-0 {
+    opacity: 0.58;
+  }
+
+  html.dark .sky-backdrop-stack > div.absolute.inset-0.z-0 {
+    opacity: 0.42;
   }
 
   .sky-aurora {
     z-index: 1;
   }
 
-  /* Light: pearl/lavender veo — zadrži suptilno */
   .sky-aurora--light {
     mix-blend-mode: soft-light;
-    opacity: 0.4;
+    opacity: 0.28;
   }
 
-  /*
-   * Dark: soft-light skoro „pojede“ ljubičasto na tamnom PNG-u; screen daje
-   * vidljivu maglicu bez punog neon sloja kao kod normal + vrlo jakih alfa.
-   */
   .sky-aurora--dark {
     mix-blend-mode: screen;
-    opacity: 0.46;
+    opacity: 0.20;
   }
 
   .sky-aurora__blob {
@@ -563,7 +604,7 @@
     display: block;
     pointer-events: none;
     inset: auto;
-    will-change: transform, opacity;
+    will-change: auto;
   }
 
   .sky-aurora__blob--light-a {
@@ -577,7 +618,7 @@
       rgba(110, 68, 255, 0.06) 38%,
       transparent 72%
     );
-    animation: sky-aurora-drift-a 96s ease-in-out infinite alternate;
+    animation: none;
   }
 
   .sky-aurora__blob--light-b {
@@ -591,8 +632,7 @@
       rgba(189, 166, 255, 0.07) 40%,
       transparent 74%
     );
-    animation: sky-aurora-drift-b 110s ease-in-out infinite alternate;
-    animation-delay: -18s;
+    animation: none;
   }
 
   /* Dark: čitljivija ljubičasta/nebula dubina (#6E44FF / #BDA6FF), bez cyan naglaska */
@@ -608,7 +648,7 @@
       rgba(83, 45, 198, 0.08) 52%,
       transparent 74%
     );
-    animation: sky-aurora-drift-a 90s ease-in-out infinite alternate;
+    animation: none;
   }
 
   .sky-aurora__blob--dark-b {
@@ -623,8 +663,7 @@
       rgba(110, 68, 255, 0.06) 55%,
       transparent 76%
     );
-    animation: sky-aurora-drift-b 118s ease-in-out infinite alternate;
-    animation-delay: -42s;
+    animation: none;
   }
 
   .sky-aurora__blob--dark-c {
@@ -639,63 +678,19 @@
       rgba(28, 20, 48, 0.28) 58%,
       transparent 80%
     );
-    animation: sky-aurora-drift-c 78s ease-in-out infinite alternate;
-    animation-delay: -28s;
+    animation: none;
   }
 
-  @keyframes sky-aurora-drift-a {
-    0% {
-      transform: translate3d(0, 0, 0) scale(1);
-      opacity: 0.85;
-    }
-    35% {
-      transform: translate3d(5%, -3.5%, 0) scale(1.04);
-      opacity: 1;
-    }
-    100% {
-      transform: translate3d(-4%, 4%, 0) scale(1.015);
-      opacity: 0.88;
-    }
-  }
+  /* Aurora blobovi statični (I8E-2); drift animacije uklonjene radi ujednačenosti. */
 
-  @keyframes sky-aurora-drift-b {
-    0% {
-      transform: translate3d(0, 0, 0) scale(1.03);
-      opacity: 0.78;
-    }
-    40% {
-      transform: translate3d(-6%, 4%, 0) scale(0.98);
-      opacity: 0.95;
-    }
-    100% {
-      transform: translate3d(4%, -5%, 0) scale(1.05);
-      opacity: 0.82;
-    }
-  }
-
-  @keyframes sky-aurora-drift-c {
-    0% {
-      transform: translate3d(0, 0, 0) scale(1);
-      opacity: 0.72;
-    }
-    55% {
-      transform: translate3d(5%, -2%, 0) scale(1.06);
-      opacity: 0.92;
-    }
-    100% {
-      transform: translate3d(-3%, -5%, 0) scale(0.99);
-      opacity: 0.75;
-    }
-  }
-
-  /* Mobile: statički blobs, blago jači tamni sloj jer nema drift animacije */
+  /* Mobile: statični blobs; blago jači tamni sloj */
   @media (max-width: 640px) {
     .sky-aurora__blob {
       animation: none !important;
       will-change: auto;
     }
     .sky-aurora--dark {
-      opacity: 0.52;
+      opacity: 0.22;
     }
   }
 
@@ -710,7 +705,7 @@
     .sky-aurora__blob--dark-a,
     .sky-aurora__blob--dark-b,
     .sky-aurora__blob--dark-c {
-      opacity: 0.9;
+      opacity: 1;
       transform: none;
     }
     *,
@@ -723,23 +718,67 @@
     }
   }
   
-  /* Background overlay utilities for sections */
+  /*
+   * I8E-2b: „platno“ — bez jakih horizontalnih traka; samo blagi vignette + lavender tišina.
+   * Tekst čitljivosti drže kartice / sky PNG uz smanjenu neprozirnost.
+   */
   .section-bg-overlay-light {
-    background: linear-gradient(
-      to bottom,
-      rgba(245, 243, 250, 0.62) 0%,
-      rgba(245, 243, 250, 0.54) 50%,
-      rgba(245, 243, 250, 0.62) 100%
-    );
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(110, 68, 255, 0.028) 0%,
+        transparent 36%,
+        transparent 64%,
+        rgba(189, 166, 255, 0.038) 100%
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(248, 246, 255, 0.14) 0%,
+        rgba(245, 243, 250, 0.06) 45%,
+        rgba(248, 246, 255, 0.12) 100%
+      );
   }
-  
+
+  /*
+   * Dark (I8E-2d): bez rgba(7,8,18,…) „ploča“ — to je rezalo horizontalne trake na rubovima sekcija.
+   * Samo suptilan ljubičasti vignette; kontinuitet drži body + body::before.
+   */
   html.dark .section-bg-overlay-dark {
     background: linear-gradient(
-      to bottom,
-      rgba(7, 8, 18, 0.80) 0%,
-      rgba(7, 8, 18, 0.75) 50%,
-      rgba(7, 8, 18, 0.80) 100%
+      180deg,
+      rgba(110, 68, 255, 0.052) 0%,
+      transparent 28%,
+      transparent 72%,
+      rgba(189, 166, 255, 0.042) 100%
     );
+  }
+
+  /* Homepage kontakt (#kontakt): još suptilniji wash od sky sekcija — stopi se s globalnim platnom */
+  html.dark .homepage-contact-atmosphere {
+    background: linear-gradient(
+      180deg,
+      rgba(110, 68, 255, 0.032) 0%,
+      transparent 38%,
+      transparent 62%,
+      rgba(189, 166, 255, 0.026) 100%
+    );
+  }
+
+  html:not(.dark) .homepage-contact-atmosphere {
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(110, 68, 255, 0.02) 0%,
+        transparent 38%,
+        transparent 62%,
+        rgba(189, 166, 255, 0.026) 100%
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(248, 246, 255, 0.09) 0%,
+        rgba(245, 243, 250, 0.045) 50%,
+        rgba(248, 246, 255, 0.075) 100%
+      );
   }
   
   /* Text styles for sections with background images */

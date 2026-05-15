@@ -216,7 +216,10 @@ export default function ContactSection({ language }: ContactSectionProps) {
           </p>
         </div>
 
-        <div className="fade-in rounded-3xl border border-[rgba(110,68,255,0.14)] bg-white/85 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] ring-1 ring-[rgba(110,68,255,0.06)] backdrop-blur-sm dark:border-lavender/18 dark:bg-white/[0.07] dark:shadow-[0_12px_48px_rgba(0,0,0,0.2)] dark:ring-lavender/10 sm:p-8 md:p-9">
+        <div
+          id="kontakt-forma"
+          className="fade-in scroll-mt-[72px] rounded-3xl border border-[rgba(110,68,255,0.14)] bg-white/85 p-6 shadow-[0_8px_40px_rgba(46,36,71,0.06)] ring-1 ring-[rgba(110,68,255,0.06)] backdrop-blur-sm dark:border-lavender/18 dark:bg-white/[0.07] dark:shadow-[0_12px_48px_rgba(0,0,0,0.2)] dark:ring-lavender/10 sm:p-8 md:p-9"
+        >
           <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-6 sm:space-y-7">
             <div
               style={{ 

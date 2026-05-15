@@ -135,17 +135,19 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           <SparklesCanvas className="pointer-events-none absolute inset-0 z-[4] h-full w-full opacity-60" />
         )}
 
-        {/* Bottom fade to page background (light & dark) */}
+        {/* Bottom fade — pearl kao body (nije čisti bijeli rez prema sljedećoj sekciji) */}
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-56"
           style={{
-            background: 'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))'
+            background: 'linear-gradient(to bottom, rgba(245,243,250,0), rgb(245,243,250))'
           }}
         />
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-56 hidden dark:block"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-44 hidden dark:block sm:h-52"
           style={{
-            background: 'linear-gradient(to bottom, rgba(7,8,18,0), rgba(7,8,18,1))'
+            /* Mekši prijelaz prema donjim sekcijama — bez pune neprozirnosti koja reže platno */
+            background:
+              'linear-gradient(to bottom, rgba(7,8,18,0), rgba(7,8,18,0.42) 72%, rgba(7,8,18,0.72))',
           }}
         />
       </div>
@@ -246,7 +248,7 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
 
         {/* Bridge — što je Ani's Studio (interiors-first javni fokus) */}
         <div
-          className="mx-auto mt-10 max-w-[min(100%,34rem)] space-y-4 border-t border-amethyst/10 px-1 pt-10 text-center dark:border-lavender/15 sm:mt-12 sm:max-w-2xl sm:space-y-5 sm:pt-12"
+          className="mx-auto mt-10 max-w-[min(100%,34rem)] space-y-4 border-t border-amethyst/10 px-1 pt-10 text-center dark:border-transparent sm:mt-12 sm:max-w-2xl sm:space-y-5 sm:pt-12"
           aria-labelledby="welcome-bridge-heading"
         >
           <h2 id="welcome-bridge-heading" className="sr-only">

@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { Mail, Phone, MessageCircle, Zap, Users } from 'lucide-react'
-import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
+
+/** Istovjetan format kao u CONTACT_INFO za tel: URI (bez razmaka). */
+const PHONE_TEL_HREF = 'tel:+385955526625'
 
 interface ContactSectionProps {
   language?: 'hr' | 'en'
@@ -53,14 +55,9 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           50% { box-shadow: 0 0 35px rgba(110,68,255,0.6), 0 22px 60px rgba(110,68,255,0.45); }
         }
       `}</style>
-      {/* Background wrapper */}
-      <div className="absolute inset-0 overflow-hidden -z-10">
-        <DecorativeSkyBackdrop priority="lazy" />
-        {/* Overlay for readability */}
-        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
-        {/* Additional glow effects */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amethyst/10 dark:bg-lavender/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lavender/10 dark:bg-amethyst/5 rounded-full blur-3xl" />
+      {/* Pozadina: globalni canvas + suptilan wash (bez sky PNG pravokutnika) */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden>
+        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark homepage-contact-atmosphere" />
       </div>
 
       <div className="relative z-10 mx-auto min-w-0 max-w-5xl px-4 sm:px-6">
@@ -76,9 +73,9 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
 
         {/* Contact Cards */}
         <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-3 sm:gap-5 md:gap-6">
-          {/* Email Card */}
-          <a
-            href="mailto:info.anilrc@gmail.com"
+          {/* Email Card — vodi na kontakt formu (bez mailto) */}
+          <Link
+            to="/kontakt#kontakt-forma"
             className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
               bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
               border border-amethyst/20 dark:border-lavender/25
@@ -105,38 +102,67 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
             <div className="mt-1 text-base font-bold text-plum/90 dark:text-white break-all group-hover:text-amethyst dark:group-hover:text-lavender transition-colors">
               info.anilrc@gmail.com
             </div>
-          </a>
+          </Link>
 
-          {/* Phone Card */}
-          <a
-            href="tel:+385955526625"
-            className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
+          {/* Phone Card — mobilni poziv (tel); desktop → forma (jedna grid ćelija) */}
+          <div className="min-h-0">
+            <a
+              href={PHONE_TEL_HREF}
+              className="group flex h-full min-h-0 flex-col rounded-2xl p-5 text-center sm:p-6 md:hidden
               bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
               border border-amethyst/20 dark:border-lavender/25
               shadow-[0_4px_20px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
               hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
               hover:-translate-y-2
               transition-all duration-300"
-          >
-            {/* Icon container with gradient */}
-            <div className="flex justify-center">
-              <div className="
+            >
+              <div className="flex justify-center">
+                <div className="
                 w-16 h-16 rounded-2xl flex items-center justify-center
                 bg-gradient-to-br from-amethyst/20 to-lavender/20 
                 dark:from-amethyst/40 dark:to-lavender/35
                 group-hover:from-amethyst/30 group-hover:to-lavender/30
                 transition-all duration-300
               ">
-                <Phone className="w-7 h-7 text-amethyst dark:text-lavender" />
+                  <Phone className="w-7 h-7 text-amethyst dark:text-lavender" />
+                </div>
               </div>
-            </div>
-            <div className="mt-4 text-sm font-semibold text-plum/80 dark:text-pearl/80">
-              {translations.phone[language]}
-            </div>
-            <div className="mt-1 text-base font-bold text-plum/90 dark:text-white group-hover:text-amethyst dark:group-hover:text-lavender transition-colors">
-              095 552 6625
-            </div>
-          </a>
+              <div className="mt-4 text-sm font-semibold text-plum/80 dark:text-pearl/80">
+                {translations.phone[language]}
+              </div>
+              <div className="mt-1 text-base font-bold text-plum/90 dark:text-white group-hover:text-amethyst dark:group-hover:text-lavender transition-colors">
+                095 552 6625
+              </div>
+            </a>
+            <Link
+              to="/kontakt#kontakt-forma"
+              className="group hidden h-full min-h-0 flex-col rounded-2xl p-5 text-center sm:p-6 md:flex
+              bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
+              border border-amethyst/20 dark:border-lavender/25
+              shadow-[0_4px_20px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
+              hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
+              hover:-translate-y-2
+              transition-all duration-300"
+            >
+              <div className="flex justify-center">
+                <div className="
+                w-16 h-16 rounded-2xl flex items-center justify-center
+                bg-gradient-to-br from-amethyst/20 to-lavender/20 
+                dark:from-amethyst/40 dark:to-lavender/35
+                group-hover:from-amethyst/30 group-hover:to-lavender/30
+                transition-all duration-300
+              ">
+                  <Phone className="w-7 h-7 text-amethyst dark:text-lavender" />
+                </div>
+              </div>
+              <div className="mt-4 text-sm font-semibold text-plum/80 dark:text-pearl/80">
+                {translations.phone[language]}
+              </div>
+              <div className="mt-1 text-base font-bold text-plum/90 dark:text-white group-hover:text-amethyst dark:group-hover:text-lavender transition-colors">
+                095 552 6625
+              </div>
+            </Link>
+          </div>
 
           {/* Message Card */}
           <Link
