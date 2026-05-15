@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { CONTACT_INFO } from '../config/contact'
+import { useSettings } from '../hooks/useSettings'
 import { BrandDescriptor } from './BrandDescriptor'
 
 interface FooterProps {
@@ -7,6 +7,11 @@ interface FooterProps {
 }
 
 export default function Footer({ language = 'hr' }: FooterProps) {
+  const { settings } = useSettings()
+  const showInteriorsSocial = settings?.interiors_public_visible ?? true
+  const showLrcSocial = settings?.lrc_public_visible ?? false
+  const hasFooterSocialIcons = showInteriorsSocial || showLrcSocial
+
   return (
     <footer className="border-t border-[rgba(110,68,255,0.12)] dark:border-lavender/20 bg-gradient-to-b from-white to-[rgba(247,246,255,0.6)] dark:from-[#070812] dark:to-[#12101c]/95">
       <section className="Section py-10 sm:py-12">
@@ -41,34 +46,24 @@ export default function Footer({ language = 'hr' }: FooterProps) {
             </Link>
           </div>
           
+          {hasFooterSocialIcons && (
           <div className="flex flex-wrap items-center justify-center gap-3 min-w-0">
-            {/* Email */}
+            {showInteriorsSocial && (
             <a 
-              className="w-11 h-11 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[rgba(110,68,255,0.4)] dark:hover:border-lavender/40"
-              href={`mailto:${CONTACT_INFO.email}`}
-              aria-label="Email"
+              className="w-11 h-11 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#0077B5]"
+              href="https://www.linkedin.com/in/anamarija-vinceti%C4%87-92118336/" 
+              aria-label="LinkedIn"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#6E44FF' }}>
-                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#0077B5' }}>
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
               </svg>
             </a>
+            )}
 
-            {/* Facebook */}
-            <a 
-              className="w-11 h-11 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#1877F2]"
-              href="https://www.facebook.com/profile.php?id=61566842910187" 
-              aria-label="Facebook"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#1877F2' }}>
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-            </a>
-
-            {/* Instagram */}
+            {showLrcSocial && (
+            <>
             <a 
               className="w-11 h-11 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-transparent"
               href="https://www.instagram.com/ani.lrc/" 
@@ -88,20 +83,18 @@ export default function Footer({ language = 'hr' }: FooterProps) {
               </svg>
             </a>
 
-            {/* LinkedIn */}
             <a 
-              className="w-11 h-11 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#0077B5]"
-              href="https://www.linkedin.com/in/anamarija-vinceti%C4%87-92118336/" 
-              aria-label="LinkedIn"
+              className="w-11 h-11 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#1877F2]"
+              href="https://www.facebook.com/profile.php?id=61566842910187" 
+              aria-label="Facebook"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#0077B5' }}>
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#1877F2' }}>
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
             </a>
 
-            {/* TikTok */}
             <a 
               className="w-11 h-11 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#000000] dark:hover:border-slate-500"
               href="https://www.tiktok.com/@ani.lrc" 
@@ -114,7 +107,6 @@ export default function Footer({ language = 'hr' }: FooterProps) {
               </svg>
             </a>
 
-            {/* YouTube */}
             <a 
               className="w-11 h-11 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#FF0000]"
               href="https://www.youtube.com/channel/UCXbvukeRxI8_z6t_pNAscQQ" 
@@ -126,7 +118,10 @@ export default function Footer({ language = 'hr' }: FooterProps) {
                 <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
               </svg>
             </a>
+            </>
+            )}
           </div>
+          )}
         </div>
       </section>
     </footer>
