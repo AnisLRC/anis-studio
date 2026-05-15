@@ -73,6 +73,18 @@ export interface Project {
   area_m2: number | null
   budget: number | null
   notes: string | null
+  /** Admin: ručna oznaka da je molba za recenziju poslana; null = nije poslano */
+  review_request_sent_at: string | null
+}
+
+/** Globalni admin predložak molbe za recenziju (nije vezan uz pojedini projekt). */
+export type ReviewRequestTemplateCategory = 'interiors' | 'lrc' | 'webAtelier'
+
+export interface ReviewRequestTemplate {
+  category: ReviewRequestTemplateCategory
+  message: string
+  created_at: string
+  updated_at: string
 }
 
 export type ProjectFileType =
@@ -442,6 +454,7 @@ export async function updateProjectStatus(
       area_m2: null,
       budget: null,
       notes: null,
+      review_request_sent_at: null,
     }
   }
 
@@ -461,6 +474,131 @@ export async function updateProjectStatus(
   }
 
   return data as Project
+}
+
+/**
+ * Postavlja ručnu admin oznaku "molba za recenziju poslana".
+ * `null` = nije poslano (toggle isključen).
+ */
+export async function updateProjectReviewRequestSentAt(
+  projectId: string,
+  reviewRequestSentAt: string | null
+): Promise<Project> {
+  if (!isSupabaseConfigured || !supabase) {
+    console.log('[Interiors] updateProjectReviewRequestSentAt (fallback)', {
+      projectId,
+      reviewRequestSentAt,
+    })
+    const now = new Date().toISOString()
+    return {
+      id: projectId,
+      created_at: now,
+      updated_at: now,
+      title: '',
+      user_type: 'client',
+      client_id: null,
+      carpenter_id: null,
+      drawn_by: 'ani',
+      uses_corpus: false,
+      wants_vr: false,
+      vr_location_preference: null,
+      vr_package_preference: null,
+      status: 'inquiry',
+      space_type: null,
+      area_m2: null,
+      budget: null,
+      notes: null,
+      review_request_sent_at: reviewRequestSentAt,
+    }
+  }
+
+  const { data, error } = await supabase!
+    .from('projects')
+    .update({
+      review_request_sent_at: reviewRequestSentAt,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', projectId)
+    .select('*')
+    .single()
+
+  if (error) {
+    console.error('[Interiors] updateProjectReviewRequestSentAt error:', error)
+    throw error
+  }
+
+  return data as Project
+}
+
+/**
+ * Dohvaća globalni predložak poruke za molbu o recenziji (po kategoriji).
+ * Vraća null ako red ne postoji ili Supabase nije konfiguriran.
+ */
+export async function fetchReviewRequestTemplate(
+  category: ReviewRequestTemplateCategory
+): Promise<ReviewRequestTemplate | null> {
+  if (!isSupabaseConfigured || !supabase) {
+    console.log('[Interiors] fetchReviewRequestTemplate (fallback)', category)
+    return null
+  }
+
+  const { data, error } = await supabase
+    .from('review_request_templates')
+    .select('*')
+    .eq('category', category)
+    .maybeSingle()
+
+  if (error) {
+    console.error('[Interiors] fetchReviewRequestTemplate error:', error)
+    throw error
+  }
+
+  return (data as ReviewRequestTemplate) ?? null
+}
+
+/**
+ * Sprema globalni predložak (upsert po category).
+ */
+export async function upsertReviewRequestTemplate(
+  category: ReviewRequestTemplateCategory,
+  message: string
+): Promise<ReviewRequestTemplate> {
+  const trimmed = message.trim()
+  if (!trimmed) {
+    throw new Error('Predložak poruke ne smije biti prazan.')
+  }
+
+  if (!isSupabaseConfigured || !supabase) {
+    console.log('[Interiors] upsertReviewRequestTemplate (fallback)', {
+      category,
+    })
+    const now = new Date().toISOString()
+    return {
+      category,
+      message: trimmed,
+      created_at: now,
+      updated_at: now,
+    }
+  }
+
+  const { data, error } = await supabase
+    .from('review_request_templates')
+    .upsert(
+      {
+        category,
+        message: trimmed,
+      },
+      { onConflict: 'category' }
+    )
+    .select('*')
+    .single()
+
+  if (error) {
+    console.error('[Interiors] upsertReviewRequestTemplate error:', error)
+    throw error
+  }
+
+  return data as ReviewRequestTemplate
 }
 
 /**

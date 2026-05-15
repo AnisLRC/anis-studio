@@ -11,6 +11,10 @@ import {
   fetchVrAppointmentsForScene,
   createVrAppointment,
   deleteProject,
+  updateProjectReviewRequestSentAt,
+  fetchReviewRequestTemplate,
+  upsertReviewRequestTemplate,
+  type ReviewRequestTemplate,
   type VrScene,
   type VrSceneType,
   type VrAppointment,
@@ -230,15 +234,98 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
 
   const [reviewMessageDraft, setReviewMessageDraft] = useState("");
 
+  const [reviewRequestToggleSaving, setReviewRequestToggleSaving] =
+    useState(false);
+  const [reviewRequestSaveFeedback, setReviewRequestSaveFeedback] = useState<
+    "idle" | "success" | "error"
+  >("idle");
+  const [reviewRequestSaveError, setReviewRequestSaveError] = useState<
+    string | null
+  >(null);
+
+  const [interiorsReviewTemplate, setInteriorsReviewTemplate] =
+    useState<ReviewRequestTemplate | null>(null);
+  const [reviewTemplateLoading, setReviewTemplateLoading] = useState(false);
+  const [reviewTemplateLoadError, setReviewTemplateLoadError] = useState<
+    string | null
+  >(null);
+  const [isSavingReviewTemplate, setIsSavingReviewTemplate] = useState(false);
+  const [reviewTemplateSaveFeedback, setReviewTemplateSaveFeedback] =
+    useState<"idle" | "success" | "error">("idle");
+  const [reviewTemplateSaveError, setReviewTemplateSaveError] = useState<
+    string | null
+  >(null);
+
+  // State for VR appointments
+  const [appointmentsByScene, setAppointmentsByScene] = useState<Record<string, VrAppointment[]>>({});
+  const [appointmentsLoadingByScene, setAppointmentsLoadingByScene] = useState<Record<string, boolean>>({});
+  const [appointmentsErrorByScene, setAppointmentsErrorByScene] = useState<Record<string, string | null>>({});
+  const [newAppointmentByScene, setNewAppointmentByScene] = useState<Record<string, NewAppointmentFormState>>({});
+
   useEffect(() => {
     setReviewCopyFeedback("idle");
   }, [project?.id]);
 
-  /** Pri promjeni projekta: zadana poruka samo iz podataka upita (bez profila klijenta) da novi projekt ne naslijedi pozdrav od prethodnog učitanog klijenta. */
   useEffect(() => {
-    if (!project) return;
-    setReviewMessageDraft(buildDefaultInteriorsReviewMessage(project, null));
+    setReviewRequestSaveFeedback("idle");
+    setReviewRequestSaveError(null);
   }, [project?.id]);
+
+  useEffect(() => {
+    setReviewTemplateSaveFeedback("idle");
+    setReviewTemplateSaveError(null);
+    setReviewTemplateLoadError(null);
+    setInteriorsReviewTemplate(null);
+    setReviewMessageDraft("");
+  }, [id]);
+
+  /** Učitaj globalni predložak i puni textarea (samo pri promjeni projekta / rute). */
+  useEffect(() => {
+    if (!project || !id || project.id !== id) return;
+
+    const snapshot = project;
+    let cancelled = false;
+
+    setReviewTemplateLoading(true);
+    setReviewTemplateLoadError(null);
+
+    (async () => {
+      try {
+        const t = await fetchReviewRequestTemplate("interiors");
+        if (cancelled || snapshot.id !== id) return;
+        setInteriorsReviewTemplate(t);
+        const fromTemplate = t?.message?.trim();
+        setReviewMessageDraft(
+          fromTemplate
+            ? t!.message
+            : buildDefaultInteriorsReviewMessage(snapshot, null)
+        );
+      } catch (error) {
+        console.error(
+          "[AdminInteriorsProjectDetailPage] Failed to load review template:",
+          error
+        );
+        if (cancelled || snapshot.id !== id) return;
+        setInteriorsReviewTemplate(null);
+        setReviewTemplateLoadError(
+          error instanceof Error
+            ? error.message
+            : "Predložak se nije mogao učitati."
+        );
+        setReviewMessageDraft(
+          buildDefaultInteriorsReviewMessage(snapshot, null)
+        );
+      } finally {
+        if (!cancelled && snapshot.id === id) {
+          setReviewTemplateLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [project?.id, id]);
 
   useEffect(() => {
     if (reviewCopyFeedback === "idle") return;
@@ -246,11 +333,23 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     return () => window.clearTimeout(t);
   }, [reviewCopyFeedback]);
 
-  // State for VR appointments
-  const [appointmentsByScene, setAppointmentsByScene] = useState<Record<string, VrAppointment[]>>({});
-  const [appointmentsLoadingByScene, setAppointmentsLoadingByScene] = useState<Record<string, boolean>>({});
-  const [appointmentsErrorByScene, setAppointmentsErrorByScene] = useState<Record<string, string | null>>({});
-  const [newAppointmentByScene, setNewAppointmentByScene] = useState<Record<string, NewAppointmentFormState>>({});
+  useEffect(() => {
+    if (reviewRequestSaveFeedback !== "success") return;
+    const t = window.setTimeout(
+      () => setReviewRequestSaveFeedback("idle"),
+      4000
+    );
+    return () => window.clearTimeout(t);
+  }, [reviewRequestSaveFeedback]);
+
+  useEffect(() => {
+    if (reviewTemplateSaveFeedback !== "success") return;
+    const t = window.setTimeout(
+      () => setReviewTemplateSaveFeedback("idle"),
+      4000
+    );
+    return () => window.clearTimeout(t);
+  }, [reviewTemplateSaveFeedback]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -482,6 +581,69 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     }
   };
 
+  const handleReviewRequestSentToggle = async () => {
+    if (!project) return;
+
+    const isSent = project.review_request_sent_at != null;
+    const nextSent = !isSent;
+
+    setReviewRequestToggleSaving(true);
+    setReviewRequestSaveFeedback("idle");
+    setReviewRequestSaveError(null);
+
+    try {
+      const updated = await updateProjectReviewRequestSentAt(
+        project.id,
+        nextSent ? new Date().toISOString() : null
+      );
+      setProject(updated);
+      setReviewRequestSaveFeedback("success");
+    } catch (error) {
+      console.error(
+        "[AdminInteriorsProjectDetailPage] Failed to update review request flag:",
+        error
+      );
+      setReviewRequestSaveFeedback("error");
+      setReviewRequestSaveError(
+        error instanceof Error
+          ? error.message
+          : "Spremanje statusa nije uspjelo."
+      );
+    } finally {
+      setReviewRequestToggleSaving(false);
+    }
+  };
+
+  const handleSaveReviewTemplate = async () => {
+    if (reviewRequestSent || !reviewMessageDraft.trim()) return;
+
+    setIsSavingReviewTemplate(true);
+    setReviewTemplateSaveFeedback("idle");
+    setReviewTemplateSaveError(null);
+
+    try {
+      const row = await upsertReviewRequestTemplate(
+        "interiors",
+        reviewMessageDraft
+      );
+      setInteriorsReviewTemplate(row);
+      setReviewTemplateSaveFeedback("success");
+    } catch (error) {
+      console.error(
+        "[AdminInteriorsProjectDetailPage] Failed to save review template:",
+        error
+      );
+      setReviewTemplateSaveFeedback("error");
+      setReviewTemplateSaveError(
+        error instanceof Error
+          ? error.message
+          : "Spremanje predloška nije uspjelo."
+      );
+    } finally {
+      setIsSavingReviewTemplate(false);
+    }
+  };
+
   const handleCreateVrScene = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -707,6 +869,8 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
       setIsDeleting(false);
     }
   };
+
+  const reviewRequestSent = project?.review_request_sent_at != null;
 
   return (
     <>
@@ -1129,54 +1293,202 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
               <h2 className="text-sm font-semibold text-slate-900">
                 Recenzija nakon završetka projekta
               </h2>
-              <p className="mt-1 text-xs text-slate-600">
+              <div className="admin-interiors-no-print mt-3 flex flex-col gap-2 rounded-lg border border-slate-100 bg-slate-50/90 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-900">
+                    Molba za recenziju
+                  </p>
+                  <p className="mt-0.5 text-xs text-slate-600">
+                    <span className="font-medium text-slate-800">
+                      {reviewRequestSent ? "Poslano" : "Nije poslano"}
+                    </span>
+                    {reviewRequestSent && project.review_request_sent_at && (
+                      <>
+                        {" "}
+                        <span className="text-slate-500">
+                          · Označeno kao poslano:{" "}
+                          {new Date(
+                            project.review_request_sent_at
+                          ).toLocaleString("hr-HR")}
+                        </span>
+                      </>
+                    )}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleReviewRequestSentToggle}
+                  disabled={reviewRequestToggleSaving}
+                  className={`
+                    relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent
+                    transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2
+                    ${reviewRequestSent ? "bg-violet-600" : "bg-slate-200"}
+                    ${reviewRequestToggleSaving ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                  `.trim()}
+                  role="switch"
+                  aria-checked={reviewRequestSent}
+                  aria-label="Molba za recenziju poslana"
+                >
+                  <span
+                    className={`
+                      pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0
+                      transition duration-200 ease-in-out
+                      ${reviewRequestSent ? "translate-x-5" : "translate-x-0"}
+                    `.trim()}
+                  />
+                </button>
+              </div>
+              {reviewRequestSaveFeedback === "success" && (
+                <p className="admin-interiors-no-print mt-2 text-xs font-medium text-emerald-700">
+                  Status je spremljen.
+                </p>
+              )}
+              {reviewRequestSaveFeedback === "error" && reviewRequestSaveError && (
+                <p className="admin-interiors-no-print mt-2 text-xs font-medium text-red-700">
+                  {reviewRequestSaveError}
+                </p>
+              )}
+              <p className="mt-3 text-xs text-slate-600">
                 Kopirajte kratku poruku koju možete poslati klijentu nakon završetka projekta.
               </p>
-              <p className="mt-2 text-xs text-slate-500">
-                Poruku možete urediti prije kopiranja.
+              <p
+                className={`mt-2 text-xs ${
+                  reviewRequestSent ? "text-slate-400" : "text-slate-500"
+                }`}
+              >
+                {reviewRequestSent
+                  ? "Poruka je zaključana jer je molba označena kao poslana. Isključite gornji prekidač ako trebate ponovno uređivati."
+                  : "Poruku možete urediti prije kopiranja."}
               </p>
-              <label htmlFor="review-message-draft" className="sr-only">
-                Poruka za recenziju
-              </label>
-              <textarea
-                id="review-message-draft"
-                value={reviewMessageDraft}
-                onChange={(e) => setReviewMessageDraft(e.target.value)}
-                rows={10}
-                spellCheck
-                className="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 font-mono leading-relaxed resize-y min-h-[11rem] max-h-[24rem]"
-              />
-              <div className="admin-interiors-no-print mt-3 flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const ok = await copyTextToClipboard(reviewMessageDraft);
-                    setReviewCopyFeedback(ok ? "copied" : "error");
-                  }}
-                  className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+              {reviewTemplateLoading && (
+                <p className="mt-2 text-xs text-slate-500">Učitavam predložak poruke…</p>
+              )}
+              {reviewTemplateLoadError && (
+                <p className="admin-interiors-no-print mt-2 text-xs font-medium text-amber-800">
+                  Nije učitan globalni predložak ({reviewTemplateLoadError}).
+                  Prikazana je zadana poruka za ovaj upit.
+                </p>
+              )}
+              {!reviewTemplateLoading &&
+                interiorsReviewTemplate?.message?.trim() &&
+                !reviewRequestSent && (
+                  <p className="mt-2 text-xs text-slate-500">
+                    Tekst je učitan iz trajnog predloška za Interijeri.
+                  </p>
+                )}
+              <div
+                className={`mt-2 rounded-md transition-colors ${
+                  reviewRequestSent
+                    ? "border border-slate-200 bg-slate-100/80 p-2 opacity-75"
+                    : ""
+                }`}
+              >
+                <label htmlFor="review-message-draft" className="sr-only">
+                  Poruka za recenziju
+                </label>
+                <textarea
+                  id="review-message-draft"
+                  value={reviewMessageDraft}
+                  onChange={(e) => setReviewMessageDraft(e.target.value)}
+                  rows={10}
+                  spellCheck
+                  disabled={reviewRequestSent || reviewTemplateLoading}
+                  className={`w-full rounded-md border px-3 py-2 text-sm font-mono leading-relaxed shadow-sm resize-y min-h-[11rem] max-h-[24rem] ${
+                    reviewRequestSent || reviewTemplateLoading
+                      ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-600"
+                      : "border-slate-300 bg-white text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                  }`}
+                />
+                <div className="admin-interiors-no-print mt-3 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={reviewRequestSent || reviewTemplateLoading}
+                    onClick={async () => {
+                      const ok = await copyTextToClipboard(reviewMessageDraft);
+                      setReviewCopyFeedback(ok ? "copied" : "error");
+                    }}
+                    className={`inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium shadow-sm ${
+                      reviewRequestSent || reviewTemplateLoading
+                        ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+                        : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                    }`}
+                  >
+                    Kopiraj poruku za recenziju
+                  </button>
+                  <button
+                    type="button"
+                    disabled={reviewRequestSent || reviewTemplateLoading}
+                    onClick={() => {
+                      setReviewMessageDraft(buildInteriorsReviewRequestMessage(null));
+                    }}
+                    className={`inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium shadow-sm ${
+                      reviewRequestSent || reviewTemplateLoading
+                        ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+                        : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                    }`}
+                  >
+                    Vrati zadanu poruku
+                  </button>
+                  <button
+                    type="button"
+                    disabled={
+                      reviewRequestSent ||
+                      reviewTemplateLoading ||
+                      isSavingReviewTemplate ||
+                      !reviewMessageDraft.trim()
+                    }
+                    onClick={handleSaveReviewTemplate}
+                    className={`inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium shadow-sm ${
+                      reviewRequestSent ||
+                      reviewTemplateLoading ||
+                      isSavingReviewTemplate ||
+                      !reviewMessageDraft.trim()
+                        ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+                        : "border-emerald-200 bg-emerald-50 text-emerald-900 hover:bg-emerald-100"
+                    }`}
+                  >
+                    {isSavingReviewTemplate
+                      ? "Spremanje…"
+                      : "Spremi kao trajni predložak"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={reviewRequestSent || reviewTemplateLoading}
+                    onClick={() =>
+                      window.open(
+                        INTERIORS_REVIEW_URL,
+                        "_blank",
+                        "noopener,noreferrer"
+                      )
+                    }
+                    className={`inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium shadow-sm ${
+                      reviewRequestSent || reviewTemplateLoading
+                        ? "cursor-not-allowed border-slate-200 bg-violet-100/60 text-violet-400"
+                        : "border-violet-200 bg-violet-50 text-violet-900 hover:bg-violet-100"
+                    }`}
+                  >
+                    Otvori link za recenziju
+                  </button>
+                </div>
+                <p
+                  className={`admin-interiors-no-print mt-2 text-xs ${
+                    reviewRequestSent ? "text-slate-400" : "text-slate-500"
+                  }`}
                 >
-                  Kopiraj poruku za recenziju
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setReviewMessageDraft(
-                      buildDefaultInteriorsReviewMessage(project, client)
-                    );
-                  }}
-                  className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-100"
-                >
-                  Vrati zadanu poruku
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    window.open(INTERIORS_REVIEW_URL, "_blank", "noopener,noreferrer")
-                  }
-                  className="inline-flex items-center rounded-md border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-900 shadow-sm hover:bg-violet-100"
-                >
-                  Otvori link za recenziju
-                </button>
+                  Spremanjem predloška mijenjate zadanu poruku za buduće Interijeri
+                  molbe za recenziju.
+                </p>
+                {reviewTemplateSaveFeedback === "success" && (
+                  <p className="admin-interiors-no-print mt-1 text-xs font-medium text-emerald-700">
+                    Predložak poruke je spremljen.
+                  </p>
+                )}
+                {reviewTemplateSaveFeedback === "error" &&
+                  reviewTemplateSaveError && (
+                    <p className="admin-interiors-no-print mt-1 text-xs font-medium text-red-700">
+                      {reviewTemplateSaveError}
+                    </p>
+                  )}
               </div>
               {reviewCopyFeedback === "copied" && (
                 <p className="mt-2 text-xs font-medium text-emerald-700">

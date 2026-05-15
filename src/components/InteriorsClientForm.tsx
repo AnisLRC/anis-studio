@@ -580,6 +580,7 @@ export function InteriorsClientForm({ stolars: _stolarsUnused, onSubmit, languag
         area_m2: areaM2,
         budget: budget,
         notes: combinedNotes,
+        review_request_sent_at: null,
       })
 
       const totalFiles =

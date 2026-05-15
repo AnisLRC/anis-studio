@@ -360,6 +360,7 @@ export function InteriorsCarpenterForm({ language = 'hr', vrEnabled = false }: I
         area_m2: areaM2,
         budget: budget,
         notes: values.notes.trim() || null,
+        review_request_sent_at: null,
       })
 
       const totalFiles = exportFiles.length + kitchenSketchFiles.length
