@@ -26,8 +26,8 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
       en: 'Where ideas become reality.'
     },
     subtitle: {
-      hr: '3D vizualizacije interijera i kuhinja — vidite prostor, raspored i materijale prije izvedbe, s fotorealističnim prikazima i jasnom vizualnom pričom.',
-      en: '3D interior and kitchen visualizations — see layout, materials and atmosphere before execution, with photorealistic renders and a clear visual story.',
+      hr: '3D vizualizacije interijera i kuhinja — prostor, raspored i materijale jasno vidite prije izvedbe. Fotorealistični prikaz moguć je po dogovoru, uz konzistentnu vizualnu priču.',
+      en: '3D interior and kitchen visualizations — see space, layout, and materials clearly before work begins. Photorealistic rendering is available by arrangement, with a clear, cohesive visual story.',
     },
     bridge: {
       hr: [

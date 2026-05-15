@@ -38,8 +38,8 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
         en: '50+ projects'
       },
       response: {
-        hr: 'Odgovor u 24h',
-        en: 'Response in 24h'
+        hr: 'Najčešće u 24h',
+        en: 'Usually within 24h'
       }
     }
   }

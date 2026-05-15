@@ -15,8 +15,8 @@ export default function Footer({ language = 'hr' }: FooterProps) {
   return (
     <footer className="border-t border-[rgba(110,68,255,0.12)] dark:border-lavender/20 bg-gradient-to-b from-white to-[rgba(247,246,255,0.6)] dark:from-[#070812] dark:to-[#12101c]/95">
       <section className="Section py-10 sm:py-12">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 min-w-0">
-          <div className="flex min-w-0 max-w-full flex-col items-center gap-2.5 sm:items-start sm:gap-3">
+        <div className="grid min-w-0 grid-cols-1 items-center gap-6 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-start lg:gap-8">
+          <div className="flex min-w-0 max-w-full flex-col items-center gap-2.5 lg:justify-self-start lg:items-start lg:gap-3">
             <div className="group/logo-ft inline-flex items-center rounded-md">
               <span
                 className="inline-block transition-[transform,filter] duration-300 ease-out group-hover/logo-ft:-translate-y-0.5 group-hover/logo-ft:drop-shadow-[0_12px_34px_rgba(110,68,255,0.24)] dark:group-hover/logo-ft:drop-shadow-[0_14px_38px_rgba(189,166,255,0.16)] [@media(prefers-reduced-motion:reduce)]:!translate-y-0 [@media(prefers-reduced-motion:reduce)]:transition-none [@media(prefers-reduced-motion:reduce)]:drop-shadow-none [@media(prefers-reduced-motion:reduce)]:group-hover/logo-ft:drop-shadow-none"
@@ -31,11 +31,11 @@ export default function Footer({ language = 'hr' }: FooterProps) {
                 />
               </span>
             </div>
-            <BrandDescriptor className="w-full max-w-[22rem] border-t border-amethyst/12 pt-2.5 text-center sm:max-w-none sm:border-t-0 sm:pt-0 sm:text-left" />
+            <BrandDescriptor className="w-full max-w-[22rem] border-t border-amethyst/12 pt-2.5 text-center lg:max-w-none lg:border-t-0 lg:pt-0 lg:text-left" />
           </div>
           
-          <div className="flex flex-col items-center gap-1.5 text-center">
-            <p className="text-sm text-plum/80 dark:text-pearl/70">
+          <div className="flex w-full max-w-full min-w-0 flex-col items-center gap-1.5 justify-self-center px-1 text-center sm:px-2 lg:w-auto lg:max-w-none lg:min-w-0 lg:justify-self-center lg:px-3">
+            <p className="max-w-full text-sm text-plum/80 [overflow-wrap:anywhere] dark:text-pearl/70 lg:max-w-none lg:whitespace-nowrap lg:[overflow-wrap:normal]">
               &copy; 2026 Ani&apos;s Studio &mdash; ru&#269;no izra&#273;eno i dizajnirano u Hrvatskoj
             </p>
             <Link
@@ -47,7 +47,7 @@ export default function Footer({ language = 'hr' }: FooterProps) {
           </div>
           
           {hasFooterSocialIcons && (
-          <div className="flex flex-wrap items-center justify-center gap-3 min-w-0">
+          <div className="flex flex-wrap items-center justify-center gap-3 min-w-0 lg:justify-self-end lg:justify-end">
             {showInteriorsSocial && (
             <a 
               className="w-11 h-11 rounded-xl bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-[rgba(110,68,255,0.15)] dark:border-lavender/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center hover:border-[#0077B5]"

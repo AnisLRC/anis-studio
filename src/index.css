@@ -159,6 +159,12 @@
   .btn-primary:active {
     transform: translateY(0) scale(0.98);
   }
+
+  /* Global base `a:hover` sets --color-primary on text; keep primary buttons readable. */
+  a.btn-primary:hover,
+  a.btn-primary:focus-visible {
+    color: #fff !important;
+  }
   
   /* Glow button for hero CTAs */
   .btn-glow {

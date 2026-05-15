@@ -108,8 +108,8 @@ export default function AboutSection({ language }: AboutSectionProps) {
         },
         { 
           key: 'interiors' as const,
-          title: "Personalizirano",
-          section: "Interijeri",
+          title: "3D vizualizacija",
+          section: "3D vizualizacija",
           to: "/interijeri"
         },
         { 
@@ -128,8 +128,8 @@ export default function AboutSection({ language }: AboutSectionProps) {
         },
         { 
           key: 'interiors' as const,
-          title: "Personalized",
-          section: "Interiors",
+          title: "3D visualization",
+          section: "3D visualization",
           to: "/interijeri"
         },
         { 
