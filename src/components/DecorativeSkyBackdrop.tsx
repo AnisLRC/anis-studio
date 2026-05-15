@@ -17,44 +17,64 @@ interface DecorativeSkyBackdropProps {
  * Tailwind `dark:hidden` / `hidden dark:block`. A CSS background-image on a
  * `display: none` element is never fetched by the browser, so only the active
  * theme's asset is loaded at runtime.
+ *
+ * Soft aurora / nebula mist (CSS-only) sits above the PNG and below page
+ * content. Dark theme uses stronger violets with `mix-blend-mode: screen`; light
+ * theme stays pearl/lavender and softer. Motion is slow on desktop only — static on
+ * small screens and when `prefers-reduced-motion: reduce` (see `index.css`).
  */
 export function DecorativeSkyBackdrop({
   priority = 'lazy',
   className = '',
 }: DecorativeSkyBackdropProps) {
+  const skyImageStyle = {
+    backgroundSize: 'cover' as const,
+    backgroundPosition: 'center' as const,
+    backgroundRepeat: 'no-repeat' as const,
+    transitionProperty: 'opacity',
+    transitionDuration: '400ms',
+    transitionTimingFunction: 'ease' as const,
+  }
+
   return (
     <>
-      {/* Light theme layer (hidden in dark mode, not fetched) */}
+      {/* Light theme (hidden in dark mode, not fetched) */}
       <div
         aria-hidden
         data-bg-priority={priority}
-        className={`pointer-events-none absolute inset-0 h-full w-full dark:hidden ${className}`}
-        style={{
-          backgroundImage: 'url(/hero-sky-light.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          // Only animate opacity transitions for smooth theme switching;
-          // skip on mobile-scale sections where animation isn't visible anyway.
-          transitionProperty: 'opacity',
-          transitionDuration: '400ms',
-          transitionTimingFunction: 'ease',
-        }}
-      />
-      {/* Dark theme layer (hidden in light mode, not fetched) */}
+        className={`sky-backdrop-stack pointer-events-none absolute inset-0 h-full w-full overflow-hidden dark:hidden ${className}`}
+      >
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            ...skyImageStyle,
+            backgroundImage: 'url(/hero-sky-light.png)',
+          }}
+        />
+        <div className="sky-aurora sky-aurora--light pointer-events-none absolute inset-0">
+          <span className="sky-aurora__blob sky-aurora__blob--light-a" aria-hidden />
+          <span className="sky-aurora__blob sky-aurora__blob--light-b" aria-hidden />
+        </div>
+      </div>
+      {/* Dark theme (hidden in light mode, not fetched) */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-0 h-full w-full hidden dark:block ${className}`}
-        style={{
-          backgroundImage: 'url(/hero-sky-dark.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          transitionProperty: 'opacity',
-          transitionDuration: '400ms',
-          transitionTimingFunction: 'ease',
-        }}
-      />
+        data-bg-priority={priority}
+        className={`sky-backdrop-stack pointer-events-none absolute inset-0 hidden h-full w-full overflow-hidden dark:block ${className}`}
+      >
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            ...skyImageStyle,
+            backgroundImage: 'url(/hero-sky-dark.png)',
+          }}
+        />
+        <div className="sky-aurora sky-aurora--dark pointer-events-none absolute inset-0">
+          <span className="sky-aurora__blob sky-aurora__blob--dark-a" aria-hidden />
+          <span className="sky-aurora__blob sky-aurora__blob--dark-b" aria-hidden />
+          <span className="sky-aurora__blob sky-aurora__blob--dark-c" aria-hidden />
+        </div>
+      </div>
     </>
   )
 }

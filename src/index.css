@@ -524,9 +524,189 @@
   .fade-in {
     animation: fade-in 0.6s ease-out;
   }
-  
-  /* Smooth scroll behavior */
+
+  /*
+   * Soft aurora / nebula mist atop hero-sky PNGs (DecorativeSkyBackdrop).
+   * CSS-only; slow transform drift; disabled on reduced motion & small screens.
+   */
+  .sky-backdrop-stack {
+    isolation: isolate;
+  }
+
+  .sky-aurora {
+    z-index: 1;
+  }
+
+  /* Light: pearl/lavender veo — zadrži suptilno */
+  .sky-aurora--light {
+    mix-blend-mode: soft-light;
+    opacity: 0.4;
+  }
+
+  /*
+   * Dark: soft-light skoro „pojede“ ljubičasto na tamnom PNG-u; screen daje
+   * vidljivu maglicu bez punog neon sloja kao kod normal + vrlo jakih alfa.
+   */
+  .sky-aurora--dark {
+    mix-blend-mode: screen;
+    opacity: 0.46;
+  }
+
+  .sky-aurora__blob {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+    inset: auto;
+    will-change: transform, opacity;
+  }
+
+  .sky-aurora__blob--light-a {
+    width: 150%;
+    height: 130%;
+    left: -28%;
+    top: -18%;
+    background: radial-gradient(
+      ellipse 55% 48% at 42% 38%,
+      rgba(189, 166, 255, 0.19) 0%,
+      rgba(110, 68, 255, 0.06) 38%,
+      transparent 72%
+    );
+    animation: sky-aurora-drift-a 96s ease-in-out infinite alternate;
+  }
+
+  .sky-aurora__blob--light-b {
+    width: 145%;
+    height: 135%;
+    right: -32%;
+    bottom: -26%;
+    background: radial-gradient(
+      ellipse 50% 44% at 58% 55%,
+      rgba(248, 246, 255, 0.55) 0%,
+      rgba(189, 166, 255, 0.07) 40%,
+      transparent 74%
+    );
+    animation: sky-aurora-drift-b 110s ease-in-out infinite alternate;
+    animation-delay: -18s;
+  }
+
+  /* Dark: čitljivija ljubičasta/nebula dubina (#6E44FF / #BDA6FF), bez cyan naglaska */
+  .sky-aurora__blob--dark-a {
+    width: 155%;
+    height: 140%;
+    left: -32%;
+    top: -22%;
+    background: radial-gradient(
+      ellipse 62% 52% at 36% 30%,
+      rgba(189, 166, 255, 0.34) 0%,
+      rgba(110, 68, 255, 0.22) 32%,
+      rgba(83, 45, 198, 0.08) 52%,
+      transparent 74%
+    );
+    animation: sky-aurora-drift-a 90s ease-in-out infinite alternate;
+  }
+
+  .sky-aurora__blob--dark-b {
+    width: 150%;
+    height: 138%;
+    right: -30%;
+    top: -8%;
+    background: radial-gradient(
+      ellipse 54% 48% at 70% 38%,
+      rgba(189, 166, 255, 0.28) 0%,
+      rgba(110, 68, 255, 0.16) 38%,
+      rgba(110, 68, 255, 0.06) 55%,
+      transparent 76%
+    );
+    animation: sky-aurora-drift-b 118s ease-in-out infinite alternate;
+    animation-delay: -42s;
+  }
+
+  .sky-aurora__blob--dark-c {
+    width: 140%;
+    height: 118%;
+    left: -12%;
+    bottom: -34%;
+    background: radial-gradient(
+      ellipse 52% 44% at 48% 68%,
+      rgba(110, 68, 255, 0.2) 0%,
+      rgba(189, 166, 255, 0.12) 40%,
+      rgba(28, 20, 48, 0.28) 58%,
+      transparent 80%
+    );
+    animation: sky-aurora-drift-c 78s ease-in-out infinite alternate;
+    animation-delay: -28s;
+  }
+
+  @keyframes sky-aurora-drift-a {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.85;
+    }
+    35% {
+      transform: translate3d(5%, -3.5%, 0) scale(1.04);
+      opacity: 1;
+    }
+    100% {
+      transform: translate3d(-4%, 4%, 0) scale(1.015);
+      opacity: 0.88;
+    }
+  }
+
+  @keyframes sky-aurora-drift-b {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1.03);
+      opacity: 0.78;
+    }
+    40% {
+      transform: translate3d(-6%, 4%, 0) scale(0.98);
+      opacity: 0.95;
+    }
+    100% {
+      transform: translate3d(4%, -5%, 0) scale(1.05);
+      opacity: 0.82;
+    }
+  }
+
+  @keyframes sky-aurora-drift-c {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.72;
+    }
+    55% {
+      transform: translate3d(5%, -2%, 0) scale(1.06);
+      opacity: 0.92;
+    }
+    100% {
+      transform: translate3d(-3%, -5%, 0) scale(0.99);
+      opacity: 0.75;
+    }
+  }
+
+  /* Mobile: statički blobs, blago jači tamni sloj jer nema drift animacije */
+  @media (max-width: 640px) {
+    .sky-aurora__blob {
+      animation: none !important;
+      will-change: auto;
+    }
+    .sky-aurora--dark {
+      opacity: 0.52;
+    }
+  }
+
+  /* Reduced motion + global pacing; aurora eksplicitno statična */
   @media (prefers-reduced-motion: reduce) {
+    .sky-aurora__blob {
+      animation: none !important;
+      will-change: auto;
+    }
+    .sky-aurora__blob--light-a,
+    .sky-aurora__blob--light-b,
+    .sky-aurora__blob--dark-a,
+    .sky-aurora__blob--dark-b,
+    .sky-aurora__blob--dark-c {
+      opacity: 0.9;
+      transform: none;
+    }
     *,
     *::before,
     *::after {
