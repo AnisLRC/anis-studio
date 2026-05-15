@@ -114,6 +114,20 @@ ${INTERIORS_REVIEW_URL}
 Hvala vam još jednom.`;
 }
 
+/** Zadana poruka za admin blok; `client` uključite za cjelovit pozdrav (profil), ili `null` pri resetu na novi projekt da se izbjegne križanje s prethodno učitanim klijentom. */
+function buildDefaultInteriorsReviewMessage(
+  project: Project,
+  client: Client | null
+): string {
+  const snapshot = parseContactFromNotes(project.notes);
+  const greetingName =
+    project.user_type === "client"
+      ? extractSafeFirstNameForGreeting(snapshot.name) ??
+        extractSafeFirstNameForGreeting(client?.name ?? null)
+      : null;
+  return buildInteriorsReviewRequestMessage(greetingName);
+}
+
 async function copyTextToClipboard(text: string): Promise<boolean> {
   try {
     if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
@@ -214,8 +228,16 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
     "idle" | "copied" | "error"
   >("idle");
 
+  const [reviewMessageDraft, setReviewMessageDraft] = useState("");
+
   useEffect(() => {
     setReviewCopyFeedback("idle");
+  }, [project?.id]);
+
+  /** Pri promjeni projekta: zadana poruka samo iz podataka upita (bez profila klijenta) da novi projekt ne naslijedi pozdrav od prethodnog učitanog klijenta. */
+  useEffect(() => {
+    if (!project) return;
+    setReviewMessageDraft(buildDefaultInteriorsReviewMessage(project, null));
   }, [project?.id]);
 
   useEffect(() => {
@@ -1110,23 +1132,41 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
               <p className="mt-1 text-xs text-slate-600">
                 Kopirajte kratku poruku koju možete poslati klijentu nakon završetka projekta.
               </p>
-              <div className="admin-interiors-no-print mt-3 flex flex-wrap gap-2">
+              <p className="mt-2 text-xs text-slate-500">
+                Poruku možete urediti prije kopiranja.
+              </p>
+              <label htmlFor="review-message-draft" className="sr-only">
+                Poruka za recenziju
+              </label>
+              <textarea
+                id="review-message-draft"
+                value={reviewMessageDraft}
+                onChange={(e) => setReviewMessageDraft(e.target.value)}
+                rows={10}
+                spellCheck
+                className="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 font-mono leading-relaxed resize-y min-h-[11rem] max-h-[24rem]"
+              />
+              <div className="admin-interiors-no-print mt-3 flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={async () => {
-                    const snapshot = parseContactFromNotes(project.notes);
-                    const greetingName =
-                      project.user_type === "client"
-                        ? extractSafeFirstNameForGreeting(snapshot.name) ??
-                          extractSafeFirstNameForGreeting(client?.name ?? null)
-                        : null;
-                    const body = buildInteriorsReviewRequestMessage(greetingName);
-                    const ok = await copyTextToClipboard(body);
+                    const ok = await copyTextToClipboard(reviewMessageDraft);
                     setReviewCopyFeedback(ok ? "copied" : "error");
                   }}
                   className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
                 >
                   Kopiraj poruku za recenziju
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReviewMessageDraft(
+                      buildDefaultInteriorsReviewMessage(project, client)
+                    );
+                  }}
+                  className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-100"
+                >
+                  Vrati zadanu poruku
                 </button>
                 <button
                   type="button"
