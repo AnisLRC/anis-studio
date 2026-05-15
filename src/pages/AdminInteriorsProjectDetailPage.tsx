@@ -80,6 +80,66 @@ function parsePhotorealisticFromNotes(
   return /Fotorealistični prikaz prostora:.*zanima me/i.test(notes);
 }
 
+const INTERIORS_REVIEW_URL =
+  "https://anis-studio.vercel.app/ostavi-recenziju?category=interiors";
+
+/** Jednostavna provjera za osobno pozdravljanje u poruci za recenziju (bez emaila / posebnih znakova). */
+function extractSafeFirstNameForGreeting(
+  raw: string | null | undefined
+): string | null {
+  if (!raw?.trim()) return null;
+  const t = raw.trim();
+  if (/@|[/:]/.test(t)) return null;
+  const first = t.split(/\s+/)[0]?.replace(/^[^\p{L}]+/u, "") ?? "";
+  if (!first || first.length > 40) return null;
+  if (!/^[\p{L}'’`-]+$/u.test(first)) return null;
+  const lower = first.toLocaleLowerCase("hr-HR");
+  return lower.charAt(0).toLocaleUpperCase("hr-HR") + lower.slice(1);
+}
+
+function buildInteriorsReviewRequestMessage(greetingName: string | null): string {
+  const greetingLine = greetingName
+    ? `Pozdrav ${greetingName},`
+    : "Pozdrav,";
+
+  return `${greetingLine}
+
+hvala vam na povjerenju i suradnji na projektu vizualizacije interijera.
+
+Ako ste zadovoljni suradnjom, puno bi mi značilo da ostavite kratku recenziju za Ani's Studio. Recenzija se prije javne objave pregledava, a sami možete odabrati želite li da se vaše ime prikaže punim imenom, samo imenom, inicijalima ili anonimno.
+
+Link za recenziju:
+${INTERIORS_REVIEW_URL}
+
+Hvala vam još jednom.`;
+}
+
+async function copyTextToClipboard(text: string): Promise<boolean> {
+  try {
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // fallback below
+  }
+
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 /** Izvlači kontaktni snapshot iz project.notes koji upisuje klijentski form. */
 function parseContactFromNotes(notes: string | null | undefined): {
   name: string | null;
@@ -149,6 +209,20 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteStorageWarning, setDeleteStorageWarning] = useState<string[] | null>(null);
+
+  const [reviewCopyFeedback, setReviewCopyFeedback] = useState<
+    "idle" | "copied" | "error"
+  >("idle");
+
+  useEffect(() => {
+    setReviewCopyFeedback("idle");
+  }, [project?.id]);
+
+  useEffect(() => {
+    if (reviewCopyFeedback === "idle") return;
+    const t = window.setTimeout(() => setReviewCopyFeedback("idle"), 4500);
+    return () => window.clearTimeout(t);
+  }, [reviewCopyFeedback]);
 
   // State for VR appointments
   const [appointmentsByScene, setAppointmentsByScene] = useState<Record<string, VrAppointment[]>>({});
@@ -1027,6 +1101,53 @@ const AdminInteriorsProjectDetailPage: React.FC = () => {
                   }
                 />
               </div>
+            </section>
+
+            <section className="rounded-lg border border-slate-200 bg-white p-4 print:break-inside-avoid">
+              <h2 className="text-sm font-semibold text-slate-900">
+                Recenzija nakon završetka projekta
+              </h2>
+              <p className="mt-1 text-xs text-slate-600">
+                Kopirajte kratku poruku koju možete poslati klijentu nakon završetka projekta.
+              </p>
+              <div className="admin-interiors-no-print mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const snapshot = parseContactFromNotes(project.notes);
+                    const greetingName =
+                      project.user_type === "client"
+                        ? extractSafeFirstNameForGreeting(snapshot.name) ??
+                          extractSafeFirstNameForGreeting(client?.name ?? null)
+                        : null;
+                    const body = buildInteriorsReviewRequestMessage(greetingName);
+                    const ok = await copyTextToClipboard(body);
+                    setReviewCopyFeedback(ok ? "copied" : "error");
+                  }}
+                  className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+                >
+                  Kopiraj poruku za recenziju
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    window.open(INTERIORS_REVIEW_URL, "_blank", "noopener,noreferrer")
+                  }
+                  className="inline-flex items-center rounded-md border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-900 shadow-sm hover:bg-violet-100"
+                >
+                  Otvori link za recenziju
+                </button>
+              </div>
+              {reviewCopyFeedback === "copied" && (
+                <p className="mt-2 text-xs font-medium text-emerald-700">
+                  Poruka je kopirana.
+                </p>
+              )}
+              {reviewCopyFeedback === "error" && (
+                <p className="mt-2 text-xs font-medium text-amber-800">
+                  Kopiranje nije uspjelo u ovom pregledniku. Poruku možete ručno kopirati iz ispisa ili otvoriti link za recenziju.
+                </p>
+              )}
             </section>
 
             {/* Prostor i budžet */}
