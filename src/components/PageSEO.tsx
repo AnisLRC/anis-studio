@@ -19,6 +19,8 @@ const DEFAULT_OG_IMAGE_ALT =
 interface PageSEOProps {
   title: string
   description: string
+  /** If true, document/OG title is `{SITE_NAME} | {title}` instead of `{title} | {SITE_NAME}` */
+  titleBrandFirst?: boolean
   /** Path relative to SITE_URL, e.g. "/lrc". Omit for noindex pages. */
   canonical?: string
   noIndex?: boolean
@@ -33,6 +35,7 @@ interface PageSEOProps {
 export function PageSEO({
   title,
   description,
+  titleBrandFirst = false,
   canonical,
   noIndex = false,
   ogTitle,
@@ -41,8 +44,8 @@ export function PageSEO({
   ogImageAlt,
   jsonLd,
 }: PageSEOProps) {
-  /** Page-specific title only (no brand suffix); document title is always `{title} | {SITE_NAME}`. */
-  const fullTitle = `${title} | ${SITE_NAME}`
+  /** Page-specific title segment; paired with SITE_NAME — see `titleBrandFirst`. */
+  const fullTitle = titleBrandFirst ? `${SITE_NAME} | ${title}` : `${title} | ${SITE_NAME}`
   const resolvedOgTitle = ogTitle ?? fullTitle
   const resolvedOgDescription = ogDescription ?? description
   const canonicalUrl = canonical ? `${SITE_URL}${canonical}` : undefined

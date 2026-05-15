@@ -39,9 +39,7 @@ export default function HomePage({ language }: HomePageProps) {
   ]
 
   const seoTitle =
-    language === 'hr'
-      ? '3D vizualizacija interijera i kuhinja'
-      : '3D interior visualizations'
+    language === 'hr' ? '3D vizualizacija prostora' : '3D Space Visualization'
 
   const seoDescription = language === 'hr' ? HR_ORG_DESCRIPTION : EN_ORG_DESCRIPTION
 
@@ -49,6 +47,7 @@ export default function HomePage({ language }: HomePageProps) {
     <AnimatedPage>
       <PageSEO
         title={seoTitle}
+        titleBrandFirst
         description={seoDescription}
         canonical="/"
         jsonLd={homeJsonLd}
