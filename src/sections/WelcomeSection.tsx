@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom'
-import { useReducedMotion } from 'framer-motion'
-import SparklesCanvas from '../components/SparklesCanvas'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 import { useSettings } from '../hooks/useSettings'
 import { trackEvent } from '../lib/analytics'
@@ -12,7 +10,6 @@ interface WelcomeSectionProps {
 export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps) {
   const USE_IMAGE_BG = true
   const { settings } = useSettings()
-  const prefersReduced = useReducedMotion()
 
   const serviceCardVisibility = {
     lrc: settings?.lrc_public_visible ?? false,
@@ -130,24 +127,19 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           style={{ backgroundImage: "url(/noise.svg)", backgroundSize: "260px 260px" }}
         />
 
-        {/* Canvas sparkles — suppressed when user prefers reduced motion */}
-        {!prefersReduced && (
-          <SparklesCanvas className="pointer-events-none absolute inset-0 z-[4] h-full w-full opacity-60" />
-        )}
-
-        {/* Bottom fade — pearl kao body (nije čisti bijeli rez prema sljedećoj sekciji) */}
+        {/* I8E-3E: SparklesCanvas uklonjen — animirani krugovi uzlazno izgledali su kao mjehurići vode. */}
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-56"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-36 dark:hidden sm:h-44"
           style={{
-            background: 'linear-gradient(to bottom, rgba(245,243,250,0), rgb(245,243,250))'
+            background:
+              'linear-gradient(to bottom, rgba(245,243,250,0) 0%, rgba(189,166,255,0.028) 42%, rgba(245,243,250,0.038) 72%, rgba(245,243,250,0.055) 100%)',
           }}
         />
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-44 hidden dark:block sm:h-52"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-32 hidden dark:block sm:h-40"
           style={{
-            /* Mekši prijelaz prema donjim sekcijama — bez pune neprozirnosti koja reže platno */
             background:
-              'linear-gradient(to bottom, rgba(7,8,18,0), rgba(7,8,18,0.42) 72%, rgba(7,8,18,0.72))',
+              'linear-gradient(to bottom, rgba(7,8,18,0) 0%, rgba(110,68,255,0.04) 38%, rgba(7,8,18,0.045) 100%)',
           }}
         />
       </div>

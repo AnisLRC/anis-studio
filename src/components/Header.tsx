@@ -85,7 +85,7 @@ export default function Header({ language, onLanguageChange, cartItemCount, onCa
   }
 
   return (
-    <header className="sticky top-0 z-50 overflow-x-clip header-glass text-plum dark:text-pearl backdrop-blur-md">
+    <header className="sticky top-0 z-50 overflow-x-clip header-glass text-plum dark:text-pearl">
       <nav className="mx-auto max-w-7xl min-w-0 px-3 sm:px-6 md:px-8 flex items-center justify-between gap-1.5 sm:gap-3 py-2 sm:py-2.5">
         {/* Logo */}
         <Link

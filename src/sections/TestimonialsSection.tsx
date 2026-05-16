@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 import TestimonialMarquee, {
   type TestimonialMarqueeRowBlock,
@@ -14,6 +15,11 @@ import { isSupabaseConfigured } from '../lib/supabase'
 
 interface TestimonialsSectionProps {
   language: 'hr' | 'en'
+  /**
+   * I8E-3C: kad je true, nema sky PNG + sekcijskog wash-a (samo globalni canvas).
+   * Kada je undefined, homepage (`/`) automatski koristi ovaj način; ostale rute zadržavaju puni stack.
+   */
+  blendWithGlobalCanvas?: boolean
 }
 
 const byIdAsc = <T extends { id: number }>(a: T, b: T) => a.id - b.id
@@ -115,7 +121,13 @@ function buildTestimonialRowBlocks(
   return blocks
 }
 
-export default function TestimonialsSection({ language }: TestimonialsSectionProps) {
+export default function TestimonialsSection({
+  language,
+  blendWithGlobalCanvas,
+}: TestimonialsSectionProps) {
+  const { pathname } = useLocation()
+  const useGlobalCanvasOnly =
+    blendWithGlobalCanvas !== undefined ? blendWithGlobalCanvas : pathname === '/'
   const { settings } = useSettings()
   const [dbTestimonials, setDbTestimonials] = useState<Testimonial[]>([])
 
@@ -170,10 +182,12 @@ export default function TestimonialsSection({ language }: TestimonialsSectionPro
 
   return (
     <section id="testimonials" className="section-with-bg relative overflow-x-clip px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <DecorativeSkyBackdrop priority="lazy" />
-        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
-      </div>
+      {!useGlobalCanvasOnly ? (
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <DecorativeSkyBackdrop priority="lazy" />
+          <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
+        </div>
+      ) : null}
 
       <div className="relative z-10 mx-auto min-w-0 max-w-6xl">
         <div className="mb-6 text-center sm:mb-8">

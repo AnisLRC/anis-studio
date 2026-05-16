@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
-import { DecorativeSkyBackdrop } from '../components/DecorativeSkyBackdrop'
 import { usePortfolioItems, type PortfolioGridItem } from '../hooks/usePortfolioItems'
 import { useSettings } from '../hooks/useSettings'
 
@@ -195,13 +194,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
 
   return (
     <section id="portfolio" className="section-with-bg relative overflow-x-clip px-4 py-10 sm:px-6 sm:py-12 md:px-8 md:py-14">
-      {/* Background wrapper */}
-      <div className="absolute inset-0 overflow-hidden -z-10">
-        <DecorativeSkyBackdrop priority="lazy" />
-        {/* Overlay for readability */}
-        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark" />
-      </div>
-      
+      {/* I8E-3C: samo homepage — pozadina je globalni canvas (body::before); bez sky/wash „ploče“. */}
       <div className="max-w-7xl mx-auto min-w-0 relative z-10">
         {/* Section Header */}
         <div className="mb-5 text-center sm:mb-6">

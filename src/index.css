@@ -33,20 +33,21 @@ body::before {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  /* I8E-3D: blago bogatiji pearl/lavender polish — profinjenija dubina, ne „gaming“ */
   background:
-    radial-gradient(ellipse 160% 100% at 50% -25%, rgba(110, 68, 255, 0.085), transparent 58%),
-    radial-gradient(ellipse 90% 75% at 100% 35%, rgba(189, 166, 255, 0.11), transparent 62%),
-    radial-gradient(ellipse 85% 70% at 0% 65%, rgba(110, 68, 255, 0.055), transparent 60%),
-    radial-gradient(ellipse 130% 90% at 50% 115%, rgba(189, 166, 255, 0.065), transparent 62%);
+    radial-gradient(ellipse 160% 100% at 50% -25%, rgba(110, 68, 255, 0.084), transparent 58%),
+    radial-gradient(ellipse 90% 75% at 100% 35%, rgba(189, 166, 255, 0.104), transparent 62%),
+    radial-gradient(ellipse 85% 70% at 0% 65%, rgba(110, 68, 255, 0.056), transparent 60%),
+    radial-gradient(ellipse 130% 90% at 50% 115%, rgba(189, 166, 255, 0.066), transparent 62%);
 }
 
 html.dark body::before {
-  /* Mekši, ravnomjerniji mist — manje „blobova“ koji izgledaju kao odvojeni blokovi */
+  /* I8E-3D: malo više cosmic ljubičaste dubine (sredina/dno) — ista 4 radijala, bez novih slojeva */
   background:
-    radial-gradient(ellipse 160% 110% at 50% -18%, rgba(110, 68, 255, 0.11), transparent 62%),
-    radial-gradient(ellipse 110% 85% at 96% 38%, rgba(189, 166, 255, 0.065), transparent 65%),
-    radial-gradient(ellipse 100% 75% at 4% 68%, rgba(83, 45, 198, 0.075), transparent 64%),
-    radial-gradient(ellipse 150% 95% at 50% 112%, rgba(110, 68, 255, 0.055), transparent 65%);
+    radial-gradient(ellipse 160% 110% at 50% -18%, rgba(110, 68, 255, 0.098), transparent 62%),
+    radial-gradient(ellipse 110% 85% at 96% 38%, rgba(189, 166, 255, 0.06), transparent 65%),
+    radial-gradient(ellipse 105% 80% at 4% 68%, rgba(83, 45, 198, 0.072), transparent 64%),
+    radial-gradient(ellipse 155% 100% at 50% 108%, rgba(110, 68, 255, 0.058), transparent 66%);
 }
 
 #root {
@@ -165,14 +166,15 @@ html.dark body::before {
     background: color-mix(in oklab, #F5F3FA 72%, transparent);
     -webkit-backdrop-filter: saturate(135%) blur(16px);
             backdrop-filter: saturate(135%) blur(16px);
-    border-bottom: 1px solid rgba(110, 68, 255, 0.055);
+    /* I8E-3B: bez vidljivog hairlinea; blur i mix i dalje odvajaju header */
+    border-bottom: 1px solid transparent;
     box-shadow: none;
   }
 
   /* Dark: stopi se s cosmic bazom — bez tamnog „ploča“ obruba */
   html.dark .header-glass {
     background: color-mix(in oklab, rgb(7 8 18) 68%, transparent);
-    border-bottom-color: rgba(110, 68, 255, 0.055);
+    border-bottom-color: transparent;
     box-shadow: none;
   }
 
@@ -439,78 +441,6 @@ html.dark body::before {
     width: 100%;
   }
   
-  /* === SECTION ACCENTS === */
-  .section-accent-top {
-    position: relative;
-  }
-  .section-accent-top::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 4px;
-    background: linear-gradient(90deg, #6E44FF, #BDA6FF);
-    border-radius: 2px;
-  }
-  
-  /* Colored section backgrounds */
-  .section-purple {
-    background: linear-gradient(135deg, rgba(110, 68, 255, 0.03), rgba(189, 166, 255, 0.05));
-  }
-  .section-pink {
-    background: linear-gradient(135deg, rgba(236, 72, 153, 0.03), rgba(244, 114, 182, 0.05));
-  }
-  .section-cyan {
-    background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(34, 211, 238, 0.05));
-  }
-
-  /* Welcome Section Aurora Background */
-  .welcome-aurora {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: -20;
-  }
-
-  .welcome-aurora::before {
-    content: "";
-    position: absolute;
-    inset: -35%;
-    filter: blur(56px) saturate(1.3);
-    background:
-      radial-gradient(70% 55% at 50% 22%, rgba(110,68,255,0.44), transparent 62%),
-      radial-gradient(50% 45% at 18% 55%, rgba(189,166,255,0.28), transparent 64%),
-      radial-gradient(48% 42% at 82% 62%, rgba(120,220,255,0.16), transparent 64%),
-      radial-gradient(55% 50% at 70% 85%, rgba(255,180,220,0.14), transparent 65%),
-      linear-gradient(180deg, rgba(245,243,250,0.55), rgba(240,238,248,0.45));
-  }
-
-  html.dark .welcome-aurora::before {
-    background:
-      radial-gradient(70% 55% at 50% 22%, rgba(110,68,255,0.45), transparent 62%),
-      radial-gradient(50% 45% at 18% 55%, rgba(255,140,200,0.18), transparent 64%),
-      radial-gradient(48% 42% at 82% 62%, rgba(120,220,255,0.14), transparent 64%),
-      radial-gradient(55% 50% at 70% 85%, rgba(189,166,255,0.12), transparent 65%),
-      linear-gradient(180deg, rgba(10,10,22,0.92), rgba(7,8,18,0.98));
-  }
-
-  .welcome-noise {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: -10;
-    background-image: url("/noise.svg");
-    background-size: 260px 260px;
-    opacity: 0.10;
-    mix-blend-mode: overlay;
-  }
-
-  html.dark .welcome-noise {
-    opacity: 0.12;
-    mix-blend-mode: soft-light;
-  }
 }
 
 /* === UTILITIES === */
@@ -519,12 +449,6 @@ html.dark body::before {
     @apply mx-auto max-w-7xl min-w-0 overflow-x-clip px-4 sm:px-6 md:px-8; 
     padding-top: clamp(1.25rem, 2.2vw, 2.5rem); 
     padding-bottom: clamp(1.25rem, 2.2vw, 2.5rem); 
-  }
-  
-  .hero-bg {
-    background:
-      radial-gradient(1000px 600px at 80% 0%, rgba(155 135 255 / .12), transparent),
-      radial-gradient(1600px 900px at -10% 20%, rgba(155 135 255 / .08), transparent);
   }
   
   .shimmer {
@@ -578,11 +502,11 @@ html.dark body::before {
   }
 
   .sky-backdrop-stack > div.absolute.inset-0.z-0 {
-    opacity: 0.58;
+    opacity: 0.5;
   }
 
   html.dark .sky-backdrop-stack > div.absolute.inset-0.z-0 {
-    opacity: 0.42;
+    opacity: 0.36;
   }
 
   .sky-aurora {
@@ -591,12 +515,12 @@ html.dark body::before {
 
   .sky-aurora--light {
     mix-blend-mode: soft-light;
-    opacity: 0.28;
+    opacity: 0.24;
   }
 
   .sky-aurora--dark {
     mix-blend-mode: screen;
-    opacity: 0.20;
+    opacity: 0.17;
   }
 
   .sky-aurora__blob {
@@ -690,7 +614,7 @@ html.dark body::before {
       will-change: auto;
     }
     .sky-aurora--dark {
-      opacity: 0.22;
+      opacity: 0.18;
     }
   }
 
@@ -722,63 +646,35 @@ html.dark body::before {
    * I8E-2b: „platno“ — bez jakih horizontalnih traka; samo blagi vignette + lavender tišina.
    * Tekst čitljivosti drže kartice / sky PNG uz smanjenu neprozirnost.
    */
+  /* I8E-3B: širi „prozirni“ srednji dio — manje traka na rubovima sekcija */
   .section-bg-overlay-light {
     background:
       linear-gradient(
         to bottom,
-        rgba(110, 68, 255, 0.028) 0%,
-        transparent 36%,
-        transparent 64%,
-        rgba(189, 166, 255, 0.038) 100%
+        rgba(110, 68, 255, 0.02) 0%,
+        transparent 30%,
+        transparent 70%,
+        rgba(189, 166, 255, 0.028) 100%
       ),
       linear-gradient(
         to bottom,
-        rgba(248, 246, 255, 0.14) 0%,
-        rgba(245, 243, 250, 0.06) 45%,
-        rgba(248, 246, 255, 0.12) 100%
+        rgba(248, 246, 255, 0.085) 0%,
+        rgba(245, 243, 250, 0.035) 45%,
+        rgba(248, 246, 255, 0.065) 100%
       );
   }
 
   /*
-   * Dark (I8E-2d): bez rgba(7,8,18,…) „ploča“ — to je rezalo horizontalne trake na rubovima sekcija.
-   * Samo suptilan ljubičasti vignette; kontinuitet drži body + body::before.
+   * Dark: samo suptilan vignette; kontinuitet drži body + body::before.
    */
   html.dark .section-bg-overlay-dark {
     background: linear-gradient(
       180deg,
-      rgba(110, 68, 255, 0.052) 0%,
-      transparent 28%,
-      transparent 72%,
-      rgba(189, 166, 255, 0.042) 100%
+      rgba(110, 68, 255, 0.034) 0%,
+      transparent 22%,
+      transparent 78%,
+      rgba(189, 166, 255, 0.028) 100%
     );
-  }
-
-  /* Homepage kontakt (#kontakt): još suptilniji wash od sky sekcija — stopi se s globalnim platnom */
-  html.dark .homepage-contact-atmosphere {
-    background: linear-gradient(
-      180deg,
-      rgba(110, 68, 255, 0.032) 0%,
-      transparent 38%,
-      transparent 62%,
-      rgba(189, 166, 255, 0.026) 100%
-    );
-  }
-
-  html:not(.dark) .homepage-contact-atmosphere {
-    background:
-      linear-gradient(
-        to bottom,
-        rgba(110, 68, 255, 0.02) 0%,
-        transparent 38%,
-        transparent 62%,
-        rgba(189, 166, 255, 0.026) 100%
-      ),
-      linear-gradient(
-        to bottom,
-        rgba(248, 246, 255, 0.09) 0%,
-        rgba(245, 243, 250, 0.045) 50%,
-        rgba(248, 246, 255, 0.075) 100%
-      );
   }
   
   /* Text styles for sections with background images */
@@ -852,8 +748,8 @@ html.dark body::before {
   html.dark .text-shadow-soft {
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   }
-  
-  /* Darker cards in sections with backgrounds */
+
+  /* Darker glass cards on atmospheric sections (portfolio, welcome, contact cards, …) */
   html.dark .section-with-bg [class*="bg-white/"] {
     background-color: rgba(44, 43, 48, 0.8) !important;
     backdrop-filter: blur(12px);

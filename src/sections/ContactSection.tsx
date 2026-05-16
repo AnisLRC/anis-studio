@@ -55,10 +55,7 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           50% { box-shadow: 0 0 35px rgba(110,68,255,0.6), 0 22px 60px rgba(110,68,255,0.45); }
         }
       `}</style>
-      {/* Pozadina: globalni canvas + suptilan wash (bez sky PNG pravokutnika) */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <div className="absolute inset-0 section-bg-overlay-light dark:section-bg-overlay-dark homepage-contact-atmosphere" />
-      </div>
+      {/* I8E-3C: samo homepage — bez sekcijskog wash wrappera; globalni body::before platno. */}
 
       <div className="relative z-10 mx-auto min-w-0 max-w-5xl px-4 sm:px-6">
         {/* Header */}

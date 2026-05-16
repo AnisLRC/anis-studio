@@ -21,7 +21,7 @@ interface DecorativeSkyBackdropProps {
  * Soft aurora / nebula mist (CSS-only) sits above the PNG and below page
  * content. Dark theme uses stronger violets with `mix-blend-mode: screen`; light
  * theme stays pearl/lavender and softer. Drift animacije su ugašene (I8E-2).
- * Globalni `body::before` nosi kontinuirani shimmer; ovaj PNG je suptilna tekstura (I8E-2b).
+ * Globalni `body::before` nosi kontinuirani pearl/lavender field; PNG je suptilna tekstura (I8E-3B: niži opacity u CSS-u).
  */
 export function DecorativeSkyBackdrop({
   priority = 'lazy',
