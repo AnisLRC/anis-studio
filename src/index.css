@@ -313,6 +313,174 @@ html.dark body::before {
     transform: translateY(-4px);
     box-shadow: 0 20px 40px rgba(110, 68, 255, 0.15);
   }
+
+  /*
+   * I8F-3A: „Glass sheet“ panel — luksuzan translucent pearl/lavender (light),
+   * amethyst frost (dark). Referenca: staklena ploča na središnjem panelu; bez slike/asset-a.
+   * Pseudo-slojevi su statični (nema animacije). Tekst ostaje iznad (> * z-index).
+   * !important sprječava Tailwind pregaz na istom čvoru.
+   */
+  .surface-premium {
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
+    transition: border-color 0.35s ease, box-shadow 0.35s ease;
+    /* Light (I8F-3A-light-tuning): topliji pearl + vidljiviji lavender frost — i dalje svijetao panel */
+    background:
+      linear-gradient(
+        168deg,
+        rgba(251, 246, 255, 0.74) 0%,
+        rgba(226, 215, 250, 0.5) 36%,
+        rgba(237, 228, 252, 0.58) 54%,
+        rgba(251, 248, 255, 0.76) 100%
+      ),
+      radial-gradient(
+        ellipse 118% 90% at 12% -8%,
+        rgba(255, 251, 254, 0.52) 0%,
+        rgba(219, 204, 245, 0.14) 42%,
+        rgba(246, 240, 255, 0) 60%
+      ),
+      radial-gradient(
+        ellipse 98% 84% at 94% 100%,
+        rgba(183, 158, 240, 0.24) 0%,
+        rgba(226, 214, 250, 0.1) 44%,
+        rgba(246, 240, 255, 0) 56%
+      ) !important;
+    border: 1px solid color-mix(in srgb, rgba(255, 255, 255, 0.75) 55%, rgba(110, 68, 255, 0.22) 45%) !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.92) inset,
+      0 16px 1px -12px rgba(255, 255, 255, 0.22) inset,
+      0 28px 72px rgba(46, 36, 71, 0.1),
+      0 14px 40px rgba(110, 68, 255, 0.07),
+      0 6px 16px rgba(46, 36, 71, 0.05) !important;
+    backdrop-filter: blur(24px) saturate(176%);
+    -webkit-backdrop-filter: blur(24px) saturate(176%);
+  }
+
+  /* Light: malo bogatiji dijagonalni sheen — lavanda vidljivija, bez prekrivanja teksta (> *) */
+  .surface-premium::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(
+      118deg,
+      rgba(255, 252, 255, 0.36) 0%,
+      rgba(255, 255, 255, 0) 22%,
+      rgba(205, 186, 245, 0.16) 40%,
+      rgba(178, 150, 232, 0.18) 52%,
+      rgba(255, 255, 255, 0) 67%,
+      rgba(246, 238, 255, 0.44) 100%
+    );
+    opacity: 0.97;
+  }
+
+  /* Light: rim-light toplije pearl/lavender, manje „surov“ bijeli obrub */
+  .surface-premium::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      linear-gradient(180deg, rgba(253, 248, 255, 0.52) 0%, rgba(232, 220, 250, 0.1) 16%, rgba(255, 255, 255, 0) min(24%, 3.85rem)),
+      linear-gradient(
+        0deg,
+        rgba(220, 208, 245, 0.22) 0%,
+        rgba(255, 255, 255, 0) min(27%, 3.95rem)
+      ),
+      radial-gradient(
+        ellipse 87% 44% at 50% -4%,
+        rgba(238, 228, 252, 0.46) 0%,
+        rgba(255, 252, 255, 0) 62%
+      );
+    opacity: 0.9;
+  }
+
+  .surface-premium > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .surface-premium:hover {
+    border-color: color-mix(in srgb, rgba(255, 255, 255, 0.82) 48%, rgba(110, 68, 255, 0.32) 52%) !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.96) inset,
+      0 18px 1px -12px rgba(255, 255, 255, 0.26) inset,
+      0 34px 84px rgba(46, 36, 71, 0.12),
+      0 16px 44px rgba(110, 68, 255, 0.09),
+      0 7px 20px rgba(46, 36, 71, 0.06) !important;
+  }
+
+  html.dark .surface-premium {
+    background:
+      linear-gradient(
+        156deg,
+        rgba(62, 52, 86, 0.58) 0%,
+        rgba(38, 32, 56, 0.66) 42%,
+        rgba(52, 44, 78, 0.6) 100%
+      ),
+      radial-gradient(
+        ellipse 115% 88% at 10% -12%,
+        rgba(129, 100, 200, 0.22) 0%,
+        rgba(42, 36, 62, 0) 56%
+      ),
+      radial-gradient(
+        ellipse 100% 70% at 95% 108%,
+        rgba(189, 166, 255, 0.12) 0%,
+        rgba(30, 26, 44, 0) 52%
+      ) !important;
+    border: 1px solid rgba(210, 198, 255, 0.22) !important;
+    box-shadow:
+      0 1px 0 rgba(230, 216, 255, 0.22) inset,
+      0 18px 1px -12px rgba(110, 68, 255, 0.12) inset,
+      0 28px 72px rgba(0, 0, 0, 0.44),
+      0 12px 36px rgba(110, 68, 255, 0.09),
+      0 4px 14px rgba(0, 0, 0, 0.38) !important;
+    backdrop-filter: blur(22px) saturate(155%);
+    -webkit-backdrop-filter: blur(22px) saturate(155%);
+  }
+
+  html.dark .surface-premium::before {
+    background: linear-gradient(
+      122deg,
+      rgba(220, 205, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(110, 68, 255, 0.15) 55%,
+      rgba(255, 255, 255, 0) 74%,
+      rgba(236, 220, 255, 0.1) 100%
+    );
+    opacity: 0.72;
+  }
+
+  html.dark .surface-premium::after {
+    background:
+      linear-gradient(180deg, rgba(230, 214, 255, 0.28) 0%, rgba(255, 255, 255, 0) min(26%, 3.85rem)),
+      linear-gradient(
+        0deg,
+        rgba(110, 68, 255, 0.09) 0%,
+        rgba(255, 255, 255, 0) min(26%, 3.85rem)
+      ),
+      radial-gradient(
+        ellipse 88% 45% at 50% -3%,
+        rgba(236, 222, 255, 0.22) 0%,
+        rgba(255, 255, 255, 0) 62%
+      );
+    opacity: 0.65;
+  }
+
+  html.dark .surface-premium:hover {
+    border-color: rgba(222, 210, 255, 0.3) !important;
+    box-shadow:
+      0 1px 0 rgba(236, 220, 255, 0.28) inset,
+      0 18px 1px -12px rgba(110, 68, 255, 0.16) inset,
+      0 34px 88px rgba(0, 0, 0, 0.5),
+      0 16px 44px rgba(110, 68, 255, 0.11),
+      0 5px 18px rgba(0, 0, 0, 0.42) !important;
+  }
   
   /* Premium glassmorphism card - enhanced for background images */
   .glass-card {

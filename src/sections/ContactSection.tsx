@@ -73,13 +73,8 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           {/* Email Card — vodi na kontakt formu (bez mailto) */}
           <Link
             to="/kontakt#kontakt-forma"
-            className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
-              bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
-              border border-amethyst/20 dark:border-lavender/25
-              shadow-[0_4px_20px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
-              hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
-              hover:-translate-y-2
-              transition-all duration-300"
+            className="surface-premium group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
+              hover:-translate-y-2 transition-all duration-300"
           >
             {/* Icon container with gradient */}
             <div className="flex justify-center">
@@ -105,13 +100,8 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           <div className="min-h-0">
             <a
               href={PHONE_TEL_HREF}
-              className="group flex h-full min-h-0 flex-col rounded-2xl p-5 text-center sm:p-6 md:hidden
-              bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
-              border border-amethyst/20 dark:border-lavender/25
-              shadow-[0_4px_20px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
-              hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
-              hover:-translate-y-2
-              transition-all duration-300"
+              className="surface-premium group flex h-full min-h-0 flex-col rounded-2xl p-5 text-center sm:p-6 md:hidden
+              hover:-translate-y-2 transition-all duration-300"
             >
               <div className="flex justify-center">
                 <div className="
@@ -133,13 +123,8 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
             </a>
             <Link
               to="/kontakt#kontakt-forma"
-              className="group hidden h-full min-h-0 flex-col rounded-2xl p-5 text-center sm:p-6 md:flex
-              bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
-              border border-amethyst/20 dark:border-lavender/25
-              shadow-[0_4px_20px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
-              hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
-              hover:-translate-y-2
-              transition-all duration-300"
+              className="surface-premium group hidden h-full min-h-0 flex-col rounded-2xl p-5 text-center sm:p-6 md:flex
+              hover:-translate-y-2 transition-all duration-300"
             >
               <div className="flex justify-center">
                 <div className="
@@ -164,13 +149,8 @@ export default function ContactSection({ language = 'hr' }: ContactSectionProps)
           {/* Message Card */}
           <Link
             to="/kontakt"
-            className="group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
-              bg-[rgba(248,246,255,0.68)] dark:bg-white/15 backdrop-blur-xl
-              border border-amethyst/20 dark:border-lavender/25
-              shadow-[0_4px_20px_rgba(46,36,71,0.07)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
-              hover:shadow-[0_12px_32px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_15px_40px_rgba(189,166,255,0.12)]
-              hover:-translate-y-2
-              transition-all duration-300"
+            className="surface-premium group flex h-full flex-col rounded-2xl p-5 text-center sm:p-6
+              hover:-translate-y-2 transition-all duration-300"
           >
             {/* Icon container with gradient */}
             <div className="flex justify-center">

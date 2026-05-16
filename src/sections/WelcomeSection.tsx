@@ -269,12 +269,8 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           <Link
             to="/lrc"
             onClick={() => trackEvent('homepage_line_click', { line: 'lrc' })}
-            className="group relative rounded-[2rem] p-6 sm:p-8 text-center
-            bg-[rgba(248,246,255,0.72)] dark:bg-white/8 backdrop-blur-2xl
-            border border-amethyst/20 dark:border-lavender/10
-            shadow-[0_8px_32px_rgba(46,36,71,0.07)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
-            hover:-translate-y-2 hover:shadow-[0_18px_48px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
-            transition-all duration-300 will-change-transform">
+            className="surface-premium group relative rounded-[2rem] p-6 sm:p-8 text-center
+            hover:-translate-y-2 transition-all duration-300 will-change-transform">
             {/* Project count badge */}
             <div className="absolute top-4 right-4">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold
@@ -307,12 +303,8 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           <Link
             to="/interijeri"
             onClick={() => trackEvent('homepage_line_click', { line: 'interijeri' })}
-            className="group relative rounded-[2rem] p-6 sm:p-8 text-center
-            bg-[rgba(248,246,255,0.72)] dark:bg-white/8 backdrop-blur-2xl
-            border border-amethyst/20 dark:border-lavender/10
-            shadow-[0_8px_32px_rgba(46,36,71,0.07)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
-            hover:-translate-y-2 hover:shadow-[0_18px_48px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
-            transition-all duration-300 will-change-transform">
+            className="surface-premium group relative rounded-[2rem] p-6 sm:p-8 text-center
+            hover:-translate-y-2 transition-all duration-300 will-change-transform">
             {/* Project count badge */}
             <div className="absolute top-4 right-4">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold
@@ -345,12 +337,8 @@ export default function WelcomeSection({ language = 'hr' }: WelcomeSectionProps)
           <Link
             to="/web-atelier"
             onClick={() => trackEvent('homepage_line_click', { line: 'web-atelier' })}
-            className="group relative rounded-[2rem] p-6 sm:p-8 text-center
-            bg-[rgba(248,246,255,0.72)] dark:bg-white/8 backdrop-blur-2xl
-            border border-amethyst/20 dark:border-lavender/10
-            shadow-[0_8px_32px_rgba(46,36,71,0.07)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
-            hover:-translate-y-2 hover:shadow-[0_18px_48px_rgba(110,68,255,0.12)] dark:hover:shadow-[0_25px_70px_rgba(189,166,255,0.12)]
-            transition-all duration-300 will-change-transform">
+            className="surface-premium group relative rounded-[2rem] p-6 sm:p-8 text-center
+            hover:-translate-y-2 transition-all duration-300 will-change-transform">
             {/* Project count badge */}
             <div className="absolute top-4 right-4">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold

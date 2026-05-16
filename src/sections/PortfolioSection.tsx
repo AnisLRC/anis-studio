@@ -238,11 +238,8 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
             const isFallbackItem = item.key.startsWith('fallback-')
 
             const cardClassName = `
-                  group flex h-full flex-col overflow-hidden rounded-2xl border border-[rgba(110,68,255,0.15)]
-                  bg-[rgba(248,246,255,0.72)] text-left shadow-sm backdrop-blur-sm
-                  transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md
-                  dark:border-lavender/15 dark:bg-white/8 dark:shadow-[0_8px_30px_rgba(0,0,0,0.25)]
-                  dark:hover:shadow-[0_12px_40px_rgba(189,166,255,0.12)]
+                  surface-premium group flex h-full flex-col overflow-hidden rounded-2xl text-left
+                  transition-all duration-300 hover:-translate-y-0.5
                   ${isFallbackItem ? 'cursor-default' : 'cursor-pointer'}`
             const cardStyle = { animationDelay: `${index * 50}ms` } as const
 
@@ -333,7 +330,7 @@ export default function PortfolioSection({ language }: PortfolioSectionProps) {
 
         {/* Conversion CTA — after portfolio grid */}
         <div className="mx-auto mt-8 max-w-xl sm:mt-10" aria-labelledby="portfolio-cta-heading">
-          <div className="rounded-2xl border border-[rgba(110,68,255,0.12)] bg-white/50 p-6 text-center shadow-[0_8px_40px_rgba(46,36,71,0.06)] backdrop-blur-md dark:border-lavender/12 dark:bg-white/[0.04] dark:shadow-[0_12px_48px_rgba(0,0,0,0.25)] sm:p-8">
+          <div className="surface-premium rounded-2xl p-6 text-center sm:p-8">
             <h3
               id="portfolio-cta-heading"
               className="font-heading text-xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-2xl"
