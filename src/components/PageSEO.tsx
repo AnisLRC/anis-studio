@@ -2,7 +2,7 @@ import { createPortal } from 'react-dom'
 import { Helmet } from 'react-helmet-async'
 
 /** Production origin — keep in sync with public/robots.txt and public/sitemap.xml */
-export const SITE_URL = 'https://anistudio.hr'
+export const SITE_URL = 'https://anislrc.hr'
 export const SITE_NAME = "Ani's Studio"
 
 /** Default social preview asset in `public/` — resolved to absolute URL for og/twitter */

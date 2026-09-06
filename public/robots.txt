@@ -3,4 +3,4 @@ Allow: /
 
 Disallow: /admin/
 
-Sitemap: https://anistudio.hr/sitemap.xml
+Sitemap: https://anislrc.hr/sitemap.xml
