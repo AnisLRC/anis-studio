@@ -40,6 +40,7 @@ const AdminPortfolioPage = lazy(() => import('./pages/AdminPortfolioPage'))
 const AdminReviewsPage = lazy(() => import('./pages/AdminReviewsPage'))
 const OstaviRecenzijuPage = lazy(() => import('./pages/OstaviRecenzijuPage'))
 const PolitikaPrivatnostiPage = lazy(() => import('./pages/PolitikaPrivatnostiPage'))
+const StarlinkHrvatskaPage = lazy(() => import('./pages/StarlinkHrvatskaPage'))
 
 // Routes component with AnimatePresence
 function AnimatedRoutes({
@@ -117,6 +118,7 @@ function AnimatedRoutes({
               path="/politika-privatnosti"
               element={<PolitikaPrivatnostiPage language={language} />}
             />
+            <Route path="/starlink-hrvatska" element={<StarlinkHrvatskaPage />} />
           </Route>
 
           {/* Admin routes - no public header/footer; login outside persistent shell */}

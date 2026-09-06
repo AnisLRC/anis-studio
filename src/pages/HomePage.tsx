@@ -2,6 +2,7 @@ import { ErrorBoundary } from '../ErrorBoundary'
 import WelcomeSection from '../sections/WelcomeSection'
 import PortfolioSection from '../sections/PortfolioSection'
 import TestimonialsSection from '../sections/TestimonialsSection'
+import StarlinkHomeCard from '../sections/StarlinkHomeCard'
 import ContactSection from '../sections/ContactSection'
 import { AnimatedPage } from '../components/AnimatedPage'
 import { PageSEO, SITE_URL } from '../components/PageSEO'
@@ -63,6 +64,10 @@ export default function HomePage({ language }: HomePageProps) {
       
       <ErrorBoundary name="Testimonials">
         <TestimonialsSection language={language} />
+      </ErrorBoundary>
+
+      <ErrorBoundary name="StarlinkHomeCard">
+        <StarlinkHomeCard />
       </ErrorBoundary>
 
       <ErrorBoundary name="Contact">
