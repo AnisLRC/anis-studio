@@ -67,7 +67,7 @@ export default function HomePage({ language }: HomePageProps) {
       </ErrorBoundary>
 
       <ErrorBoundary name="StarlinkHomeCard">
-        <StarlinkHomeCard />
+        <StarlinkHomeCard language={language} />
       </ErrorBoundary>
 
       <ErrorBoundary name="Contact">

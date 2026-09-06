@@ -31,12 +31,17 @@ export default function Footer({ language = 'hr' }: FooterProps) {
                 />
               </span>
             </div>
-            <BrandDescriptor className="w-full max-w-[22rem] border-t border-amethyst/12 pt-2.5 text-center lg:max-w-none lg:border-t-0 lg:pt-0 lg:text-left" />
+            <BrandDescriptor
+              language={language}
+              className="w-full max-w-[22rem] border-t border-amethyst/12 pt-2.5 text-center lg:max-w-none lg:border-t-0 lg:pt-0 lg:text-left"
+            />
           </div>
           
           <div className="flex w-full max-w-full min-w-0 flex-col items-center gap-1.5 justify-self-center px-1 text-center sm:px-2 lg:w-auto lg:max-w-none lg:min-w-0 lg:justify-self-center lg:px-3">
             <p className="max-w-full text-sm text-plum/80 [overflow-wrap:anywhere] dark:text-pearl/70 lg:max-w-none lg:whitespace-nowrap lg:[overflow-wrap:normal]">
-              &copy; 2026 Ani&apos;s Studio &mdash; ru&#269;no izra&#273;eno i dizajnirano u Hrvatskoj
+              {language === 'hr'
+                ? "© 2026 Ani's Studio — ručno izrađeno i dizajnirano u Hrvatskoj"
+                : "© 2026 Ani's Studio — handcrafted and designed in Croatia"}
             </p>
             <Link
               to="/politika-privatnosti"

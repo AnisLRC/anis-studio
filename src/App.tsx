@@ -118,7 +118,10 @@ function AnimatedRoutes({
               path="/politika-privatnosti"
               element={<PolitikaPrivatnostiPage language={language} />}
             />
-            <Route path="/starlink-hrvatska" element={<StarlinkHrvatskaPage />} />
+            <Route
+              path="/starlink-hrvatska"
+              element={<StarlinkHrvatskaPage language={language} />}
+            />
           </Route>
 
           {/* Admin routes - no public header/footer; login outside persistent shell */}

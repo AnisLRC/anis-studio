@@ -37,8 +37,26 @@ const HR_MONTHS = [
   'prosinca',
 ] as const
 
-/** Human-readable Croatian date for the on-page verification line. */
-export function formatStarlinkContentVerifiedDate(): string {
+const EN_MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+] as const
+
+/** Human-readable date for the on-page verification line. */
+export function formatStarlinkContentVerifiedDate(language: 'hr' | 'en' = 'hr'): string {
   const [year, month, day] = STARLINK_HR.contentLastVerified.split('-').map(Number)
+  if (language === 'en') {
+    return `${day} ${EN_MONTHS[month - 1]} ${year}.`
+  }
   return `${day}. ${HR_MONTHS[month - 1]} ${year}.`
 }

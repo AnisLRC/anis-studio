@@ -8,8 +8,8 @@ const INTERIORS_FIRST = {
     ariaLabel: '3D vizualizacije, Interijeri, Vizualna prezentacija',
   },
   en: {
-    labels: ['3D Visualizations', 'Interiors', 'Visual Presentation'],
-    ariaLabel: '3D Visualizations, Interiors, Visual Presentation',
+    labels: ['3D visualisations', 'Interiors', 'Visual presentation'],
+    ariaLabel: '3D visualisations, Interiors, Visual presentation',
   },
 } as const
 
