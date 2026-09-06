@@ -84,6 +84,7 @@ export type AnalyticsEventName =
   | 'interiors_portfolio_preview_click'
   | 'review_cta_click'
   | 'form_submit_success'
+  | 'starlink_referral_click'
 
 export function trackEvent(
   name: AnalyticsEventName,

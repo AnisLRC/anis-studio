@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { AnimatedPage } from '../components/AnimatedPage'
 import { PageSEO, SITE_NAME, SITE_URL } from '../components/PageSEO'
+import { trackEvent } from '../lib/analytics'
 import {
   STARLINK_HR,
   STARLINK_HR_PATH,
@@ -9,6 +10,7 @@ import {
 } from '../config/starlinkHr'
 
 type Lang = 'hr' | 'en'
+type StarlinkReferralPlacement = 'hero' | 'pricing' | 'referral_steps' | 'final_cta'
 
 interface StarlinkHrvatskaPageProps {
   language: Lang
@@ -409,11 +411,15 @@ function ReferralLink({
   className,
   id,
   describedBy,
+  placement,
+  language,
 }: {
   children: ReactNode
   className?: string
   id?: string
   describedBy?: string
+  placement: StarlinkReferralPlacement
+  language: Lang
 }) {
   return (
     <a
@@ -423,6 +429,12 @@ function ReferralLink({
       rel={STARLINK_REFERRAL_REL}
       className={className}
       aria-describedby={describedBy}
+      onClick={() =>
+        trackEvent('starlink_referral_click', {
+          placement,
+          language,
+        })
+      }
     >
       {children}
     </a>
@@ -556,6 +568,8 @@ export default function StarlinkHrvatskaPage({ language }: StarlinkHrvatskaPageP
                 <ReferralLink
                   id="starlink-hero-cta"
                   describedBy="starlink-hero-referral-note"
+                  placement="hero"
+                  language={language}
                   className="btn btn-primary inline-flex min-h-[48px] w-full items-center justify-center !whitespace-normal px-6 py-3 text-center text-base font-semibold shadow-md sm:w-auto sm:max-w-md"
                 >
                   {copy.ctaPrimary[language]}
@@ -757,6 +771,8 @@ export default function StarlinkHrvatskaPage({ language }: StarlinkHrvatskaPageP
             <p className={`mt-4 ${BODY_CLASS}`}>{copy.costBody[language]}</p>
             <ReferralLink
               describedBy="starlink-cost-referral-note"
+              placement="pricing"
+              language={language}
               className="btn btn-primary mt-6 inline-flex min-h-[48px] w-full items-center justify-center !whitespace-normal px-6 py-3 text-center text-base font-semibold shadow-md sm:w-auto"
             >
               {copy.costCta[language]}
@@ -784,6 +800,8 @@ export default function StarlinkHrvatskaPage({ language }: StarlinkHrvatskaPageP
             </div>
             <ReferralLink
               describedBy="starlink-referral-note"
+              placement="referral_steps"
+              language={language}
               className="btn btn-primary mt-6 inline-flex min-h-[48px] w-full items-center justify-center !whitespace-normal px-6 py-3 text-center text-base font-semibold shadow-md sm:w-auto"
             >
               {copy.referralCta[language]}
@@ -844,6 +862,8 @@ export default function StarlinkHrvatskaPage({ language }: StarlinkHrvatskaPageP
               </p>
               <ReferralLink
                 describedBy="starlink-final-referral-note"
+                placement="final_cta"
+                language={language}
                 className="btn btn-primary mt-6 inline-flex min-h-[48px] w-full max-w-sm items-center justify-center !whitespace-normal px-8 py-3 text-center text-base font-semibold shadow-md sm:mt-7 sm:w-auto sm:px-10"
               >
                 {copy.ctaPrimary[language]}
