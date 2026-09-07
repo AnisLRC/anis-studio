@@ -37,8 +37,8 @@ const copy = {
     en: 'Starlink in Croatia – guide before ordering',
   },
   seoDescription: {
-    hr: 'Jednostavan vodič na hrvatskom: kako Starlink radi, kome može koristiti, što provjeriti prije narudžbe i kako funkcionira referral pogodnost.',
-    en: 'A simple guide to Starlink in Croatia: how it works, who it may help, what to check before ordering and how the referral benefit works.',
+    hr: 'Saznajte kako Starlink radi u Hrvatskoj i kako putem referral poveznice možete ostvariti jedan mjesec usluge bez naknade.',
+    en: 'Learn how Starlink works in Croatia and how you may receive one month of service at no charge through the referral link.',
   },
   h1: {
     hr: 'Starlink u Hrvatskoj: jednostavan vodič prije narudžbe',
@@ -49,8 +49,20 @@ const copy = {
     en: 'Starlink may be an option for homes, holiday properties and locations where cable or mobile internet is unavailable or unreliable. This independent guide explains what you should check before making a decision.',
   },
   ctaPrimary: {
-    hr: 'Provjeri dostupnost i aktualnu ponudu',
-    en: 'Check availability and current offer',
+    hr: 'Ostvari 1 mjesec bez naknade',
+    en: 'Get 1 month at no charge',
+  },
+  benefitLabel: {
+    hr: 'Referral pogodnost',
+    en: 'Referral benefit',
+  },
+  benefitHeadline: {
+    hr: '1 mjesec Starlink usluge bez naknade za vas — i 1 mjesec pogodnosti za mene',
+    en: '1 month of Starlink service at no charge for you — and a 1-month referral benefit for me',
+  },
+  benefitFinePrint: {
+    hr: 'Vrijedi kada naručite putem moje referral poveznice, prema aktualnim pravilima Starlink referral programa.',
+    en: 'Available when you order through my referral link, subject to the current Starlink referral programme rules.',
   },
   ctaSecondary: {
     hr: 'Kako funkcionira?',
@@ -61,12 +73,12 @@ const copy = {
     en: 'Note:',
   },
   referralNote: {
-    hr: 'Ovo je referral poveznica. Ako putem nje naručite Starlink i ispunjeni su aktualni uvjeti programa, vi možete ostvariti jedan mjesec usluge bez naknade, a pogodnost mogu ostvariti i ja kao preporučitelj.',
-    en: 'This is a referral link. If you order Starlink through this link and meet the current programme requirements, you may receive one month of service at no charge, and I may also receive a referral benefit.',
+    hr: 'Ovo je referral poveznica. Pogodnost se primjenjuje prema aktualnim pravilima Starlink referral programa.',
+    en: 'This is a referral link. The benefit is applied under the current Starlink referral programme rules.',
   },
   independenceNote: {
-    hr: "Ani's Studio nije povezan sa Starlinkom i nije njegov zastupnik ni prodavatelj. Narudžba, dostupnost, cijene i uvjeti provjeravaju se izravno na službenoj Starlink stranici.",
-    en: "Ani's Studio is not affiliated with Starlink and is not its representative or reseller. Orders, availability, prices and terms are handled directly through the official Starlink website.",
+    hr: "Ani's Studio nije povezan sa Starlinkom i nije njegov zastupnik ni prodavatelj. Narudžba, cijene i uvjeti provjeravaju se izravno na službenoj Starlink stranici.",
+    en: "Ani's Studio is not affiliated with Starlink and is not its representative or reseller. Orders, prices and terms are handled directly through the official Starlink website.",
   },
   trustTags: {
     hr: [
@@ -133,8 +145,8 @@ const copy = {
     ],
   },
   whoNote: {
-    hr: 'Dostupnost i prikladan paket ovise o adresi, načinu uporabe i aktualnoj ponudi. Prije narudžbe to treba provjeriti na službenoj Starlink stranici.',
-    en: 'Availability and a suitable plan depend on the address, how the service is used and the current offer. Check this on the official Starlink website before ordering.',
+    hr: 'Starlink je dostupan diljem Hrvatske. Za kvalitetno korištenje na konkretnoj lokaciji najvažniji su otvoren pogled prema nebu, odgovarajući paket i pravilno postavljena antena.',
+    en: 'Starlink is available throughout Croatia. For reliable use at a specific location, the most important factors are a clear view of the sky, the appropriate service plan and correct antenna placement.',
   },
   checkHeading: {
     hr: 'Što treba provjeriti prije narudžbe?',
@@ -142,7 +154,7 @@ const copy = {
   },
   checklist: {
     hr: [
-      'dostupnost usluge na adresi',
+      'odgovarajući paket za vaš način uporabe',
       'jasan pogled prema nebu',
       'moguće prepreke poput stabala, krovova i viših objekata',
       'mjesto montaže i sigurno provođenje kabela',
@@ -151,7 +163,7 @@ const copy = {
       'pravila korištenja na drugoj lokaciji',
     ],
     en: [
-      'service availability at the address',
+      'the appropriate plan for how you will use the service',
       'a clear view of the sky',
       'possible obstructions such as trees, roofs and taller buildings',
       'mounting location and safe cable routing',
@@ -173,24 +185,28 @@ const copy = {
     en: 'Home or travel use',
   },
   useBody: {
-    hr: 'Starlink može nuditi različite vrste usluge za stalnu kućnu adresu i za prenosivu ili putnu uporabu. Nazivi paketa, područja dostupnosti i pravila mogu se mijenjati, zato ih prije narudžbe provjerite na službenoj stranici.',
-    en: 'Starlink may offer different types of service for a fixed home address and for portable or travel use. Plan names, coverage areas and rules may change, so check them on the official website before ordering.',
+    hr: 'Starlink nudi različite vrste usluge za stalnu kućnu adresu i za prenosivu ili putnu uporabu. Nazivi paketa i pravila mogu se mijenjati, zato prije narudžbe pregledajte aktualnu ponudu na službenoj stranici.',
+    en: 'Starlink offers different types of service for a fixed home address and for portable or travel use. Plan names and rules may change, so view the current offer on the official website before ordering.',
   },
   homeTitle: {
     hr: 'Za dom',
     en: 'For the home',
   },
   homeBody: {
-    hr: 'Namijenjeno stalnoj adresi, npr. kući ili vikendici. Prije narudžbe provjerite je li usluga dostupna na toj adresi i koja pravila vrijede za prelazak na drugu lokaciju.',
-    en: 'Intended for a fixed address, such as a house or holiday home. Before ordering, check whether the service is available at that address and which rules apply if you move it to another location.',
+    hr: 'Namijenjeno stalnoj adresi, npr. kući ili vikendici. Odaberite odgovarajući paket i provjerite ima li mjesto postavljanja otvoren pogled prema nebu.',
+    en: 'Intended for a fixed address, such as a house or holiday home. Choose the appropriate plan and make sure the installation location has a clear view of the sky.',
   },
   travelTitle: {
     hr: 'Za putovanja i promjenjive lokacije',
     en: 'For travel and changing locations',
   },
   travelBody: {
-    hr: 'Namijenjeno prenosivoj uporabi, npr. na putovanju ili na više mjesta. Dostupnost, pauza usluge i pravila korištenja izvan početne zone mogu se razlikovati — provjerite ih na službenoj stranici.',
-    en: 'Intended for portable use, for example while travelling or at more than one place. Availability, service pause options and rules outside the original coverage area may differ — check them on the official website.',
+    hr: 'Uz odgovarajući Roam paket Starlink se može koristiti na različitim lokacijama diljem Hrvatske. Najvažnije je pronaći mjesto s dovoljno otvorenim pogledom prema nebu i koristiti uslugu u skladu s pravilima odabranog paketa.',
+    en: 'With an appropriate Roam plan, Starlink can be used at different locations throughout Croatia. The key requirements are finding a location with a sufficiently clear view of the sky and using the service in accordance with the selected plan.',
+  },
+  travelNote: {
+    hr: 'Ovo ne znači automatski korištenje tijekom vožnje; pravila uporabe u pokretu ovise o opremi i odabranom planu.',
+    en: 'This does not automatically include use while a vehicle is moving; in-motion use depends on the equipment and selected plan.',
   },
   homeTravelAlt: {
     hr: 'Usporedni prikaz kućne uporabe satelitskog interneta i prenosive uporabe na putovanju.',
@@ -243,36 +259,40 @@ const copy = {
     en: 'How much does it cost?',
   },
   costBody: {
-    hr: 'Cijene opreme, dostave i mjesečne usluge mogu se mijenjati. Točan iznos za svoju adresu provjerite neposredno prije narudžbe na službenoj Starlink stranici.',
-    en: 'Equipment, delivery and monthly service prices may change. Check the exact amount for your address on the official Starlink website just before you order.',
+    hr: 'Cijene opreme, dostave i mjesečne usluge mogu se mijenjati. Konačnu cijenu i uvjete provjerite neposredno prije narudžbe na službenoj Starlink stranici.',
+    en: 'Equipment, delivery and monthly service prices may change. Check the final price and terms on the official Starlink website just before you order.',
   },
   costCta: {
-    hr: 'Provjeri aktualnu ponudu na Starlinku',
-    en: 'Check the current offer on Starlink',
+    hr: 'Pogledaj ponudu i ostvari pogodnost',
+    en: 'View the offer and claim the benefit',
   },
   referralHeading: {
     hr: 'Kako funkcionira referral pogodnost?',
     en: 'How does the referral benefit work?',
   },
+  referralLead: {
+    hr: 'Kada prihvatljivu narudžbu dovršite putem moje referral poveznice, možete dobiti jedan mjesec Starlink usluge bez naknade. Jedan mjesec referral pogodnosti mogu dobiti i ja kao preporučitelj.',
+    en: 'When you complete an eligible order through my referral link, you may receive one month of Starlink service at no charge. I may also receive a one-month referral benefit as the referrer.',
+  },
   referralSteps: {
     hr: [
       'Otvorite Starlink preko označene referral poveznice',
-      'Provjerite adresu, dostupnost i aktualne uvjete',
-      'Ako završite narudžbu i ispunjeni su uvjeti programa, možete ostvariti jedan mjesec usluge bez naknade',
+      'Pregledajte aktualnu ponudu, odaberite odgovarajući paket te provjerite konačnu cijenu i uvjete',
+      'Ako završite prihvatljivu narudžbu, možete ostvariti jedan mjesec usluge bez naknade',
     ],
     en: [
       'Open Starlink through the marked referral link',
-      'Check the address, availability and current terms',
-      'If you complete an order and meet the programme requirements, you may receive one month of service at no charge',
+      'View the current offer, choose the appropriate plan and check the final price and terms',
+      'If you complete an eligible order, you may receive one month of service at no charge',
     ],
   },
   referralLimits: {
-    hr: "Pogodnost određuje Starlink. Uvjeti se mogu promijeniti. Ani's Studio ne obrađuje narudžbu ni plaćanje i ne može odobriti niti jamčiti pogodnost.",
-    en: "Starlink determines the benefit. Terms may change. Ani's Studio does not process the order or payment and cannot approve or guarantee the benefit.",
+    hr: "Pogodnost primjenjuje Starlink prema aktualnim pravilima programa. Ani's Studio ne obrađuje narudžbu, ne prima plaćanje i ne može samostalno odobriti pogodnost.",
+    en: "The benefit is applied by Starlink under the current programme rules. Ani's Studio does not process the order, receive payment or independently approve the benefit.",
   },
   referralCta: {
-    hr: 'Otvori Starlink referral poveznicu',
-    en: 'Open the Starlink referral link',
+    hr: 'Ostvari 1 mjesec putem referral poveznice',
+    en: 'Get 1 month through the referral link',
   },
   orderHeading: {
     hr: 'Kako izgleda narudžba?',
@@ -281,14 +301,14 @@ const copy = {
   orderSteps: {
     hr: [
       'Otvorite službenu stranicu preko poveznice',
-      'Unesite adresu i provjerite dostupnost',
+      'Unesite adresu u narudžbenom procesu Starlinka',
       'Pregledajte prikazani paket, opremu, dostavu i uvjete',
       'Provjerite konačni iznos prije plaćanja',
       'Narudžbu dovršite izravno na Starlink stranici',
     ],
     en: [
       'Open the official website through the link',
-      'Enter your address and check availability',
+      'Enter your address in the Starlink order process',
       'Review the displayed plan, equipment, delivery and terms',
       'Check the final amount before payment',
       'Complete the order directly on the Starlink website',
@@ -321,12 +341,12 @@ const copy = {
     },
     {
       question: {
-        hr: 'Je li jedan mjesec bez naknade zajamčen?',
-        en: 'Is one month at no charge guaranteed?',
+        hr: 'Dobivamo li kupac i preporučitelj po jedan mjesec pogodnosti?',
+        en: 'Do the customer and referrer each receive a one-month benefit?',
       },
       answer: {
-        hr: 'Nije zajamčen. Ako naručite putem referral poveznice i ispunjeni su aktualni uvjeti programa, možete ostvariti jedan mjesec usluge bez naknade. Pogodnost određuje Starlink, a uvjeti se mogu promijeniti.',
-        en: 'It is not guaranteed. If you order through the referral link and meet the current programme requirements, you may receive one month of service at no charge. Starlink determines the benefit, and terms may change.',
+        hr: 'Prema aktualnoj referral ponudi, prihvatljivi novi korisnik može dobiti jedan mjesec Starlink usluge bez naknade, a jedan mjesec pogodnosti može dobiti i preporučitelj. Pogodnost primjenjuje Starlink prema važećim pravilima programa.',
+        en: 'Under the current referral offer, an eligible new customer may receive one month of Starlink service at no charge, and the referrer may also receive a one-month benefit. Starlink applies the benefit under the current programme rules.',
       },
     },
     {
@@ -335,8 +355,8 @@ const copy = {
         en: 'Is Starlink available at every address in Croatia?',
       },
       answer: {
-        hr: 'Ne nužno. Dostupnost ovisi o adresi, načinu uporabe i aktualnoj ponudi. Prije odluke to treba provjeriti na službenoj Starlink stranici.',
-        en: 'Not necessarily. Availability depends on the address, how the service is used and the current offer. Check this on the official Starlink website before deciding.',
+        hr: 'Starlink je dostupan diljem Hrvatske. Za kvalitetno korištenje na konkretnoj lokaciji najvažniji su otvoren pogled prema nebu, odgovarajući paket i pravilno postavljena antena.',
+        en: 'Starlink is available throughout Croatia. For reliable use at a specific location, the most important factors are a clear view of the sky, the appropriate service plan and correct antenna placement.',
       },
     },
     {
@@ -355,8 +375,8 @@ const copy = {
         en: 'Are prices and plans always the same?',
       },
       answer: {
-        hr: 'Nisu. Cijene opreme, dostave i mjesečne usluge, kao i nazivi paketa, mogu se mijenjati. Točan iznos za svoju adresu provjerite neposredno prije narudžbe.',
-        en: 'No. Equipment, delivery and monthly service prices, as well as plan names, may change. Check the exact amount for your address just before you order.',
+        hr: 'Nisu. Cijene opreme, dostave i mjesečne usluge, kao i nazivi paketa, mogu se mijenjati. Konačnu cijenu i uvjete provjerite neposredno prije narudžbe.',
+        en: 'No. Equipment, delivery and monthly service prices, as well as plan names, may change. Check the final price and terms just before you order.',
       },
     },
     {
@@ -365,8 +385,8 @@ const copy = {
         en: 'Can the equipment be used at another location?',
       },
       answer: {
-        hr: 'To ovisi o vrsti usluge i aktualnim pravilima Starlinka. Prije narudžbe na službenoj stranici provjerite razliku između kućne i putne uporabe.',
-        en: "That depends on the type of service and Starlink's current rules. Before ordering, check the difference between home and travel use on the official website.",
+        hr: 'To ovisi o vrsti usluge i aktualnim pravilima Starlinka. Prije narudžbe na službenoj stranici odaberite odgovarajući paket i pregledajte razliku između kućne i putne uporabe.',
+        en: "That depends on the type of service and Starlink's current rules. Before ordering, choose the appropriate plan and review the difference between home and travel use on the official website.",
       },
     },
     {
@@ -381,12 +401,12 @@ const copy = {
     },
   ],
   finalHeading: {
-    hr: 'Provjerite odgovara li Starlink vašoj lokaciji',
-    en: 'Check whether Starlink is right for your location',
+    hr: 'Ostvarite 1 mjesec usluge bez naknade',
+    en: 'Get 1 month of service at no charge',
   },
   finalBody: {
-    hr: 'Prije narudžbe provjerite dostupnost, konačnu cijenu, opremu i aktualne uvjete izravno na službenoj stranici.',
-    en: 'Before ordering, check availability, the final price, equipment and current terms directly on the official website.',
+    hr: 'Prije narudžbe pregledajte aktualnu ponudu, konačnu cijenu, opremu i uvjete izravno na službenoj stranici.',
+    en: 'Before ordering, view the current offer, the final price, equipment and terms directly on the official website.',
   },
   legalHeading: {
     hr: 'Pravna napomena',
@@ -563,6 +583,20 @@ export default function StarlinkHrvatskaPage({ language }: StarlinkHrvatskaPageP
               <h1 className="font-heading text-3xl font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
                 {copy.h1[language]}
               </h1>
+              <div className="mt-5 rounded-2xl border border-amethyst/22 bg-white/70 p-4 shadow-sm backdrop-blur-sm dark:border-lavender/25 dark:bg-white/[0.06] sm:p-5">
+                <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-amethyst dark:text-lavender">
+                  {copy.benefitLabel[language]}
+                </p>
+                <p className="mt-1.5 font-heading text-base font-bold tracking-tight text-balance text-plum/95 dark:text-pearl sm:text-lg">
+                  {copy.benefitHeadline[language]}
+                </p>
+                <p
+                  id="starlink-hero-referral-note"
+                  className="mt-2 text-xs leading-relaxed text-plum/70 dark:text-pearl/68 sm:text-[0.8125rem]"
+                >
+                  {copy.benefitFinePrint[language]}
+                </p>
+              </div>
               <p className={`mt-5 ${BODY_CLASS}`}>{copy.intro[language]}</p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <ReferralLink
@@ -582,7 +616,9 @@ export default function StarlinkHrvatskaPage({ language }: StarlinkHrvatskaPageP
                 </a>
               </div>
               <div className="mt-4 max-w-xl">
-                <ReferralNote id="starlink-hero-referral-note" language={language} />
+                <p className="text-xs leading-relaxed text-plum/68 dark:text-pearl/65 sm:text-[0.8125rem]">
+                  {copy.independenceNote[language]}
+                </p>
               </div>
               <ul className="mt-5 flex flex-wrap gap-2">
                 {copy.trustTags[language].map((tag) => (
@@ -711,6 +747,9 @@ export default function StarlinkHrvatskaPage({ language }: StarlinkHrvatskaPageP
                   <p className="mt-2 text-sm leading-relaxed text-plum/75 dark:text-pearl/70 sm:text-[0.9375rem]">
                     {copy.travelBody[language]}
                   </p>
+                  <p className="mt-2 text-sm leading-relaxed text-plum/68 dark:text-pearl/62 sm:text-[0.9375rem]">
+                    {copy.travelNote[language]}
+                  </p>
                 </article>
               </div>
             </div>
@@ -792,8 +831,9 @@ export default function StarlinkHrvatskaPage({ language }: StarlinkHrvatskaPageP
             <h2 id="starlink-referral-heading" className={H2_CLASS}>
               {copy.referralHeading[language]}
             </h2>
+            <p className={`mt-4 ${BODY_CLASS}`}>{copy.referralLead[language]}</p>
             <NumberedSteps items={copy.referralSteps[language]} />
-            <div className={`${SURFACE_CARD} mt-6 space-y-2`}>
+            <div id="starlink-referral-note" className={`${SURFACE_CARD} mt-6 space-y-2`}>
               <p className="text-sm leading-relaxed text-plum/75 dark:text-pearl/72">
                 {copy.referralLimits[language]}
               </p>
@@ -806,9 +846,6 @@ export default function StarlinkHrvatskaPage({ language }: StarlinkHrvatskaPageP
             >
               {copy.referralCta[language]}
             </ReferralLink>
-            <div className="mt-4">
-              <ReferralNote id="starlink-referral-note" language={language} />
-            </div>
           </div>
         </section>
 

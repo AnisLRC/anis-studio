@@ -7,16 +7,16 @@ interface StarlinkHomeCardProps {
 
 const copy = {
   label: {
-    hr: 'Informativni vodič',
-    en: 'Informational guide',
+    hr: 'Referral pogodnost',
+    en: 'Referral benefit',
   },
   title: {
-    hr: 'Razmišljate o Starlinku?',
-    en: 'Considering Starlink?',
+    hr: '1 mjesec Starlink usluge bez naknade',
+    en: '1 month of Starlink service at no charge',
   },
   text: {
-    hr: 'Pročitajte jednostavan vodič na hrvatskom i provjerite što je važno znati prije narudžbe.',
-    en: 'Read a simple guide and learn what is important to check before ordering.',
+    hr: 'Putem moje referral poveznice vi možete dobiti jedan mjesec usluge bez naknade, a pogodnost mogu dobiti i ja. Prije narudžbe pročitajte kratki vodič na hrvatskom.',
+    en: 'Through my referral link, you may receive one month of service at no charge, and I may also receive a referral benefit. Read the short guide before ordering.',
   },
   button: {
     hr: 'Otvori vodič',
