@@ -57,8 +57,8 @@ const copy = {
     en: 'Referral benefit',
   },
   benefitHeadline: {
-    hr: '1 mjesec Starlink usluge bez naknade za vas — i 1 mjesec pogodnosti za mene',
-    en: '1 month of Starlink service at no charge for you — and a 1-month referral benefit for me',
+    hr: '1 mjesec Starlink usluge bez naknade za vas — i isto toliko za mene',
+    en: '1 month of Starlink service at no charge for you — and the same for me',
   },
   benefitFinePrint: {
     hr: 'Vrijedi kada naručite putem moje referral poveznice, prema aktualnim pravilima Starlink referral programa.',
