@@ -1,8 +1,9 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { Toaster } from 'react-hot-toast'
 import CartDrawer from './components/CartDrawer'
+import { PublicServiceGuard } from './components/PublicServiceGuard'
 import { RouteFallback } from './components/RouteFallback'
 import { useCart } from './lib/cart.store'
 import { ErrorBoundary } from './ErrorBoundary'
@@ -90,8 +91,17 @@ function AnimatedRoutes({
             }
           >
             <Route path="/" element={<HomePage language={language} />} />
-            <Route path="/lrc/upit" element={<LrcInquiryPage language={language} />} />
-            <Route path="/lrc" element={<LRCPage language={language} />} />
+            <Route
+              path="/lrc"
+              element={
+                <PublicServiceGuard service="lrc" language={language}>
+                  <Outlet />
+                </PublicServiceGuard>
+              }
+            >
+              <Route index element={<LRCPage language={language} />} />
+              <Route path="upit" element={<LrcInquiryPage language={language} />} />
+            </Route>
             <Route
               path="/interijeri/klijenti"
               element={<InterijeriClientsPage language={language} />}
@@ -102,10 +112,16 @@ function AnimatedRoutes({
             />
             <Route path="/interijeri" element={<InterijeriPage language={language} />} />
             <Route
-              path="/web-atelier/upit"
-              element={<WebAtelierInquiryPage language={language} />}
-            />
-            <Route path="/web-atelier" element={<WebAtelierPage language={language} />} />
+              path="/web-atelier"
+              element={
+                <PublicServiceGuard service="webAtelier" language={language}>
+                  <Outlet />
+                </PublicServiceGuard>
+              }
+            >
+              <Route index element={<WebAtelierPage language={language} />} />
+              <Route path="upit" element={<WebAtelierInquiryPage language={language} />} />
+            </Route>
             <Route path="/o-nama" element={<AboutPage language={language} />} />
             <Route path="/kontakt" element={<ContactPage language={language} />} />
             <Route path="/faq" element={<FAQPage language={language} />} />

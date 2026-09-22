@@ -11,8 +11,10 @@ interface LrcInquiryPageProps {
 
 export default function LrcInquiryPage({ language = 'hr' }: LrcInquiryPageProps) {
   const { settings, isLoading, error } = useSettings()
-  const LRC_FORM_ENABLED = settings?.is_lrc_form_enabled ?? true
-  const isFormEnabled = error ? true : LRC_FORM_ENABLED
+  const isFormEnabled =
+    error === null &&
+    settings !== null &&
+    settings.is_lrc_form_enabled === true
 
   const title =
     language === 'hr' ? 'Personaliziraj svoj proizvod' : 'Customize your product'

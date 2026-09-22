@@ -12,7 +12,10 @@ interface LRCPageProps {
 
 const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
   const { settings, isLoading, error } = useSettings();
-  const LRC_FORM_ENABLED = settings?.is_lrc_form_enabled ?? true;
+  const isFormEnabled =
+    error === null &&
+    settings !== null &&
+    settings.is_lrc_form_enabled === true;
 
   return (
     <AnimatedPage>
@@ -32,7 +35,7 @@ const LRCPage: React.FC<LRCPageProps> = ({ language = 'hr' }) => {
               </p>
             </div>
           ) : (
-            <LRCSection language={language} isFormEnabled={error ? true : LRC_FORM_ENABLED} />
+            <LRCSection language={language} isFormEnabled={isFormEnabled} />
           )}
         </div>
       </section>
